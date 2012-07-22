@@ -1,0 +1,284 @@
+@charset "utf-8";
+	
+html, body {
+height: 100%;
+}
+
+#ecform_container {
+	width: 95%;
+	text-align: center;
+}
+
+#ecform_title {
+    text-align: center;
+	font-size: 1.7em;
+	font-weight: bold;
+}
+
+#ecform_content {
+  clear: both; 
+  border-top: thin #dcdcdc solid;
+  border-bottom: thin #dcdcdc solid;  
+  border-left: thin #dcdcdc solid; 
+  border-right: thin #dcdcdc solid;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-bottom: 1em;
+  overflow-x : hidden;  
+  -moz-border-radius-topleft:6px;
+  -moz-border-radius-topright:6px;
+  -moz-border-radius-bottomleft:6px;
+  -moz-border-radius-bottomright:6px;
+}
+#ecform_content .titcontent {
+  margin-top: 1em;
+}
+
+#ecform_container .on {
+	display: block;
+}
+#ecform_container .off {
+	display: none;
+}
+
+/* #ecform_onglet ul#menu li a {
+	cursor: pointer;
+	cursor: hand;
+	text-align: center;
+	display: block;
+	width: 116px;
+	height: 22px;
+	line-height: 13px;
+	text-decoration: none;
+	border-top: thin #dcdcdc solid;
+	border-left: thin #dcdcdc solid;
+	border-right: thin #dcdcdc solid;
+	border-bottom: thin #e6e6fa solid;
+	-moz-border-radius-topleft:6px;
+	-moz-border-radius-topright:6px;
+} */
+
+#ecform_onglet ul li{
+	margin:5px 4px 0px 4px;
+	/* background-image:url(pix/tab/right.gif); */
+	background-repeat:no-repeat;
+	background-position:top right;
+	white-space: nowrap;
+}
+
+#ecform_onglet ul#menu li a{
+	width: 116px;
+	line-height: 13px;
+	height: 22px;
+}
+
+.ecformtab{
+	width:80%;
+	margin-right: auto; 
+	margin-left: auto;
+	margin-bottom:5px;
+}
+
+.son {
+	display: block;
+}
+.soff {
+	display: none;
+}	
+	
+#monForm {
+	width: 91%;
+}
+#monForm p {
+	margin: 2px 0;
+	margin-bottom: 10px;
+}
+/* fieldset , legend */
+#monForm fieldset {
+	margin-bottom: 10px;
+	border: #CCCCCC 1px solid;
+	padding: 7px 7px 7px 7px;  
+}
+#monForm fieldset:hover {
+	background-color: #FFF;
+}
+#monForm fieldset legend {
+	padding: 0 10px;
+	font-size: 1.3em;
+	color: #999;
+}
+/* Label */
+#monForm label {
+	display: block;
+	width: 35%;
+	float: left;
+	padding-right: 1%;
+	text-align: right;
+	letter-spacing: 1px;
+	background: #dcdcdc;
+	font-size: 1.1em;
+}
+#monForm label:hover {
+	font-weight: bold;
+}
+#monForm label .error{
+	background: #FF0000;
+}
+#monForm .form_label_nostyle {
+	background: none;
+}
+/* Input */
+#monForm input, #monForm select {
+	margin-left: 1%;
+	width: 62%;
+	border: #CCCCCC 1px solid;
+}
+#monForm input:hover, #monForm select:hover, #monForm input:focus, #monForm select:focus {
+	border: #CCCCCC 1px solid;
+}
+#monForm .form_input_day {
+	width: 20%;
+	text-align: center;
+}
+#monForm .form_input_month {
+	width: 20%;
+	text-align: center;
+}
+#monForm .form_input_year {
+	width: 20%;
+	text-align: center;
+}
+#monForm .form_input_duration {
+	width: 6%;
+}
+
+#monForm .addbutton{
+	width: 40%;
+	text-align:center;
+	margin-bottom:10px;
+}
+
+/* button submit */
+#monForm input[type="submit"] {
+	border: #DDEEFF 1px solid;
+	width: 27%;
+}
+#monForm input[type="submit"]:hover {
+	background-color: #66CC33;
+	cursor: pointer;
+}
+#monForm input[type="reset"] {
+	border: #DDEEFF 1px solid;
+	width: 27%;
+}
+#monForm input[type="reset"]:hover {
+	background-color: #E6484D;
+	cursor: pointer;
+}
+
+.ds_box {
+	background-color: #FFF;
+	border: 1px solid #000;
+	position: absolute;
+	z-index: 32767;
+}
+
+.ds_tbl {
+	background-color: #FFF;
+}
+
+.ds_head {
+	background-color: #585858;
+	color: #FFF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	text-align: center;
+	letter-spacing: 2px;
+}
+
+.ds_subhead {
+	background-color: #CCC;
+	color: #000;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	width: 32px;
+}
+
+.ds_cell {
+	background-color: #EEE;
+	color: #000;
+	font-size: 13px;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 5px;
+	cursor: pointer;
+}
+
+.ds_cell:hover {
+	background-color: #F3F3F3;
+} /* This hover code won't work for IE */
+
+/** Styling for library GUI **/
+
+#libsearch INPUT{
+	font-size:0.9em;
+}
+
+#libsearch SELECT{
+	font-size:0.9em;
+}
+
+.widget{
+}
+
+.widget-label{
+}
+
+.widget-input{
+}
+
+td.mtdfield{
+   width:25%;
+   min-height:24px;
+   text-align:right;
+   color:white;
+   background-color:#565B9E;
+   border:2px solid white;
+   font-weight:bolder;
+   padding:4px;
+   padding-right:10px;
+}
+
+td.mtdnum{
+   width:5%;
+   min-height:24px;
+   text-align:right;
+   color:#B9B9D9;
+   background-color:#565B9E;
+   border:2px solid white;
+   padding:4px;
+}
+
+td.mtdvalue{
+   width:70%;
+   text-align:left;
+   padding:2px;
+   background-color:#F0F0F7;
+   padding-left:10px;
+}
+
+fieldset.subbranch{
+   margin:5px;
+   margin-bottom:10px;
+   padding:5px;
+}
+
+fieldset > legend{
+   margin:5px;
+   padding:5px;
+   font-weight:bolder;
+   color:#54549E;
+}
