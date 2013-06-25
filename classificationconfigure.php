@@ -99,7 +99,7 @@
 	echo '</td><td>';
 	$orderingopts['0'] = '0';
 	$orderingopts['1'] = '1';
-	echo html_writer:select('orderingmin', $orderingopts);
+	echo html_writer::select($orderingopts,'orderingmin');
 	echo '</td></tr>';
 	echo '</table><br/>';
 	echo '<center><input type="submit" value="'.get_string('addclassification','sharedresource').'"/></center>';

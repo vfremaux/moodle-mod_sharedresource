@@ -8,11 +8,14 @@
  *
  */
 require_once $CFG->libdir.'/formslib.php';
+
 class mod_sharedresource_entry_form extends moodleform {
+
     function mod_sharedresource_entry_form($mode) {
         $this->sharedresource_entry_mode = $mode;
         parent::moodleform();
     }
+
     function definition(){
         global $CFG, $USER, $DB;
         $mform =& $this->_form;
@@ -39,14 +42,14 @@ class mod_sharedresource_entry_form extends moodleform {
         // These are internal legacy metainformation, whatever the extension model is 
         $mform->addRule('title', null, 'required', null, 'client');
 
-		// resource entry description. Is copied into metadata also
+        // resource entry description. Is copied into metadata also
         $mform->addElement('editor', 'description', get_string('description'));
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
-		// sharing contexts
-		$contextopts[1] = get_string('systemcontext', 'sharedresource');
-		sharedresource_add_accessible_contexts($contextopts);
+        // sharing contexts
+        $contextopts[1] = get_string('systemcontext', 'sharedresource');
+        sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
         $mform->setType('context', PARAM_INT);
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
@@ -56,7 +59,8 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('static', 'filename', get_string('file').': ', '');
         } else {
             $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size'=>'48'));
-            $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), 'size="40"');
+            $mform->setType('url', PARAM_URL);
+            $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => "40"));
         }
         // let the plugins see the form definition
         $plugins = sharedresource_get_plugins();
@@ -74,18 +78,26 @@ class mod_sharedresource_entry_form extends moodleform {
             $btext = get_string('gometadataform', 'sharedresource');
         // }
 
-        $this->add_action_buttons(true, $btext);
 
         $mform->addElement('hidden', 'course', $course);
+        $mform->setType('course', PARAM_INT);
         $mform->addElement('hidden', 'add', $add);
+        $mform->setType('add', PARAM_ALPHA);
         $mform->addElement('hidden', 'return', $return);
+        $mform->setType('return', PARAM_BOOL);
         $mform->addElement('hidden', 'section', $section);
+        $mform->setType('section', PARAM_INT);
         $mform->addElement('hidden', 'mode', $mode);
+        $mform->setType('mode', PARAM_ALPHA);
         $mform->addElement('hidden', 'entry_id', $entry_id);
+        $mform->setType('entry_id', PARAM_INT);
+
+        $this->add_action_buttons(true, $btext);
 
         // mark this as the first step page // OBSOLETE
         /* $mform->addElement('hidden', 'pagestep', 1); */
     }
+
     function validation($data, $files) {
         global $DB;
 
@@ -100,6 +112,7 @@ class mod_sharedresource_entry_form extends moodleform {
             if (empty($data['url']) && $data['sharedresourcefile'] == null) {
                 $errors['url'] = get_string('missingresource','sharedresource');
             }
+        }
 
         return $errors;
     }

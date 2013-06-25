@@ -37,17 +37,17 @@
         print_error('coursemisconf');
     }
 
-/// security         
+/// security
 
     $system_context = context_system::instance();
     $context = context_course::instance($course->id);
-	require_login($course);
+    require_login($course);
     require_capability('moodle/course:manageactivities', $context);
 
 /// page construction
 
     $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
-    $PAGE->set_pagelayout('standard');
+   // $PAGE->set_pagelayout('standard');
     $PAGE->set_context($system_context);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
@@ -92,8 +92,8 @@
     }
     // which form phase are we in - step 1 or step 2
     $mform = false;
-        $mform = new mod_sharedresource_entry_form($mode);
-        $mform->set_data(($sharedresource_entry));        
+    $mform = new mod_sharedresource_entry_form($mode);
+    $mform->set_data(($sharedresource_entry));
     if ( $mform->is_cancelled() ){
         //cancel - go back to course
         redirect($CFG->wwwroot."/course/view.php?id={$course->id}");
@@ -117,11 +117,11 @@
                 if ($key == 'url') {
                     $sharedresource_entry->add_element($key, clean_param($value, PARAM_URL));
                 } else {
-                	if (is_array($value)){
-	                    $sharedresource_entry->add_element($key, clean_param_array($value, PARAM_CLEANHTML));
-                	} else {
-	                    $sharedresource_entry->add_element($key, clean_param($value, PARAM_CLEANHTML));
-	                }
+                    if (is_array($value)){
+                        $sharedresource_entry->add_element($key, clean_param_array($value, PARAM_CLEANHTML));
+                    } else {
+                        $sharedresource_entry->add_element($key, clean_param($value, PARAM_CLEANHTML));
+                    }
                 }
             }
         }
@@ -138,7 +138,7 @@
                     $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
                 } else {
                     // if resource uploaded then move to temp area until user has
-                    //save the file 
+                    //save the file
                     $file  = $mform->save_stored_file('sharedresourcefile', SITEID, 'mod_sharedresource', 'sharedresource', 0, "/", null, true, $USER->id);
                     $sharedresource_entry->identifier = $file->get_contenthash();
                     $sharedresource_entry->file = $file->get_id();
@@ -149,14 +149,14 @@
                 }
         }
 
-		$sr_entry = serialize($sharedresource_entry);
-		$SESSION->sr_entry = $sr_entry;
-		$error = 'no error';
-		$SESSION->error = $error;
-		$plugin = $plugins[$CFG->{'pluginchoice'}];
-		$nameplugin = $plugin->pluginname;
-		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}&pluginchoice={$nameplugin}";
-		redirect($fullurl);
+        $sr_entry = serialize($sharedresource_entry);
+        $SESSION->sr_entry = $sr_entry;
+        $error = 'no error';
+        $SESSION->error = $error;
+        $plugin = $plugins[$CFG->{'pluginchoice'}];
+        $nameplugin = $plugin->pluginname;
+        $fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}&pluginchoice={$nameplugin}";
+        redirect($fullurl);
     }
 
     // do we have hidden elements that we need to salvage

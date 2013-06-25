@@ -86,10 +86,10 @@ $item->set_updatedcallback('redirectmetadata');
 $settings->add($item);
 
 if (!function_exists('redirectmetadata')){
-	function redirectmetadata(){
-		global $CFG;
-		redirect($CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php?action=reinitialize');
-	}
+    function redirectmetadata(){
+        global $CFG;
+        redirect($CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php?action=reinitialize');
+    }
 }
 
 /*was used to configure each plugin, not used anymore because admin have to choose only one plugin
@@ -100,7 +100,7 @@ foreach($sharedresourcesplugins as $plugin){
 }*/
 
 $settings->add(new admin_setting_heading('metadataconfig', get_string('metadataconfiguration', 'sharedresource'),
-                   get_string('medatadaconfigurationdesc', 'sharedresource', '/mod/sharedresource/metadataconfigure.php')));
+                   get_string('medatadaconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php')));
 				   
 $settings->add(new admin_setting_heading('classificationconfig', get_string('classificationconfiguration', 'sharedresource'),
-                   get_string('classificationconfigurationdesc', 'sharedresource', '/mod/sharedresource/classificationconfigure.php')));
+                   get_string('classificationconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classificationconfigure.php')));
