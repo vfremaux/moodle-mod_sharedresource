@@ -24,10 +24,19 @@ class mod_sharedresource_search_form extends moodleform {
         $buttonattributes = array('title'=> $searchinlibrary, 'onclick'=>"location.href = '".$CFG->wwwroot."/local/sharedresources/index.php?course={$course}'; return false;");
         $addbutton->updateAttributes($buttonattributes);
         $mform->addElement('hidden', 'course', $course);
+        $mform->setType('course', PARAM_INT);
+
         $mform->addElement('hidden', 'add', $add);
+        $mform->setType('add', PARAM_ALPHA);
+
         $mform->addElement('hidden', 'return', $return);
+        $mform->setType('return', PARAM_BOOL);
+
         $mform->addElement('hidden', 'type', $type);
+        $mform->setType('type', PARAM_ALPHANUM);
+
         $mform->addElement('hidden', 'section', $section);
+        $mform->setType('section', PARAM_ALPHANUM);
         if (! $course = $DB->get_record('course', array('id' => $course))) {
             print_error('coursemisconf');
         }

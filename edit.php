@@ -38,16 +38,15 @@
     }
 
 /// security
-
     $system_context = context_system::instance();
     $context = context_course::instance($course->id);
     require_login($course);
     require_capability('moodle/course:manageactivities', $context);
 
-/// page construction
-
     $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
-   // $PAGE->set_pagelayout('standard');
+    $PAGE->set_pagelayout('admin');
+    $url = new moodle_url('/mod/sharedresource/edit.php');
+    $PAGE->set_url($url);
     $PAGE->set_context($system_context);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
@@ -59,8 +58,6 @@
     $PAGE->set_cacheable(false);
     $PAGE->set_button('');
     $PAGE->set_headingmenu('');
-    $url = new moodle_url('/mod/sharedresource/edit.php');
-    $PAGE->set_url($url);
 
     $pagetitle = strip_tags($course->shortname);
 
@@ -168,21 +165,20 @@
         }
         $mform->_form->addElement('hidden', 'sharedresource_hidden', join('|', $hidden));
     }
-    echo '<center>';
 
     if ($mode == 'update') {
         //$mform->addElement('hidden', 'entry_id', $entry_id);
     }
 
     echo $OUTPUT->header();
+    echo $OUTPUT->heading($strtitle);
 
     // display form
     $mform->display();
-    echo '</center>';
     print($OUTPUT->footer($course));
+
     // page local functions
     // grab and clean form value
-
     function sharedresource_clean_field($field) {
         switch ($field) {
             case 'identifier' :
@@ -203,4 +199,3 @@
         }
         return $value;
     }
-?>

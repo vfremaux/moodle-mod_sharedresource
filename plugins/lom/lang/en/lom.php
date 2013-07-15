@@ -68,7 +68,7 @@ $string['taxum'] = 'Taxum';
 $string['id'] = 'Id';
 $string['descriptionlom']='Learning Object Metadata is a data model, usually encoded in XML, used to describe a learning object and similar digital resources used to support learning. The purpose of learning object metadata is to support the reusability of learning objects, to aid discoverability, and to facilitate their interoperability, usually in the context of online learning management systems (LMS). <br/><br/>
 
-The IEEE 1484.12.1 – 2002 Standard for Learning Object Metadata is an internationally-recognised open standard (published by the Institute of Electrical and Electronics Engineers Standards Association, New York) for the description of “learning objects”. Relevant attributes of learning objects to be described include: type of object; author; owner; terms of distribution; format; and pedagogical attributes, such as teaching or interaction style. <br/><br>
+The IEEE 1484.12.1 - 2002 Standard for Learning Object Metadata is an internationally-recognised open standard (published by the Institute of Electrical and Electronics Engineers Standards Association, New York) for the description of "learning objects". Relevant attributes of learning objects to be described include: type of object; author; owner; terms of distribution; format; and pedagogical attributes, such as teaching or interaction style. <br/><br>
 <center>More informations here : <a href=\"http://en.wikipedia.org/wiki/Learning_Object_Metadata\">Wikipedia page of LOM</a></center>';
 
 //Aggregation level
