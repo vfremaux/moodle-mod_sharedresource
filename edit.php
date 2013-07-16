@@ -136,6 +136,7 @@
                 } else {
                     // if resource uploaded then move to temp area until user has
                     //save the file
+                    $filename = $mform->get_new_filename('sharedresourcefile');
                     $file  = $mform->save_stored_file('sharedresourcefile', SITEID, 'mod_sharedresource', 'sharedresource', 0, "/", null, true, $USER->id);
                     $sharedresource_entry->identifier = $file->get_contenthash();
                     $sharedresource_entry->file = $file->get_id();

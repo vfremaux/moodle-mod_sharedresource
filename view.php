@@ -45,16 +45,16 @@
         if ($id) {
             if (!$cm = get_coursemodule_from_id('sharedresource', $id)) {
                 sharedresource_not_found();
-//                error('Course Module ID was incorrect');
+                //error('Course Module ID was incorrect');
             }
 
             if (!$resource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
                 sharedresource_not_found($cm->course);
-//                error('Resource ID was incorrect');
+                //error('Resource ID was incorrect');
             }
         } else {
             sharedresource_not_found();
-//            error('No valid parameters!!');
+            //error('No valid parameters!!');
         }
 
         if (!$course =  $DB->get_record('course', array('id'=> $cm->course))) {
@@ -65,7 +65,7 @@
         $cmid = $cm->id;
     }
 
-	/*
+    /*
     require ($CFG->dirroot.'/mod/sharedresource/type/'.$resource->type.'/resource.class.php');
 
     $resourceclass = 'sharedresource_'.$resource->type;

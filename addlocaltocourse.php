@@ -101,15 +101,15 @@
         $DB->update_record('course', $course);
 
         if (!$section){
-        	// when we add directly from library without course action
-	        $section = sharedresource_get_course_section_to_add($COURSE);
-	    }
+            // when we add directly from library without course action
+            $section = sharedresource_get_course_section_to_add($COURSE);
+        }
 
         if (!$sectionid = course_add_cm_to_section($course, $cm->coursemoduleid, $section)){
             print_error('errorsectionaddition', 'sharedresource');
         }
 
-        echo "added cm $cm->id in section $sectionid for $lastsection ";
+        echo "added cm {$cm->coursemoduleid} in section {$sectionid}";
 
         if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->coursemoduleid))) {
             print_error('errorcmsectionbinding', 'sharedresource');
@@ -130,4 +130,3 @@
     echo $OUTPUT->continue_button($return);
     echo $OUTPUT->footer($course);
     die;
-?>
