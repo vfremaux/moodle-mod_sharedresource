@@ -46,7 +46,7 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         $this->standard_coursemodule_elements(array('groups' => false, 'groupmembersonly' => true, 'gradecat' => false));
 
-        $this->add_action_buttons();        
+        $this->add_action_buttons();
     }
 
     function data_preprocessing(&$default_values){

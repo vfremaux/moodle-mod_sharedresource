@@ -55,36 +55,39 @@ class sharedresource_base {
             if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id'=> $this->cm->instance))) {
                 print_error('invalidsharedreosurce', 'sharedresource');
             }
-            if (!$this->cm->visible and !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
-		        $pagetitle = strip_tags($this->course->shortname.': '.$this->strsharedresource);
-		        $navigation = build_navigation($this->navlinks, $this->cm);
-		        $course_context = context_course::instance($this->course->id);
-		        $PAGE->set_pagelayout('standard');
-		        $PAGE->set_context($course_context);
-		        $url = new moodle_url('/mod/sharedresource/view.php');
-		        $PAGE->set_url($url);
-		        $PAGE->set_title($SITE->fullname);
-		        $PAGE->set_heading($SITE->fullname);
-		        /* SCANMSG: may be additional work required for $navigation variable */
-		        $PAGE->navbar->add("view sharedresource info",'view.php','misc');
-		        $PAGE->set_focuscontrol('');
-		        $PAGE->set_cacheable(false);
-		        $PAGE->set_button('');
-		        $PAGE->set_headingmenu('');
-		
-		        echo $OUTPUT->header();
+            if (!$this->cm->visible and
+                !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
+
+                $pagetitle = strip_tags($this->course->shortname.': '.$this->strsharedresource);
+                $navigation = build_navigation($this->navlinks, $this->cm);
+                $course_context = context_course::instance($this->course->id);
+                $PAGE->set_pagelayout('standard');
+                $PAGE->set_context($course_context);
+                $url = new moodle_url('/mod/sharedresource/view.php');
+                $PAGE->set_url($url);
+                $PAGE->set_title($SITE->fullname);
+                $PAGE->set_heading($SITE->fullname);
+                /* SCANMSG: may be additional work required for $navigation variable */
+                $PAGE->navbar->add("view sharedresource info",'view.php','misc');
+                $PAGE->set_focuscontrol('');
+                $PAGE->set_cacheable(false);
+                $PAGE->set_button('');
+                $PAGE->set_headingmenu('');
+
+                echo $OUTPUT->header();
 
                 echo $OUTPUT->notification(get_string("activityiscurrentlyhidden"), "$CFG->wwwroot/course/view.php?id={$this->course->id}");
-		        echo $OUTPUT->footer();
-		        die;
+                echo $OUTPUT->footer();
+                die;
             }
-			// we can use it, so get the associate entry
+
+            // we can use it, so get the associate entry
             if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
                 print_error('errorinvalididentifier', 'sharedresource');
             }
         } else {
-        	// TODO Check effectivity of this code... or we might just create an empty(incomplete) sharedresource instance ? 
-        	// we were just given an identifier
+            // TODO Check effectivity of this code... or we might just create an empty(incomplete) sharedresource instance ?
+            // we were just given an identifier
             $this->course = $COURSE;
             if ($identifier) {
                 if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
@@ -113,7 +116,7 @@ class sharedresource_base {
     */
     function _postprocess(&$resource) {
         global $SHAREDRESOURCE_WINDOW_OPTIONS;
-        
+
         $alloptions = $SHAREDRESOURCE_WINDOW_OPTIONS;
 
         if (!empty($resource->forcedownload)) {
@@ -151,14 +154,6 @@ class sharedresource_base {
     }
 
     /**
-    * Display function does nothing in the base class
-    * will delegate to subtypes....
-    */
-    /*
-    function display() {
-    }
-    */
-    /**
     * Display the file resource
     *
     * Displays a file resource embedded, in a frame, or in a popup.
@@ -168,13 +163,13 @@ class sharedresource_base {
     */
     function display() {
         global $CFG, $THEME, $USER, $PAGE, $OUTPUT, $SITE, $DB;
-        
+
     /// Set up some shorthand variables
         $cm = $this->cm;
         $course = $this->course;
         $resource = $this->sharedresource;
         $sharedresourceentry = $this->sharedresourceentry;
-        
+
         $DB->set_field('sharedresource_entry', 'scoreview', $sharedresourceentry->scoreview + 1, array('id' => $sharedresourceentry->id));
 
         // if we dont get the resource then fail
@@ -188,7 +183,7 @@ class sharedresource_base {
         } else {
             $resource->title = $sharedresourceentry->title;
         }
-        
+
         $this->set_parameters(); // set the parameters array
 
         /// First, find out what sort of file we are dealing with.
@@ -234,7 +229,7 @@ class sharedresource_base {
             } else if ($mimetype == 'audio/x-pn-realaudio') {   // It's a realmedia file
                 $resourcetype = 'rm';
                 $embedded = true;
-            } 
+            }
         }
         $isteamspeak = (stripos($resource->reference, 'teamspeak://') === 0);
 
@@ -274,7 +269,7 @@ class sharedresource_base {
             }
             $fullurl = sharedresource_get_file_url($sharedresourceentry, $querys);
         }
-        
+
         /// Check whether this is supposed to be a popup, but was called directly
         if (isset($resource->popup) && $resource->popup and !$inpopup) {    /// Make a page and a pop-up window
 
@@ -313,7 +308,7 @@ class sharedresource_base {
             print($OUTPUT->footer($course));
             exit;
         }
-        
+
         /// Now check whether we need to display a frameset
         $frameset = optional_param('frameset', '', PARAM_ALPHA);
         if (empty($frameset) and !$embedded and !$inpopup and (isset($resource->options) && $resource->options == "frame") and empty($USER->screenreader)) {
@@ -331,7 +326,7 @@ class sharedresource_base {
             echo "</html>";
             exit;
         }
-        
+
         /// We can only get here once per resource, so add an entry to the log
         add_to_log($course->id, "sharedresource", "view", "view.php?identifier={$sharedresourceentry->identifier}", $sharedresourceentry->title);
         /// If we are in a frameset, just print the top of it
@@ -364,7 +359,7 @@ class sharedresource_base {
             $strdirectlink = get_string('directlink', 'sharedresource');
             $course_context = context_course::instance($course->id);
 
-        	if ($inpopup) {
+            if ($inpopup) {
                 $PAGE->set_pagelayout('embedded');
             } else {
                 $PAGE->set_pagelayout('popup');
@@ -478,7 +473,7 @@ class sharedresource_base {
                 echo '</object>';
                 echo '</div>';
             } else if ($resourcetype == 'rm') {
-                echo '<div class="resourcecontent resourcerm">'; 
+                echo '<div class="resourcecontent resourcerm">';
                 echo '<object classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="320" height="240">';
                 echo '<param name="src" value="' . $fullurl . '" />';
                 echo '<param name="controls" value="All" />';
@@ -489,7 +484,7 @@ class sharedresource_base {
                 echo '</object>';
                 echo '<!--<![endif]-->';
                 echo '</object>';
-                echo '</div>'; 
+                echo '</div>';
             } else if ($resourcetype == 'quicktime') {
                 echo '<div class="resourcecontent resourceqt">';
                 echo '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B"';
@@ -677,11 +672,11 @@ class sharedresource_base {
      * of the new instance.
      *
      * @param sharedresource   object, sharedresource record values
-     * @return int, sharedresource id or false      
+     * @return int, sharedresource id or false
      */
     function add_instance($sharedresource) {
         global  $DB;
-        
+
         $this->_postprocess($sharedresource);
         $sharedresource->timemodified = time();
         return  $DB->insert_record('sharedresource', $sharedresource);
@@ -692,7 +687,7 @@ class sharedresource_base {
      * will update an existing instance with new data.
      *
      * @param sharedresource   object, sharedresource record values
-     * @return bool sharedresource insert status      
+     * @return bool sharedresource insert status
      */
     function update_instance($sharedresource) {
         global  $DB;
@@ -702,18 +697,18 @@ class sharedresource_base {
         $sharedresource->timemodified = time();
         return  $DB->update_record('sharedresource', $sharedresource);
     }
-    
+
     /**
      * Given an object containing the sharedresource data
      * this function will permanently delete the instance
      * and any data that depends on it.
      *
      * @param sharedresource   object, sharedresource record values
-     * @return bool sharedresource delete status      
+     * @return bool sharedresource delete status
      */
     function delete_instance($sharedresource) {
         global  $DB;
-        
+
         $result = true;
         if (!  $DB->delete_records('sharedresource', array('id' => $sharedresource->id))) {
             $result = false;
@@ -729,7 +724,7 @@ class sharedresource_base {
     */
     function set_parameters() {
         global $USER, $CFG,$PAGE,$OUTPUT,$SITE;
-        
+
         $site = get_site();
         $littlecfg = new stdClass();       // to avoid some notices later
         $littlecfg->wwwroot = $CFG->wwwroot;
@@ -810,7 +805,7 @@ class sharedresource_base {
              $this->parameters = $userparameters + $this->parameters;
         }
     }
-    
+
     /**
      * set up form elements for add/update of sharedresource
      *
@@ -857,7 +852,11 @@ class sharedresource_base {
         }
         $this->set_parameters(); // set the parameter array for the form
         $mform->addElement('hidden', 'entry_id', $sharedresource_entry->id);
+        $mform->setType('entry_id', PARAM_INT);
+
         $mform->addElement('hidden', 'identifier', $sharedresource_entry->identifier);
+        $mform->setType('identifier', PARAM_TEXT);
+
         $mform->setDefault('name', $sharedresource_entry->title);
         $mform->setDefault('description', ($sharedresource_entry->description));
         $location = $mform->addElement('static', 'origtitle', get_string('title', 'sharedresource').': ', ($sharedresource_entry->title));
@@ -904,6 +903,7 @@ class sharedresource_base {
         foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $option) {
             if ($option == 'height' or $option == 'width') {
                 $mform->addElement('text', $option, get_string('new'.$option, 'sharedresource'), array('size'=>'4'));
+                $mform->setType($option, PARAM_INT);
                 $mform->setDefault($option, $CFG->{'sharedresource_popup'.$option});
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             } else {
@@ -937,6 +937,7 @@ class sharedresource_base {
             $group[] =& $mform->createElement('select', $parametername, '', $options);//TODO: accessiblity
             $mform->addGroup($group, 'pargroup'.$i, get_string('variablename', 'sharedresource').'='.get_string('parameter', 'sharedresource'), ' ', false);
             $mform->setAdvanced('pargroup'.$i);
+            $mform->setType($parsename, PARAM_RAW);
             $mform->setDefault($parametername, '-');
         }
     }
@@ -951,4 +952,3 @@ class sharedresource_base {
         //override to add your own options
     }
 }
-?>

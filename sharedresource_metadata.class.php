@@ -1,6 +1,5 @@
 <?php
 /**
- *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
@@ -8,12 +7,11 @@
  *
  */
 
-
 /**
 * sharedresource_metadata defines a sharedresource_metadata element
 *
 * This class provides all the functionality for a sharedresource_metadata
-* You dont really need to be here, as this is managed through the 
+* You dont really need to be here, as this is managed through the
 * sharedresource_entry object.
 */
 class sharedresource_metadata {

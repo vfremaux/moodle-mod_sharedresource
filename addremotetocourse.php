@@ -28,7 +28,7 @@
     }
 
     // if we have a physical file to get, get it.
-    if ($mode == 'file' || ($mode == 'local' && !empty($filename))){        
+    if ($mode == 'file' || ($mode == 'local' && !empty($filename))){
 	    $url = required_param('url', PARAM_URL);
 	    $filename = required_param('file', PARAM_TEXT);
         $ch = curl_init($url);
@@ -62,7 +62,7 @@
         $provider = required_param('provider', PARAM_TEXT);
         $keywords = required_param('keywords', PARAM_TEXT);
         // make a sharedresource_entry
-        $sharedresource_entry = new sharedresource_entry(false); 
+        $sharedresource_entry = new sharedresource_entry(false);
         $sharedresource_entry->title = $title;
         $sharedresource_entry->description = $desc;
         $sharedresource_entry->keywords = $keywords;
@@ -101,7 +101,7 @@
                 $resource =  $DB->get_record('resource',array( 'id'=> $resourceid));
                 $resource->reference = basename($filename);
                  $DB->update_record('resource', $resource);
-            }            
+            }
         } else {
             if (!$resourceid = $sharedresource->add_instance($sharedresource)){
                 print_error('erroraddinstance', 'sharedresource');

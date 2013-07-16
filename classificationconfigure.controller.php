@@ -54,7 +54,7 @@
 			$recordclassif = false;
 			$erroradd .= get_string('missingnametable', 'sharedresource');
 		} else {
-           
+
 			$metatables = $DB->get_tables();
 			$metatables = array_flip($metatables);
 			$metatables = array_change_key_case($metatables, CASE_LOWER);
@@ -129,4 +129,3 @@
 		}
 		set_config('classifarray', serialize($classifarray));
 	}
-?>

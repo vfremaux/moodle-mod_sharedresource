@@ -31,20 +31,19 @@ abstract class search_widget {
         $this->label = $label;
         $this->type = $type;
     }
- 
+
 	/**
     * print widget implementation for each widget style.
-    * @param string $layout gives some indication about the surrounding layout and what glue is 
+    * @param string $layout gives some indication about the surrounding layout and what glue is
     * to be added.
     * @param mixed $value the input or current value
     */
     abstract function print_search_widget($layout, $value = 0);
 
 	/**
-	* implements a value catcher from CGI input or retreives the session stored current value 
+	* implements a value catcher from CGI input or retreives the session stored current value
 	* @param array $searchfields a colelctor array that traverse all catch_value calls to collect field value for search query.
 	*/
     abstract function catch_value(&$searchfields);
 	
 }
-?>

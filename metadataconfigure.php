@@ -5,8 +5,8 @@
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
- * 
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
+ *
  * @package sharedresource
  *
  */
@@ -45,7 +45,7 @@
     	foreach($currentconfig as $conf){
     		$config[$conf->name] = $conf->value;
     	}
-    }    
+    }
     if($config == array() || $action == 'reinitialize'){
 		foreach($plugin->METADATATREE as $key => $value) {
 			if($key != 0){

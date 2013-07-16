@@ -9,7 +9,7 @@
  */
 
     //This php script contains all the stuff to use classifications
-	//This is used in the metadata form of a sharedresource and 
+	//This is used in the metadata form of a sharedresource and
     //in the search engine of a sharedresource.
     //-----------------------------------------------------------
 
@@ -33,8 +33,8 @@ function metadata_create_classification($classtable, $classifarray, $classificat
 				$newclassif[$classification]['childs']['none'.$i] = $taxon->$classifarray[$classification]['id'];
 				$i++;
 			}
-			$newclassif[$taxon->$classifarray[$classification]['id']] = array('label' => $taxon->$classifarray[$classification]['label'], 
-																			  'ordering' => $taxon->$classifarray[$classification]['ordering'], 
+			$newclassif[$taxon->$classifarray[$classification]['id']] = array('label' => $taxon->$classifarray[$classification]['label'],
+																			  'ordering' => $taxon->$classifarray[$classification]['ordering'],
 																			  'childs' => array()
 																		);
 			unset($tempclassif[$key]);

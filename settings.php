@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
@@ -37,7 +37,7 @@ $settings->add(new admin_setting_configcheckbox('sharedresource_backup_index', g
 
 $settings->add(new admin_setting_configcheckbox('sharedresource_restore_index', get_string('restore_index', 'sharedresource'),
                    get_string('config_restore_index', 'sharedresource'), '0'));
-                   
+
 $settings->add(new admin_setting_configtext('sharedresource_framesize', get_string('framesize', 'sharedresource'),
                    get_string('configframesize', 'sharedresource'), 130, PARAM_INT));
 
@@ -65,7 +65,7 @@ foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $optionname) {
     }
 }
 
-/// get plugins list for enabling/disabling 
+/// get plugins list for enabling/disabling
 
 $pluginscontrolstr = get_string('pluginscontrol', 'sharedresource');
 $pluginscontrolinfostr = get_string('pluginscontrolinfo', 'sharedresource');
@@ -101,6 +101,6 @@ foreach($sharedresourcesplugins as $plugin){
 
 $settings->add(new admin_setting_heading('metadataconfig', get_string('metadataconfiguration', 'sharedresource'),
                    get_string('medatadaconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php')));
-				   
+
 $settings->add(new admin_setting_heading('classificationconfig', get_string('classificationconfiguration', 'sharedresource'),
                    get_string('classificationconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classificationconfigure.php')));

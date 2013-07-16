@@ -21,7 +21,7 @@
         if (!isset($cachedcourseid) || $cachedcourseid !== (int)$courseid) {
             $resourcelist = array();
             $nothingtodo = false;
-        } 
+        }
         $cachedcourseid = (int)$courseid;
         if ($nothingtodo === true) {
             return $text;
@@ -29,13 +29,13 @@
     /// Create a list of all the sharedresources to search for.  It may be cached already.
         if (empty($resourcelist)) {
             /* get all non-hidden resources from this course
-             * sorted from long to short so longer ones can be 
-             * linked first. And order by section so we try to 
+             * sorted from long to short so longer ones can be
+             * linked first. And order by section so we try to
              * link to the top resource first.
              */
-            $resource_sql  = "SELECT r.id, r.name 
-                FROM {sharedresource} r, 
-                     {course_modules} cm, 
+            $resource_sql  = "SELECT r.id, r.name
+                FROM {sharedresource} r,
+                     {course_modules} cm,
                      {modules} m
                 WHERE m.name = 'resource' AND
                         cm.module = m.id AND
@@ -55,7 +55,7 @@
                 if (!empty($strippedname)) {
                     $resourcelist[] = new filterobject($currentname,
                             '<a class="resource autolink" title="'.$strippedname.'" href="'.
-                             $CFG->wwwroot.'/mod/sharedresource/view.php?r='.$resource->id.'" '.$CFG->frametarget.'>', 
+                             $CFG->wwwroot.'/mod/sharedresource/view.php?r='.$resource->id.'" '.$CFG->frametarget.'>',
                              '</a>', false, true);
                 }
             }

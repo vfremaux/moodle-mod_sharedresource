@@ -108,7 +108,7 @@
         if (!$sectionid = course_add_cm_to_section($course, $cm->coursemoduleid, $section)){
             print_error('errorsectionaddition', 'sharedresource');
         }
-        
+
         echo "added cm $cm->id in section $sectionid for $lastsection ";
 
         if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->coursemoduleid))) {

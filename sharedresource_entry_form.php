@@ -39,7 +39,7 @@ class mod_sharedresource_entry_form extends moodleform {
         } else {
             $mform->setType('title', PARAM_CLEANHTML);
         }
-        // These are internal legacy metainformation, whatever the extension model is 
+        // These are internal legacy metainformation, whatever the extension model is
         $mform->addRule('title', null, 'required', null, 'client');
 
         // resource entry description. Is copied into metadata also
@@ -123,7 +123,7 @@ class mod_sharedresource_entry_form extends moodleform {
         if ($data == NULL) {
             return $data;
         }
-        
+
         // Not sure to keep this default metadata setyup : Old Piers trick
         if (!empty($data->IssueDate)) {
             $data->IssueDate = date("Y-m-d\TH:i:s.000\Z", $data->IssueDate);
@@ -136,7 +136,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
     function set_data($default_values, $slashed = false) {
 
-        // poke all the basic metadata elements into defaults so 
+        // poke all the basic metadata elements into defaults so
         // that they get set in the form
         if (isset($default_values->metadata_elements)) {
             foreach ($default_values->metadata_elements as $element) {

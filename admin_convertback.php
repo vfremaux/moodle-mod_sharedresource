@@ -25,7 +25,7 @@
 	    	print_error('coursemisconf');
 	    }
 
-	/// security 
+	/// security
 	
 	    $context = context_course::instance($courseid);
 	    require_login($course);
@@ -51,7 +51,7 @@
         $alllps = $DB->get_records_menu('course', array('format' => 'learning'), 'shortname', 'id,id');
         $form = new sharedresource_choosecourse_form($alllps);
 
-	    echo $OUTPUT->header();  
+	    echo $OUTPUT->header();
 	    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
         $form->display();
         echo $OUTPUT->footer();
@@ -59,14 +59,14 @@
     } else {
         $sharedresources = $DB->get_records('sharedresource', array('course'=> $courseid), 'name');
         if (empty($sharedresources)){
-		    echo $OUTPUT->header();  
+		    echo $OUTPUT->header();
 		    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
             echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
             echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
             echo $OUTPUT->footer();
             exit();
         }
-        /// filter convertible resources : 
+        /// filter convertible resources :
         // we only can convert back non shared resources
         foreach($sharedresources as $id => $sharedresource){
             if ($DB->count_records_select('sharedresource', " course <> {$courseid} AND identifier = '{$sharedresource->identifier}' ") != 0){
@@ -96,13 +96,12 @@
             }
         } else {
             // print form
-		    echo $OUTPUT->header();  
-		    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
+            echo $OUTPUT->header();
+            print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
             $form2->display();
             echo $OUTPUT->footer();
-    		exit;
+            exit;
         }
     }
     echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
     echo $OUTPUT->footer();
-?>
