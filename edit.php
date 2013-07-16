@@ -37,21 +37,22 @@
         print_error('coursemisconf');
     }
 
-/// security         
+/// security
 
-    $system_context = context_system::instance();
-    $context = context_course::instance($course->id);
+	$system_context = context_system::instance();
+	$context = context_course::instance($course->id);
 	require_login($course);
-    require_capability('moodle/course:manageactivities', $context);
+	require_capability('moodle/course:manageactivities', $context);
 
 /// page construction
 
     $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
-    $PAGE->set_pagelayout('standard');
     $PAGE->set_context($system_context);
+    $PAGE->set_pagelayout('admin');
+    $url = new moodle_url('/mod/sharedresource/edit.php');
+    $PAGE->set_url($url);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
-    /* SCANMSG: may be additional work required for $navigation variable */
     $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), "{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id");
     $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
     $PAGE->navbar->add($strtitle,'edit.php','misc');
@@ -59,8 +60,6 @@
     $PAGE->set_cacheable(false);
     $PAGE->set_button('');
     $PAGE->set_headingmenu('');
-    $url = new moodle_url('/mod/sharedresource/edit.php');
-    $PAGE->set_url($url);
 
     $pagetitle = strip_tags($course->shortname);
 
@@ -92,8 +91,8 @@
     }
     // which form phase are we in - step 1 or step 2
     $mform = false;
-        $mform = new mod_sharedresource_entry_form($mode);
-        $mform->set_data(($sharedresource_entry));        
+    $mform = new mod_sharedresource_entry_form($mode);
+    $mform->set_data(($sharedresource_entry));        
     if ( $mform->is_cancelled() ){
         //cancel - go back to course
         redirect($CFG->wwwroot."/course/view.php?id={$course->id}");
@@ -130,30 +129,30 @@
         if ($mode == 'add') {
             // locally defined resource ie. we are the master
             $sharedresource_entry->type = 'file';
-            // page step 1
-            // if ($pagestep == 1) {
-                // is this a local resource or a remote one?
-                if (!empty($sharedresource_entry->url)) {
-                    $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
-                    $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
-                } else {
-                    // if resource uploaded then move to temp area until user has
-                    //save the file 
-                    $file  = $mform->save_stored_file('sharedresourcefile', SITEID, 'mod_sharedresource', 'sharedresource', 0, "/", null, true, $USER->id);
-                    $sharedresource_entry->identifier = $file->get_contenthash();
-                    $sharedresource_entry->file = $file->get_id();
-                    $formdata->identifier = $sharedresource_entry->identifier;
-                    $formdata->file = $sharedresource_entry->file;
-                    $formdata->uploadname = $filename;// $sharedresource_entry->uploadname;
-                    //$formdata->mimetype = $sharedresource_entry->mimetype;
-                }
+            // is this a local resource or a remote one?
+            if (!empty($sharedresource_entry->url)) {
+                $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
+                $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
+            } else {
+                // if resource uploaded then move to temp area until user has
+                //save the file 
+                $systemcontext = context_system::instance();
+                $file  = $mform->save_stored_file('sharedresourcefile', $systemcontext->id, 'mod_sharedresource', 'sharedresource', 0, "/", null, true, $USER->id);
+                $sharedresource_entry->identifier = $file->get_contenthash();
+                $sharedresource_entry->file = $file->get_id();
+                $formdata->identifier = $sharedresource_entry->identifier;
+                $formdata->file = $sharedresource_entry->file;
+                $formdata->uploadname = $file->get_filename();// $sharedresource_entry->uploadname;
+                //$formdata->mimetype = $sharedresource_entry->mimetype;
+                $sharedresource_entry->url = '';
+            }
         }
 
 		$sr_entry = serialize($sharedresource_entry);
 		$SESSION->sr_entry = $sr_entry;
 		$error = 'no error';
 		$SESSION->error = $error;
-		$plugin = $plugins[$CFG->{'pluginchoice'}];
+		$plugin = $plugins[$CFG->pluginchoice];
 		$nameplugin = $plugin->pluginname;
 		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}&pluginchoice={$nameplugin}";
 		redirect($fullurl);

@@ -2,13 +2,23 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery@valeisti.fr
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package sharedresource
  *
  */
 global $SITE;
+
+// Capabilities
+$string['sharedresource:addinstance'] = 'Can add an instance';
+$string['sharedresource:browsecatalog'] = 'Browse shared library';
+$string['sharedresource:editcatalog'] = 'Manage entries in shared library';
+$string['sharedresource:file'] = 'Shared Resource';
+$string['sharedresource:manageblocks'] = 'Manage blocks in the library';
+$string['sharedresource:authormetadata'] = 'Can work with author metadata';
+$string['sharedresource:indexermetadata'] = 'Can work with indexer metadata';
+$string['sharedresource:systemmetadata'] = 'Can work with system metadata';
 
 $string['DMdescription'] = 'Description of the metadata model :';
 $string['DMuse'] = 'Use of the metadata model :';
@@ -21,6 +31,7 @@ $string['addfile'] = 'Add to the course files';
 $string['addfiletocourse'] = 'Add to course files';
 $string['addheader'] = 'Adding A New Resource';
 $string['addlocal'] = 'Relocalize a distant resource';
+$string['addltiinstall'] = 'Install an LTI Tool from the library';
 $string['addmetadataform'] = 'Add Metadata Form';
 $string['addremote'] = 'Add a remote resource';
 $string['addshared'] = 'Add a shared resource';
@@ -44,7 +55,7 @@ $string['choose'] = 'Choose';
 $string['chooseparameter'] = 'Choose Parameter';
 $string['chooseprovidertopushto'] = 'By sharing the resource to an external provider, you :<ul><li>Move physically the resource</li><li>Delete the local representation for this resource</li><li>Allow other sites using this provider to use the resource</li><li>Will rebind the all locations of use of the resource within the Moodle network.</li></ul></p>';
 $string['classificationconfiguration'] = 'Classification configuration';
-$string['classificationconfigurationdesc'] = 'This <a href="{$a}">additional page</a> allows the configuration of classifications for the chosen data model.<br/>';
+$string['classificationconfigurationdesc'] = 'This <a href="{$a}">additional page</a> allows the configuration of classifications for the chosen data model.';
 $string['classificationmodif'] = 'Classification modification';
 $string['classificationname'] = 'Classification usual name';
 $string['classificationsearch'] = 'Research on classification';
@@ -77,12 +88,14 @@ $string['configsecretphrase'] = 'This secret phrase is used to generate the encr
 $string['configwebsearch'] = 'URL displayed during the add of a web page or a link, in order to allow the user to search the desired URL.';
 $string['configwindowsettings'] = 'Determines if the zone configuration of windows is displayed or not by default when adding new resources. After the first use, this setting is individual.';
 $string['contains'] = 'contains';
-$string['conversioncancelled'] = 'covnersion cancelled';
+$string['conversioncancelled'] = 'conversion cancelled';
 $string['conversioncancelledtocourse'] = 'Conversion canceled. You are going to be redirect to the management of activities';
 $string['conversioncancelledtolibrary'] = 'Conversion canceled. You are going to be redirect to the library';
 $string['convert'] = 'Convert selection';
+$string['convert_help'] = 'If sharedresources are used, you can use these links to convert standard resources to sharedlibrary back and forth';
 $string['convertall'] = 'Share and index resources';
 $string['convertback'] = 'Localize back a resource';
+$string['convertingsharedresource'] = 'Converting shared resource {$a->id} : {$a->name}';
 $string['copyright_and_other_restrictions'] = 'Copyright and other restrictions';
 $string['correctsave'] = '<h2> Resource saved successfully </h2>';
 $string['d'] = 'days';
@@ -100,19 +113,19 @@ $string['durationsearch'] = 'Research on duration field';
 $string['edit'] = 'Edit';
 $string['endswith'] = 'ends with';
 $string['equalto'] = 'equals to';
-$string['errordeletesharedresource'] = 'Error - can\'t delete resource file ({$a})';
-$string['errormetadata'] = 'Errors found in the following fields (these errors will be printed in red in the form) : ';
-$string['errorcmaddition'] = 'Could not add the course module';
-$string['errorsectionaddition'] = 'Could not setup a section';
-$string['errorcmsectionbinding'] = 'Could not update the course module with the correct section';
 $string['erroraddinstance'] = 'sharedresource instance creation error';
-$string['errorinvalididentifier'] = 'Ressource Identifier {$a} does not match any resource';
-$string['errorupdatecm'] = 'Could not update course module';
-$string['errornotinstalled'] = 'sharedresource module not installed !!';
-$string['errornometadataplugins'] = 'No Metadata plugins installed';
-$string['errornometadataenabled'] = 'Metadata cannot be configured as no plugin is activated as schema';
-$string['errornoticecreation'] = 'Could not create the remote notice';
+$string['errorcmaddition'] = 'Could not add the course module';
+$string['errorcmsectionbinding'] = 'Could not update the course module with the correct section';
+$string['errordeletesharedresource'] = 'Error - can\'t delete resource file ({$a})';
 $string['erroremptyurl'] = 'Tried to create a Shared Resource without a URL';
+$string['errorinvalididentifier'] = 'Ressource Identifier {$a} does not match any resource';
+$string['errormetadata'] = 'Errors found in the following fields (these errors will be printed in red in the form) : ';
+$string['errornometadataenabled'] = 'Metadata cannot be configured as no plugin is activated as schema';
+$string['errornometadataplugins'] = 'No Metadata plugins installed';
+$string['errornoticecreation'] = 'Could not create the remote notice';
+$string['errornotinstalled'] = 'sharedresource module not installed !!';
+$string['errorsectionaddition'] = 'Could not setup a section';
+$string['errorupdatecm'] = 'Could not update course module';
 $string['existothermetadata'] = 'A metadata form using another data model already exists for this resource.<br/>If this form is validated, a new metadata form will be stored and the old one will be deleted.';
 $string['export'] = 'Export to an external provider';
 $string['failadd'] = 'Resource failed to save (add) to the DB';
@@ -131,6 +144,7 @@ $string['frameifpossible_help'] = 'Help on Frame if possible';
 $string['framesize'] = 'Frame size';
 $string['freeze_index'] = 'Freeze shared Index';
 $string['gometadataform'] = 'Fill in metadata about this shared resource';
+$string['gometadataform2'] = 'Fill in metadata about this shared resource';
 $string['h'] = 'hours';
 $string['hours'] = 'Hour(s)';
 $string['idname'] = 'Name of the id field';
@@ -151,6 +165,7 @@ $string['interactivity_type'] = 'Interactivity Type';
 $string['keepnavigationvisible'] = 'Keep Navigation Visible';
 $string['keywordpunct'] = 'No punctuation authorized in keywords <br/>';
 $string['keywords'] = 'Keywords';
+$string['keyword'] = 'Keyword';
 $string['labelname'] = 'Name of the label field';
 $string['language'] = 'Language';
 $string['learning_resource_type'] = 'Learning Resourc Type ';
@@ -161,7 +176,7 @@ $string['localizetocourse'] = 'Localize as a course resource';
 $string['location'] = 'Resource location';
 $string['m'] = 'mins';
 $string['maximum_version'] = 'Maximum Version';
-$string['medatadaconfigurationdesc'] = 'This <a href="{$a}">additional page</a> allows the configuration of metadata form for each role, and to choose the search widgets.<br/>';
+$string['medatadaconfigurationdesc'] = 'This <a href="{$a}">additional page</a> allows the configuration of metadata form for each role, and to choose the search widgets.';
 $string['metadata'] = 'Meta data';
 $string['metadata_configure'] = 'Metadata Configuration';
 $string['metadata_schema'] = 'Metadata Schema';
@@ -196,9 +211,9 @@ $string['newscrollbars'] = 'Scrollerbar in new window';
 $string['newstatus'] = 'Show the status bar';
 $string['newtoolbar'] = 'New Toolbar';
 $string['newtoolbar'] = 'Show the toolbar';
-$string['newtoolbar'] = 'Toolbar';
 $string['newwidth'] = 'Default window width (in pixels)';
 $string['newwindow'] = 'New window';
+$string['noSQLrestrict'] = 'Enter an SQL SELECT statement';
 $string['noaccessform'] = 'Your user category do not have access to this form';
 $string['noclassification'] = 'No classification found';
 $string['node'] = 'Node';
@@ -223,7 +238,7 @@ $string['parameters'] = 'Parameters';
 $string['parentname'] = 'Name of the parent field';
 $string['pluginadministration'] = 'Plugin Administration';
 $string['pluginchoice'] = 'Plugin choice';
-$string['pluginname'] = 'Shared Resource Mod.';
+$string['pluginname'] = 'Shared Resource';
 $string['pluginscontrol'] = 'Metadata Plugins Control';
 $string['pluginscontrolinfo'] = 'The following parameter control the plugin used in metadata sets while collecting data for indexation';
 $string['preview'] = 'Preview';
@@ -258,23 +273,18 @@ $string['searchsharedresource'] = 'Search for A shared resource';
 $string['seconds'] = 'Second(s)';
 $string['selectable'] = 'Selectable';
 $string['selectall'] = 'Select all';
+$string['selectall'] = 'all';
 $string['selectclassification'] = 'Selection and configuration of visible classifications';
 $string['selectnone'] = 'Select none';
 $string['selectsearch'] = 'Research on select field';
 $string['semantic_density'] = 'Semantic Density';
 $string['serverurl'] = 'Server URL';
-$string['selectall'] = 'all';
-$string['unselectall'] = 'none';
-$string['sharedresource:addinstance'] = 'Can add an instance';
-$string['sharedresource:browsecatalog'] = 'Browse shared library';
-$string['sharedresource:editcatalog'] = 'Manage entries in shared library';
-$string['sharedresource:file'] = 'Shared Resource';
-$string['sharedresource:manageblocks'] = 'Manage blocks in the library';
-$string['sharedresourcedetails'] = "Sharedresource Details";
+$string['sharedresourcedetails'] = 'Sharedresource Details';
+$string['sharedresourceintro'] = 'Introduction';
 $string['sharedresourcenotice'] = 'Sharedresource Notice for : {$a}';
 $string['sharedresourceservice_name'] = 'Sharedresource Module Services';
+$string['sharedresourceservice_description'] = 'Allows remote access to providers. Library consumers should subscribe to this service. Library providers should publish this service.';
 $string['sharedresourcetypefile'] = 'shared resource';
-$string['sharedresourceintro'] = 'Introduction';
 $string['sharingcontext'] = 'Sharing context';
 $string['startswith'] = 'starts with';
 $string['step2'] = 'Go to Step2';
@@ -288,12 +298,13 @@ $string['textsearch'] = 'Research on text field';
 $string['title'] = 'Title';
 $string['typical_age_range'] = 'Typical Age Range';
 $string['typical_learning_time'] = 'Typical Learning Time';
+$string['unselectall'] = 'none';
+$string['updatemetadata'] = 'Update configuration';
 $string['updatemetadataform'] = 'Update the description';
 $string['updateresourcepageoff'] = 'Quit edition mode';
 $string['updateresourcepageon'] = 'Go to edition mode';
 $string['updatesharedresource'] = 'Update shared resource';
 $string['updatesharedresourcetypefile'] = 'Update a shared resource';
-$string['updatemetadata'] = 'Update configuration';
 $string['url'] = 'shared resource URL';
 $string['used'] = 'Used {$a} times';
 $string['validateform'] = 'Validate';
@@ -306,14 +317,14 @@ $string['wrongform'] = '<h2>The form was not filled in correctly. Return to the 
 $string['year'] = '- Year -';
 
 //************* Help Strings ******************/
-$string['description_help']= "
+$string['description_help'] = "
 The description is a very short summary of the resource.\n\n
 For some resource display options, the summary is printed along side 
 the resource itself, otherwise it appears on the resource index page
 making it easier for students searching for particular resources.
 ";
 
-$string['addclassification_help']= "
+$string['addclassification_help'] = "
 A classification references to a database table, which must contains at least these four fields:\n\n
 - id\n
 - parent, which is the id of the taxon\'s parent\n
@@ -324,28 +335,28 @@ You have to notice the name of the table can be written with the prefix of the m
 The configuration of each classification added is then necessary by clicking on the \"Configure\" button.
 ";
 
-$string['addsharedresource_help']= "
+$string['addsharedresource_help'] = "
 Resources are content: information the teacher wants to bring into the course.  These can be prepared files uploaded to the course 
 server; pages edited directly in Moodle; or external web pages made to appear part of this course.\n\n
 Shared Resources are course independent, and are created in advance before being attached to a Course.\n\n
 Resources are either URLs, or a locally uploaded file. Specify your resource, along with the appropriate metadata, to add it to the searchable index.
 ";
 
-$string['classificationsearch_help']= "
+$string['classificationsearch_help'] = "
 Searching through the classification will use successive select selections. You first need to choose which classification will be used (several can be applied to the resoruces), than choose the classification first category. A further select list will appear if there ae any child category in which you can refine selection.\n\n
 Leave the subselects unselected if you want to match the whole supercategory, and hit the \"Search\" button.
 ";
 
-$string['datesearch_help']= '
+$string['datesearch_help'] = '
 A date search will use two date fields: You can define start and/or end of range.
 ';
 
-$string['durationdescr_help']= "
+$string['durationdescr_help'] = "
 The duration combines two parts. The former gives the normalized and formatted expression of the duration, the latter is a textual unformatted description, if it can not be written in an another way, or if the textual information is required to complete the formatted value.\n\n
-Here is a sample formatted duration: « P2Y1M2DT1H20M25.55S ». « P » prefixes the calendar part of a duration; « 2Y » = 2 years; « 1M » = 1 months; « 2D » = 2 days; « T » prefixes the time part of the duration: « hour, minute, second »; « 1H » = 1 hour; « 20M » = 20 minutes; « 25.55S » = 25,55 seconds.
+Here is a sample formatted duration: \"P2Y1M2DT1H20M25.55S\". \"P\" prefixes the calendar part of a duration; \"2Y\" = 2 years; \"1M\" = 1 months; \"2D\" = 2 days; \"T\" prefixes the time part of the duration: \"hour, minute, second\"; \"1H\" = 1 hour; \"20M\" = 20 minutes; \"25.55S\" = 25,55 seconds.
 ";
 
-$string['durationsearch_help']= '
+$string['durationsearch_help'] = '
 Searching for duration will use comparison statements (=, !=, <...) followed by a textual duration expression.
 ';
 
@@ -365,10 +376,10 @@ $string['restrictclassification_help'] = '
 Restricting classification extraction allows focussing to a subset of the table\'s values to get the classification dataset. You need know the table structure and how to write select SQL expressions to write restriction statement.
 ';
 
-$string['searchsharedresource_help'] = '
+$string['searchsharedresource_help'] = "
 All Shared Resources are course independent and created in advance.\n
 Search for a resource, and select Choose to add this to the current course, or use the Preview function to examine.
-';
+";
 
 $string['selectclassification_help'] = "
 All taxons of classification will be provided to the metadata forms when the classification instance is enabled.\n

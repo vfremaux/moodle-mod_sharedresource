@@ -5,19 +5,22 @@ header('Content-type: text/javascript');
 
 function multiMenu(eltId,nbr) {
 	arrLinkId = new Array();
-	for (i = 0; i < = nbr ; i++) {
+	for (i = 0; i <= nbr ; i++) {
 		arrLinkId[i]='_'+i;
 	}
 	intNbLinkElt = new Number(arrLinkId.length);
 	arrClassLink = new Array('current','ghost');
 	strContent = new String();
 	for (i = 0; i < intNbLinkElt ; i++) {
-		strContent = "menu"+arrLinkId[i];
+		strTab = "menu"+arrLinkId[i];
+		strContent = "tab"+arrLinkId[i];
 		if ( arrLinkId[i] == eltId ) {
 			document.getElementById(arrLinkId[i]).className = arrClassLink[0];
+			document.getElementById(strTab).className = 'tabon content';
 			document.getElementById(strContent).className = 'on content';
 		} else {
 			document.getElementById(arrLinkId[i]).className = arrClassLink[1];
+			document.getElementById(strTab).className = 'taboff content';
 			document.getElementById(strContent).className = 'off content';
 		}
 	}	

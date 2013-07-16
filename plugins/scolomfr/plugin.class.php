@@ -17,8 +17,6 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 
-	var $pluginname = 'scolomfr';
-
 	var $context;
 
 	var $DEFAULTSOURCE = 'LOMv1.0';
@@ -1130,6 +1128,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 	function __construct($entryid = 0){
 		$this->entryid = $entryid;
 		$this->context = context_system::instance();
+		$this->pluginname = 'scolomfr';
 	}	
 
     function sharedresource_entry_definition(&$mform){
@@ -1741,7 +1740,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
     function setKeywords($keywords){
     	global $DB;
     	if (empty($this->entryid)) return; // do not affect metadata to unkown entries
-    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lomfr' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
+    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'scolomfr' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
     	if ($keywordsarr = explode(',', $keywords)){
     		$i = 0;
 	    	foreach($keywordsarr as $aword){
@@ -1763,7 +1762,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
     function setTitle($title){
 		global $DB;
     	if ($this->entryid == 0) return;
-		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'lomfr', 'element' => '1_2:0_0'));
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'scolomfr', 'element' => '1_2:0_0'));
 		$mtdrec = new StdClass;
 		$mtdrec->entry_id = $this->entryid;
 		$mtdrec->element = '1_2:0_0';
@@ -1780,7 +1779,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 		global $DB;
     	if ($this->entryid == 0) return;
 
-		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'lomfr', 'element' => '1_4:0_0'));
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'scolomfr', 'element' => '1_4:0_0'));
 
 		$mtdrec = new StdClass;
 		$mtdrec->entry_id = $this->entryid;

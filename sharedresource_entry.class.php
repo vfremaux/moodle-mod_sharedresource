@@ -14,7 +14,7 @@
 * This class provides all the functionality for a sharedresource
 * defined locally or remotely
 * 
-* A locally defined resource is essentially one where the user has uploaded 
+* A locally defined resource is essentially one where the user has uploaded
 * a file, therefore this local moodle has to serve it.
 * 
 * A remote resource is one that has a fully qualified URI that does not rely
@@ -140,7 +140,7 @@ class sharedresource_entry {
                 }
             }
         }
-    }    
+    }
     
     /**
      * Internal method that processes the plugins for the before save
@@ -240,7 +240,7 @@ class sharedresource_entry {
 			}
         }
         return true;
-    }    
+    }
     
     /**
      * set a core sharedresource_entry attribute, or add a metadata element (allways appended)
@@ -254,11 +254,10 @@ class sharedresource_entry {
         // add the core ones to the main table entry - everything else goes in the metadata table
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace)) {
             $this->$element = $value;
-        } 
-        else {
+        } else {
             $this->metadata_elements[] = new sharedresource_metadata($this->id, $element, $value, $namespace);
         }
-    }    
+    }
 
     /**
      * access the value of a core sharedresource_entry attribute or metadata element
@@ -269,15 +268,18 @@ class sharedresource_entry {
      */
     function element($element, $namespace = '') {
         global $SHAREDRESOURCE_CORE_ELEMENTS;
+
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && isset($this->$element)) {
             return $this->$element;
-        } 
-        else {
-            foreach ($this->metadata_elements as $el) {
-                if ($el->element == $element && $el->namespace == $namespace) {
-                    return $el->value;
-                }
-            }
+        } else {
+        	// print_object($this->metadata_elements);
+        	if (!empty($this->metadata_elements)){
+	            foreach ($this->metadata_elements as $el) {
+	                if ($el->element == $element && $el->namespace == $namespace) {
+	                    return $el->value;
+	                }
+	            }
+	        }
         }
         return false;
     }
@@ -295,8 +297,7 @@ class sharedresource_entry {
         // add the core ones to the main table entry - everything else goes in the metadata table
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && !empty($value)) {
             $this->$element = $value;
-        } 
-        else {
+        } else {
             $location = false;
             foreach ($this->metadata_elements as $key => $el) {
                 if ($el->element == $element && $el->namespace == $namespace) {
@@ -306,12 +307,11 @@ class sharedresource_entry {
             }
             if ($location !== false) {
                 $this->metadata_elements[$location] = new sharedresource_metadata($this->id, $element, $value, $namespace);
-            }
-            else {
+            } else {
                 $this->metadata_elements []= new sharedresource_metadata($this->id, $element, $value, $namespace);
             }
         }
-    }    
+    }
 
     /**
      * check if resource is local or not
@@ -336,7 +336,6 @@ class sharedresource_entry {
      * @return bool, true = remote
      */
     function is_remote_resource() {
-        
         return ! $this->is_local_resource();
     }
     
@@ -347,7 +346,6 @@ class sharedresource_entry {
      * @return bool, true = remote
      */
     function has_local_provider() {        
-
         return empty($this->provider) || $this->provider == 'local';
     }
     
@@ -427,66 +425,66 @@ class sharedresource_entry {
 		foreach($this->metadata_elements as $elm){
 			$metadataelements[$elm->element] = $elm;
 		}
-        $this->keywords = $mtdstandard->getKeywordValues($metadataelements);
+		$this->keywords = $mtdstandard->getKeywordValues($metadataelements);
         
         // Fix description from tinymce
         
-        $this->description = $this->description['text'];
-        if ($oldres = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))){
-        	$this->id = $oldres->id;
+		$this->description = @$this->description['text'];
+		if ($oldres = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))){
+			$this->id = $oldres->id;
 			$DB->update_record('sharedresource_entry', $this);
 		} else {
-	        if (!$this->id =  $DB->insert_record('sharedresource_entry', $this)) {
-	            return false;
-	        }
-	    }
+			if (!$this->id =  $DB->insert_record('sharedresource_entry', $this)) {
+			return false;
+			}
+		}
         
-        // now do the LOM metadata elements
-        foreach ($this->metadata_elements as $element) {
-            $element->entry_id = $this->id;
-            if (! $element->add_instance()) {
-                return false;
-            }
-        }
-        
-        // trigger the after save plugins
-        $this->after_save();
-        
-        return true;
+		// now do the LOM metadata elements
+		foreach ($this->metadata_elements as $element) {
+			$element->entry_id = $this->id;
+			if (! $element->add_instance()) {
+				return false;
+			}
+		}
+		
+		// trigger the after save plugins
+		$this->after_save();
+		
+		return true;
     }
 
-    /**
-     * Commit the updated Shared resource to the database
-     * 
-     * @return bool, true = success
-     */
-    function update_instance() {
-       
-    // Given an object containing all the necessary data,
-    // (defined by the form in mod.html) this function
-    // will update an existing instance with new data.
+	/**
+	 * Commit the updated Shared resource to the database
+	 * 
+	 * @return bool, true = success
+	 */
+	function update_instance() {
+	   
+	// Given an object containing all the necessary data,
+	// (defined by the form in mod.html) this function
+	// will update an existing instance with new data.
 
-    	global $CFG, $DB;
+		global $CFG, $DB;
 
-        $this->timemodified = time();
-        
-        // trigger the before save plugins
-        //$this->before_update();
-        
-        // remove and recreate metadata records
-        if (!  $DB->delete_records('sharedresource_metadata',array('entry_id'=> $this->id))) {
-            return false;
-        }
-        foreach ($this->metadata_elements as $element) {
-            $element->add_instance();
-        }
-        
-        $this->description = stripslashes(@$this->description);
-        $this->title = stripslashes($this->title);
+		$this->timemodified = time();
+		
+		// trigger the before save plugins
+		//$this->before_update();
+		
+		// remove and recreate metadata records
+		if (!  $DB->delete_records('sharedresource_metadata',array('entry_id'=> $this->id))) {
+			return false;
+		}
+		foreach ($this->metadata_elements as $element) {
+			$element->add_instance();
+		}
+		
+		$this->description = @$this->description['text'];
+		$this->title = $this->title;
 
 		// add a proxy for keyword values
 		require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->{'pluginchoice'}.'/plugin.class.php');
-		$object = 'sharedresource_plugin_'.$CFG->{'pluginchoice'};
+		$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 		$mtdstandard = new $object;
 		
 		// remap metadata elements array to cope with setKeywordValues expected format
@@ -494,33 +492,33 @@ class sharedresource_entry {
 		foreach($this->metadata_elements as $elm){
 			$metadataelements[$elm->element] = $elm;
 		}
-        $this->keywords = $mtdstandard->getKeywordValues($metadataelements);
+		$this->keywords = $mtdstandard->getKeywordValues($metadataelements);
 
-        if (! $DB->update_record('sharedresource_entry', ($this))) {
-            return false;
-        }
-        
-        // trigger the after save plugins
-        //$this->after_update();
-        
-        return true;
-    }
+		if (! $DB->update_record('sharedresource_entry', ($this))) {
+			return false;
+		}
+		
+		// trigger the after save plugins
+		//$this->after_update();
+		
+		return true;
+	}
 
-    /**
-     * delete the current Shared resource from the database, and
-     * any locally attached files.
-     * 
-     * @return bool, true = success
-     */
-    function delete_instance() {
-        global $DB;
-    // Given an object containing the sharedresource data
-    // this function will permanently delete the instance
-    // and any data that depends on it, including local file.
+	/**
+	 * delete the current Shared resource from the database, and
+	 * any locally attached files.
+	 * 
+	 * @return bool, true = success
+	 */
+	function delete_instance() {
+	    global $DB;
+	// Given an object containing the sharedresource data
+	// this function will permanently delete the instance
+	// and any data that depends on it, including local file.
 
-        if (! $DB->delete_records('sharedresource_metadata', array('entry_id'=> $this->id))) {
-            return false;
-        }
+		if (! $DB->delete_records('sharedresource_metadata', array('entry_id'=> $this->id))) {
+			return false;
+		}
         
         if ($this->is_local_resource()) {
             $filename = $CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH.$this->file;

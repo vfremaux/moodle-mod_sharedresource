@@ -13,12 +13,16 @@
 */
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
+
 class sharedresource_plugin_lom extends sharedresource_plugin_base {
-	var $pluginname = 'lom';
+
 	// we may setup a context in which we can decide where users 
 	// can be assigned role regarding metadata	
+
 	var $context;
+
     var $DEFAULTSOURCE = 'LOMv1.0';
+
 	var $METADATATREE = array(
 		'0' => array(
 	        'name' => 'Root',
@@ -987,6 +991,7 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 	function __construct($entryid = 0){
 		$this->entryid = $entryid;
 		$this->context = context_system::instance();
+		$this->pluginname = 'lom';
 	}
 
     function sharedresource_entry_definition(&$mform){
@@ -1562,8 +1567,9 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 	*/
     function setKeywords($keywords){
 		global $DB;
+
     	if (empty($this->entryid)) return; // do not affect metadata to unkown entries
-    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lom' AND element LIKE '1_5:0_%' AND entry_id = {$this->entryid} ");
+    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lom' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
     	if ($keywordsarr = explode(',', $keywords)){
     		$i = 0;
 	    	foreach($keywordsarr as $aword){

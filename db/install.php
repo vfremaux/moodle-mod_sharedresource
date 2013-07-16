@@ -34,16 +34,20 @@ function xmldb_sharedresource_install() {
     global $CFG, $DB, $OUTPUT;
 
     $result = true;
+
+    $dbman = $DB->get_manager();
     
     if (preg_match('/^postgres/', $CFG->dbtype)) {
         $idx_field = 'description';
     } else {
         $idx_field = 'description(250)';
     }
-    $table = new XMLDBTable('sharedresource_entry');
-    $index = new XMLDBIndex('description');
-    $index->setAttributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
-    $dbman = $DB->get_manager();
+
+    $table = new xmldb_table('sharedresource_entry');
+    $index = new xmldb_index('description');
+
+    $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
+
     if (!$dbman->index_exists($table, $index)) {
         $result = $dbman->add_index($table, $index, false, false);
     }

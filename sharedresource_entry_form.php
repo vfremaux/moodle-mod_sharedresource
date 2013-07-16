@@ -8,15 +8,19 @@
  *
  */
 require_once $CFG->libdir.'/formslib.php';
+
 class mod_sharedresource_entry_form extends moodleform {
+
     function mod_sharedresource_entry_form($mode) {
         $this->sharedresource_entry_mode = $mode;
         parent::moodleform();
     }
+
     function definition(){
         global $CFG, $USER, $DB;
+
         $mform =& $this->_form;
-   /*     $this->set_upload_manager(new upload_manager('sharedresourcefile', false, false, null, false, 0, true, true, false));*/
+
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
         $return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
@@ -24,7 +28,6 @@ class mod_sharedresource_entry_form extends moodleform {
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
         $course        = required_param('course', PARAM_INT);
-        /* $pagestep      = optional_param('pagestep', 1, PARAM_INT); */
         $entry_id      = optional_param('entry_id', 1, PARAM_INT);
 
         $mform->addElement('header', 'resourceheader', get_string('resource'));
@@ -47,16 +50,17 @@ class mod_sharedresource_entry_form extends moodleform {
 		// sharing contexts
 		$contextopts[1] = get_string('systemcontext', 'sharedresource');
 		sharedresource_add_accessible_contexts($contextopts);
-        $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
-        $mform->setType('context', PARAM_INT);
+		$mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
+		$mform->setType('context', PARAM_INT);
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
 
         if ($this->sharedresource_entry_mode == 'update') {
             $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
             $mform->addElement('static', 'filename', get_string('file').': ', '');
         } else {
-            $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size'=>'48'));
-            $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), 'size="40"');
+            $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
+			$mform->setType('url', PARAM_URL); 
+            $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
         // let the plugins see the form definition
         $plugins = sharedresource_get_plugins();
@@ -68,24 +72,29 @@ class mod_sharedresource_entry_form extends moodleform {
             }
         }
 
-        /* if (sharedresource_extra_resource_screen()) {
-            $btext = get_string('step2', 'sharedresource');
-        } else { */
-            $btext = get_string('gometadataform', 'sharedresource');
-        // }
-
-        $this->add_action_buttons(true, $btext);
+        $btext = get_string('gometadataform', 'sharedresource');
 
         $mform->addElement('hidden', 'course', $course);
-        $mform->addElement('hidden', 'add', $add);
-        $mform->addElement('hidden', 'return', $return);
-        $mform->addElement('hidden', 'section', $section);
-        $mform->addElement('hidden', 'mode', $mode);
-        $mform->addElement('hidden', 'entry_id', $entry_id);
+		$mform->setType('course', PARAM_INT); 
 
-        // mark this as the first step page // OBSOLETE
-        /* $mform->addElement('hidden', 'pagestep', 1); */
+        $mform->addElement('hidden', 'add', $add);
+       	$mform->setType('add', PARAM_ALPHA); 
+
+        $mform->addElement('hidden', 'return', $return);
+        $mform->setType('return', PARAM_BOOL); 
+        
+        $mform->addElement('hidden', 'section', $section);
+        $mform->setType('section', PARAM_INT);
+        
+        $mform->addElement('hidden', 'mode', $mode);
+        $mform->setType('mode', PARAM_ALPHA); 
+        
+        $mform->addElement('hidden', 'entry_id', $entry_id);
+        $mform->setType('entry_id', PARAM_INT);
+
+        $this->add_action_buttons(true, $btext);
     }
+
     function validation($data, $files) {
         global $DB;
 
@@ -100,12 +109,12 @@ class mod_sharedresource_entry_form extends moodleform {
             if (empty($data['url']) && $data['sharedresourcefile'] == null) {
                 $errors['url'] = get_string('missingresource','sharedresource');
             }
+        }
 
         return $errors;
     }
 
     function get_data($slashed = true) {
-
         $data = parent::get_data($slashed);
         if ($data == NULL) {
             return $data;
@@ -122,7 +131,6 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     function set_data($default_values, $slashed = false) {
-
         // poke all the basic metadata elements into defaults so 
         // that they get set in the form
         if (isset($default_values->metadata_elements)) {
