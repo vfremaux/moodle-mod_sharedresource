@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
@@ -8,7 +8,7 @@
  *
  */
     require_once("../../config.php");
-    
+
     $id = required_param( 'id', PARAM_INT ); // course
 
     if (!$course =  $DB->get_record("course", array("id" => $id))) {
@@ -83,11 +83,11 @@
             $extra = "";
         }
         if (!$resource->visible) {      // Show dimmed if the mod is hidden
-            $table->data[] = array ($printsection, 
+            $table->data[] = array ($printsection,
                     "<a class=\"dimmed\" $extra href=\"view.php?id=$resource->coursemodule\">".format_string($resource->name,true)."</a>",
                     format_text($resource->summary, FORMAT_MOODLE, $options) );
         } else {                        //Show normal if the mod is visible
-            $table->data[] = array ($printsection, 
+            $table->data[] = array ($printsection,
                     "<a $extra href=\"view.php?id=$resource->coursemodule\">".format_string($resource->name,true)."</a>",
                     format_text($resource->description, FORMAT_MOODLE, $options) );
         }
@@ -95,4 +95,3 @@
     echo "<br />";
     echo html_writer::table($table);
     echo $OUTPUT->footer($course);
-?>

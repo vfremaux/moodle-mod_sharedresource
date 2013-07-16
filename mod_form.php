@@ -10,8 +10,10 @@
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 
 class mod_sharedresource_mod_form extends moodleform_mod {
+
     var $_resinstance;
-     function definition() {
+
+    function definition() {
         global $CFG, $DB;
 
         $mform =& $this->_form;
@@ -25,8 +27,6 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
         $this->_resinstance = new sharedresource_base();
-
-//-------------------------------------------------------------------------------
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -46,7 +46,7 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         $this->standard_coursemodule_elements(array('groups' => false, 'groupmembersonly' => true, 'gradecat' => false));
 
-        $this->add_action_buttons();        
+        $this->add_action_buttons();
     }
 
     function data_preprocessing(&$default_values){

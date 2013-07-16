@@ -25,7 +25,7 @@
         print_error('coursemisconf');
     }
 
-// Security 
+// Security
 
     $system_context = context_system::instance();
     $context = context_course::instance($course->id);
@@ -49,11 +49,11 @@
     $PAGE->set_headingmenu('');
 
 /// process search form
-	$mform = new mod_sharedresource_search_form();
-	if ( $mform->is_cancelled() ){
-	    //cancel - go back to course    
-	    redirect($CFG->wwwroot."/course/view.php?id={$course->id}");
-	}
+    $mform = new mod_sharedresource_search_form();
+    if ( $mform->is_cancelled() ){
+        //cancel - go back to course
+        redirect($CFG->wwwroot."/course/view.php?id={$course->id}");
+    }
 
     echo $OUTPUT->header();
 
@@ -128,7 +128,7 @@
   	    	echo '<div id="sharedresource-results" class="generalbox mform">';
 			$pagingbar = new paging_bar($totalcount, $page, SHAREDRESOURCE_RESULTS_PER_PAGE, $baseurl, $pagevar='page');
     	    print($OUTPUT->render($pagingbar));
-        	echo '<ul>'; 
+        	echo '<ul>';
     		foreach($resources_subset as $resource) {
     			echo "<li> " .$resource->title;
                 echo "&nbsp;";
@@ -144,7 +144,7 @@
                 } else {
                     $url = str_replace('<%%ID%%>', $resource->identifier, $CFG->sharedresource_foreignurl);
                     echo "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
-                }      
+                }
                 if (has_capability('moodle/course:manageactivities', $context)) {
                     echo "&nbsp;";
                     echo '<a href=\''.$CFG->wwwroot."/mod/sharedresource/edit.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode=update&entry_id={$resource->id}".'\'>('.get_string("update").')</a>';
@@ -164,6 +164,5 @@
         $mform->set_data($toform);
         $mform->display();
     }
- 	echo '</center>';
 
     echo $OUTPUT->footer();

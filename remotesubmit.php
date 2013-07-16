@@ -19,7 +19,7 @@
         $plugins = sharedresource_get_plugins();
         foreach ($plugins as $plugin) {
             $pluginclass = get_class($plugin);
-            preg_match('/sharedresource_plugin_(.*)/', $pluginclass, $matches); 
+            preg_match('/sharedresource_plugin_(.*)/', $pluginclass, $matches);
             $pluginname = $matches[1];
             if (!empty($repos) && !preg_match("/\\b$pluginname\\b/", $repos)) continue;
             if ($plugin->remotesubmit($sharedresource_entry)){

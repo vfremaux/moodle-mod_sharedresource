@@ -4,7 +4,7 @@
 *
 */
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
-require_once $CFG->dirroot.'/local/sharedresource/lib.php';
+require_once $CFG->dirroot.'/local/sharedresources/lib.php';
 require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
 require_once $CFG->libdir.'/filelib.php';
@@ -58,7 +58,7 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
         $response->error = "Calling user has no local account. Register remote user first";
         return json_encode($response);
     }
-	// TODO : browse metadata classification using $rootcategory and getting direct childs only ? or rebuild a category 
+	// TODO : browse metadata classification using $rootcategory and getting direct childs only ? or rebuild a category
 	// exposure strategy (flat list of all categories).
 	$response->items = sharedresource_get_by_metadata('Taxum', $namespace, $what = 'values');
     return json_encode($response);
@@ -68,7 +68,7 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
 * retrieve the remote list of resources
 * @param string $remoteuser the username of the remote user
 * @param string $remoteuserhost the MNET hostname of the remote user
-* @param string $metadatafilters 
+* @param string $metadatafilters
 * @param string $offset
 * @param int $page
 */
@@ -85,7 +85,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
     if (empty($metadatafilters)){
 		debug_trace(" Getting without filters ");
         $sql = "
-            SELECT 
+            SELECT
                 *
             FROM
                 {sharedresource_entry}
@@ -94,7 +94,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                 isvalid = 1
         ";
         $sqlcount = "
-            SELECT 
+            SELECT
                 COUNT(*)
             FROM
                 {sharedresource_entry}
@@ -202,13 +202,13 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
         $newid = $entry;
 	} else {
 		// in case an array or an object, we have to add a new resource, or update
-		// an exiting resource 
+		// an exiting resource
 	    $entry = (object) $entry;
 	    $oldurl = $entry->url;
 	    // need to make a local entry
 	    $entry->provider = 'local';
 	    $entry->timemodified = time();
-	    // fetch the file on the consumer side and store it here through a CURL call    
+	    // fetch the file on the consumer side and store it here through a CURL call
 	    $ch = curl_init($oldurl);
 	    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -238,11 +238,11 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
             if(!is_dir($CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH)){
                 mkdir($CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH);
             }
-	        $FILE = fopen($filename, 'w');        
+	        $FILE = fopen($filename, 'w');
 	        fwrite($FILE, $rawresponse);
 	        fclose($FILE);
 		    if (empty($entry->mimetype)) $entry->mimetype = mimeinfo('type', $filename);
-            $entry->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$entry->identifier;	        
+            $entry->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$entry->identifier;	
             $response->resourceurl = $entry->url;
 	        $response->status = RPC_SUCCESS;
 	    } else {
@@ -260,7 +260,7 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 	    }
 	    $response->resourceid = $newid;
 	    // finally, fetch all consumers and ask them to change resource location
-	    if($consumers = get_consumers()){    
+	    if($consumers = get_consumers()){
 	        foreach($consumers as $consumer){
 	            $client = new mnet_xmlrpc_client();
 	            $client->set_method('mod/sharedresource_rpc_move');
@@ -289,15 +289,15 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 * @param string $resourceID the resource Unique Identifier
 */
 function sharedresource_rpc_check($remoteuser, $remoteuserhost, $resourceID){
-    $response = '';    
+    $response = '';
     $uses = $DB->count_records('sharedresource', array('identifier' => $resourceID));
-    return $uses;        
+    return $uses;
 }
 /**
 * Interface : consumer
-* allows a producer to claim for moving the physical location point of a 
+* allows a producer to claim for moving the physical location point of a
 * resource he has obtained. When a producer gets a resource through a submission,
-* he will call all his consumers to aske them for moving the resource from old location 
+* he will call all his consumers to aske them for moving the resource from old location
 * @param string $remoteuser the username of the remote user
 * @param string $remoteuserhost the MNET hostname of the remote user
 * @param string $resourceID the resource Unique Identifier

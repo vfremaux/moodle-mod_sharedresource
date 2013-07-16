@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
  *
- * This php script displays the 
+ * This php script displays the
  * metadata form
  */
 

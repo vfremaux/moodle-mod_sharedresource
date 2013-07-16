@@ -21,5 +21,3 @@ $module->component = 'mod_sharedresource';     // Full name of the plugin (used 
 $module->cron      = 0;
 $module->maturiry = MATURITY_BETA;     // Full name of the plugin (used for diagnostics)
 $module->release = '2.4.0 (Build 2013031800)';     // Full name of the plugin (used for diagnostics)
-
-?>

@@ -1,16 +1,16 @@
 <?php
-	/**
-	 *
-	 * @author  Frédéric GUILLOU
-	 * @version 0.0.1
-	 * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
-	 * @package sharedresource
-	 *
-	 * This php script display the admin part of a specific 
-	 * classification. You can modify the classification and
-	 * select the taxon path which are displayed.
-	 *-----------------------------------------------------------
-	 */
+/**
+ *
+ * @author  Frédéric GUILLOU
+ * @version 0.0.1
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package sharedresource
+ *
+ * This php script display the admin part of a specific
+ * classification. You can modify the classification and
+ * select the taxon path which are displayed.
+ *-----------------------------------------------------------
+ */
 
     require_once("../../config.php");
     require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -49,7 +49,7 @@
     $PAGE->set_button('');
     $PAGE->set_headingmenu('');
 
-    print($OUTPUT->header()); 
+    print($OUTPUT->header());
 
 	$classifarray = unserialize(get_config(NULL,'classifarray'));
 
@@ -64,7 +64,7 @@
 	if(!empty($_POST)){
 		if($mode == 'modif'){
 			$updateclassif = true;
-			global $CFG, $db;      
+			global $CFG, $db;
 			$metatables = $db->MetaTables();
 			$metatables = array_flip($metatables);
 			$metatables = array_change_key_case($metatables, CASE_LOWER);

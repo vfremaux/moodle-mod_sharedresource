@@ -25,7 +25,7 @@
 	    	print_error('coursemisconf');
 	    }
 
-	/// security 
+	/// security
 	
 	    $context = context_course::instance($courseid);
 	    require_login($course);
@@ -55,7 +55,7 @@
         if ($form->is_cancelled()){
             redirect($CFG->wwwroot.'/resources/index.php');
         }
-    	echo $OUTPUT->header();  
+    	echo $OUTPUT->header();
         $form->display();
         echo $OUTPUT->footer();
         die;
@@ -68,7 +68,7 @@
         $resources = $DB->get_records('resource', array('course' => $courseid), 'name');
         $urls = $DB->get_records('url', array('course' => $courseid),'name');
         if (empty($resources) && empty($urls)){
-    		echo $OUTPUT->header();  
+    		echo $OUTPUT->header();
             echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
             echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
             print ($OUTPUT->footer());
@@ -114,7 +114,7 @@
             }
         } else {
             // print form
-    		echo $OUTPUT->header();  
+    		echo $OUTPUT->header();
             $form2->display();
             if ($course){
              	print ($OUTPUT->footer($course));
@@ -125,9 +125,8 @@
         }
     }
 
-	echo $OUTPUT->header();  
+    echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
 
     echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
     print ($OUTPUT->footer());
-?>

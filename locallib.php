@@ -8,15 +8,15 @@ require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 * @param array $string
 * @param string $lang
 * @todo can be optimized for not loading unused strings elsewhere than in admin
-* setting forms. 
+* setting forms.
 */
 function sharedresource_load_plugins_lang(&$string, $lang=''){
     global $CFG;
-    
+
     if ($lang == ''){
         $lang = current_language();
     }
-    
+
     $plugins = get_list_of_plugins('mod/sharedresource/plugins');
     foreach($plugins as $plugin){
         $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}.php";
@@ -41,7 +41,7 @@ function sharedresource_convertto(&$resource, $type = 'resource'){
     $context = context_module::instance($cm->id);
 
     /// make a sharedresource_entry record
-    $sharedresource_entry = new sharedresource_entry(false); 
+    $sharedresource_entry = new sharedresource_entry(false);
     $sharedresource_entry->title = $resource->name;
     $sharedresource_entry->description = $resource->intro;
     $sharedresource_entry->keywords = '';
@@ -52,7 +52,7 @@ function sharedresource_convertto(&$resource, $type = 'resource'){
         $sharedresource_entry->file = '';
         $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
     } else {
-    	// we convert filestorage reference just moving the records 
+    	// we convert filestorage reference just moving the records
   		$fs = get_file_storage();
 		$resourcefiles = $fs->get_area_files($context->id, 'mod_resource', 'content', 0);
 		$stored_file = array_pop($resourcefiles);
@@ -77,7 +77,7 @@ function sharedresource_convertto(&$resource, $type = 'resource'){
     if (debugging()){
         echo "Constructed resource entry : {$sharedresource_entry->identifier}<br/>";
     }
-    
+
     /// attach the new resource to a course module
     $sharedresource = new sharedresource_base(0, $sharedresource_entry->identifier);
     $sharedresource->options = $resource->displayoptions;
@@ -128,7 +128,7 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
     if (!$sharedresource_entry = $DB->get_record('sharedresource_entry',array('identifier' => $sharedresource->identifier))){
         print_error('errorinvalididentifier', 'sharedresource');
     }
-    
+
     /// calculate physical locations and reference
     if (!empty($sharedresource_entry->file)){
     } else {
@@ -173,7 +173,7 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
     if (!$DB->update_record('course_modules', $cm)){
         print_error('errorupdatecm', 'sharedresource');
     }
-    
+
     print_string('localizeadvice', 'sharedresource');
 
     /// duplicate files record and relocate filearea to resource
@@ -191,10 +191,10 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
     if (!$makecm){
         return $resourceid;
     }
-    
+
     /// discard the old sharedresource module
     $DB->delete_records('sharedresource',array('id'=> $sharedresource->id));
-    
+
     /// Original resource stays in repository.
     // TODO : examinate librarian case that may want to fully discard the resource.
 
@@ -212,7 +212,7 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
 function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'values', $using = '') {
     global $CFG,$DB;
     // get metadata plugin and restype element name
-    
+
     include_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$namespace.'/plugin.class.php';
     $classname = "sharedresource_plugin_{$namespace}";
     $mtdplugin = new $classname();
@@ -240,7 +240,7 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
 						case 'endswith' :
 						$listsearchoptions[] = ' value LIKE \'%'.trim($token).'\' ';
 						break;
-						default : 
+						default :
 						break;
 					}
 				}
@@ -311,7 +311,7 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
         ORDER BY
             value
      ";
-    
+
     $items = array();
     // debug_trace('localsearch : '.$sql);
     if($recs = $DB->get_records_sql($sql, array($namespace))){
@@ -390,7 +390,7 @@ function sharedresource_get_course_section_to_add($courseorid){
 }
 
 function sharedresource_print_stars($stars, $maxstars){
-	global $OUTPUT; 
+	global $OUTPUT;
 	
 	$str = '';
 	

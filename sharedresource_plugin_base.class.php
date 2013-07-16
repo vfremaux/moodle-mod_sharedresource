@@ -13,31 +13,31 @@
 * sharedresource_plugin_base is the base class for sharedresource plugins
 *
 * This class provides all the functionality for a sharedresource plugin that does nothing :-)
-* 
+*
 * The idea of the plugin is to give access to particular events in the cycle of creating new
 * shared Resources (new resources, NOT the attachment of resources to a course as a course module).
-* 
+*
 * These events fall into three broad categories - creating a New Resource, updating a Resource,
 * and searching for Resources that will be attached to a course as a course module.
-* 
+*
 * Plugins are subclassed from this class, in a file called plugin.class.php, which must live in
 * a directory named after the plugin, and follow a strict naming convention.  For example, the
 * two standard plugins provided are, local, and solr.
 * local: provides a search interface using the local resource table sharedresource_entry.
 * solr: provides a simple search interface to an Apache-Solr directory populated with data
 * from the sharedresource_entry table.
-* 
-* local lives in the mod/sharedresource/plugins/local/plugin.class.php file with a class name of 
+*
+* local lives in the mod/sharedresource/plugins/local/plugin.class.php file with a class name of
 * sharedresource_plugin_local.
-* 
-* All plugins are stacked, so you can create several specialised handlers, and have them run one 
-* after the other.  If you want the processing of stacked handlers to finish at any stage then 
+*
+* All plugins are stacked, so you can create several specialised handlers, and have them run one
+* after the other.  If you want the processing of stacked handlers to finish at any stage then
 * return false from your handling method.
-* 
+*
 * Plugins can be deactivated by system config eg. to deactivate the solr plugin, use:
 * $CFG->sharedresource_plugin_hide_solr  = 1;
 * So it is sharedresource_plugin_hide_<plugin name>.
-* 
+*
 */
 
 abstract class sharedresource_plugin_base {
@@ -53,7 +53,7 @@ abstract class sharedresource_plugin_base {
     * sharedresource_entry is the table that contains the basic
     * details of a shared Resource, and the sharedresource_metadata table
     * is a flexible structure to maintain an arbitrary set of metadata
-    * attributes for a shared Resource. 
+    * attributes for a shared Resource.
     *
     */
     function __construct() {
@@ -72,10 +72,10 @@ abstract class sharedresource_plugin_base {
 
         return true;
     }
-    
+
     /**
      * Entry point to facilitate the search based on search form
-     * inputs submitted.  Using the form input values, populate 
+     * inputs submitted.  Using the form input values, populate
      * the $results array with sharedresource_entry objects corresponding
      * to what you want to give back to the user.
      *
@@ -86,7 +86,7 @@ abstract class sharedresource_plugin_base {
      *         false to stop the running of any subsequent plugin handlers.
      */
     function search(&$fromform, &$result) {
-        
+
         return true;
     }
 
@@ -103,7 +103,7 @@ abstract class sharedresource_plugin_base {
         return true;
     }
 
-    
+
     /**
      * Entry point to validate the sharedresource_entry_form form.
      * Add your errors to the $errors array, and use $mode to determine
@@ -120,12 +120,12 @@ abstract class sharedresource_plugin_base {
 
         return true;
     }
-    
-    
+
+
     /**
      * If this is overriden to return true, then an extra page will appear
      * after the first page of data entry for a sharedresource_entry.
-     * 
+     *
      * You must implement sharedresource_entry_extra_definition() to populate
      * this additional screen.
      *
@@ -139,18 +139,18 @@ abstract class sharedresource_plugin_base {
         return false;
     }
 	*/
-    
+
     /**
      * Entry point to modify the sharedresource_entry_extra_form form - add/modify elements
      * here.
-     * 
+     *
      * This form is used when it may make sense to have a second screen instead of lumping all data
      * onto one.
      *
      * @param mform   object, reference to Moodle Forms object
      * @return bool, return true to continue to the next handler
      *         false to stop the running of any subsequent plugin handlers.
-     * OBSOLETE : No more extra forms 
+     * OBSOLETE : No more extra forms
      */
      /*
     function sharedresource_entry_extra_definition(&$mform) {
@@ -158,7 +158,7 @@ abstract class sharedresource_plugin_base {
         return true;
     }
 	*/
-    
+
     /**
      * Entry point to validate the sharedresource_entry_extra_form form.
      * Add your errors to the $errors array, and use $mode to determine
@@ -190,62 +190,62 @@ abstract class sharedresource_plugin_base {
 
         return array();
     }
-    
-    
+
+
     /**
      * Access to the sharedresource_entry object before a new object
      * is saved.  This is a good position to populate the remoteid
      * value after submitting the details to the external CNDP index.
-     * 
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
     function before_save(&$sharedresource_entry){
-        
+
         return true;
     }
-    
+
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved. 
-     * 
+     * is saved.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
     function after_save(&$sharedresource_entry){
-        
+
         return true;
     }
-    
+
     /**
      * Access to the sharedresource_entry object before an existing object
-     * is updated. 
-     * 
+     * is updated.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
     function before_update(&$sharedresource_entry){
-        
+
         return true;
     }
-    
+
     /**
      * Access to the sharedresource_entry object after an existing object
-     * is updated. 
-     * 
+     * is updated.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
     function after_update(&$sharedresource_entry){
-        
+
     	if (method_exists('setKeywords', $this)){
     		setKeywords($this->keywords);
     	}
@@ -255,13 +255,13 @@ abstract class sharedresource_plugin_base {
     /**
      * given a sharedresource entry, retrieves a suitable metadata string that might cope with
      * the metadata collected
-     * 
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return string   the metadata produced
      */
     function get_metadata(&$sharedresource_entry){
-        
+
         return true;
     }
 
@@ -276,8 +276,8 @@ abstract class sharedresource_plugin_base {
 			return new $parser_class_name();
 		}
 		return null;
-	}    
-    
+	}
+
 	/**
 	* set the current resource entry id for this plugin
 	*/
@@ -315,9 +315,9 @@ abstract class sharedresource_plugin_base {
 	
 	/**
 	* loads an externally defined default values for the schema
-	* the provided default tree must provide additional default keys 
-	* for relevant nodes : 
-	* 
+	* the provided default tree must provide additional default keys
+	* for relevant nodes :
+	*
 	* $METADATATREE_DEFAULT = array (
 	*    '1_1_1' => arrau('default' => 'MyCatalog');
 	* );
@@ -333,9 +333,9 @@ abstract class sharedresource_plugin_base {
     }
 
 	/**
-	* a static factory 
+	* a static factory
 	*
-	*/    
+	*/
     static function load_mtdstandard($schemaname){
     	global $CFG;
     	

@@ -1,10 +1,10 @@
 <?php
     // This file adds support to rss feeds generation
     // This function is the main entry point to sharedresource module
-    // rss feeds generation. 
+    // rss feeds generation.
     function sharedresource_rss_feeds() {
         global $CFG, $DB;
-        
+
 		include_once("$CFG->libdir/rsslib.php");
 
         $status = true;
@@ -26,7 +26,7 @@
 		return false;
 	    }
 	    // Get the first and put it back
-	    $lastrecord = array_shift($sharedresources); 
+	    $lastrecord = array_shift($sharedresources);
 	    array_unshift($sharedresources, $lastrecord);
 	    $lastrecord->id = 1;
 	    $xmlname = 'lastsharedres';

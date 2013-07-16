@@ -24,13 +24,13 @@ function metadata_detect_change_DM($sharedresource_entry, $pluginchoice){
 	global $CFG, $DB;
 
 	$sql = "
-		SELECT 
-			* 
-		FROM 
-			{sharedresource_metadata} 
-		WHERE  
-			entry_id = ? AND 
-			namespace <> ? 
+		SELECT
+			*
+		FROM
+			{sharedresource_metadata}
+		WHERE
+			entry_id = ? AND
+			namespace <> ?
 	";
 	$metadata = $DB->get_records_sql($sql, array($sharedresource_entry->id, $pluginchoice));
 	if(!empty($metadata)){
@@ -101,7 +101,7 @@ function metadata_create_panels($capability, &$mtdstandard) {
 		} else {
 			echo metadata_make_part_form($mtdstandard, $i, false, 1, $i, $capability);
 		}
-		echo '</div>';  
+		echo '</div>';
 	}
 	echo '</form>';
 	echo '</div>';
@@ -127,18 +127,18 @@ function metadata_create_notice_panels(&$sharedresource_entry, $capability, &$mt
 			echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $i, false, 1, $i, $capability);
 		}
 		echo '</table>';
-		echo '</div>';  
+		echo '</div>';
 	}
 	echo '</div>';
 }
 
 /**
-* This function is used to display the entire form using reccurence. The parameter are in the correct order: 
+* This function is used to display the entire form using reccurence. The parameter are in the correct order:
 * @param string $pluginchoice the name of the datamodel choosen (lom for instance)
 * @param string $fieldnum the number of the field in the metadata tree
-* @param boolean $islist 
-* @param int $numoccur the number of occurence of the field displayed, 
-* @param string $name the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2), 
+* @param boolean $islist
+* @param int $numoccur the number of occurence of the field displayed,
+* @param string $name the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2),
 * @param string $capability tells if the field is visible or not depending of the category of the user
 * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata form.
 */
@@ -312,7 +312,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 				}
 				echo '<select class="form_input_year" id="'.$keyid.'_dateyear" name="'.$name.'n'.$numoccur.'_dateyear">';
 				echo '<option value="-year-">';
-				echo get_string('year','sharedresource'); 
+				echo get_string('year','sharedresource');
 				echo '</option>';
 				for ($i = date('Y'); $i >= 1970; $i--){
 					if ($fill != '' && $i == substr($date,0,4)){
@@ -324,7 +324,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 				echo '</select>';
 				echo '<select class="form_input_month" id="'.$keyid.'_datemonth" name="'.$name.'n'.$numoccur.'_datemonth">';
 				echo '<option value="-month-">';
-				echo get_string('month','sharedresource'); 
+				echo get_string('month','sharedresource');
 				echo '</option>';
 				for ($i = 1; $i <=12; $i++){
 					if ($i < 10){
@@ -344,7 +344,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 				echo '</select>';
 				echo '<select class="form_input_day" id="'.$keyid.'_dateday" name="'.$name.'n'.$numoccur.'_dateday">';
 				echo '<option value="-day-">';
-				echo get_string('day','sharedresource'); 
+				echo get_string('day','sharedresource');
 				echo '</option>';
 				for ($i = 1; $i <= 31; $i++){
 					if ($i < 10){
@@ -492,12 +492,12 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 }
 
 /**
-* This function is used to display the entire metadata notice. The parameter are in the correct order: 
+* This function is used to display the entire metadata notice. The parameter are in the correct order:
 * @param string $mtdstandard the instance of activated metadata plugin
 * @param string $fieldnum the number of the field in the metadata tree
-* @param boolean $islist 
-* @param int $numoccur the number of occurence of the field displayed, 
-* @param string $name the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2), 
+* @param boolean $islist
+* @param int $numoccur the number of occurence of the field displayed,
+* @param string $name the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2),
 * @param string $capability tells if the field is visible or not depending of the role of the user regarding metadata
 * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
 */
@@ -514,7 +514,7 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
 		$listresult = array();
 		if ($fieldtype == 'category'){
 			//if the field concerns classification
-			if ($mtdstandard->METADATATREE[$fieldnum]['name'] == $taxumarray['main']){ 
+			if ($mtdstandard->METADATATREE[$fieldnum]['name'] == $taxumarray['main']){
 				echo '<tr>';
 				if($numoccur == 1){
 					echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'">'.$fieldname.'</td>';
@@ -795,7 +795,7 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
 			case 'vcard' :
 				return $value;
 			break;
-			default : 
+			default :
 			return '';
 			break;
 		}
@@ -831,7 +831,7 @@ function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$share
 
 /**
 * returns an array which contains all children of a category (except those which are a category).
-* It is used to check that at least one of the children has been filled before adding a new occurence of a category 
+* It is used to check that at least one of the children has been filled before adding a new occurence of a category
 */
 function metadata_get_children_nodes(&$mtdstandard, $fieldnum, $capability, $listchildren = array()){
 	global $DB;
@@ -853,7 +853,7 @@ function metadata_get_children_nodes(&$mtdstandard, $fieldnum, $capability, $lis
 }
 
 /**
-* checks that children of a category have been filled 
+* checks that children of a category have been filled
 * (in case of a suppression of a classification, because there can be empty categories).
 */
 function metadata_check_subcats_filled($listresult, $numoccur, $pluginchoice, &$sharedresource_entry){
@@ -916,16 +916,16 @@ function metadata_is_integer ($x){
 
 
 /*
-* used to display a part of the form. The parameter are in order: 
-* @param string $mtdstandard the instance of activated metadata plugin, 
-* @param string $fieldnum the number of the field in the metadata tree, 
-* @param boolean $islist 
-* @param integer $numoccur represents the number of occurence of the field displayed, 
-* @param string $name gives the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2), 
-* @param string $capability decides if the field is visible or not depending of the category of the user, 
+* used to display a part of the form. The parameter are in order:
+* @param string $mtdstandard the instance of activated metadata plugin,
+* @param string $fieldnum the number of the field in the metadata tree,
+* @param boolean $islist
+* @param integer $numoccur represents the number of occurence of the field displayed,
+* @param string $name gives the entire name of the field depending of the occurence of parents (1n1_2n2_3 for instance, which represents the field 1_2_3 and occurence 1 and 2 respectively for the fields 1 and 1_2),
+* @param string $capability decides if the field is visible or not depending of the category of the user,
 * @@param $realoccur used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata form.
 *
-* It is slightly different from metadata_make_part_form because it does not check if a field is filled or not (indeed, 
+* It is slightly different from metadata_make_part_form because it does not check if a field is filled or not (indeed,
 * the field is added, so it is always empty).
 */
 function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, $name, $capability, $realoccur = 0) {
@@ -1011,7 +1011,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
 				}
 				$str .= '<select class="form_input_year" id="'.$keyid.'_dateyear" name="'.$name.'n'.$numoccur.'_dateyear">';
 				$str .= '<option value="-year-">';
-				$str .= get_string('year','sharedresource'); 
+				$str .= get_string('year','sharedresource');
 				$str .= '</option>';
 				for ($i = date('Y'); $i >= 1970 ; $i--){
 					$str .= '<option value="'.$i.'">'.$i.'</option>';
@@ -1019,7 +1019,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
 				$str .= '</select>';
 				$str .= '<select class="form_input_month" id="'.$keyid.'_datemonth" name="'.$name.'n'.$numoccur.'_datemonth">';
 				$str .= '<option value="-month-">';
-				$str .= get_string('month','sharedresource'); 
+				$str .= get_string('month','sharedresource');
 				$str .= '</option>';
 				for ($i = 1 ; $i <= 12; $i++){
 					if ($i < 10){
@@ -1031,7 +1031,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
 				$str .= '</select>';
 				$str .= '<select class="form_input_day" id="'.$keyid.'_dateday" name="'.$name.'n'.$numoccur.'_dateday">';
 				$str .= '<option value="-day-">';
-				$str .= get_string('day','sharedresource'); 
+				$str .= get_string('day','sharedresource');
 				$str .= '</option>';
 				for ($i = 1; $i <= 31; $i++){
 					if($i < 10){

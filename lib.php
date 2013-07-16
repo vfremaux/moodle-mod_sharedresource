@@ -19,24 +19,24 @@ global $SHAREDRESOURCE_WINDOW_OPTIONS;
 global $SHAREDRESOURCE_CORE_ELEMENTS;
 global $SHAREDRESOURCE_METADATA_ELEMENTS; // must be global because it might be included from a function!
 
-$SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable', 
-                                    'scrollbars', 
-                                    'directories', 
+$SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
+                                    'scrollbars',
+                                    'directories',
                                     'location',
-                                    'menubar', 
-                                    'toolbar', 
-                                    'status', 
-                                    'width', 
+                                    'menubar',
+                                    'toolbar',
+                                    'status',
+                                    'width',
                                     'height');
 
-$SHAREDRESOURCE_CORE_ELEMENTS = array('id', 
-                                    'identifier', 
-                                    'title', 
-                                    'description', 
-                                    'url', 
-                                    'file', 
-                                    'type', 
-                                    'remoteid', 
+$SHAREDRESOURCE_CORE_ELEMENTS = array('id',
+                                    'identifier',
+                                    'title',
+                                    'description',
+                                    'url',
+                                    'file',
+                                    'type',
+                                    'remoteid',
                                     'mimetype',
                                     'timemodified');
 
@@ -93,7 +93,7 @@ function sharedresource_supports($feature) {
 */
 function sharedresource_get_plugins($entryid = 0) {
     global $CFG;
-    
+
     $plugins = array();
 
     /// fetch all plugins
@@ -389,9 +389,9 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
 
 /**
  * Check to see if a given URI is a URL.
- * 
+ *
  * @param $path  string, URI.
- * 
+ *
  * @return bool, true = is URL
  */
 function sharedresource_is_url($path) {
@@ -414,7 +414,7 @@ function sharedresource_get_post_actions() {
 
 /**
  * This function is used by the reset_course_userdata function in moodlelib.
- * 
+ *
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
@@ -424,9 +424,9 @@ function sharedresource_reset_userdata($data) {
 
 /**
  * Returns all other caps used in module
- * 
+ *
  * @return array, of capabilities
- */ 
+ */
 function sharedresource_get_extra_capabilities() {
     return array('moodle/site:accessallgroups');
 }
@@ -436,7 +436,7 @@ function sharedresource_get_extra_capabilities() {
  * save all the mod backup files. We always name it moddata
  * to be able to restore it, but in restore we check for
  * $CFG->moddata !!
- * 
+ *
  * @return bool, true = dir exists
  */
 function sharedresource_check_and_create_moddata_temp_dir() {
@@ -451,7 +451,7 @@ function sharedresource_check_and_create_moddata_temp_dir() {
  * save all the mod backup files. We always name it moddata
  * to be able to restore it, but in restore we check for
  * $CFG->moddata !!
- * 
+ *
  * @return bool, true = dir exists
  */
 function sharedresource_check_and_create_moddata_sharedresource_dir() {
@@ -462,9 +462,9 @@ function sharedresource_check_and_create_moddata_sharedresource_dir() {
 }
 
 /**
- *  copy file - most likely tmp file to temp, while resource details are 
+ *  copy file - most likely tmp file to temp, while resource details are
  *  sorted out
- * 
+ *
  * @param $from_file string, source file for copy
  * @param $to_file string, destination location for file
  * @param $log_clam bool, shall we log this?
@@ -498,7 +498,7 @@ function sharedresource_copy_file($from_file, $to_file, $log_clam = false) {
 
 /**
  *  delete file - most likely removing temp file
- * 
+ *
  * @param $file string, location of file to delete
  * @return bool, true = succesful delete
  *
@@ -520,9 +520,9 @@ function sharedresource_delete_file($file) {
 
 /**
  * generate key/unique name of file
- * 
+ *
  * @param $file string, location of file
- * @return string, sha1 hash of file contents  
+ * @return string, sha1 hash of file contents
  * Obsolete : Relies on file storage now
  */
 function sharedresource_sha1file($file) {
@@ -530,8 +530,8 @@ function sharedresource_sha1file($file) {
 }
 
 /**
- * format the URL correctly for local files    
- * 
+ * format the URL correctly for local files
+ *
  * @param $sharedresourceentry object, actual sharedresource object
  * @param $options array, query string parameters to be passed along
  * @return string, formated URL.
@@ -542,11 +542,11 @@ function sharedresource_get_file_url($sharedresourceentry, $options = null) {
 
     $fs = get_file_storage();
     $file = $fs->get_file_by_id($sharedresourceentry->file);
-    
+
     if(!$file){
         return false;
     }
-    
+
     $ffurl = $CFG->wwwroot."/pluginfile.php/".$file->get_contextid()."/".$file->get_component()."/".$file->get_filearea()."/".$file->get_itemid().$file->get_filepath().$file->get_filename();
 
     return $ffurl;
@@ -555,8 +555,8 @@ function sharedresource_get_file_url($sharedresourceentry, $options = null) {
 
 /**
  * return a 404 if a shared Resource is not found
- * 
- * @param courseid int, the current context course    
+ *
+ * @param courseid int, the current context course
  */
 function sharedresource_not_found($courseid=0) {
     global $CFG;

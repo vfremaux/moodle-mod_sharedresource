@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
  * @author  Frederic GUILLOU
@@ -8,8 +8,8 @@
  *
  */
     // This php script displays the filled fields of the metadata
-	// form and save these metadata and the resource. 
-	// It informs the user if there are some errors and in that 
+	// form and save these metadata and the resource.
+	// It informs the user if there are some errors and in that
 	// case, the resource is not saved and the user is sent back
 	// to the metadata form
     //-----------------------------------------------------------

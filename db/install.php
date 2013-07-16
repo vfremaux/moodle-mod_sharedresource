@@ -33,6 +33,8 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_sharedresource_install() {
     global $CFG, $DB, $OUTPUT;
 
+    $dbman = $DB->get_manager();
+
     $result = true;
     
     if (preg_match('/^postgres/', $CFG->dbtype)) {
@@ -40,10 +42,11 @@ function xmldb_sharedresource_install() {
     } else {
         $idx_field = 'description(250)';
     }
-    $table = new XMLDBTable('sharedresource_entry');
-    $index = new XMLDBIndex('description');
-    $index->setAttributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
-    $dbman = $DB->get_manager();
+
+    $table = new xmldb_table('sharedresource_entry');
+    $index = new xmldb_index('description',
+                             XMLDB_INDEX_NOTUNIQUE, array($idx_field));
+
     if (!$dbman->index_exists($table, $index)) {
         $result = $dbman->add_index($table, $index, false, false);
     }

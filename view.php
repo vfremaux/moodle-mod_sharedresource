@@ -10,13 +10,13 @@
 
     require_once("../../config.php");
     require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
- 
+
     $id         = optional_param('id', 0, PARAM_INT);    // Course Module ID
     $identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier
     $inpopup    = optional_param('inpopup', 0, PARAM_BOOL);
 
-    $cm_id = 0;   
-   
+    $cm_id = 0;
+
     $system_context = context_system::instance();
     $strtitle = get_string('sharedresourcedetails', 'sharedresource');
     $PAGE->set_pagelayout('standard');
@@ -45,27 +45,27 @@
         if ($id) {
             if (!$cm = get_coursemodule_from_id('sharedresource', $id)) {
                 sharedresource_not_found();
-//                error('Course Module ID was incorrect');
+                //error('Course Module ID was incorrect');
             }
-    
+
             if (!$resource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
                 sharedresource_not_found($cm->course);
-//                error('Resource ID was incorrect');
+                //error('Resource ID was incorrect');
             }
         } else {
             sharedresource_not_found();
-//            error('No valid parameters!!');
+            //error('No valid parameters!!');
         }
-    
+
         if (!$course =  $DB->get_record('course', array('id'=> $cm->course))) {
             print_error('badcourseid', 'sharedresource');
         }
-    
+
         require_course_login($course, true, $cm);
         $cmid = $cm->id;
     }
 
-	/*
+    /*
     require ($CFG->dirroot.'/mod/sharedresource/type/'.$resource->type.'/resource.class.php');
 
     $resourceclass = 'sharedresource_'.$resource->type;
@@ -75,11 +75,9 @@
     $resourceinstance = new sharedresource_base($cmid, $identifier);
 
     if ($inpopup) {
-        $resourceinstance->inpopup();
+     //   $resourceinstance->inpopup();
     }
-    
+
     $resourceinstance->display();
 
     echo $OUTPUT->footer();
-
-?>
