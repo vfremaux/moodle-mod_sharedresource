@@ -18,6 +18,7 @@
  * These two functions (create_classif and create_classif_rec) create a useable array representing a classification.
  */
 function metadata_create_classification($classtable, $classifarray, $classification){
+
 	$newclassif = array();
 	$tempclassif = $classtable;
 	$newclassif[$classification] = array('label' => '',
@@ -40,7 +41,7 @@ function metadata_create_classification($classtable, $classifarray, $classificat
 			unset($tempclassif[$key]);
 		}
 	}
-	$finalclassif = metadata_create_classification_rec($tempclassif,$newclassif,$classifarray,$classification);
+	$finalclassif = metadata_create_classification_rec($tempclassif, $newclassif, $classifarray, $classification);
 
 	return $finalclassif;
 }
@@ -52,7 +53,7 @@ function metadata_create_classification($classtable, $classifarray, $classificat
 function metadata_create_classification_rec($tempclassif, $newclassif, $classifarray, $classification){
 	while(!empty($tempclassif)){
 		foreach($newclassif as $key => $value){
-			$i=0;
+			$i = 0;
 			foreach($tempclassif as $id => $classif){
 				if($classif->$classifarray[$classification]['parent'] == $key){
 					//if the ordering is defined, it is the key in the child array
@@ -86,19 +87,19 @@ function metadata_print_classification_options($classifarray, $selectedlabel = '
 			if($infos['restriction'] == ''){
 				$classtable =  $DB->get_records($name);
 			} else {
-				$classtable =  $DB->get_records_sql($classifarray[$name]['restriction']);
+				$sql = "SELECT * FROM {{$name}} WHERE {$classifarray[$name]['restriction']}";
+				$classtable =  $DB->get_records_sql($sql, array());
 			}
-			$finalclassif = metadata_create_classification($classtable,$classifarray,$name);
+			$finalclassif = metadata_create_classification($classtable, $classifarray, $name);
 			echo '<option class="sharedresource-listsection" disabled="disabled" value="'.$name.'">'.$name.'</option>';
 			foreach($finalclassif[$name]['childs'] as $ordering => $id){
-				if(in_array($id,$infos['taxonselect'])){
-					if($name.':'.$id == substr($selectedlabel, 0, strripos($selectedlabel, ':'))){
-						echo '<option selected value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
-					} else {
-						echo '<option value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
-					}
-					echo metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $finalclassif[$id]['label'], $selectedlabel);
+				if (!empty($infos['taxonselect']) && !in_array($id, $infos['taxonselect'])) continue;
+				if($name.':'.$id == substr($selectedlabel, 0, strripos($selectedlabel, ':'))){
+					echo '<option selected value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
+				} else {
+					echo '<option value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
 				}
+				echo metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $finalclassif[$id]['label'], $selectedlabel);
 			}
 		}
 	}
@@ -195,7 +196,7 @@ function print_classification_childs($name, $num, $key, $classif, $value){
 		} else {
 			$classtable = $DB->get_records_sql($classifarray[$name]['restriction']);
 		}
-		$finalclassif = metadata_create_classification($classtable,$classifarray,$name);
+		$finalclassif = metadata_create_classification($classtable, $classifarray, $name);
 		$restriction = $classifarray[$name]['taxonselect'];
 		if(!empty($finalclassif[$name]['childs'])){
 			echo '<select name=classif:'.$num.' onChange="javascript:classif(this.options[selectedIndex].text,'.($num+1).',';

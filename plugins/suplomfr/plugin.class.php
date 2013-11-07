@@ -17,6 +17,8 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class sharedresource_plugin_suplomfr extends sharedresource_plugin_base {
 
+	var $namespace;
+
 	var $context;
 
 	var $DEFAULTSOURCE = 'LOMv1.0';
@@ -50,7 +52,7 @@ class sharedresource_plugin_suplomfr extends sharedresource_plugin_base {
 		'diffuseur/distributeur', // Scolomfr-voc-03
 		'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos', 
 			'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie', 
-			'carte', 'carte heuristique et conceptuelle', 'chronologier', 'collection de documents',
+			'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
 			'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
 			'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
 			'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
@@ -1076,6 +1078,7 @@ class sharedresource_plugin_suplomfr extends sharedresource_plugin_base {
 		$this->entryid = $entryid;
 		$this->context = context_system::instance();
 		$this->pluginname = 'suplomfr';
+		$this->namespace = 'suplomfr';
 	}	
 
     function sharedresource_entry_definition(&$mform){
@@ -1600,15 +1603,15 @@ class sharedresource_plugin_suplomfr extends sharedresource_plugin_base {
     }
 
 	/**
-	* function to get any element only with its number of node
+	* purpose must expose the values, so a function to find the purpose field is usefull
 	*/
-	function getElement($id){
+    function getTaxonomyPurposeElement(){
 		$element = new StdClass;
-		$element->id = $id;
-		$element->name = $this->METADATATREE[$id]['name'];
-		$element->type = $this->METADATATREE[$id]['widget'];
-		return $element;
-	}
+    	$element->name = '9_1';
+    	$element->type = 'list';
+    	$element->values = $this->METADATATREE['9_1']['values'];
+    	return $element;
+    }
 
 	/**
 	* keyword have a special status in metadata form, so a function to find the keyword field is necessary
@@ -1714,24 +1717,6 @@ class sharedresource_plugin_suplomfr extends sharedresource_plugin_base {
 		$mtdrec->element = '1_2:0_0';
 		$mtdrec->namespace = 'lomfr';
 		$mtdrec->value = $title;
-
-		return $DB->insert_record('sharedresource_metadata', $mtdrec);
-    }
-
-	/**
-	* records title in metadata flat table from db attributes
-	*/
-    function setDescription($description){
-		global $DB;
-    	if ($this->entryid == 0) return;
-
-		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'suplomfr', 'element' => '1_4:0_0'));
-
-		$mtdrec = new StdClass;
-		$mtdrec->entry_id = $this->entryid;
-		$mtdrec->element = '1_4:0_0';
-		$mtdrec->namespace = 'lomfr';
-		$mtdrec->value = $description;
 
 		return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }

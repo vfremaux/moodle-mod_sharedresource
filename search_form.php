@@ -32,16 +32,16 @@ class mod_sharedresource_search_form extends moodleform {
         $mform->setType('course', PARAM_INT);
         
         $mform->addElement('hidden', 'add', $add);
-        $mform->setType('course', PARAM_ALPHA);
+        $mform->setType('add', PARAM_ALPHA);
 
         $mform->addElement('hidden', 'return', $return);
-        $mform->setType('course', PARAM_BOOL);
+        $mform->setType('return', PARAM_BOOL);
 
         $mform->addElement('hidden', 'type', $type);
-        $mform->setType('course', PARAM_ALPHANUM);
+        $mform->setType('type', PARAM_ALPHANUM);
 
         $mform->addElement('hidden', 'section', $section);
-        $mform->setType('course', PARAM_ALPHNUM);
+        $mform->setType('section', PARAM_ALPHANUM);
 
         if (! $course = $DB->get_record('course', array('id' => $course))) {
             print_error('coursemisconf');

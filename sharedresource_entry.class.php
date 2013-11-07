@@ -24,18 +24,23 @@
 * to determine if this resource is hosted locally (the physical file must
 * also exist in the course independent repository).
 * 
-* mod/sharedresource uses a course independent file repository.  By default, this
-* is located in $CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH where
-* SHAREDRESOURCE_RESOURCEPATH is '/sharedresources/'.
+* mod/sharedresource uses a course independent file repository. Files are stored into
+* a system context, course independant, special filearea.
 * 
 */
 
 class sharedresource_entry {
-
+	
+	// a sharedresource entry is a combination of:
+	
+	// a DB record	
     var $sharedresource_entry;
+
+	// A set of metadata
     var $metadata_elements;
-    var $file;
-    var $id;
+
+	// An eventual physical file stored somewhere in the Moodle filesystem
+    var $storedfile;
     
     /**
      * Internal method that processes the plugins for the search
@@ -69,7 +74,7 @@ class sharedresource_entry {
     static function read($identifier) {
         global $CFG, $DB;
     
-        if (! $sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier'=> $identifier))) {
+        if (! $sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
             return false;
         }
 
@@ -84,7 +89,7 @@ class sharedresource_entry {
      * @return sharedresource_entry object
      */
     static function read_by_id($entry_id) {
-    global  $DB;
+    	global  $DB;
         if (! $sharedresource_entry =  $DB->get_record('sharedresource_entry', array('id'=> $entry_id))) {
             return false;
         }
@@ -94,7 +99,7 @@ class sharedresource_entry {
     }
 
     /**
-     * Hydrate a sharedresource_entry object reading by id
+     * Same as read_by_id(). Hydrate a sharedresource_entry object reading by id
      * 
      * @param id   int, internal id of sharedresource_entry object
      * @return sharedresource_entry object
@@ -105,7 +110,7 @@ class sharedresource_entry {
     }
 
     /**
-     * Hydrate a sharedresource_entry object reading by identifier
+     * Same as read(). Hydrate a sharedresource_entry object reading by identifier
      * 
      * @param identifier   hash, sha1 hash identifier
      * @return sharedresource_entry object
@@ -116,30 +121,96 @@ class sharedresource_entry {
     }
 
     /**
-    * Constructor for the base sharedresource class
-    *
     * Constructor for the base sharedresource class.
-    * If cmid is set create the cm, course, sharedresource objects.
-    * and do some checks to make sure people can be here, and so on.
+    * Loads metadata from DB if any.
     *
-    * @param sharedresource_entry   object, sharedresource_entry object, or table row
+    * @param object $sharedresource_entry sharedresource_entry table row
     * 
     */
     function sharedresource_entry($sharedresource_entry = false) {
         global $DB;
 
-        global $SHAREDRESOURCE_CORE_ELEMENTS;
+        if (is_object($sharedresource_entry)) {
+        	$this->sharedresource_entry = $sharedresource_entry;
+
+			if ($this->file){
+				$fs = get_file_storage();
+	        	$this->storedfile = $fs->get_file_by_id($sharedresource_entry->file);
+	        }
+        } else {
+        	$this->sharedresource_entry = new StdClass();
+        	$this->id = 0;
+        	$this->provider = 'local';
+        	$this->isvalid = 1;
+        	$this->displayed = 1;
+        	$this->context = 1;
+        	$this->scoreview = 0;
+        	$this->scorelike = 0;
+        }
+
         $this->metadata_elements = array();
+
+		/*
+        global $SHAREDRESOURCE_CORE_ELEMENTS;
         if (is_object($sharedresource_entry)) {
             foreach ($SHAREDRESOURCE_CORE_ELEMENTS as $key) {
                 $this->add_element($key, $sharedresource_entry->$key);
             }
-            if ($elements =  $DB->get_records('sharedresource_metadata',array('entry_id'=> $this->id))) {
+            if ($elements =  $DB->get_records('sharedresource_metadata', array('entry_id' => $this->id))) {
                 foreach ($elements as $element) {
                     $this->add_element($element->element, $element->value, $element->namespace);
                 }
             }
         }
+        */
+
+		if ($this->id){
+	        if ($elements =  $DB->get_records('sharedresource_metadata', array('entry_id' => $this->id))) {
+	            foreach ($elements as $element) {
+	                $this->add_element($element->element, $element->value, $element->namespace);
+	            }
+	        }
+	    }
+    }
+    
+    /**
+    * magic getter
+    *
+    */
+    function __get($attr){
+    	
+    	if ($attr == 'id'){
+    		return 0 + @$this->sharedresource_entry->$attr;
+    	}
+    	
+    	if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike'))){
+    		return $this->sharedresource_entry->$attr;
+    	} else {
+    		print_error('memberwrongaccess', 'local_sharedresources', $attr);
+    	}
+    }
+
+    /**
+    * magic setter
+    *
+    */
+    function __set($attr, $value){
+    	if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike'))){
+    		if ($attr == 'description'){
+    			if (is_array($value)){
+		    		if (preg_match('/^<p>?(.*)<\/p>$/', $value['text'])){
+			    		$this->sharedresource_entry->$attr = preg_replace('/^<p>?(.*)<\/p>$/', "$1", format_string($value['text'], $value['format']));
+			    	} else {
+			    		$valuestr = format_string($value['text'], $value['format']);
+			    		$this->sharedresource_entry->$attr = $valuestr;
+			    	}
+		    	} else {
+		    		$this->sharedresource_entry->$attr = $value;
+		    	}
+    		} else {
+	    		$this->sharedresource_entry->$attr = $value;
+	    	}
+    	}
     }
     
     /**
@@ -148,7 +219,7 @@ class sharedresource_entry {
      * 
      * @return bool, returns true.
      */
-    function before_save () {
+    function before_save() {
 		global $CFG;
         // get the plugins
         $plugins = sharedresource_get_plugins($this->id);
@@ -173,7 +244,7 @@ class sharedresource_entry {
      * 
      * @return bool, returns true.
      */
-    function after_save () {
+    function after_save() {
 		global $CFG;
         // get the plugins
         $plugins = sharedresource_get_plugins($this->id);
@@ -198,7 +269,7 @@ class sharedresource_entry {
      * 
      * @return bool, returns true.
      */
-    function before_update () {
+    function before_update() {
 		global $CFG;
         // get the plugins
         $plugins = sharedresource_get_plugins($this->id);
@@ -223,7 +294,7 @@ class sharedresource_entry {
      * 
      * @return bool, returns true.
      */
-    function after_update () {
+    function after_update() {
 		global $CFG;
         // get the plugins
 		
@@ -251,6 +322,7 @@ class sharedresource_entry {
      */
     function add_element($element, $value, $namespace = '') {
         global $SHAREDRESOURCE_CORE_ELEMENTS;
+
         // add the core ones to the main table entry - everything else goes in the metadata table
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace)) {
             $this->$element = $value;
@@ -355,43 +427,31 @@ class sharedresource_entry {
      * @return bool, true = success
      */
     function add_instance() {
+        global $CFG, $DB;
     // Given an object containing all the necessary data,
     // (defined by the form in mod.html) this function
     // will create a new instance and return the id number
     // of the new instance.
     
-        global $CFG, $DB;
-
         // is this a local resource or a remote one?
         if (empty($this->identifier) && !empty($this->url) && empty($this->file)) {
             $this->identifier = sha1($this->url);
             $this->mimetype = mimeinfo("type", $this->url);
         }
         
-        if ( isset($this->url) && $this->url && !$this->is_local_resource()) {
+        $url = $this->url;
+        $file = $this->file;
+        
+        if (!empty($url) && !$this->is_local_resource()) {
             $this->file = '';
-        } else if (empty($this->url) && isset($this->file) && $this->file) {
-            /*
-            if (!sharedresource_check_and_create_moddata_sharedresource_dir()) {
-                // error - can't create resources temp dir
-                error("Error - can't create Shared resources dir");
-            }
-            */
-            // $filename = $CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH.$this->file;
-            /*  if (!sharedresource_copy_file($this->tempfilename, $filename, true)) {
-                error("Error - can't copy temporary resource file ({$this->tempfilename}) to resource path ($filename)");
-            }*/
-            
+        } elseif ((empty($url)) && (!empty($file))) {
             if (empty($CFG->sharedresource_foreignurl)){
                 $this->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$this->identifier;
             } else {
                 $this->url = str_replace('<%%ID%%>', $this->identifier, $CFG->sharedresource_foreignurl);
             }
-            
-            // tidy up temp file
-            /*  if (!sharedresource_delete_file($this->tempfilename)) {
-                error("Error - can't delete temporary resource file ({$this->tempfilename})");
-            }*/
+        } else {
+        	print_error("bad case ");
         }
 
         // one way or another we must have a URL by now
@@ -406,14 +466,6 @@ class sharedresource_entry {
         $this->before_save();
     
         $this->timemodified = time();
-        // we need silent return as duplicating denotes we already have this entry
-        /*
-        $this->description = stripslashes(@$this->description);
-        $this->title = stripslashes($this->title);
-        */
-        //$this->keywords = stripslashes(@$this->keywords);
-
-		// print_object($this->metadata_elements);
 
 		// add a proxy for keyword values
 		require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->{'pluginchoice'}.'/plugin.class.php');
@@ -428,16 +480,42 @@ class sharedresource_entry {
 		$this->keywords = $mtdstandard->getKeywordValues($metadataelements);
         
         // Fix description from tinymce
-        
-		$this->description = @$this->description['text'];
+        if (is_array(@$this->description)){
+			$this->description = @$this->description['text'];
+		}
+
 		if ($oldres = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))){
 			$this->id = $oldres->id;
-			$DB->update_record('sharedresource_entry', $this);
+			$DB->update_record('sharedresource_entry', $this->sharedresource_entry);
 		} else {
-			if (!$this->id =  $DB->insert_record('sharedresource_entry', $this)) {
-			return false;
+			if (!$this->id =  $DB->insert_record('sharedresource_entry', $this->sharedresource_entry)) {
+				return false;
 			}
 		}
+		
+		// now we know the itemid for this resource, if it has a real file 
+		// $this->file still holds the draft area file record at this time
+		if (!empty($this->file)){
+
+			$fs = get_file_storage();
+
+			$filerec = new StdClass();
+			$systemcontext = context_system::instance();
+			$filerec->contextid = $systemcontext->id;
+			$filerec->component = 'mod_sharedresource';
+			$filerec->filearea = 'sharedresource';
+			$filerec->itemid = $this->id;
+			$filerec->path = '/';
+
+			$definitive = $fs->create_file_from_storedfile($filerec, $this->file);
+
+			// now we post udate the sharedresource_entry record to reflect changes 
+			
+			$DB->set_field('sharedresource_entry', 'file', $definitive->id, array('id' => $this->id));
+		}		
+		
+		// clean up any prexisting elements (in case of bounces)
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->id));
         
 		// now do the LOM metadata elements
 		foreach ($this->metadata_elements as $element) {
@@ -469,21 +547,23 @@ class sharedresource_entry {
 		$this->timemodified = time();
 		
 		// trigger the before save plugins
-		//$this->before_update();
+		$this->before_update();
 		
 		// remove and recreate metadata records
-		if (!  $DB->delete_records('sharedresource_metadata',array('entry_id'=> $this->id))) {
-			return false;
-		}
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->id));
+		
 		foreach ($this->metadata_elements as $element) {
+			$element->entry_id = $this->id;
 			$element->add_instance();
 		}
 		
-		$this->description = @$this->description['text'];
+		if (is_array(@$this->description)){
+			$this->description = @$this->description['text'];
+		}
 		$this->title = $this->title;
 
 		// add a proxy for keyword values
-		require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->{'pluginchoice'}.'/plugin.class.php');
+		require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 		$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 		$mtdstandard = new $object;
 		
@@ -494,12 +574,12 @@ class sharedresource_entry {
 		}
 		$this->keywords = $mtdstandard->getKeywordValues($metadataelements);
 
-		if (! $DB->update_record('sharedresource_entry', ($this))) {
+		if (! $DB->update_record('sharedresource_entry', $this->sharedresource_entry)) {
 			return false;
 		}
 		
 		// trigger the after save plugins
-		//$this->after_update();
+		$this->after_update();
 		
 		return true;
 	}
@@ -533,4 +613,3 @@ class sharedresource_entry {
         return true;
     }
 }
-?>

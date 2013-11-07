@@ -49,10 +49,10 @@ class sharedresource_base {
             if (! $this->cm = get_coursemodule_from_id('sharedresource', $cmid)) {
                 print_error('invalidcoursemodule');
             }
-            if (! $this->course =  $DB->get_record('course', array('id'=> $this->cm->course))) {
+            if (! $this->course =  $DB->get_record('course', array('id' => $this->cm->course))) {
                 print_error('coursemisconf');
             }
-            if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id'=> $this->cm->instance))) {
+            if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
                 print_error('invalidsharedresource', 'sharedresource');
             }
             if (!$this->cm->visible and !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
@@ -65,8 +65,7 @@ class sharedresource_base {
 		        $PAGE->set_url($url);
 		        $PAGE->set_title($SITE->fullname);
 		        $PAGE->set_heading($SITE->fullname);
-		        /* SCANMSG: may be additional work required for $navigation variable */
-		        $PAGE->navbar->add("view sharedresource info",'view.php','misc');
+		        $PAGE->navbar->add('view sharedresource info', 'view.php', 'misc');
 		        $PAGE->set_focuscontrol('');
 		        $PAGE->set_cacheable(false);
 		        $PAGE->set_button('');
@@ -816,11 +815,6 @@ class sharedresource_base {
      *
      * @param mform   object, reference to Moodle Forms object
      */
-     /*
-    function setup_elements(&$mform) {
-        //override to add your own options
-    } */
-
     function setup_elements(&$mform) {
         global $CFG, $USER, $SHAREDRESOURCE_WINDOW_OPTIONS, $DB, $OUTPUT;
 

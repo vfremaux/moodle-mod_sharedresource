@@ -1,11 +1,12 @@
 <?php
 
-$string['a_pour_apercu'] = 'Has as preview';
-$string['a_pour_logo'] = 'Has as logo';
-$string['a_pour_prerequis'] = 'Has as prerequisite';
-$string['a_pour_vignette'] = 'Has as thumbnail';
+$string['accessibilityrestrictions'] = 'Accessibility restrictions';
+$string['apourapercu'] = 'Has as preview';
+$string['apourlogo'] = 'Has as logo';
+$string['apourprerequis'] = 'Has as prerequisite';
+$string['apourvignette'] = 'Has as thumbnail';
 $string['activity'] = 'Activity';
-$string['aggregation_level'] = 'Aggregation level';
+$string['aggregationlevel'] = 'Aggregation level';
 $string['animation'] = 'Animation';
 $string['animer'] = 'Animate';
 $string['annales'] = 'Histories';
@@ -15,28 +16,28 @@ $string['archives'] = 'Archive';
 $string['article'] = 'Paper';
 $string['assessment'] = 'Assessment';
 $string['atlas'] = 'Maps';
-$string['bande_dessinee'] = 'Comics';
-$string['banque_d_images'] = 'Image set';
-$string['banque_de_videos'] = 'Video set';
-$string['base_de_donnees'] = 'Databases';
-$string['bibliographie_sitographie'] = 'Bibliography/Sitography';
+$string['bandedessinee'] = 'Comics';
+$string['banquedimages'] = 'Image set';
+$string['banquedevideos'] = 'Video set';
+$string['basededonnees'] = 'Databases';
+$string['bibliographiesitographie'] = 'Bibliography/Sitography';
 $string['biographie'] = 'Biography';
 $string['browserenvironment'] = 'Web User Agent';
 $string['carte'] = 'Map';
-$string['carte_heuristique_et_conceptuelle'] = 'Mindmap';
+$string['carteheuristiqueetconceptuelle'] = 'Mindmap';
 $string['chronologie'] = 'Chronology';
 $string['classificationpurpose'] = 'Classification purpose';
 $string['classificationtaxonpath'] = 'Classification taxon path';
 $string['collaborer'] = 'Collaborate';
-$string['collection_de_documents'] = 'Documents collection';
+$string['collectiondedocuments'] = 'Documents collection';
 $string['communiquer'] = 'Communicate';
-$string['compte_rendu'] = 'Compte rendu';
+$string['compterendu'] = 'Compte rendu';
 $string['conference'] = 'Conference';
 $string['context'] = 'Learning context';
 $string['contributerole'] = 'Contributor role';
 $string['contributor'] = 'Contributor';
 $string['cooperer'] = 'Cooperate';
-$string['copyright_and_other_restrictions'] = 'Copyright';
+$string['copyrightandotherrestrictions'] = 'Copyright';
 $string['cost'] = 'Use costs';
 $string['creer'] = 'Create';
 $string['cyberquete'] = 'Cyberquest';
@@ -44,123 +45,122 @@ $string['demonstration'] = 'Demonstration';
 $string['diaporama'] = 'Diaporama';
 $string['difficulty'] = 'Difficulty';
 $string['doctorat'] = 'Doctorate';
-$string['document_type'] = 'Content type';
-$string['dossier_documentaire'] = 'Document folder';
-$string['dossier_technique'] = 'Technical folder';
+$string['documenttype'] = 'Content type';
+$string['dossierdocumentaire'] = 'Document folder';
+$string['dossiertechnique'] = 'Technical folder';
 $string['echanger'] = 'Exchange';
 $string['enduserrole'] = 'End user role';
 $string['enseignement'] = 'Teaching';
-$string['enseignement_primaire'] = 'Primary courses';
-$string['enseignement_secondaire'] = 'Secondary courses';
-$string['ensemble_de_donnees'] = 'Data set';
+$string['enseignementprimaire'] = 'Primary courses';
+$string['enseignementsecondaire'] = 'Secondary courses';
+$string['ensemblededonnees'] = 'Data set';
 $string['environmenttype'] = 'Environment type';
-$string['est_aperçu_de'] = 'Is preview of';
-$string['est_associee_a'] = 'Is associated with';
-$string['est_la_traduction_de'] = 'Is a translation of';
-$string['est_prerequis_de'] = 'Is prerequisite of';
-$string['etude_de_cas'] = 'Case study';
+$string['estapercude'] = 'Is preview of';
+$string['estassocieea'] = 'Is associated with';
+$string['estlatraductionde'] = 'Is a translation of';
+$string['estprerequisde'] = 'Is prerequisite of';
+$string['etudedecas'] = 'Case study';
 $string['evenement'] = 'Event';
 $string['experimenter'] = 'Experiment';
 $string['exposition'] = 'Exhibition';
-$string['fait_l_objet_d_une_traduction'] = 'Has a translation';
-$string['feuille_de_calcul'] = 'Spreadsheet';
+$string['faitlobjetdunetraduction'] = 'Has a translation';
+$string['feuilledecalcul'] = 'Spreadsheet';
 $string['film'] = 'Movie';
-$string['formation_continue'] = 'Profesional development';
-$string['formation_en_entreprise'] = 'Internal training';
+$string['formationcontinue'] = 'Profesional development';
+$string['formationenentreprise'] = 'Internal training';
 $string['glossaire'] = 'Glossary';
 $string['guide'] = 'Guide';
 $string['image'] = 'Image';
-$string['image_en_mouvement'] = 'Moving image';
-$string['image_fixe'] = 'Still image';
-$string['image_numerique'] = 'Digital image';
-$string['installation_remarks'] = 'User manual';
-$string['intended_end_user_role'] = 'Intented end user role';
-$string['interactivity_level'] = 'Interactivity level';
-$string['interactivity_type'] = 'Interactivity type';
+$string['imageenmouvement'] = 'Moving image';
+$string['imagefixe'] = 'Still image';
+$string['imagenumerique'] = 'Digital image';
+$string['installationremarks'] = 'User manual';
+$string['intendedenduserrole'] = 'Intented end user role';
+$string['interactivitylevel'] = 'Interactivity level';
+$string['interactivitytype'] = 'Interactivity type';
 $string['issuedate'] = 'Issue date';
-$string['jeu_de_donnees'] = 'Data set';
-$string['jeu_educatif'] = 'Learning game';
+$string['jeudedonnees'] = 'Data set';
+$string['jeueducatif'] = 'Learning game';
 $string['kind'] = 'Kind';
 $string['label'] = 'Label';
-$string['learning_resource_type'] = 'Learning resource type';
+$string['learningresourcetype'] = 'Learning resource type';
 $string['lomfrformat'] = 'Learning Object Model FR (LOMFR)';
 $string['licence'] = 'Licence';
 $string['lieux'] = 'Location';
-$string['life_cycle'] = 'Life cycle';
+$string['lifecycle'] = 'Life cycle';
 $string['linux'] = 'Linux';
 $string['lire'] = 'Read';
-$string['livre_numerique'] = 'Digital book';
+$string['livrenumerique'] = 'Digital book';
 $string['logiciel'] = 'Software';
-$string['manuel_d_enseignement'] = 'Teaching Manual';
-$string['maquette_prototype'] = 'Prototype';
+$string['manueldenseignement'] = 'Teaching Manual';
+$string['maquetteprototype'] = 'Prototype';
 $string['master'] = 'Master';
 $string['mastere'] = 'Mastere';
-$string['materiel_de_reference'] = 'Reference equipment';
-$string['maximum_version'] = 'Max version';
-$string['meta-metadata'] = 'Metadata schema';
-$string['metadata_schema'] = 'Metadata Schema Url';
+$string['materieldereference'] = 'Reference equipment';
+$string['maximumversion'] = 'Max version';
+$string['metametadata'] = 'Metadata schema';
+$string['metadataschema'] = 'Metadata Schema Name';
 $string['methodologie'] = 'Methodology';
-$string['methode_de_langues'] = 'Language learning method';
-$string['minimum_version'] = 'Min version';
-$string['modalite_pedagogique'] = 'Pedagogic method';
+$string['methodedelangues'] = 'Language learning method';
+$string['minimumversion'] = 'Min version';
+$string['modalitepedagogique'] = 'Pedagogic method';
 $string['narrative_text'] = 'Storytelling';
 $string['norme'] = 'Standard';
-$string['objet_3D'] = '3D Object';
-$string['objet_physique'] = 'Physical object';
+$string['objet3D'] = '3D Object';
+$string['objetphysique'] = 'Physical object';
 $string['observer'] = 'Observe';
 $string['organiser'] = 'Organize';
 $string['osenvironment'] = 'Operation system';
-$string['other_platform_requirements'] = 'Other technological constraints';
+$string['otherplatformrequirements'] = 'Other technological constraints';
 $string['outil'] = 'Tool';
 $string['outils'] = 'Tools';
 $string['ouvrage'] = 'Book';
-$string['partition_musicale'] = 'Musical score';
+$string['partitionmusicale'] = 'Musical score';
 $string['photographie'] = 'Photography';
-$string['plugin_suplomfr'] = 'Local indexation (SupLOM FR v1.0)';
 $string['podcast'] = 'Podcast';
 $string['produire'] = 'Produce';
-$string['programme_scolaire'] = 'Scholar program';
-$string['production_d_eleve'] = 'Student outcomes';
-$string['presentation_multimedia'] = 'Multimedia presentations';
-$string['public_cible_detaille'] = 'Detailed user target';
+$string['programmescolaire'] = 'Scholar program';
+$string['productiondeleve'] = 'Student outcomes';
+$string['presentationmultimedia'] = 'Multimedia presentations';
+$string['publiccibledetaille'] = 'Detailed user target';
 $string['publier'] = 'Publish';
 $string['purpose'] = 'Object';
 $string['periodique'] = 'Periodical publishing';
 $string['rapport'] = 'Report';
 $string['rechercher'] = 'Search';
-$string['ressource_interactive'] = 'Interactive resource';
+$string['ressourceinteractive'] = 'Interactive resource';
 $string['rights'] = 'Rights';
 $string['rightsdescription'] = 'Rights description';
 $string['role'] = 'Role';
-$string['referentiel_de_competences'] = 'Référentiel de compétences';
-$string['s_auto-former'] = 'Self-teach';
-$string['s_evaluer'] = 'Self-evaluate';
-$string['s_exercer'] = 'Self-train';
-$string['s_informer'] = 'Self inform';
+$string['referentieldecompetences'] = 'Skill base';
+$string['sautoformer'] = 'Self-teach';
+$string['sevaluer'] = 'Self-evaluate';
+$string['sexercer'] = 'Self-train';
+$string['sinformer'] = 'Self inform';
 $string['safari'] = 'Safari';
-$string['scenario_pedagogique'] = 'Pedagogical scenario';
-$string['schema_graphique'] = 'Drawing';
+$string['scenariopedagogique'] = 'Pedagogical scenario';
+$string['schemagraphique'] = 'Drawing';
 $string['suplomfrformat'] = 'Learning Object Model FR (SupLOMFR v1.0)';
-$string['se_former'] = 'Learn';
-$string['semantic_density'] = 'Semantical density';
+$string['seformer'] = 'Learn';
+$string['semanticdensity'] = 'Semantical density';
 $string['service'] = 'Service';
-$string['sharedresource_plugin_hide_lomfr'] = 'Disable local indexer metadata (LOM FR)';
 $string['simuler'] = 'Simulate';
-$string['site_web'] = 'Web Site';
+$string['siteweb'] = 'Web Site';
 $string['son'] = 'Sound';
 $string['status'] = 'Publishing status';
 $string['structure'] = 'Structure';
 $string['tableau_art'] = 'Painting (art)';
-$string['temoignage_pedagogique'] = 'Pedagogical testimony';
-$string['taxon_path'] = 'Classification category';
+$string['temoignagepedagogique'] = 'Pedagogical testimony';
+$string['taxonpath'] = 'Classification category';
 $string['texte'] = 'Text';
 $string['tutoriel'] = 'Tutorial';
-$string['type_de_diffusion'] = 'Diffusion type';
-$string['type_general_de_documents'] = 'General document type';
-$string['typical_age_range'] = 'Typical age range';
-$string['typical_learning_time'] = 'Typical learning time';
+$string['typedediffusion'] = 'Diffusion type';
+$string['typegeneraldedocuments'] = 'General document type';
+$string['typicalagerange'] = 'Typical age range';
+$string['typicallearningtime'] = 'Typical learning time';
 $string['web_media'] = 'Web media';
-$string['descriptionscolomfr']='LOMFR is the french application profile of LOM. <br/><br/>
+
+$string['description_scolomfr']='LOMFR is the french application profile of LOM. <br/><br/>
 LOMFR describe pedagogical objects (resources).
 Any entity (numeric or not) used in a educational process, a formation process or a learning process is considered as a pedagogical resource.<br/><br/>
 ScoLOMFR is an extension of LOM FR standadized by the French Ministry of Education.<br/><br/>
@@ -173,3 +173,143 @@ It concern the whole educative community :<br/>
 - archivists and librarians<br/>
 - publishers, companies <br/><br/>
 <center>More informations here : <a href=\"http://www.lom-fr.fr\">Page of the lomfr profile</a></center>';
+
+//Aggregation level
+$string['1'] = '1';
+$string['2'] = '2';
+$string['3'] = '3';
+$string['4'] = '4';
+
+// Difficulty
+$string['veryeasy'] = 'Very easy';
+$string['easy'] = 'Easy';
+$string['medium'] = 'Medium';
+$string['difficult'] = 'Difficult';
+$string['verydifficult'] = 'Very difficult';
+
+// Level
+$string['verylow'] = 'Very low';
+$string['low'] = 'Low';
+$string['medium'] = 'Medium';
+$string['high'] = 'High';
+$string['veryhigh'] = 'Very high';
+
+// Context
+$string['school'] = 'School';
+$string['highereducation'] = 'Higher education';
+$string['training'] = 'Training';
+$string['other'] = 'Other';
+
+// Structure
+$string['atomic'] = 'Atomic';
+$string['collection'] = 'Collection';
+$string['networked'] = 'Networked';
+$string['hierarchical'] = 'Hierarchical';
+$string['linear'] = 'Linear';
+
+// Status
+$string['draft'] = 'Draft';
+$string['final'] = 'Final';
+$string['revised'] = 'Revised';
+$string['unavailable'] = 'Unavailable';
+
+// Role
+$string['author'] = 'Author';
+$string['publisher'] = 'Publisher';
+$string['unknown'] = 'Unknown';
+$string['initiator'] = 'Initiator';
+$string['terminator'] = 'Terminator';
+$string['validator'] = 'Validator';
+$string['editor'] = 'Editor';
+$string['graphicaldesigner'] = 'Graphical designer';
+$string['technicalimplementer'] = 'Technical implementer';
+$string['contentprovider'] = 'Content provider';
+$string['technicalvalidator'] = 'Technical validator';
+$string['educationalvalidator'] = 'Educational validator';
+$string['scriptwriter'] = 'Script writer';
+$string['instructionaldesigner'] = 'Designer instructional';
+$string['subjectmatterexpert'] = 'Subject matter expert';
+
+// Contribute role
+$string['creator'] = 'Creator';
+$string['validator'] = 'Validator';
+
+// Environment type
+$string['operatingsystem'] = 'Operating system';
+$string['browser'] = 'Browser';
+
+// OSEnvironment
+$string['pcdos'] = 'PC DOS';
+$string['mswindows'] = 'Microsoft Windows';
+$string['macos'] = 'Mac OS';
+$string['unix'] = 'Unix';
+$string['multios'] = 'Multi-OS';
+$string['none'] = 'None';
+
+// BrowserEnvironment
+$string['any'] = 'Any';
+$string['netscapecommunicator'] = 'Netscape Communicator';
+$string['msinternetexplorer'] = 'Internet Explorer';
+$string['opera'] = 'Opera';
+$string['amaya'] = 'Amaya';
+$string['firefox'] = 'Firefox';
+$string['googlechrome'] = 'Google Chrome';
+
+// Type d'interactivité
+$string['active'] = 'Active';
+$string['expositive'] = 'Expositive';
+$string['mixed'] = 'Mixed';
+
+// LearningResourceType
+$string['exercise'] = 'Exercice';
+$string['simulation'] = 'Simulation';
+$string['questionnaire'] = 'Questionnaire';
+$string['diagram'] = 'Diagram';
+$string['figure'] = 'Figure';
+$string['graph'] = 'Graph';
+$string['index'] = 'Index';
+$string['slide'] = 'Slide';
+$string['table'] = 'Table';
+$string['narrative text'] = 'Narrative text';
+$string['exam'] = 'Exam';
+$string['experiment'] = 'Experiment';
+$string['problemstatement'] = 'Problem statement';
+$string['selfassessment'] = 'Self assessment';
+$string['lecture'] = 'Lecture';
+
+
+// End User Role
+$string['teacher'] = 'Teacher';
+$string['author'] = 'Author';
+$string['learner'] = 'Learner';
+$string['manager'] = 'Manager';
+
+// yes,no
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
+
+// Purpose
+$string['discipline'] = 'Discipline';
+$string['idea'] = 'Idea';
+$string['prerequisite'] = 'Prerequisite';
+$string['educationalobjective'] = 'Educational objective';
+$string['accessibility'] = 'Accessibility';
+$string['restrictions'] = 'Restrictions';
+$string['educationallevel'] = 'Educational level';
+$string['skilllevel'] = 'Skill level';
+$string['securitylevel'] = 'Security level';
+$string['competency'] = 'Competency';
+
+// Kind 
+$string['ispartof'] = 'is part of';
+$string['haspart'] = 'has part';
+$string['isversionof'] = 'is version of';
+$string['hasversion'] = 'has version';
+$string['isformatof'] = 'is format of';
+$string['hasformat'] = 'has format';
+$string['references'] = 'references';
+$string['isreferencedby'] = 'is referenced by';
+$string['isbasedon'] = 'is based on';
+$string['isbasisfor'] = 'is basis for';
+$string['requires'] = 'requires';
+$string['isrequiredby'] = 'is required by';

@@ -37,16 +37,16 @@ class select_search_widget extends search_widget{
 		require_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$this->pluginchoice.'/plugin.class.php';
 		$object = 'sharedresource_plugin_'.$this->pluginchoice;
 		$mtdstandard = new $object;
-		echo '<table class="widget"><tr><td class="widget-label">'.$widgetname.'</td><td class="widget-input">';
-		echo $OUTPUT->help_icon('selectsearch', 'sharedresource', false);
-		echo '</td><td>';
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('selectsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<select name="'.$this->label.'">';
 		echo '<option selected value="defaultvalue"> </option>';
 		foreach($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
 			$selected = ($value == $optvalue) ? 'selected="selected"' : '' ;
 			echo "<option value=\"$optvalue\" $selected >".get_string(clean_string_key($optvalue), 'sharedresource').'</option>';
 		}
-		echo '</select></td></tr></table>';
+		echo '</select>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

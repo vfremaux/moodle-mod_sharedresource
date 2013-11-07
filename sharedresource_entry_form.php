@@ -47,13 +47,17 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
-		// sharing contexts
+		// sharing context : 
+		// users can share a sharedresource at public system context level, or share privately to a specific course category
+		// (and subcatgories)
 		$contextopts[1] = get_string('systemcontext', 'sharedresource');
 		sharedresource_add_accessible_contexts($contextopts);
 		$mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
 		$mform->setType('context', PARAM_INT);
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
 
+		// Url or file
+		// On update as soon as a sharedresource exists, it cannot be muted any more
         if ($this->sharedresource_entry_mode == 'update') {
             $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
             $mform->addElement('static', 'filename', get_string('file').': ', '');
@@ -62,6 +66,10 @@ class mod_sharedresource_entry_form extends moodleform {
 			$mform->setType('url', PARAM_URL); 
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
+        
+        // obsolete
+        // metadata plugins now impact only the second metadata form.
+        /*
         // let the plugins see the form definition
         $plugins = sharedresource_get_plugins();
 
@@ -71,6 +79,7 @@ class mod_sharedresource_entry_form extends moodleform {
                 break;
             }
         }
+        */
 
         $btext = get_string('gometadataform', 'sharedresource');
 
@@ -100,10 +109,6 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $errors = parent::validation($data, $files);
 
-        if(!empty($data['sharedrsourcefile'])){
-            //$file = $DB->get_record('file','')
-        }
-
         if ($this->sharedresource_entry_mode == 'add') {
             // make sure that either the file or the URL are supplied
             if (empty($data['url']) && $data['sharedresourcefile'] == null) {
@@ -131,6 +136,8 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     function set_data($default_values, $slashed = false) {
+
+		/*
         // poke all the basic metadata elements into defaults so 
         // that they get set in the form
         if (isset($default_values->metadata_elements)) {
@@ -144,12 +151,30 @@ class mod_sharedresource_entry_form extends moodleform {
                 }
             }
         }
+        */
+        
+        // process description 
+        $description = $default_values->description;
+        $default_values->description = array();
+        $default_values->description['text'] = $description;
+        $default_values->description['format'] = FORMAT_HTML;
 
+		/*
+		// in a first approach a shared resource is not physically mutable, only metadata is
+		$draftitemid = file_get_submitted_draft_itemid('sharedresourcefile');		 
+		$maxbytes = 100000;
+		$systemcontext = context_system::instance();
+		file_prepare_draft_area($draftitemid, $systemcontext->id, 'mod_sharedresource', 'sharedresource', 0, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => 1));		 
+		$data->sharedresourcefile = $draftitemid;
+		*/
+		
+		/*
         // clean the hash off of the front as this maybe misleading - even though we need it
         // to guarantee that the file is unique on the filesystem.
         if (!empty($default_values->sharedresourcefile) && preg_match('/^\w+\-(.*?)$/', $default_values->sharedresourcefile, $matches)) {
             $default_values->sharedresourcefile = $matches[1];
         }
+        */
         $errors = parent::set_data($default_values, $slashed = false);
     }
 }

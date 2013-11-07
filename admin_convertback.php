@@ -25,7 +25,7 @@
 	    	print_error('coursemisconf');
 	    }
 
-	/// security 
+	/// security
 	
 	    $context = context_course::instance($courseid);
 	    require_login($course);
@@ -102,4 +102,3 @@
     }
     echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
     echo $OUTPUT->footer();
-?>

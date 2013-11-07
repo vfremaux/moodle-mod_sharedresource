@@ -48,17 +48,16 @@ class freetext_search_widget extends search_widget{
 		$beginswithselected = ($operator == 'beginswith') ? 'selected="selected"' : '' ;
 		$endswithselected = ($operator == 'endswith') ? 'selected="selected"' : '' ;
 
-		echo '<table class="widget" width="100%"><tr><td class="header" width="10px"></td>';
-		echo '<td class="header">'.$widgetname.'</td>';
-		echo '<td class="header" align="right">'.$OUTPUT->help_icon('textsearch', 'sharedresource', false).'</td></tr>';
-		echo '<tr><td colspan="3">';
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('textsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<select name="'.$this->label.'_option">';
 		echo "<option value=\"includes\" $includesselected >".get_string('contains', 'sharedresource').'</option>';
 		echo "<option value=\"equals\" $equalsselected >".get_string('equalto', 'sharedresource').'</option>';
 		echo "<option value=\"beginswith\" $beginswithselected >".get_string('startswith', 'sharedresource').'</option>';
 		echo "<option value=\"endswith\" $endswithselected >".get_string('endswith', 'sharedresource').'</option>';
 		echo '</select>';
-		echo '<input type="text" name="'.$this->label.'" value="'.$value.'"/></td></tr></table>';
+		echo '<input type="text" name="'.$this->label.'" value="'.$value.'"/>';
+		echo $OUTPUT->box_end();
     }
 	
 	/** 

@@ -776,7 +776,13 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
 		$value = $sharedresource_entry->element($field, $mtdstandard->pluginname);
 		list ($fieldkey, $occurrence) = explode(':', $field);
 		$default = $mtdstandard->defaultValue($fieldkey);
-		if (empty($value) && isset($default)) $value = $default;
+		if (empty($value) && isset($default)){
+			if (!is_array($default)){
+				$value = $default;
+			} else {
+				$value = @$default[$occurrence];
+			}
+		}
 		switch ($type){
 			case 'text' :
 				return $value;
@@ -811,7 +817,7 @@ function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$share
 
 	$maxoccur = 1;
 	if (!empty($sharedresource_entry->metadata_elements)){
-		foreach ($sharedresource_entry->metadata_elements as $cle => $metadata){
+		foreach ($sharedresource_entry->metadata_elements as $key => $metadata){
 			if ($metadata->namespace == $mtdstandard->pluginname){
 				if (substr_compare($fieldnum, $metadata->element, 0, strlen($fieldnum)) == 0 && strpos($metadata->element, $search) != FALSE){
 					$nbroccur = substr($metadata->element, stripos($metadata->element, ':') + 1);
@@ -827,6 +833,11 @@ function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$share
 					}
 				}
 			}
+		}
+	} else {
+		// examinate some defaults settings and raise maxoccurs to the expected amount for defaults.
+		if (isset($mtdstandard->METADATATREE[$fieldnum]['default']) && is_array($mtdstandard->METADATATREE[$fieldnum]['default'])){
+			$maxoccur = count($mtdstandard->METADATATREE[$fieldnum]['default']) + 1;
 		}
 	}
 	return $maxoccur;
@@ -1103,7 +1114,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 	$display = '<table border="1" width="70%"><tr><td align="center" width="25%">Nom du champ</td><td align="center" width="25%">Id du champ</td><td align="center">Valeur du champ</td></tr>';
 	foreach ($metadataentries as $key => $value){
 		// we check if the field have been filled for the vcard, select and date
-		if (preg_replace('/[[:space:]]/','',$value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' && $value != 'basicvalue' && $value != '-year-' && $value != '-month-' && $value != '-day-' && substr($key,-9)!= 'datemonth' && substr($key,-7)!= 'dateday' && substr($key,-3)!= 'Hou' && substr($key,-3)!= 'Min' && substr($key,-3)!= 'Sec'){
+		if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' && $value != 'basicvalue' && $value != '-year-' && $value != '-month-' && $value != '-day-' && substr($key,-9)!= 'datemonth' && substr($key,-7)!= 'dateday' && substr($key,-3)!= 'Hou' && substr($key,-3)!= 'Min' && substr($key,-3)!= 'Sec'){
 			$errortemp = '';
 			// if the key is a date, we have to have a treatment on this key
 			if (substr($key, -3) == 'Day'){
@@ -1263,18 +1274,24 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 }
 
 function clean_string_key($value){
-	$value = str_replace(' ', '_', $value);
-	$value = str_replace('\'', '_', $value);
-	$value = str_replace('/', '_', $value);
-	$value = str_replace("'", '_', $value);
+	$value = str_replace(' ', '', $value);
+	$value = str_replace('_', '', $value);
+	$value = str_replace('-', '', $value);
+	$value = str_replace('\'', '', $value);
+	$value = str_replace('/', '', $value);
+	$value = str_replace("'", '', $value);
 	$value = str_replace('é', 'e', $value);
+	$value = str_replace('ê', 'e', $value);
 	$value = str_replace('è', 'e', $value);
 	$value = str_replace('ë', 'e', $value);
 	$value = str_replace('î', 'i', $value);
+	$value = str_replace('ï', 'i', $value);
 	$value = str_replace('û', 'u', $value);
+	$value = str_replace('ü', 'u', $value);
 	$value = str_replace('ô', 'o', $value);
 	$value = str_replace('à', 'a', $value);
-	$value = str_replace('�', 'a', $value);
+	$value = str_replace('â', 'a', $value);
+	$value = str_replace('ç', 'c', $value);
 	return $value;
 }
 

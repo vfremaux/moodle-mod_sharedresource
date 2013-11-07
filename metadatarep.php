@@ -102,9 +102,14 @@
 		} else if ($mode != 'add' && !$sharedresource_entry->update_instance()) {
 			print_error('failupdate', 'sharedresource');
 		} else {
-			// if everything was saved correctly, go back to the search page
-			$fullurl = $CFG->wwwroot."/mod/sharedresource/search.php?id={$sharedresource_entry->id}&course={$course->id}&section={$section}&add={$add}&return={$return}";
-			redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			// if everything was saved correctly, go back to the search page or to the library
+			if ($return){
+				$fullurl = $CFG->wwwroot."/local/sharedresources/index.php?course={$course->id}";
+				redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			} else {
+				$fullurl = $CFG->wwwroot."/mod/sharedresource/search.php?id={$sharedresource_entry->id}&course={$course->id}&section={$section}&add={$add}&return={$return}";
+				redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			}
 			die;
 		}
 	}

@@ -10,7 +10,27 @@ require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 * @todo can be optimized for not loading unused strings elsewhere than in admin
 * setting forms. 
 */
-function sharedresource_load_plugins_lang(&$string, $lang=''){
+function sharedresource_load_plugin_lang(&$string, $lang = ''){
+    global $CFG;
+    
+    if ($lang == ''){
+        $lang = current_language();
+    }
+    
+	if ($plugin = @$CFG->pluginchoice){
+		$pluginlangfile = $CFG->dirroot.'/mod/sharedresource/plugins/'.$plugin.'/lang/'.$lang.'/'.$plugin.'.php';    
+	    include($pluginlangfile);
+	}
+}
+
+/**
+* loads the minimal strings for plugin management
+* @param array $string
+* @param string $lang
+* @todo can be optimized for not loading unused strings elsewhere than in admin
+* setting forms. 
+*/
+function sharedresource_load_pluginsmin_lang(&$string, $lang = ''){
     global $CFG;
     
     if ($lang == ''){
@@ -19,8 +39,8 @@ function sharedresource_load_plugins_lang(&$string, $lang=''){
     
     $plugins = get_list_of_plugins('mod/sharedresource/plugins');
     foreach($plugins as $plugin){
-        $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}.php";
-        include_once($pluginlang);
+        $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}-min.php";
+        include($pluginlang);
     }
 }
 

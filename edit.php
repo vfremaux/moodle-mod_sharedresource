@@ -16,12 +16,16 @@
 
     // include "debugging.php";
 
-    $ignore_list = array('mform_showadvanced_last', /* 'pagestep', */ 'MAX_FILE_SIZE', 'add', 'update', 'return', 'type', 'section', 'mode', 'course', 'submitbutton');
-    $plugins = sharedresource_get_plugins();
+/// load metadata plugin    
 
-    foreach($plugins as $plugin){
-        $ignore_list = array_merge($ignore_list, $plugin->sharedresource_get_ignored());
-    }
+	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
+	$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
+	$mtdstandard = new $object;
+    
+    $ignore_list = array('mform_showadvanced_last', /* 'pagestep', */ 'MAX_FILE_SIZE', 'add', 'update', 'return', 'type', 'section', 'mode', 'course', 'submitbutton');
+    $ignore_list = array_merge($ignore_list, $mtdstandard->sharedresource_get_ignored());
+
+/// get params
 
     $add           = optional_param('add', 0, PARAM_ALPHA);
     $update        = optional_param('update', 0, PARAM_INT);
@@ -47,8 +51,8 @@
 /// page construction
 
     $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
+    $PAGE->set_pagelayout('standard');
     $PAGE->set_context($system_context);
-    $PAGE->set_pagelayout('admin');
     $url = new moodle_url('/mod/sharedresource/edit.php');
     $PAGE->set_url($url);
     $PAGE->set_title($strtitle);
@@ -64,14 +68,19 @@
     $pagetitle = strip_tags($course->shortname);
 
     // sort out how we should look depending on add or update
+
     if ($mode == 'update') {
+
         $entryid = required_param('entry_id', PARAM_INT);
         $sharedresource_entry = sharedresource_entry::get_by_id($entryid);
         $strpreview = get_string('preview', 'sharedresource');
 
+		// make a flat record for feeding the form
+		$formdata = $sharedresource_entry->sharedresource_entry;
+
         if (empty($CFG->sharedresource_foreignurl)){
             // ressouce preview is on the same server it is accessible. openpopup can be used
-            $sharedresource_entry->url_display =  "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?identifier={$sharedresource_entry->identifier}&amp;inpopup=true\" "
+            $formdata->url_display =  "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?identifier={$sharedresource_entry->identifier}&amp;inpopup=true\" "
               . "onclick=\"this.target='resource{$sharedresource_entry->id}'; return openpopup('/mod/sharedresource/view.php?inpopup=true&amp;identifier={$sharedresource_entry->identifier}', "
               . "'resource{$sharedresource_entry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
         } else {
@@ -80,19 +89,24 @@
     //        $sharedresource_entry->url_display = "<a href=\"{$url}&amp;inpopup=true\" "
     //          . "onclick=\"this.target='resource{$sharedresource_entry->id}'; return openpopup('{$url}', "
     //          . "'resource{$sharedresource_entry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
-            $sharedresource_entry->url_display = "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
+            $formdata->url_display = "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
         }
 
-        $sharedresource_entry->sharedresourcefile = $sharedresource_entry->file;
-        $sharedresource_entry->filename = $DB->get_field('files', 'filename', array('id' => $sharedresource_entry->file));
+        // $formdata->sharedresourcefile = $sharedresource_entry->file; // No need, not mutable resource.
+        // @TODO : this should call the file storage API 
+        $formdata->filename = $DB->get_field('files', 'filename', array('id' => $sharedresource_entry->file));
+
     } else {
+
         $mode = 'add';
-        $sharedresource_entry = new sharedresource_entry();
+        $sharedresource_entry = new sharedresource_entry(false);
+
     }
-    // which form phase are we in - step 1 or step 2
+
     $mform = false;
     $mform = new mod_sharedresource_entry_form($mode);
-    $mform->set_data(($sharedresource_entry));        
+    $mform->set_data(($formdata));        
+
     if ( $mform->is_cancelled() ){
         //cancel - go back to course
         redirect($CFG->wwwroot."/course/view.php?id={$course->id}");
@@ -101,6 +115,7 @@
     // is this a successful POST ?
 
     if ($formdata = $mform->get_data()) {
+
         // check for hidden values
         if ($hidden = optional_param('sharedresource_hidden', '', PARAM_CLEANHTML)) {
             $hidden = explode('|', $hidden);
@@ -126,35 +141,42 @@
         }
 
         $sharedresource_entry->lang = $USER->lang;
+        
         if ($mode == 'add') {
+
             // locally defined resource ie. we are the master
-            $sharedresource_entry->type = 'file';
+            $sharedresource_entry->type = 'file'; // obsolete ?
+
             // is this a local resource or a remote one?
             if (!empty($sharedresource_entry->url)) {
                 $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
                 $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
             } else {
-                // if resource uploaded then move to temp area until user has
-                //save the file 
-                $systemcontext = context_system::instance();
-                $file  = $mform->save_stored_file('sharedresourcefile', $systemcontext->id, 'mod_sharedresource', 'sharedresource', 0, "/", null, true, $USER->id);
+
+                // if resource is a real file we necessarily have one in the user's filepicker temp file area
+                $filepickeritemid = $formdata->sharedresourcefile;
+	            $fs = get_file_storage();
+	            $context = context_user::instance($USER->id);
+	            if (!$draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $filepickeritemid, 'id DESC', false)) {
+	                print_error('errorprogramming', 'sharedresource');
+	            }
+				$file = reset($draftfiles);
+
                 $sharedresource_entry->identifier = $file->get_contenthash();
-                $sharedresource_entry->file = $file->get_id();
-                $formdata->identifier = $sharedresource_entry->identifier;
-                $formdata->file = $sharedresource_entry->file;
-                $formdata->uploadname = $file->get_filename();// $sharedresource_entry->uploadname;
-                //$formdata->mimetype = $sharedresource_entry->mimetype;
+                $sharedresource_entry->file = $file->get_id(); // this temp file will be post processed at the end of the storage process
+                // $formdata->identifier = $sharedresource_entry->identifier;
+                // $formdata->file = $sharedresource_entry->file;
+                // $formdata->uploadname = $file->get_filename();// $sharedresource_entry->uploadname;
+                // $formdata->mimetype = $sharedresource_entry->mimetype;
                 $sharedresource_entry->url = '';
             }
         }
-
+        
 		$sr_entry = serialize($sharedresource_entry);
 		$SESSION->sr_entry = $sr_entry;
 		$error = 'no error';
 		$SESSION->error = $error;
-		$plugin = $plugins[$CFG->pluginchoice];
-		$nameplugin = $plugin->pluginname;
-		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}&pluginchoice={$nameplugin}";
+		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}";
 		redirect($fullurl);
     }
 
@@ -167,8 +189,6 @@
         }
         $mform->_form->addElement('hidden', 'sharedresource_hidden', join('|', $hidden));
     }
-    echo '<center>';
-
     if ($mode == 'update') {
         //$mform->addElement('hidden', 'entry_id', $entry_id);
     }
@@ -177,8 +197,7 @@
 
     // display form
     $mform->display();
-    echo '</center>';
-    print($OUTPUT->footer($course));
+    echo $OUTPUT->footer($course);
     // page local functions
     // grab and clean form value
 
@@ -190,9 +209,6 @@
             case 'file' :
                 $value = optional_param($field, '', PARAM_PATH);
                 break;
-            case 'uploadname' :
-                $value = optional_param($field, '', PARAM_PATH);
-                break;
             case 'mimetype' :
                 $value = optional_param($field, '', PARAM_URL);
                 break;
@@ -202,4 +218,3 @@
         }
         return $value;
     }
-?>

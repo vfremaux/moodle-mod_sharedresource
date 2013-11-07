@@ -39,10 +39,9 @@ class selectmultiple_search_widget extends search_widget{
 		require_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$this->pluginchoice.'/plugin.class.php';
 		$object = 'sharedresource_plugin_'.$this->pluginchoice;
 		$mtdstandard = new $object;
-		echo '<table class="widget" width="100%"><tr><td class="header" width="2px"><a href="Javascript:search_widget_toggle(\''.$this->id.'\')"><img src="'.$OUTPUT->pix_url('t/switch_plus').'" /></a></td>';
-		echo '<td class="header">'.$widgetname.'</td>';
-		echo '<td class="header">'.$OUTPUT->help_icon('selectsearch', 'sharedresource', false).'</td>';
-		echo '</tr><tr><td id="search-widget-'.$this->id.'" colspan="3">';
+
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('selectsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		$selectallstr = get_string('selectall', 'sharedresource');
 		$unselectallstr = get_string('unselectall', 'sharedresource');
 		echo '<a class="smalltext" href="Javascript:search_widget_selectall(\''.$this->id.'\')">'.$selectallstr.'</a> / <a class="smalltext" href="Javascript:search_widget_unselectall(\''.$this->id.'\')">'.$unselectallstr.'</a><br/>';
@@ -61,7 +60,7 @@ class selectmultiple_search_widget extends search_widget{
 			echo '<input type="checkbox" name="'.$this->label.'[]" value="'.$optvalue."\" $checked /> ".get_string(clean_string_key($optvalue), 'sharedresource').'<br/>';
 		}
 
-		echo '</td></tr></table>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

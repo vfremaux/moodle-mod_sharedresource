@@ -34,10 +34,8 @@ class numeric_search_widget extends search_widget{
 		$lowername = strtolower($this->label);
 		$widgetname = get_string(str_replace(' ', '', $lowername), 'sharedresource');
 
-		echo '<table class="widget" width="100%"><tr><td class="header" width="2px"></td>';
-		echo '<td class="header">'.$widgetname.'</td>';
-		echo '<td class="header" align="right">'.$OUTPUT->help_icon('numericsearch', 'sharedresource', false).'</td></tr>';
-		echo '<tr><td colspan="3">';
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('numericsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<select name="'.$this->label.'_symbol">';
 		echo '<option selected value="basicvalue"> </option>';
 		echo '<option value="=">=</option>';
@@ -48,7 +46,7 @@ class numeric_search_widget extends search_widget{
 		echo '<option value=">=">=</option>';
 		echo '</select>';
 		echo '<input type="text" name="'.$this->label.'"/>';
-		echo '</td></tr></table>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

@@ -148,4 +148,3 @@
     echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}");
     echo $OUTPUT->footer($course);
     die;
-?>

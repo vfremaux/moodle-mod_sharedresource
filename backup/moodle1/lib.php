@@ -51,7 +51,7 @@ class moodle1_mod_sharedresource_handler extends moodle1_mod_handler {
      */
     public function get_paths() {
         return array(
-            new convert_path('forum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/SHAREDRESOURCE',
+            new convert_path('sharedresource', '/MOODLE_BACKUP/COURSE/MODULES/MOD/SHAREDRESOURCE',
                 array(
                     'renamefields' => array(
                         'description' => 'intro',

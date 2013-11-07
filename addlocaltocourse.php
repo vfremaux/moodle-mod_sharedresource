@@ -19,6 +19,7 @@
     require_once($CFG->dirroot . '/mod/sharedresource/lib.php');
     require_once($CFG->dirroot . '/mod/sharedresource/locallib.php');
     require_once($CFG->dirroot . '/mod/sharedresource/admin_convert_form.php');
+    require_once($CFG->dirroot . '/course/lib.php');
 
     $courseid = optional_param('id', '', PARAM_INT);
     $section = optional_param('section', '', PARAM_INT);

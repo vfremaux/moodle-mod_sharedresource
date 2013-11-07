@@ -220,6 +220,16 @@ abstract class sharedresource_plugin_base {
 		}
 		return null;
 	}    
+
+	/**
+	* tells the outside world if we know this node in the current standard.
+	* @param string a Dublin Core node identifier.
+	* @return true if the node is known
+	*/
+	function hasNode($nodekey){
+		if (empty($this->METADATATREE)) return false;
+		return array_key_exists($nodekey, $this->METADATATREE);
+	}
     
 	/**
 	* set the current resource entry id for this plugin
@@ -247,12 +257,28 @@ abstract class sharedresource_plugin_base {
 	* get the metadata node identity for keyword
 	*/
     abstract function getKeywordElement();
+
+	/**
+	* get the metadata node identity for taxonomy purpose
+	*/
+    abstract function getTaxonomyPurposeElement();
     
     /**
     * add keywords metadata entries from a comma separated list
     * of values. Each plugin know how and where to put values
     */
     abstract function setKeywords($keywords);
+
+	/**
+	* function to get any element only with its number of node
+	*/
+	function getElement($id){
+		$element = new StdClass;
+		$element -> id = $id;
+		$element -> name = $this->METADATATREE[$id]['name'];
+		$element -> type = $this->METADATATREE[$id]['widget'];
+		return $element;
+	}
 
 	/**
 	* A generic method that allows changing a simple text value
@@ -287,9 +313,74 @@ abstract class sharedresource_plugin_base {
 		} else {
 			$DB->insert_record('sharedresource_metadata', $mtdrec);
 		}
-
-		
 	}
+
+	/**
+	* records title in metadata flat table from db attributes?
+	* title element identification is given by each concrete plugin
+	*/
+    function setTitle($title){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+
+    	$titleElement = $this->getTitleElement();
+    	$titlekey = '$titleElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $titlekey));
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $titlekey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $title;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+	/**
+	* records master description in metadata flat table from db attributes
+	* description element identification is given by each concrete plugin
+	*/
+    function setDescription($description){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+    	
+    	$descriptionElement = $this->getDescriptionElement();
+    	$desckey = '$descriptionElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $desckey));
+
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $desckey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $description;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+	/**
+	* records resource physical lcoation in metadata flat table from db attributes?
+	* location element identification is given by each concrete plugin
+	*/
+    function setLocation($location){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+
+    	$locationElement = $this->getLocationElement();
+    	$locationkey = '$locationElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $locationkey));
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $locationkey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $location;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
 
 	/**
 	* gets a default value for a node if exists
