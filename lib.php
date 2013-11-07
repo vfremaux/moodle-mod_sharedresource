@@ -235,15 +235,22 @@ function sharedresource_get_coursemodule_info($coursemodule) {
        require_once($CFG->libdir.'/filelib.php');
 
        if (!$sharedresource_entry) {
-           $icon = 'unknown.gif';
-       }
-       else {
-           $icon = mimeinfo('icon', $sharedresource_entry->url);
-       }
-       if ($icon != 'unknown.gif') {
-           $info->icon = "f/$icon";
+           $icon = 'unknown';
        } else {
-           $info->icon = 'f/web.gif';
+       		if ($sharedresource_entry->file){
+       			$fs = get_file_storage();
+       			$filerec = $fs->get_file_by_id($sharedresource_entry->file);
+       			$mimetype = $filerec->get_mimetype();
+          		$icon = file_mimetype_icon($mimetype);
+       		} else {
+       			$icon = 'icon';
+       		}
+       }
+
+       if ($icon != 'unknown') {
+           $info->icon = $icon;
+       } else {
+           $info->icon = 'icon';
        }
    }
 
@@ -578,7 +585,7 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
     require_login($course, true, $cm);
 
     $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
-
+    
     if ($filearea === 'sharedresource') {
         $revision = (int)array_shift($args); // prevents caching problems - ignored here
         $relativepath = implode('/', $args);

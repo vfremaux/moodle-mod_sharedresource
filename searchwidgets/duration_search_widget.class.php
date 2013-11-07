@@ -54,10 +54,8 @@ class duration_search_widget extends search_widget{
 		$lessequalselected = ($operator == '<=') ? 'selected="selected"' : '' ;
 		$moreequalselected = ($operator == '>=') ? 'selected="selected"' : '' ;
 
-		echo '<table class="widget" width="100%"><tr><td width="10px" class="header"></td>';
-		echo '<td class="header">'.$widgetname.'</td>';
-		echo '<td class="header" align="right">'.$OUTPUT->help_icon('durationsearch', 'sharedresource', false).'</td></tr>';
-		echo '<tr><td colspan="3">';
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('durationsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<select name="'.$this->label.'_symbol">';
 		echo '<option value="defaultvalue"> </option>';
 		echo '<option value="=" '.$equalselected.' >=</option>';
@@ -71,7 +69,7 @@ class duration_search_widget extends search_widget{
 		echo '<input type="text" size="2" name="'.$this->label.'_hour" value="'.$value->hours.'" />&nbsp;'.get_string('h', 'sharedresource');
 		echo '<input type="text" size="2" name="'.$this->label.'_min" value="'.$value->mins.'" />&nbsp;'.get_string('m', 'sharedresource');
 		echo '<input type="text" size="2" name="'.$this->label.'_sec" value="'.$value->secs.'" />&nbsp;'.get_string('s', 'sharedresource');
-		echo '</td></tr></table>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

@@ -10,22 +10,22 @@
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
+global $SHAREDRESOURCE_WINDOW_OPTIONS; // make sure we have the pesky global
+
 // configuration for rss feed
 if (empty($CFG->enablerssfeeds)) {
     $options = array(0 => get_string('rssglobaldisabled', 'admin'));
     $str = get_string('configenablerssfeeds', 'sharedresource').'<br />'.get_string('configenablerssfeedsdisabled2', 'admin');
-
 } else {
     $options = array(0=>get_string('no'), 1=>get_string('yes'));
     $str = get_string('configenablerssfeeds', 'sharedresource');
 }
+
 $settings->add(new admin_setting_configselect('sharedresource_enablerssfeeds', get_string('enablerssfeeds', 'admin'),
                    $str, 0, $options));
+
 $settings->add(new admin_setting_configtext('sharedresource_article_quantity', get_string('articlequantity', 'sharedresource'),
                    get_string('configarticlequantity', 'sharedresource'), 10, PARAM_INT));
-
-
-global $SHAREDRESOURCE_WINDOW_OPTIONS; // make sure we have the pesky global
 
 $checkedyesno = array('' => get_string('no'), 'checked' => get_string('yes')); // not nice at all
 
@@ -81,15 +81,17 @@ foreach($sharedresourcesplugins as $p){
     }
     $pluginsoptions[$p] = get_string('plugin_'.$p, 'sharedresource');
 }
-$item = new admin_setting_configselect('pluginchoice',get_string('pluginchoice', 'sharedresource'),get_string('basispluginchoice', 'sharedresource'), @$CFG->pluginchoice, $pluginsoptions);
+$item = new admin_setting_configselect('pluginchoice', get_string('pluginchoice', 'sharedresource'), get_string('basispluginchoice', 'sharedresource'), @$CFG->pluginchoice, $pluginsoptions);
 $item->set_updatedcallback('redirectmetadata');
 $settings->add($item);
 
 if (!function_exists('redirectmetadata')){
+
 	function redirectmetadata(){
 		global $CFG;
 		redirect($CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php?action=reinitialize');
 	}
+
 }
 
 /*was used to configure each plugin, not used anymore because admin have to choose only one plugin
@@ -100,7 +102,7 @@ foreach($sharedresourcesplugins as $plugin){
 }*/
 
 $settings->add(new admin_setting_heading('metadataconfig', get_string('metadataconfiguration', 'sharedresource'),
-                   get_string('medatadaconfigurationdesc', 'sharedresource', '/mod/sharedresource/metadataconfigure.php')));
+                   get_string('medatadaconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php')));
 				   
 $settings->add(new admin_setting_heading('classificationconfig', get_string('classificationconfiguration', 'sharedresource'),
-                   get_string('classificationconfigurationdesc', 'sharedresource', '/mod/sharedresource/classificationconfigure.php')));
+                   get_string('classificationconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classificationconfigure.php')));

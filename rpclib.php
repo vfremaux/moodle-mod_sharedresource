@@ -4,10 +4,11 @@
 *
 */
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
-require_once $CFG->dirroot.'/local/sharedresource/lib.php';
+require_once $CFG->dirroot.'/local/sharedresources/lib.php';
 require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
 require_once $CFG->libdir.'/filelib.php';
+
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
     define('RPC_SUCCESS', 200);

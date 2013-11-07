@@ -80,17 +80,15 @@ class treeselect_search_widget extends search_widget{
 		require_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$this->pluginchoice.'/plugin.class.php';
 		$classifarray = unserialize(@$CFG->classifarray);
 		require_once $CFG->dirroot.'/mod/sharedresource/classificationlib.php';
-		echo '<table class="widget" width="100%"><tr><td class="header" width="2px"></td>';
-		echo '<td class="header">'.get_string('taxonpath', 'sharedresource').'</td>';
-		echo '<td class="header" align="right">'.$OUTPUT->help_icon('classificationsearch', 'sharedresource', false).'</td></tr>';
-		echo '<tr><td colspan="3">';
+		echo $OUTPUT->box(get_string('taxonpath', 'sharedresource').' '.$OUTPUT->help_icon('classificationsearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<div id="classif0">';
 		echo '<select name="classif:0" onChange="javascript:classif(this.options[selectedIndex].value,1,\'\',this.options[selectedIndex].value,this.options[this.selectedIndex].value);">';
 		echo '<option selected value="defaultvalue"> </option>';
 		echo print_classif2($classifarray, $value);
 		echo '</select></div>';
 		echo '<div id="classif1"></div>';
-		echo '</td></tr></table>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

@@ -40,7 +40,7 @@ class sharedresource_choosecourse_form extends moodleform{
 
 class sharedresource_selectresources_form extends moodleform{
 
-    function __construct(&$course, &$resources, &$urls){
+    function __construct(&$course, &$resources, $urls = null){
         $this->course = $course;
         $this->resources = $resources;
         $this->urls = $urls;
@@ -57,21 +57,23 @@ class sharedresource_selectresources_form extends moodleform{
 
         if (!empty($this->resources)){
         	$hasitems = true;
-            foreach($this->resources as $r){
-                $mform->addElement('header', 'hdr_'.$r->id);
-                $mform->addElement('advcheckbox', 'rcnv_'.$r->id, get_string('resource').':', $r->name, array('group' => 1), array(0,1));
-                $mform->setDefault('rcnv_'.$r->id, 1);
-                $mform->addElement('static', 'lbl_'.$r->id, get_string('description').':', @$r->summary);
-            }
+        	foreach($this->resources as $r){
+				$name = format_string($r->name);
+				$mform->addElement('header', 'hdr_'.$r->id, $name);
+				$mform->addElement('advcheckbox', 'rcnv_'.$r->id, get_string('resource').':', $name, array('group' => 1), array(0,1));
+				$mform->setDefault('rcnv_'.$r->id, 1);
+				$mform->addElement('static', 'lbl_'.$r->id, get_string('description').':', format_string($r->intro, $r->introformat));
+			}
             
-            $convertstr = get_string('convert', 'sharedresource');
+			$convertstr = get_string('convert', 'sharedresource');
         }
 
         if (!empty($this->urls)){
         	$hasitems = true;
             foreach($this->urls as $u){
-                $mform->addElement('header', 'hdr_'.$u->id);
-                $mform->addElement('advcheckbox', 'ucnv_'.$u->id, get_string('url').':', $u->name, array('group' => 1), array(0,1));
+            	$name = format_string($u->name);
+                $mform->addElement('header', 'hdu_'.$u->id, $name);
+                $mform->addElement('advcheckbox', 'ucnv_'.$u->id, get_string('url').':', $u->externalurl, array('group' => 1), array(0,1));
                 $mform->setDefault('ucnv_'.$u->id, 1);
                 $mform->addElement('static', 'lbl_'.$u->id, get_string('description').':', @$u->intro);
             }

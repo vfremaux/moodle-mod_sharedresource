@@ -17,8 +17,8 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 
-	var $pluginname = 'scolomfr';
-
+	var $namespace;
+	
 	var $context;
 
 	var $DEFAULTSOURCE = 'LOMv1.0';
@@ -234,7 +234,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 		'type' => 'select',
 		'values' => array('annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos', 
 'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie', 
-'carte', 'carte heuristique et conceptuelle', 'chronologier', 'collection de documents',
+'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
 'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
 'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
 'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
@@ -1130,6 +1130,8 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 	function __construct($entryid = 0){
 		$this->entryid = $entryid;
 		$this->context = context_system::instance();
+		$this->pluginname = 'scolomfr';
+		$this->namespace = 'scolomfr';
 	}	
 
     function sharedresource_entry_definition(&$mform){
@@ -1655,15 +1657,15 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
     }
 
 	/**
-	* function to get any element only with its number of node
+	* purpose must expose the values, so a function to find the purpose field is usefull
 	*/
-	function getElement($id){
+    function getTaxonomyPurposeElement(){
 		$element = new StdClass;
-		$element->id = $id;
-		$element->name = $this->METADATATREE[$id]['name'];
-		$element->type = $this->METADATATREE[$id]['widget'];
-		return $element;
-	}
+    	$element->name = '9_1';
+    	$element->type = 'list';
+    	$element->values = $this->METADATATREE['9_1']['values'];
+    	return $element;
+    }
 
 	/**
 	* keyword have a special status in metadata form, so a function to find the keyword field is necessary
@@ -1723,7 +1725,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 	*/
 	function getTaxumpath(){
 		$element = array();
-		$element['main']="Taxon Path";
+		$element['main'] = "Taxon Path";
     	$element['source'] = "9_2_1";
 		$element['id'] = "9_2_2_1";
 		$element['entry'] = "9_2_2_2";
@@ -1740,8 +1742,10 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 	*/
     function setKeywords($keywords){
     	global $DB;
+
     	if (empty($this->entryid)) return; // do not affect metadata to unkown entries
-    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lomfr' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
+
+    	$DB->delete_records_select('sharedresource_metadata', " namespace = '{$this->namespace}' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
     	if ($keywordsarr = explode(',', $keywords)){
     		$i = 0;
 	    	foreach($keywordsarr as $aword){
@@ -1749,45 +1753,11 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 	    		$mtdrec = new StdClass;
 	    		$mtdrec->entry_id = $this->entryid;
 	    		$mtdrec->element = '1_5:0_'.$i;
-	    		$mtdrec->namespace = 'lomfr';
+	    		$mtdrec->namespace = $this->namespace;
 	    		$mtdrec->value = $aword;
 	    		$DB->insert_record('sharedresource_metadata', $mtdrec);
 	    		$i++;
 	    	}
 	    }
-    }
-
-	/**
-	* records title in metadata flat table from db attributes
-	*/
-    function setTitle($title){
-		global $DB;
-    	if ($this->entryid == 0) return;
-		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'lomfr', 'element' => '1_2:0_0'));
-		$mtdrec = new StdClass;
-		$mtdrec->entry_id = $this->entryid;
-		$mtdrec->element = '1_2:0_0';
-		$mtdrec->namespace = 'lomfr';
-		$mtdrec->value = $title;
-
-		return $DB->insert_record('sharedresource_metadata', $mtdrec);
-    }
-
-	/**
-	* records title in metadata flat table from db attributes
-	*/
-    function setDescription($description){
-		global $DB;
-    	if ($this->entryid == 0) return;
-
-		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => 'lomfr', 'element' => '1_4:0_0'));
-
-		$mtdrec = new StdClass;
-		$mtdrec->entry_id = $this->entryid;
-		$mtdrec->element = '1_4:0_0';
-		$mtdrec->namespace = 'lomfr';
-		$mtdrec->value = $description;
-
-		return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }
 }

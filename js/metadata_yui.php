@@ -14,14 +14,14 @@ function multiMenu(eltId, tabcount) {
 	
 	intNbLinkElt = new Number(arrLinkId.length);
 	for (i = 0 ; i < intNbLinkElt ; i++) {
-		strContent = new String();
-		strContent = "tab"+arrLinkId[i];
+		strTab = new String();
+		strTab = "tab"+arrLinkId[i];
 		if ( arrLinkId[i] == eltId ) {
 			document.getElementById(arrLinkId[i]).parentNode.className = 'active';
-			document.getElementById(strContent).className = 'on content';
+			document.getElementById(strTab).className = 'on content';
 		} else {
 			document.getElementById(arrLinkId[i]).parentNode.className = '';
-			document.getElementById(strContent).className = 'off content';
+			document.getElementById(strTab).className = 'off content';
 		}
 	}	
 }

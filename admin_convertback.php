@@ -1,7 +1,7 @@
 <?php  // $Id: admin_convertback.php,v 1.1 2013-02-13 21:56:40 wa Exp $
     /**
-    * this admin screen allows converting massively resources into sharedresources
-    * indexable entries.
+    * this admin screen allows converting massively sharedresources into local resources or urls.
+    *
     *
     * @package    mod-sharedresource
     * @category   mod
@@ -25,7 +25,7 @@
 	    	print_error('coursemisconf');
 	    }
 
-	/// security 
+	/// security
 	
 	    $context = context_course::instance($courseid);
 	    require_login($course);
@@ -41,9 +41,8 @@
     $PAGE->set_title(get_string('resourceconversion', 'sharedresource'));
     $PAGE->set_heading(get_string('resourceconversion', 'sharedresource'));
     $PAGE->set_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
-    $PAGE->navbar->add($course->shortname, "/course/view.php?id={$course->id}");
     $PAGE->navbar->add(get_string('resourceconversion', 'sharedresource'));
-    $PAGE->navbar->add(get_string('resourcetorepository', 'sharedresource'));
+    $PAGE->navbar->add(get_string('repositorytoresource', 'sharedresource'));
 
 
     /// get courses
@@ -51,7 +50,7 @@
         $alllps = $DB->get_records_menu('course', array('format' => 'learning'), 'shortname', 'id,id');
         $form = new sharedresource_choosecourse_form($alllps);
 
-	    echo $OUTPUT->header();  
+	    echo $OUTPUT->header();
 	    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
         $form->display();
         echo $OUTPUT->footer();
@@ -59,20 +58,18 @@
     } else {
         $sharedresources = $DB->get_records('sharedresource', array('course'=> $courseid), 'name');
         if (empty($sharedresources)){
-		    echo $OUTPUT->header();  
-		    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
+		    echo $OUTPUT->header();
+		    echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
             echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
             echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
             echo $OUTPUT->footer();
             exit();
         }
         /// filter convertible resources : 
-        // we only can convert back non shared resources
+        // we only can convert back non effectively shared resources
         foreach($sharedresources as $id => $sharedresource){
             if ($DB->count_records_select('sharedresource', " course <> {$courseid} AND identifier = '{$sharedresource->identifier}' ") != 0){
                 unset($sharedresources[$id]);
-            } else {
-                $sharedresources[$id]->summary = $sharedresources[$id]->description;
             }
         }
         $form2 = new sharedresource_selectresources_form($course, $sharedresources);
@@ -87,16 +84,16 @@
                 foreach($reskeys as $reskey){
                     // convert selected resources.
                     if ($data->$reskey == 1){
-                        $resid = str_replace('cnv_', '', $reskey);
+                        $resid = str_replace('rcnv_', '', $reskey);
                         $sharedresource = $DB->get_record('sharedresource', array('id'=> $resid));
-                        mtrace("converting resource {$sharedresource->id} : {$sharedresource->name}<br/>\n");
+                        print_string('convertingsharedresource', 'sharedresource', $sharedresource);
                         sharedresource_convertfrom($sharedresource);
                     }
                 }
             }
         } else {
             // print form
-		    echo $OUTPUT->header();  
+		    echo $OUTPUT->header();
 		    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
             $form2->display();
             echo $OUTPUT->footer();
@@ -105,4 +102,3 @@
     }
     echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
     echo $OUTPUT->footer();
-?>

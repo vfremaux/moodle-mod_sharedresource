@@ -36,8 +36,8 @@ $capabilities = array(
     'mod/sharedresource:addinstance' => array(
 
         'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
             'manager' => CAP_ALLOW,
 			'coursecreator' => CAP_ALLOW,
 			'teacher' => CAP_ALLOW
@@ -48,7 +48,7 @@ $capabilities = array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'archetypes' => array(
             'manager' => CAP_ALLOW,
 			'coursecreator' => CAP_ALLOW
         )
@@ -58,7 +58,7 @@ $capabilities = array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'archetypes' => array(
             'manager' => CAP_ALLOW,
 			'coursecreator' => CAP_ALLOW,
 			'editingteacher' => CAP_ALLOW,
@@ -71,7 +71,7 @@ $capabilities = array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
 			'coursecreator' => CAP_ALLOW,
@@ -82,7 +82,7 @@ $capabilities = array(
     'mod/sharedresource:authormetadata' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
         )
     ),
@@ -90,7 +90,7 @@ $capabilities = array(
     'mod/sharedresource:indexermetadata' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'archetypes' => array(
             'coursecreator' => CAP_ALLOW
         )
     ),
@@ -98,7 +98,7 @@ $capabilities = array(
     'mod/sharedresource:systemmetadata' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     )

@@ -1,30 +1,37 @@
-﻿<?php
-require_once("../../../config.php");
-header('Content-type: text/javascript');
+<?php
+include "../../../config.php";
+/**
+* TODO : Rewrite this old code with JQuery
+*
+*/
+
 ?>
 
 function multiMenu(eltId,nbr) {
 	arrLinkId = new Array();
-	for (i = 0; i < = nbr ; i++) {
+	for (i = 0; i <= nbr ; i++) {
 		arrLinkId[i]='_'+i;
 	}
 	intNbLinkElt = new Number(arrLinkId.length);
 	arrClassLink = new Array('current','ghost');
 	strContent = new String();
 	for (i = 0; i < intNbLinkElt ; i++) {
-		strContent = "menu"+arrLinkId[i];
+		strTab = "menu"+arrLinkId[i];
+		strContent = "tab"+arrLinkId[i];
 		if ( arrLinkId[i] == eltId ) {
 			document.getElementById(arrLinkId[i]).className = arrClassLink[0];
+			document.getElementById(strTab).className = 'tabon content';
 			document.getElementById(strContent).className = 'on content';
 		} else {
 			document.getElementById(arrLinkId[i]).className = arrClassLink[1];
+			document.getElementById(strTab).className = 'taboff content';
 			document.getElementById(strContent).className = 'off content';
 		}
 	}	
 }
 
 /*
-Utilisation de l'objet XmlHttpRequest pour ajouter des champs.
+* Using XmlHttpRequest for adding fields
 */
 function getXhr(){
 	var xhr = null; 
@@ -37,8 +44,8 @@ function getXhr(){
 			xhr = new ActiveXObject("Microsoft.XMLHTTP");
 		}
 	}
-	else { // XMLHttpRequest non supporté par le navigateur 
-		alert("Votre navigateur ne supporte pas les objets XMLHTTPRequest..."); 
+	else { // XMLHttpRequest not handled by browser
+		alert("XMLHTTPRequest not dupported"); 
 		xhr = false; 
 	} 
 	return xhr
@@ -46,7 +53,7 @@ function getXhr(){
 
 		
 /**
-* Méthode qui sera appelée sur le click du bouton
+* On button clic
 */
 function go(pluginchoice,fieldnum,islist,numoccur,name,type,keyid,listchildren,capability,realoccur){
 	if(type != 'category'){
@@ -69,9 +76,9 @@ function go(pluginchoice,fieldnum,islist,numoccur,name,type,keyid,listchildren,c
 			document.getElementById("add_"+keyid).style.display = 'none';
 			numoccur2 = parseInt(numoccur) + 1;
 			var xhr = getXhr()
-			// On défini ce qu'on va faire quand on aura la réponse
+			// What to do when we get answer
 			xhr.onreadystatechange = function(){
-				// On ne fait quelque chose que si on a tout reçu et que le serveur est ok
+				// Only process on success
 				if(xhr.readyState == 4 && xhr.status == 200){
 					document.getElementById("zone_"+name+"_"+numoccur).innerHTML = xhr.responseText;
 				}
@@ -89,7 +96,7 @@ function go(pluginchoice,fieldnum,islist,numoccur,name,type,keyid,listchildren,c
 		}
 	}
 	if(type == 'category'){
-		var occur = keyid.substr(keyid.indexOf(':', 0) + 1); //on récupère le numéro d'occurence des parents
+		var occur = keyid.substr(keyid.indexOf(':', 0) + 1); // get parent IDs
 		var listtab = listchildren.split(';');
 		var lengthlist = new Number(listtab.length);
 		var nbremptyfield = 0;
@@ -145,9 +152,9 @@ function go(pluginchoice,fieldnum,islist,numoccur,name,type,keyid,listchildren,c
 			document.getElementById('add_'+keyid).style.display='none';
 			numoccur2 = parseInt(numoccur) + 1;
 			var xhr = getXhr()
-			// On défini ce qu'on va faire quand on aura la réponse
+			// What to be done on answer
 			xhr.onreadystatechange = function(){
-				// On ne fait quelque chose que si on a tout reçu et que le serveur est ok
+				// Only process when everything received
 				if(xhr.readyState == 4 && xhr.status == 200){
 					document.getElementById("zone_"+name+"_"+numoccur).innerHTML = xhr.responseText;
 				}

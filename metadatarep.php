@@ -16,8 +16,7 @@
 	require_once("../../config.php");
 	require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 	require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-	$pluginchoice    = required_param('pluginchoice', PARAM_ALPHA);
-	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$pluginchoice.'/plugin.class.php');
+	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 
 	$mode          = required_param('mode', PARAM_ALPHA);
 	$add           = optional_param('add', 0, PARAM_ALPHA);
@@ -71,7 +70,7 @@
 			unset($sharedresource_entry->metadata_elements[$key]);
 		}
 	}
-	$result = metadata_display_and_check($sharedresource_entry, $pluginchoice, $metadataentries);
+	$result = metadata_display_and_check($sharedresource_entry, $CFG->pluginchoice, $metadataentries);
 
 	//if there are errors in fields filled in by the user
 	if($result['error'] != array()){
@@ -79,7 +78,7 @@
 		$SESSION->sr_entry = $sr_entry;
 		$error = serialize($result['error']);
 		$SESSION->error = $error;
-		$object = 'sharedresource_plugin_'.$pluginchoice;
+		$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 		$mtdstandard = new $object;
 		echo $OUTPUT->header();
 		echo $OUTPUT->heading(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
@@ -90,7 +89,7 @@
 			$fieldnum = substr($field,0,strpos($field,':'));
 			echo '<strong> - '.$fieldnum.' : '.$mtdstandard->METADATATREE[$fieldnum]['name'].'</strong><br/><br/>';
 		}
-		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}&mode={$mode}&pluginchoice={$pluginchoice}&context={$sharingcontext}";
+		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}";
 		$OUTPUT->continue($fullurl, get_string('wrongform', 'sharedresource'), 15);
 		echo '</center>';
 		echo $OUTPUT->footer();
@@ -103,9 +102,14 @@
 		} else if ($mode != 'add' && !$sharedresource_entry->update_instance()) {
 			print_error('failupdate', 'sharedresource');
 		} else {
-			// if everything was saved correctly, go back to the search page
-			$fullurl = $CFG->wwwroot."/mod/sharedresource/search.php?id={$sharedresource_entry->id}&course={$course->id}&section={$section}&add={$add}&return={$return}";
-			redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			// if everything was saved correctly, go back to the search page or to the library
+			if ($return){
+				$fullurl = $CFG->wwwroot."/local/sharedresources/index.php?course={$course->id}";
+				redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			} else {
+				$fullurl = $CFG->wwwroot."/mod/sharedresource/search.php?id={$sharedresource_entry->id}&course={$course->id}&section={$section}&add={$add}&return={$return}";
+				redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
+			}
 			die;
 		}
 	}

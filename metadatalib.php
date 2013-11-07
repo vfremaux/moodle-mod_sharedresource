@@ -20,7 +20,7 @@
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/encoding.php');
 
-function metadata_detect_change_DM($sharedresource_entry, $pluginchoice){
+function metadata_detect_change_DM($sharedresource_entry){
 	global $CFG, $DB;
 
 	$sql = "
@@ -32,7 +32,7 @@ function metadata_detect_change_DM($sharedresource_entry, $pluginchoice){
 			entry_id = ? AND 
 			namespace <> ? 
 	";
-	$metadata = $DB->get_records_sql($sql, array($sharedresource_entry->id, $pluginchoice));
+	$metadata = $DB->get_records_sql($sql, array($sharedresource_entry->id, $CFG->pluginchoice));
 	if(!empty($metadata)){
 		echo '<h2><center style=\"color:red;\">';
 		echo get_string('existothermetadata','sharedresource');
@@ -82,7 +82,6 @@ function metadata_create_panels($capability, &$mtdstandard) {
 
 	echo '<div style="margin-left: 67px;">';
 	echo '<form id="monForm" action="metadatarep.php" method="post">';
-	echo '<input type="hidden"  name="pluginchoice"  value="'.$mtdstandard->pluginname.'">';
 	echo '<input type="hidden"  name="mode"  value="'.$mode.'">';
 	echo '<input type="hidden"  name="course"  value="'.$course.'">';
 	echo '<input type="hidden"  name="section"  value="'.$section.'">';
@@ -746,8 +745,10 @@ function metadata_convert_key($key){
 * This function is used to fill fields which have already been completed (in case of an update)
 */
 function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$sharedresource_entry){
+
 	$taxumarray = $mtdstandard->getTaxumpath();
 	$field = $key['pos'].':'.$key['occ'];
+
 	if($mtdstandard->METADATATREE[$key['pos']]['name'] == $taxumarray['main']){
 		$keysource = $taxumarray['source'];
 		$sourcelength = strlen($keysource);
@@ -772,10 +773,16 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
 		$entry = $sharedresource_entry->element($keyentry, $mtdstandard->pluginname);
 		return $source.':'.$id.':'.$entry;
 	} else {
-		$value = stripslashes(@$sharedresource_entry->element($field, $mtdstandard->pluginname));
+		$value = $sharedresource_entry->element($field, $mtdstandard->pluginname);
 		list ($fieldkey, $occurrence) = explode(':', $field);
 		$default = $mtdstandard->defaultValue($fieldkey);
-		if (empty($value) && isset($default)) $value = $default;
+		if (empty($value) && isset($default)){
+			if (!is_array($default)){
+				$value = $default;
+			} else {
+				$value = @$default[$occurrence];
+			}
+		}
 		switch ($type){
 			case 'text' :
 				return $value;
@@ -809,21 +816,28 @@ function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$share
 	global $SESSION;
 
 	$maxoccur = 1;
-	foreach ($sharedresource_entry->metadata_elements as $cle => $metadata){
-		if ($metadata->namespace == $mtdstandard->pluginname){
-			if (substr_compare($fieldnum, $metadata->element, 0, strlen($fieldnum)) == 0 && strpos($metadata->element, $search) != FALSE){
-				$nbroccur = substr($metadata->element, stripos($metadata->element, ':') + 1);
-				if (substr_count($fieldnum, '_') == 0){
-					$nbroccur = substr($nbroccur, 0, 1);
-				} else {
-					for ($i = 0 ; $i < substr_count($fieldnum, '_') ; $i++){
-						$nbroccur = substr($nbroccur, stripos($metadata->element, '_') + 1);
+	if (!empty($sharedresource_entry->metadata_elements)){
+		foreach ($sharedresource_entry->metadata_elements as $key => $metadata){
+			if ($metadata->namespace == $mtdstandard->pluginname){
+				if (substr_compare($fieldnum, $metadata->element, 0, strlen($fieldnum)) == 0 && strpos($metadata->element, $search) != FALSE){
+					$nbroccur = substr($metadata->element, stripos($metadata->element, ':') + 1);
+					if (substr_count($fieldnum, '_') == 0){
+						$nbroccur = substr($nbroccur, 0, 1);
+					} else {
+						for ($i = 0 ; $i < substr_count($fieldnum, '_') ; $i++){
+							$nbroccur = substr($nbroccur, stripos($metadata->element, '_') + 1);
+						}
+					}
+					if ($nbroccur + 1 > $maxoccur){
+						$maxoccur = $nbroccur + 1;
 					}
 				}
-				if ($nbroccur + 1 > $maxoccur){
-					$maxoccur = $nbroccur + 1;
-				}
 			}
+		}
+	} else {
+		// examinate some defaults settings and raise maxoccurs to the expected amount for defaults.
+		if (isset($mtdstandard->METADATATREE[$fieldnum]['default']) && is_array($mtdstandard->METADATATREE[$fieldnum]['default'])){
+			$maxoccur = count($mtdstandard->METADATATREE[$fieldnum]['default']) + 1;
 		}
 	}
 	return $maxoccur;
@@ -862,11 +876,13 @@ function metadata_check_subcats_filled($listresult, $numoccur, $pluginchoice, &$
 		$listresult[$key] .= ':'.$numoccur;
 	}
 
-	foreach ($sharedresource_entry->metadata_elements as $cle => $metadata){
-		if ($metadata->namespace == $pluginchoice){
-			foreach ($listresult as $key => $field){
-				if (substr_compare($field, $metadata->element, 0, strlen($field)) == 0){
-					$isfill = true;
+	if(!empty($sharedresource_entry->metadata_elements)){
+		foreach ($sharedresource_entry->metadata_elements as $cle => $metadata){
+			if ($metadata->namespace == $pluginchoice){
+				foreach ($listresult as $key => $field){
+					if (substr_compare($field, $metadata->element, 0, strlen($field)) == 0){
+						$isfill = true;
+					}
 				}
 			}
 		}
@@ -929,7 +945,7 @@ function metadata_is_integer ($x){
 * the field is added, so it is always empty).
 */
 function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, $name, $capability, $realoccur = 0) {
-	global $DB;
+	global $DB, $CFG;
 	
 	$lowername = strtolower($mtdstandard->METADATATREE[$fieldnum]['name']);
 	$fieldname = get_string(clean_string_key($lowername), 'sharedresource');
@@ -1088,6 +1104,8 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
 */
 
 function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $metadataentries){
+	global $CFG;
+	
 	$object = 'sharedresource_plugin_'.$pluginchoice;
 	$mtdstandard = new $object;
 	$taxumarray = $mtdstandard->getTaxumpath();
@@ -1096,7 +1114,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 	$display = '<table border="1" width="70%"><tr><td align="center" width="25%">Nom du champ</td><td align="center" width="25%">Id du champ</td><td align="center">Valeur du champ</td></tr>';
 	foreach ($metadataentries as $key => $value){
 		// we check if the field have been filled for the vcard, select and date
-		if (preg_replace('/[[:space:]]/','',$value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' && $value != 'basicvalue' && $value != '-year-' && $value != '-month-' && $value != '-day-' && substr($key,-9)!= 'datemonth' && substr($key,-7)!= 'dateday' && substr($key,-3)!= 'Hou' && substr($key,-3)!= 'Min' && substr($key,-3)!= 'Sec'){
+		if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' && $value != 'basicvalue' && $value != '-year-' && $value != '-month-' && $value != '-day-' && substr($key,-9)!= 'datemonth' && substr($key,-7)!= 'dateday' && substr($key,-3)!= 'Hou' && substr($key,-3)!= 'Min' && substr($key,-3)!= 'Sec'){
 			$errortemp = '';
 			// if the key is a date, we have to have a treatment on this key
 			if (substr($key, -3) == 'Day'){
@@ -1209,7 +1227,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 				}
 				$display .= $source.'</strong></td><td align="center">';
 				$display .= substr($value, 0, stripos($value, ':')).'</td></tr>';
-				$sharedresource_entry->add_element($source, substr($value, 0, stripos($value, ':')), $_POST['pluginchoice']);
+				$sharedresource_entry->add_element($source, substr($value, 0, stripos($value, ':')), $CFG->pluginchoice);
 				$value = substr($value, stripos($value, ':') + 1);
 				$display .= '<tr><td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['id']]['name'].'</strong></td>';
 				$display .= '<td align="center"><strong>';
@@ -1221,7 +1239,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 				}
 				$display .= $id.'</strong></td><td align="center">';
 				$display .= substr($value,0,stripos($value,':')).'</td></tr>';
-				$sharedresource_entry->add_element($id, substr($value, 0, stripos($value,':')), $_POST['pluginchoice']);
+				$sharedresource_entry->add_element($id, substr($value, 0, stripos($value,':')), $CFG->pluginchoice);
 				$value = substr($value, stripos($value, ':') + 1);
 				$display .= '<tr><td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['entry']]['name'].'</strong></td>';
 				$display .= '<td align="center"><strong>';
@@ -1233,7 +1251,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 				}
 				$display .= $entry.'</strong></td><td align="center">';
 				$display .= $value.'</td></tr>';
-				$sharedresource_entry->add_element($entry, $value, $_POST['pluginchoice']);
+				$sharedresource_entry->add_element($entry, $value, $CFG->pluginchoice);
 				$value = '';
 			}
 			$key2 = $Position.':'.$Occur;
@@ -1245,7 +1263,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 				$display .= '<tr><td align="center"><strong>'.$name.'</strong></td>';
 				$display .= '<td align="center"><strong>'.$key2. '</strong></td>';
 				$display .= '<td align="center">'.$value.'</td></tr>';
-				$sharedresource_entry->add_element($key2, $value, $_POST['pluginchoice']);
+				$sharedresource_entry->add_element($key2, $value, $CFG->pluginchoice);
 			}
 		}
 	}
@@ -1256,18 +1274,24 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 }
 
 function clean_string_key($value){
-	$value = str_replace(' ', '_', $value);
-	$value = str_replace('\'', '_', $value);
-	$value = str_replace('/', '_', $value);
-	$value = str_replace("'", '_', $value);
+	$value = str_replace(' ', '', $value);
+	$value = str_replace('_', '', $value);
+	$value = str_replace('-', '', $value);
+	$value = str_replace('\'', '', $value);
+	$value = str_replace('/', '', $value);
+	$value = str_replace("'", '', $value);
 	$value = str_replace('é', 'e', $value);
+	$value = str_replace('ê', 'e', $value);
 	$value = str_replace('è', 'e', $value);
 	$value = str_replace('ë', 'e', $value);
 	$value = str_replace('î', 'i', $value);
+	$value = str_replace('ï', 'i', $value);
 	$value = str_replace('û', 'u', $value);
+	$value = str_replace('ü', 'u', $value);
 	$value = str_replace('ô', 'o', $value);
 	$value = str_replace('à', 'a', $value);
-	$value = str_replace('�', 'a', $value);
+	$value = str_replace('â', 'a', $value);
+	$value = str_replace('ç', 'c', $value);
 	return $value;
 }
 

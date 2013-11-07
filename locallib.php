@@ -10,7 +10,27 @@ require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 * @todo can be optimized for not loading unused strings elsewhere than in admin
 * setting forms. 
 */
-function sharedresource_load_plugins_lang(&$string, $lang=''){
+function sharedresource_load_plugin_lang(&$string, $lang = ''){
+    global $CFG;
+    
+    if ($lang == ''){
+        $lang = current_language();
+    }
+    
+	if ($plugin = @$CFG->pluginchoice){
+		$pluginlangfile = $CFG->dirroot.'/mod/sharedresource/plugins/'.$plugin.'/lang/'.$lang.'/'.$plugin.'.php';    
+	    include($pluginlangfile);
+	}
+}
+
+/**
+* loads the minimal strings for plugin management
+* @param array $string
+* @param string $lang
+* @todo can be optimized for not loading unused strings elsewhere than in admin
+* setting forms. 
+*/
+function sharedresource_load_pluginsmin_lang(&$string, $lang = ''){
     global $CFG;
     
     if ($lang == ''){
@@ -19,8 +39,8 @@ function sharedresource_load_plugins_lang(&$string, $lang=''){
     
     $plugins = get_list_of_plugins('mod/sharedresource/plugins');
     foreach($plugins as $plugin){
-        $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}.php";
-        include_once($pluginlang);
+        $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}-min.php";
+        include($pluginlang);
     }
 }
 
@@ -114,7 +134,7 @@ function sharedresource_convertto(&$resource, $type = 'resource'){
 * back converts a given sharedresource into independant local resource.
 * This WILL NOT remove the shared resource from repository
 * @param reference $sharedresource
-* @param boolean $makecm if true, the produced resource is bound to a priorly existing course module. If false, all the coursemodule concerns are ignored.
+* @param boolean $makecm if true, the produced resource is bound to a priorly existing course module. If false, all the coursemodule concerns are ignored (f.e. in a paged course format).
 */
 function sharedresource_convertfrom(&$sharedresource, $makecm = true){
     global $CFG,$DB;
@@ -125,46 +145,45 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
     $module = $DB->get_record('modules', array('name'=> 'resource'));
 
     /// get the sharedresource_entry that is represented by the sharedresource
-    if (!$sharedresource_entry = $DB->get_record('sharedresource_entry',array('identifier' => $sharedresource->identifier))){
+    if (!$sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))){
         print_error('errorinvalididentifier', 'sharedresource');
     }
     
     /// calculate physical locations and reference
     if (!empty($sharedresource_entry->file)){
+    	$module = $DB->get_record('modules', 'name', 'resource');
+
+	    /// complete and add a resource record
+		$instance->course = $sharedresource->course;
+		$instance->name = $sharedresource->name;
+		$instance->intro = $sharedresource->description;
+		$instance->introformat = FORMAT_MOODLE;
+		$instance->tobemigrated = 0;
+		$instance->legacyfiles = 0;
+		$instance->legacyfileslast = null;
+		$instance->display = 0;
+		$instance->displayoptions = $sharedresource->options;
+		$instance->filterfiles = 0;
+		$instance->revision = 1;
+		$instance->timemodified = time();
+	
+	    $instance->id = $DB->insert_record('resource', $instance);
+	    mtrace(get_string('resourcebuilt', 'sharedresource', $sharedresource_entry->url));
     } else {
-        $resource->reference = $sharedresource_entry->url;
+    	$module = $DB->get_record('modules', 'name', 'url');
+
+		$instance->name = $sharedresource->name;
+		$instance->intro = $sharedresource->description;
+		$instance->introformat = FORMAT_MOODLE;
+		$instance->externalurl = $sharedresource_entry->url;
+		$instance->display = 0;
+		$instance->displayoptions = $sharedresource->options;
+		$instance->parameters = '';
+		$instance->timemodified = time();
+	
+	    $instance->id = $DB->insert_record('resource', $instance);
+	    mtrace(get_string('urlbuilt', 'sharedresource', $sharedresource_entry->url));
     }
-
-    /// complete a resource record
-    /*
-    $resource->course = $sharedresource->course;
-    $resource->type = 'file';
-    $resource->name = $sharedresource->name;
-    $resource->summary = $sharedresource->description;
-    $resource->alltext = $sharedresource->alltext;
-    $resource->popup = $sharedresource->popup;
-    $resource->options = $sharedresource->options;
-    $resource->timemodified = $sharedresource->timemodified;
-
-    */
-	$resource->course = $sharedresource->course;
-	$resource->name = $sharedresource->name;
-	$resource->intro = $sharedresource->description;
-	$resource->introformat = FORMAT_MOODLE;
-	$resource->tobemigrated = 0;
-	$resource->legacyfiles = 0;
-	$resource->legacyfileslast = null;
-	$resource->display = 0;
-	$resource->displayoptions = $sharedresource->options;
-
-    $resourceid = $DB->insert_record('resource', $resource);
-
-    /// give some trace
-    /*
-    if (debugging()){
-        echo "Constructed ressource : {$resourceid}<br/>";
-    }
-    */
 
     /// rebind the existing module to the new resource
     $cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id, $sharedresource->course);
@@ -184,16 +203,16 @@ function sharedresource_convertfrom(&$sharedresource, $makecm = true){
   		$newfile->component = 'mod_resource';
   		$newfile->filearea = 'content';
   		$newfile->itemid = 0;
-  		$newfile->context = context_module::instance($cm->id);
-		$fs->create_file_from_storedfile($newfile, $filerecord);
+  		$newfile->contextid = context_module::instance($cm->id);
+		$newfile = $fs->create_file_from_storedfile($newfile, $filerecord);
     }
 
     if (!$makecm){
-        return $resourceid;
+        return $instance->id;
     }
     
     /// discard the old sharedresource module
-    $DB->delete_records('sharedresource',array('id'=> $sharedresource->id));
+    $DB->delete_records('sharedresource', array('id'=> $sharedresource->id));
     
     /// Original resource stays in repository.
     // TODO : examinate librarian case that may want to fully discard the resource.
@@ -387,17 +406,4 @@ function sharedresource_get_course_section_to_add($courseorid){
 		}
 	}
 	return $s->section;
-}
-
-function sharedresource_print_stars($stars, $maxstars){
-	global $OUTPUT; 
-	
-	$str = '';
-	
-	for($i = 0 ; $i < $maxstars ; $i++){
-		$icon = ($i < $stars) ? 'star' : 'star_shadow';
-		$str .= '<img src="'.$OUTPUT->pix_url($icon, 'local_sharedresource').'" />';
-	}
-
-	return $str;
 }

@@ -17,10 +17,10 @@
 
     $cm_id = 0;   
    
-    $system_context = context_system::instance();
+    $systemcontext = context_system::instance();
     $strtitle = get_string('sharedresourcedetails', 'sharedresource');
     $PAGE->set_pagelayout('standard');
-    $PAGE->set_context($system_context);
+    $PAGE->set_context($systemcontext);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
     /* SCANMSG: may be additional work required for $navigation variable */
@@ -73,6 +73,8 @@
     */
     require_once ($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
     $resourceinstance = new sharedresource_base($cmid, $identifier);
+    
+    print_object($resourceinstance);
 
     if ($inpopup) {
         $resourceinstance->inpopup();

@@ -55,7 +55,6 @@ class restore_sharedresource_activity_task extends restore_activity_task {
         $contents = array();
 
         $contents[] = new restore_decode_content('sharedresource', array('intro'), 'sharedresource');
-        $contents[] = new restore_decode_content('sharedresource_posts', array('message'), 'sharedresource_post');
 
         return $contents;
     }

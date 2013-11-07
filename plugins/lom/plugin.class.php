@@ -13,12 +13,18 @@
 */
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
+
 class sharedresource_plugin_lom extends sharedresource_plugin_base {
-	var $pluginname = 'lom';
+
 	// we may setup a context in which we can decide where users 
 	// can be assigned role regarding metadata	
+	
+	var $namespace;
+
 	var $context;
+
     var $DEFAULTSOURCE = 'LOMv1.0';
+
 	var $METADATATREE = array(
 		'0' => array(
 	        'name' => 'Root',
@@ -987,6 +993,8 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 	function __construct($entryid = 0){
 		$this->entryid = $entryid;
 		$this->context = context_system::instance();
+		$this->pluginname = 'lom';
+		$this->namespace = 'lom';
 	}
 
     function sharedresource_entry_definition(&$mform){
@@ -1114,7 +1122,7 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 		$activewidgets = unserialize(get_config(NULL,'activewidgets'));
 		$checked_widget = '';
 		foreach($activewidgets as $key=> $widget){
-			if($widget->id==$fieldid){
+			if($widget->id == $fieldid){
 				$checked_widget = 'checked="checked"';
 			}
 		}
@@ -1474,23 +1482,23 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
     }
 
 	/**
-	* function to get any element only with its number of node
-	*/
-	function getElement($id){
-		$element = new StdClass;
-		$element -> id = $id;
-		$element -> name = $this->METADATATREE[$id]['name'];
-		$element -> type = $this->METADATATREE[$id]['widget'];
-		return $element;
-	}
-
-	/**
 	* keyword have a special status in metadata form, so a function to find the keyword field is necessary
 	*/
     function getKeywordElement(){
 		$element = new StdClass;
     	$element->name = "1_5";
     	$element->type = "list";
+    	return $element;
+    }
+
+	/**
+	* purpose must expose the values, so a function to find the purpose field is usefull
+	*/
+    function getTaxonomyPurposeElement(){
+		$element = new StdClass;
+    	$element->name = '9_1';
+    	$element->type = 'list';
+    	$element->values = $this->METADATATREE['9_1']['values'];
     	return $element;
     }
 
@@ -1542,7 +1550,7 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 	*/
 	function getTaxumpath(){
 		$element = array();
-		$element['main']="Taxon Path";
+		$element['main'] = "Taxon Path";
     	$element['source'] = "9_2_1";
 		$element['id'] = "9_2_2_1";
 		$element['entry'] = "9_2_2_2";
@@ -1562,8 +1570,9 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
 	*/
     function setKeywords($keywords){
 		global $DB;
+
     	if (empty($this->entryid)) return; // do not affect metadata to unkown entries
-    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lom' AND element LIKE '1_5:0_%' AND entry_id = {$this->entryid} ");
+    	$DB->delete_records_select('sharedresource_metadata', " namespace = 'lom' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
     	if ($keywordsarr = explode(',', $keywords)){
     		$i = 0;
 	    	foreach($keywordsarr as $aword){

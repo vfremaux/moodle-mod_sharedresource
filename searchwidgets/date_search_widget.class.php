@@ -34,16 +34,15 @@ class date_search_widget extends search_widget{
 		$lowername = strtolower($this->label);
 		$widgetname = get_string(str_replace(' ', '', $lowername), 'sharedresource');
 
-		echo '<table class="widget" width="100%"><tr><td width="2px" class="header"></td>';
-		echo '<td class="header">'.$widgetname.'</td>';
-		echo '<td class="header" align="right">'.$OUTPUT->help_icon('datesearch', 'sharedresource', false).'</td></tr>';
-		echo '<tr><td colspan="3">';
+		echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('datesearch', 'sharedresource', false), 'header');
+		echo $OUTPUT->box_start('content');
 		echo '<input size="10" onclick="javascript:ds_sh(this);" name="'.$this->label.'_startdate" value="Begin" readonly="readonly"/> ';
 		echo '<input size="10" onclick="javascript:ds_sh(this);" name="'.$this->label.'_enddate" value="End" readonly="readonly"/></td></tr></table>';
 		echo '<table class="ds_box" cellpadding="0" cellspacing="0" id="ds_conclass" style="display: none;">';
 		echo '<tr><td id="ds_calclass" colspan="3">';
 		echo '</td></tr>';
 		echo '</table>';
+		echo $OUTPUT->box_end();
     }
 	
 	// catchs a value in session from CGI input

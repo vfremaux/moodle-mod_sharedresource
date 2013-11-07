@@ -43,6 +43,8 @@
 abstract class sharedresource_plugin_base {
 
 	var $entryid; // the sharedresource entry id	
+	
+	var $pluginname;
 
     /**
     * Constructor for the base sharedresource_plugin class
@@ -120,66 +122,7 @@ abstract class sharedresource_plugin_base {
 
         return true;
     }
-    
-    
-    /**
-     * If this is overriden to return true, then an extra page will appear
-     * after the first page of data entry for a sharedresource_entry.
-     * 
-     * You must implement sharedresource_entry_extra_definition() to populate
-     * this additional screen.
-     *
-     * @return bool, return true to activate extra screen
-     *         false to finish here.
-     * OBSOLETE : no more extra screens
-     */
-     /*
-    function sharedresource_entry_extra_form_required() {
-
-        return false;
-    }
-	*/
-    
-    /**
-     * Entry point to modify the sharedresource_entry_extra_form form - add/modify elements
-     * here.
-     * 
-     * This form is used when it may make sense to have a second screen instead of lumping all data
-     * onto one.
-     *
-     * @param mform   object, reference to Moodle Forms object
-     * @return bool, return true to continue to the next handler
-     *         false to stop the running of any subsequent plugin handlers.
-     * OBSOLETE : No more extra forms 
-     */
-     /*
-    function sharedresource_entry_extra_definition(&$mform) {
-
-        return true;
-    }
-	*/
-    
-    /**
-     * Entry point to validate the sharedresource_entry_extra_form form.
-     * Add your errors to the $errors array, and use $mode to determine
-     * if the sharedresource_entry is being updated or added new (add == new).
-     *
-     * @param  data   object, reference to $data as per normal Moodle Forms validations
-     * @param  files  object, reference to $files as per normal Moodle Forms validations
-     * @param  errors object, reference to $errors as per normal Moodle Forms validations
-     * @param  mode   add = new resource being created
-     * @return bool,  return true to continue to the next handler
-     *         false to stop the running of any subsequent plugin handlers.
-     *
-     * OBSOLETE : No more extra forms
-     */
-     /*
-    function sharedresource_entry_extra_validation($data, $files, &$errors, $mode) {
-
-        return true;
-    }
-    */
-
+            
     /**
      * Entry point to get a list of field names to be ignored as incoming
      * metadata.
@@ -277,6 +220,16 @@ abstract class sharedresource_plugin_base {
 		}
 		return null;
 	}    
+
+	/**
+	* tells the outside world if we know this node in the current standard.
+	* @param string a Dublin Core node identifier.
+	* @return true if the node is known
+	*/
+	function hasNode($nodekey){
+		if (empty($this->METADATATREE)) return false;
+		return array_key_exists($nodekey, $this->METADATATREE);
+	}
     
 	/**
 	* set the current resource entry id for this plugin
@@ -306,6 +259,130 @@ abstract class sharedresource_plugin_base {
     abstract function getKeywordElement();
 
 	/**
+	* get the metadata node identity for taxonomy purpose
+	*/
+    abstract function getTaxonomyPurposeElement();
+    
+    /**
+    * add keywords metadata entries from a comma separated list
+    * of values. Each plugin know how and where to put values
+    */
+    abstract function setKeywords($keywords);
+
+	/**
+	* function to get any element only with its number of node
+	*/
+	function getElement($id){
+		$element = new StdClass;
+		$element -> id = $id;
+		$element -> name = $this->METADATATREE[$id]['name'];
+		$element -> type = $this->METADATATREE[$id]['widget'];
+		return $element;
+	}
+
+	/**
+	* A generic method that allows changing a simple text value
+	*
+	*/
+	function setTextElementValue($element, $item, $value){
+		global $DB;
+		
+		if (!array_key_exists($element, $this->METADATATREE)){
+			throw new MetadataException("Bad element ID");
+		}
+
+		if ($this->METADATATREE[$element]['type'] != 'text'){
+			throw new MetadataException("Bad element type for setting text");
+		}
+		
+		$itemdepth = count(explode('_', $element));
+		$defaultitemarr = array_fill(0, $itemdepth, 0);
+		if (empty($item)){
+			$item = implode('_', $defaultitemarr);
+		}
+
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = "$element:$item";
+		$mtdrec->namespace = $this->pluginname;
+		$mtdrec->value = $value;
+
+		if ($oldrec = $DB->get_record('sharedresource_metadata', array('entry_id' => $this->entryid, 'element' => $mtdrec->element, 'namespace' => $this->pluginname))){
+			$mtdrec->id = $oldrec->id;
+			$DB->update_record('sharedresource_metadata', $mtdrec);
+		} else {
+			$DB->insert_record('sharedresource_metadata', $mtdrec);
+		}
+	}
+
+	/**
+	* records title in metadata flat table from db attributes?
+	* title element identification is given by each concrete plugin
+	*/
+    function setTitle($title){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+
+    	$titleElement = $this->getTitleElement();
+    	$titlekey = '$titleElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $titlekey));
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $titlekey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $title;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+	/**
+	* records master description in metadata flat table from db attributes
+	* description element identification is given by each concrete plugin
+	*/
+    function setDescription($description){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+    	
+    	$descriptionElement = $this->getDescriptionElement();
+    	$desckey = '$descriptionElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $desckey));
+
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $desckey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $description;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+	/**
+	* records resource physical lcoation in metadata flat table from db attributes?
+	* location element identification is given by each concrete plugin
+	*/
+    function setLocation($location){
+		global $DB;
+
+    	if ($this->entryid == 0) return;
+
+    	$locationElement = $this->getLocationElement();
+    	$locationkey = '$locationElement:0_0';
+
+		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $this->namespace, 'element' => $locationkey));
+		$mtdrec = new StdClass;
+		$mtdrec->entry_id = $this->entryid;
+		$mtdrec->element = $locationkey;
+		$mtdrec->namespace = $this->namespace;
+		$mtdrec->value = $location;
+
+		return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+	/**
 	* gets a default value for a node if exists
 	*
 	*/
@@ -333,7 +410,7 @@ abstract class sharedresource_plugin_base {
     }
 
 	/**
-	* a static factory 
+	* a static factory. Gives back a metadata object loded with default values
 	*
 	*/    
     static function load_mtdstandard($schemaname){
@@ -343,6 +420,9 @@ abstract class sharedresource_plugin_base {
     		include_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$schemaname.'/plugin.class.php';
     		$classname = "sharedresource_plugin_$schemaname";
     		$mtdstandard = new $classname();
+			if (!empty($CFG->METADATATREE_DEFAULTS)){
+				$mtdstandard->load_defaults($CFG->METADATATREE_DEFAULTS);
+			}
     		return $mtdstandard;
     	}
 

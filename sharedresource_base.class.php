@@ -49,11 +49,11 @@ class sharedresource_base {
             if (! $this->cm = get_coursemodule_from_id('sharedresource', $cmid)) {
                 print_error('invalidcoursemodule');
             }
-            if (! $this->course =  $DB->get_record('course', array('id'=> $this->cm->course))) {
+            if (! $this->course =  $DB->get_record('course', array('id' => $this->cm->course))) {
                 print_error('coursemisconf');
             }
-            if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id'=> $this->cm->instance))) {
-                print_error('invalidsharedreosurce', 'sharedresource');
+            if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
+                print_error('invalidsharedresource', 'sharedresource');
             }
             if (!$this->cm->visible and !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
 		        $pagetitle = strip_tags($this->course->shortname.': '.$this->strsharedresource);
@@ -65,8 +65,7 @@ class sharedresource_base {
 		        $PAGE->set_url($url);
 		        $PAGE->set_title($SITE->fullname);
 		        $PAGE->set_heading($SITE->fullname);
-		        /* SCANMSG: may be additional work required for $navigation variable */
-		        $PAGE->navbar->add("view sharedresource info",'view.php','misc');
+		        $PAGE->navbar->add('view sharedresource info', 'view.php', 'misc');
 		        $PAGE->set_focuscontrol('');
 		        $PAGE->set_cacheable(false);
 		        $PAGE->set_button('');
@@ -80,7 +79,7 @@ class sharedresource_base {
             }
 			// we can use it, so get the associate entry
             if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
-                print_error('errorinvalididentifier', 'sharedresource');
+                print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $this->sharedresource->identifier);
             }
         } else {
         	// TODO Check effectivity of this code... or we might just create an empty(incomplete) sharedresource instance ? 
@@ -88,7 +87,7 @@ class sharedresource_base {
             $this->course = $COURSE;
             if ($identifier) {
                 if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
-                    print_error('errorinvalididentifier', 'sharedresource');
+                    print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $identifier);
                 }
             }
         }
@@ -709,7 +708,7 @@ class sharedresource_base {
      * and any data that depends on it.
      *
      * @param sharedresource   object, sharedresource record values
-     * @return bool sharedresource delete status      
+     * @return bool sharedresource delete status
      */
     function delete_instance($sharedresource) {
         global  $DB;
@@ -728,7 +727,7 @@ class sharedresource_base {
     * @uses $CFG   global object
     */
     function set_parameters() {
-        global $USER, $CFG,$PAGE,$OUTPUT,$SITE;
+        global $USER, $CFG, $PAGE, $OUTPUT, $SITE;
         
         $site = get_site();
         $littlecfg = new stdClass();       // to avoid some notices later
@@ -816,11 +815,6 @@ class sharedresource_base {
      *
      * @param mform   object, reference to Moodle Forms object
      */
-     /*
-    function setup_elements(&$mform) {
-        //override to add your own options
-    } */
-
     function setup_elements(&$mform) {
         global $CFG, $USER, $SHAREDRESOURCE_WINDOW_OPTIONS, $DB, $OUTPUT;
 
@@ -909,6 +903,7 @@ class sharedresource_base {
             } else {
                 $mform->addElement('checkbox', $option, get_string('new'.$option, 'sharedresource'));
                 $mform->setDefault($option, $CFG->{'sharedresource_popup'.$option});
+            	$mform->setType($option, PARAM_INT); 
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             }
             $mform->setAdvanced($option);
@@ -937,10 +932,10 @@ class sharedresource_base {
             $group[] =& $mform->createElement('select', $parametername, '', $options);//TODO: accessiblity
             $mform->addGroup($group, 'pargroup'.$i, get_string('variablename', 'sharedresource').'='.get_string('parameter', 'sharedresource'), ' ', false);
             $mform->setAdvanced('pargroup'.$i);
+            $mform->setType($parsename, PARAM_RAW);
             $mform->setDefault($parametername, '-');
         }
     }
-
 
     /**
      * set up form element default values prior to display for add/update of sharedresource

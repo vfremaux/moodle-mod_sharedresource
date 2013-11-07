@@ -1,9 +1,5 @@
 @charset "utf-8";
 	
-html, body {
-height: 100%;
-}
-
 #ecform_container {
 	width: 95%;
 	text-align: center;
@@ -39,6 +35,14 @@ height: 100%;
 }
 #ecform_container .off {
 	display: none;
+}
+
+#ecform_container .tabon {
+	display: inline;
+}
+#ecform_container .taboff {
+	display: inline;
+	opacity: 0.5;
 }
 
 /* #ecform_onglet ul#menu li a {

@@ -44,7 +44,6 @@ $string['metadataschema'] = 'Url du schema';
 $string['minimumversion'] = 'Version min.';
 $string['osenvironment'] = 'Environnement système';
 $string['otherplatformrequirements'] = 'Dépendances techniques';
-$string['plugin_lom'] = 'Indexation locale (LOM Simplifié)';
 $string['purpose'] = 'Objet';
 $string['relation'] = 'Relation';
 $string['requirement'] = 'Contraintes d\'utilisation';
@@ -53,7 +52,6 @@ $string['rightsdescription'] = 'Description des droits d\'usage';
 $string['role'] = 'Role';
 $string['rights'] = 'Droits';
 $string['semanticdensity'] = 'Densité sémantique';
-$string['sharedresource_plugin_hide_lom'] = 'Désactiver les métadonnées locales (LOM simplifié)';
 $string['size'] = 'Taille';
 $string['source'] = 'Référentiel source';
 $string['status'] = 'Etat de publication';
@@ -81,22 +79,22 @@ $string['3'] = '3';
 $string['4'] = '4';
 
 // Difficulty
-$string['very_easy'] = 'Très facile';
+$string['veryeasy'] = 'Très facile';
 $string['easy'] = 'Facile';
 $string['medium'] = 'Medium';
 $string['difficult'] = 'Difficile';
-$string['very_difficult'] = 'Très difficile';
+$string['verydifficult'] = 'Très difficile';
 
 // Level
-$string['very_low'] = 'Trés faible';
+$string['verylow'] = 'Trés faible';
 $string['low'] = 'Faible';
 $string['medium'] = 'Medium';
 $string['high'] = 'Haut(e)';
-$string['very_high'] = 'Très haut(e)';
+$string['veryhigh'] = 'Très haut(e)';
 
 // Context
 $string['school'] = 'Système scolaire';
-$string['higher_education'] = 'Enseignement supérieur';
+$string['highereducation'] = 'Enseignement supérieur';
 $string['training'] = 'Formation continue';
 $string['other'] = 'Autres';
 
@@ -121,39 +119,39 @@ $string['initiator'] = 'Initiateur';
 $string['terminator'] = 'Finaliseur';
 $string['validator'] = 'Validateur';
 $string['editor'] = 'Editeur';
-$string['graphical_designer'] = 'Graphiste';
-$string['technical_implementer'] = 'Développeur';
-$string['content_provider'] = 'Auteur de contenus';
-$string['technical_validator'] = 'Validateur technique';
-$string['educational_validator'] = 'Validateur pédagogique';
-$string['script_writer'] = 'Scénariste';
-$string['instructional_designer'] = 'Concepteur pédagogique';
-$string['subject_matter_expert'] = 'Expert thématique';
+$string['graphicaldesigner'] = 'Graphiste';
+$string['technicalimplementer'] = 'Développeur';
+$string['contentprovider'] = 'Auteur de contenus';
+$string['technicalvalidator'] = 'Validateur technique';
+$string['educationalvalidator'] = 'Validateur pédagogique';
+$string['scriptwriter'] = 'Scénariste';
+$string['instructionaldesigner'] = 'Concepteur pédagogique';
+$string['subjectmatterexpert'] = 'Expert thématique';
 
 // Contribute role
 $string['creator'] = 'Créateur';
 $string['validator'] = 'Validateur';
 
 // Environment type
-$string['operating_system'] = 'Système d\'exploitation';
+$string['operatingsystem'] = 'Système d\'exploitation';
 $string['browser'] = 'Navigateur';
 
 // OSEnvironment
-$string['pc-dos'] = 'PC DOS';
-$string['ms-windows'] = 'Microsoft Windows';
+$string['pcdos'] = 'PC DOS';
+$string['mswindows'] = 'Microsoft Windows';
 $string['macos'] = 'Mac OS';
 $string['unix'] = 'Unix';
-$string['multi-os'] = 'Multi-OS';
+$string['multios'] = 'Multi-OS';
 $string['none'] = 'Aucun';
 
 // BrowserEnvironment
 $string['any'] = 'Tous les navigateurs';
-$string['netscape_communicator'] = 'Netscape Communicator';
-$string['ms-internet_explorer'] = 'Internet Explorer';
+$string['netscapecommunicator'] = 'Netscape Communicator';
+$string['msinternetexplorer'] = 'Internet Explorer';
 $string['opera'] = 'Opera';
 $string['amaya'] = 'Amaya';
 $string['firefox'] = 'Firefox';
-$string['google_chrome'] = 'Google Chrome';
+$string['googlechrome'] = 'Google Chrome';
 
 // Type d'interactivité
 $string['active'] = 'Interactif';
@@ -173,8 +171,8 @@ $string['table'] = 'Tableaux';
 $string['narrative text'] = 'Texte narratif';
 $string['exam'] = 'Examen';
 $string['experiment'] = 'Expérience';
-$string['problem_statement'] = 'Résolution de problèmes';
-$string['self_assessment'] = 'Auto-évaluation';
+$string['problemstatement'] = 'Résolution de problèmes';
+$string['selfassessment'] = 'Auto-évaluation';
 $string['lecture'] = 'Cours';
 
 
@@ -192,12 +190,12 @@ $string['no'] = 'Non';
 $string['discipline'] = 'Discipline';
 $string['idea'] = 'Idée';
 $string['prerequisite'] = 'Prérequis';
-$string['educational_objective'] = 'Objectif d\'apprentissage';
+$string['educationalobjective'] = 'Objectif d\'apprentissage';
 $string['accessibility'] = 'Accessibilité';
 $string['restrictions'] = 'Restrictions';
-$string['educational_level'] = 'Niveau éducatif';
-$string['skill_level'] = 'Niveau de compétences';
-$string['security_level'] = 'Niveau de sécurité';
+$string['educationallevel'] = 'Niveau éducatif';
+$string['skilllevel'] = 'Niveau de compétences';
+$string['securitylevel'] = 'Niveau de sécurité';
 $string['competency'] = 'Compétence';
 
 // Kind 
