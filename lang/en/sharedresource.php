@@ -12,13 +12,7 @@ global $SITE;
 
 // Capabilities
 $string['sharedresource:addinstance'] = 'Can add an instance';
-$string['sharedresource:browsecatalog'] = 'Browse shared library';
-$string['sharedresource:editcatalog'] = 'Manage entries in shared library';
-$string['sharedresource:file'] = 'Shared Resource';
 $string['sharedresource:manageblocks'] = 'Manage blocks in the library';
-$string['sharedresource:authormetadata'] = 'Can work with author metadata';
-$string['sharedresource:indexermetadata'] = 'Can work with indexer metadata';
-$string['sharedresource:systemmetadata'] = 'Can work with system metadata';
 
 $string['DMdescription'] = 'Description of the metadata model :';
 $string['DMuse'] = 'Use of the metadata model :';

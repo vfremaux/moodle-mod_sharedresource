@@ -11,13 +11,7 @@ global $SITE;
 
 // Capabilities
 $string['sharedresource:addinstance'] = 'Peut ajouter une instance';
-$string['sharedresource:browsecatalog'] = 'Voir le contenu de la librairie mutualisée';
-$string['sharedresource:editcatalog'] = 'Gérer le contenu de la librairie mutualisée';
-$string['sharedresource:file'] = 'Ressource mutualisée';
 $string['sharedresource:manageblocks'] = 'Gérer les blocs dans la librairie';
-$string['sharedresource:authormetadata'] = 'Peut voir les métadonnées auteur';
-$string['sharedresource:indexermetadata'] = 'Peut voir les métadonnées bibliothécaire';
-$string['sharedresource:systemmetadata'] = 'Peut voir les métadonnées système';
 
 $string['DMdescription'] = 'Description du modèle de métadonnées';
 $string['DMuse'] = 'Utilisation du modèle de métadonnées';

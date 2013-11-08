@@ -158,7 +158,7 @@ $string['typedediffusion'] = 'Diffusion type';
 $string['typegeneraldedocuments'] = 'General document type';
 $string['typicalagerange'] = 'Typical age range';
 $string['typicallearningtime'] = 'Typical learning time';
-$string['web_media'] = 'Web media';
+$string['webmedia'] = 'Web media';
 
 $string['description_scolomfr']='LOMFR is the french application profile of LOM. <br/><br/>
 LOMFR describe pedagogical objects (resources).

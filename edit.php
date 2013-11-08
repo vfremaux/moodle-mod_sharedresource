@@ -66,6 +66,8 @@
     $PAGE->set_headingmenu('');
 
     $pagetitle = strip_tags($course->shortname);
+    
+    $formdata = new StdClass();
 
     // sort out how we should look depending on add or update
 

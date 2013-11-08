@@ -97,6 +97,12 @@ $string['type'] = 'Type';
 $string['typicalagerange'] = 'Typical age range';
 $string['typicallearningtime'] = 'Typical learning time';
 $string['version'] = 'Version';
+$string['glossaire'] = 'Glossary';
+$string['guide'] = 'Guidance';
+$string['materieldereference'] = 'Reference material';
+$string['methodologie'] = 'Method';
+$string['outil'] = 'Teaching tool';
+$string['scenariopedagogique'] = 'Learning scenario';
 
 
 $string['descriptionlomfr'] = 'LOMFR is the french application profile of LOM. <br/><br/>

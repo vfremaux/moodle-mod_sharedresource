@@ -154,7 +154,7 @@ class mod_sharedresource_entry_form extends moodleform {
         */
         
         // process description 
-        $description = $default_values->description;
+        $description = @$default_values->description;
         $default_values->description = array();
         $default_values->description['text'] = $description;
         $default_values->description['format'] = FORMAT_HTML;

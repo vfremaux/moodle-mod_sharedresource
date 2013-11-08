@@ -74,8 +74,6 @@
     require_once ($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
     $resourceinstance = new sharedresource_base($cmid, $identifier);
     
-    print_object($resourceinstance);
-
     if ($inpopup) {
         $resourceinstance->inpopup();
     }
