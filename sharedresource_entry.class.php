@@ -446,7 +446,7 @@ class sharedresource_entry {
             $this->file = '';
         } elseif ((empty($url)) && (!empty($file))) {
             if (empty($CFG->sharedresource_foreignurl)){
-                $this->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$this->identifier;
+                $this->url = $CFG->wwwroot.'/local/sharedresources/view.php?identifier='.$this->identifier;
             } else {
                 $this->url = str_replace('<%%ID%%>', $this->identifier, $CFG->sharedresource_foreignurl);
             }
@@ -488,14 +488,14 @@ class sharedresource_entry {
 			$this->id = $oldres->id;
 			$DB->update_record('sharedresource_entry', $this->sharedresource_entry);
 		} else {
-			if (!$this->id =  $DB->insert_record('sharedresource_entry', $this->sharedresource_entry)) {
+			if (!$this->id = $DB->insert_record('sharedresource_entry', $this->sharedresource_entry)) {
 				return false;
 			}
 		}
-		
+
 		// now we know the itemid for this resource, if it has a real file 
 		// $this->file still holds the draft area file record at this time
-		if (!empty($this->file)){
+		if (!empty($file)){
 
 			$fs = get_file_storage();
 
@@ -507,11 +507,11 @@ class sharedresource_entry {
 			$filerec->itemid = $this->id;
 			$filerec->path = '/';
 
-			$definitive = $fs->create_file_from_storedfile($filerec, $this->file);
-
+			$definitive = $fs->create_file_from_storedfile($filerec, $file);
+			
 			// now we post udate the sharedresource_entry record to reflect changes 
 			
-			$DB->set_field('sharedresource_entry', 'file', $definitive->id, array('id' => $this->id));
+			$DB->set_field('sharedresource_entry', 'file', $definitive->get_id(), array('id' => $this->id));
 		}		
 		
 		// clean up any prexisting elements (in case of bounces)

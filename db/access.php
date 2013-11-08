@@ -44,28 +44,6 @@ $capabilities = array(
         )
     ),
 
-    'mod/sharedresource:editcatalog' => array(
-
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW,
-			'coursecreator' => CAP_ALLOW
-        )
-    ),
-
-    'mod/sharedresource:browsecatalog' => array(
-
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW,
-			'coursecreator' => CAP_ALLOW,
-			'editingteacher' => CAP_ALLOW,
-			'teacher' => CAP_ALLOW
-        )
-    ),
-
     'mod/sharedresource:manageblocks' => array(
         'riskbitmask' => RISK_XSS,
 
@@ -79,29 +57,6 @@ $capabilities = array(
         )
     ),
 
-    'mod/sharedresource:authormetadata' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-        )
-    ),
-
-    'mod/sharedresource:indexermetadata' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'coursecreator' => CAP_ALLOW
-        )
-    ),
-    
-    'mod/sharedresource:systemmetadata' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    )
 );
 
 ?>
