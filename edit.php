@@ -148,9 +148,11 @@
 
             // locally defined resource ie. we are the master
             $sharedresource_entry->type = 'file'; // obsolete ?
-
+            
             // is this a local resource or a remote one?
-            if (!empty($sharedresource_entry->url)) {
+            if (!empty($formdata->url)) {
+            	$sharedresource_entry->url = $formdata->url;
+            	$sharedresource_entry->file = '';
                 $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
                 $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
             } else {

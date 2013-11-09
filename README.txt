@@ -50,4 +50,26 @@ and a metadata configuration grid will be presented to define each of three user
 - Administrator profile : the widest access to metadata in the resource information form
 - Librarian profile : Usually has access to indexing and identification fields
 - Author profile : Usually restricted to "essential information" authors are supposed to be able to provide, pursuant their 
-background of indexation technology, or the access they may have or be required to be able to regarding qualified information.   
+background of indexation technology, or the access they may have or be required to be able to regarding qualified information. 
+
+Changes for 2013110800
+======================
+
+The resource system has been completely reviewed to simplify implementation, make structures more rational and 
+review all metadata definition formats. In additions, a mass importer has been developped in the local/sharedresources
+library front end implementation. Capabilities driving the repository behaviour have been moved to the repository definition.
+Module capabilities have been cleaned away.
+
+Some changes in the files handling : Now the sharedresource files are hold into a systemlevel file area 'sharedresource' in component
+'mod_sharedresource'. In spite of the "mod" attachement, context level for those fileareas are the system context. Each resource is
+attached to the sharedresource entry instance as itemid. Conversely, a sharedresource entry is pointing the exact mdl_files record that
+will handle the physical storage. 
+
+From now, the "legal" url of a sharedresource is <moodleroot>/local/sharedresources/view.php?identifier=xxxxxxxxx (or using other resource
+identity schemes, such as remoteID). This can be overriden and all resources mapped from a virtual domain for resources, using proper
+URL rewriting. Provision is given for the resources internally generated be mapped on this virtual domain rather than Moodle common Urls.
+
+The library front now behaves like a pseudo blocked layout and will reuse styles from blocks easily (@see Readme for
+local/sharedresources).
+
+  
