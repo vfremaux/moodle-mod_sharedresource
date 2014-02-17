@@ -17,10 +17,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version   = 2013110800;       // The current module version (Date: YYYYMMDDXX)
+$module->version   = 2013110801;       // The current module version (Date: YYYYMMDDXX)
 $module->requires  = 2012062500;       // Requires this Moodle version
 $module->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics)
 $module->cron      = 0;
-$module->maturity = MATURITY_BETA;     // Full name of the plugin (used for diagnostics)
-$module->release = '2.4.0 (Build 2013031800)';     // Full name of the plugin (used for diagnostics)
+$module->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
+$module->release = '2.4.0 (Build 2013031801)';     // Full name of the plugin (used for diagnostics)
 

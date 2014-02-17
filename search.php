@@ -29,7 +29,7 @@
 
     $system_context = context_system::instance();
     $context = context_course::instance($course->id);
-    require_login($course);
+    require_course_login($course, false);
     require_capability('moodle/course:manageactivities', $context);
 
     $strtitle = get_string('metadata_configure', 'sharedresource');
@@ -39,7 +39,6 @@
     $PAGE->set_context($system_context);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
-    /* SCANMSG: may be additional work required for $navigation variable */
     $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
     $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), "{$CFG->wwwroot}/mod/sharedresource/index.php?id={$course->id}&section={$section}", 'activity');
     $PAGE->navbar->add(get_string('searchsharedresource', 'sharedresource'));
@@ -146,9 +145,10 @@
                     echo "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
                 }      
                 if (has_capability('moodle/course:manageactivities', $context)) {
-                    echo "&nbsp;";
+                    echo '&nbsp;';
                     echo '<a href=\''.$CFG->wwwroot."/mod/sharedresource/edit.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode=update&entry_id={$resource->id}".'\'>('.get_string("update").')</a>';
                 }
+                echo '&nbsp;<a href=\''.$CFG->wwwroot."/mod/sharedresource/cancel.php?course={$course->id}&return={$return}".'\'>('.get_string("cancel").')</a>';
     			echo "</li>\n";
     		}
     		echo '</ul>';

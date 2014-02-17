@@ -2,6 +2,7 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package sharedresource
@@ -9,15 +10,13 @@
  */
     require('../../config.php');
     require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry_form.php');
-    // require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry_extra_form.php');
     require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
     require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
     require_once($CFG->libdir.'/filelib.php');
 
     // include "debugging.php";
 
-/// load metadata plugin    
-
+/// load metadata plugin   
 	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 	$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 	$mtdstandard = new $object;
@@ -116,7 +115,13 @@
 
     // is this a successful POST ?
 
-    if ($formdata = $mform->get_data()) {
+    if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('sharedresourcefile', null, PARAM_INT))) {
+
+		// fake feed formdata with directly query params when call for addition comes from other sources    	
+    	if (empty($formdata)){
+    		$formdata = new StdClass();
+    		$formdata->sharedresourcefile = $sharedresourcefile;
+    	}
 
         // check for hidden values
         if ($hidden = optional_param('sharedresource_hidden', '', PARAM_CLEANHTML)) {
@@ -180,7 +185,16 @@
 		$SESSION->sr_entry = $sr_entry;
 		$error = 'no error';
 		$SESSION->error = $error;
-		$fullurl = $CFG->wwwroot."/mod/sharedresource/metadataform.php?course={$course->id}&section={$section}&type={$type}&add=sharedresource&return={$return}&mode={$mode}&context={$sharingcontext}";
+		
+		$params = array('course' => $course->id,
+						'section' => $section,
+						'type' => $type,
+						'add' => 'sharedresource',
+						'return' => $return,
+						'mode' => $mode,
+						'context' => $sharingcontext);
+		
+		$fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
 		redirect($fullurl);
     }
 

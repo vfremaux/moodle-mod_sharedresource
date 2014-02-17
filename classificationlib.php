@@ -139,7 +139,7 @@ function metadata_print_classification_value($classifarray, $selectedlabel = '')
 				if($infos['restriction'] == ''){
 					$classtable = $DB->get_records($name);
 				} else {
-					$classtable = $DB->get_records_sql($classifarray[$name]['restriction']);
+					$classtable = $DB->get_records_sql("SELECT * FROM {{$name}} WHERE ".$classifarray[$name]['restriction']);
 				}
 				$finalclassif = metadata_create_classification($classtable, $classifarray, $name);
 				foreach($finalclassif[$name]['childs'] as $ordering => $id){
@@ -194,7 +194,7 @@ function print_classification_childs($name, $num, $key, $classif, $value){
 		if($classifarray[$name]['restriction'] == ''){
 			$classtable = $DB->get_records($name);
 		} else {
-			$classtable = $DB->get_records_sql($classifarray[$name]['restriction']);
+			$classtable = $DB->get_records_sql("SELECT * FROM {{$name}} WHERE ".$classifarray[$name]['restriction']);
 		}
 		$finalclassif = metadata_create_classification($classtable, $classifarray, $name);
 		$restriction = $classifarray[$name]['taxonselect'];

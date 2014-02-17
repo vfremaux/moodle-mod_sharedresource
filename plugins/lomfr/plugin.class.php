@@ -1210,7 +1210,7 @@ class sharedresource_plugin_lomfr extends sharedresource_plugin_base {
 		}
 		$indentsize = 15 * $indent;
 		$lowername = strtolower($field['name']);
-		$fieldname = get_string(str_replace(' ', '', $lowername), 'sharedresource');
+		$fieldname = get_string(clean_string_key($lowername), 'sharedresource');
 		if ($field['type'] == 'category'){
 			echo "<tr";
 			if($parentnode == '0'){

@@ -22,7 +22,7 @@
 	$PAGE->requires->js('/mod/sharedresource/js/metadata_yui.php', true);
 
 	$system_context = context_system::instance();
-	$strtitle = get_string("metadatanotice",'sharedresource');
+	$strtitle = get_string('metadatanotice', 'sharedresource');
 	$PAGE->set_pagelayout('popup');
 	$PAGE->set_context($system_context);
 	$PAGE->set_title($strtitle);
@@ -41,7 +41,7 @@
 	$id = optional_param('id', 0, PARAM_INT);
 	$identifier = optional_param('identifier', 0, PARAM_TEXT);
 	if ($identifier) {
-	    if (!$sharedresource_entry =  $DB->get_record('sharedresource_entry', array('identifier'=> $identifier))) {
+	    if (!$sharedresource_entry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
 	        sharedresource_not_found();
 	        //error('Resource Identifier was incorrect');
 	    }
@@ -68,20 +68,19 @@
 	}
 
 	$sharedresource_entry = sharedresource_entry::read($sharedresource_entry->identifier);
-	$pluginchoice = optional_param('pluginchoice', $CFG->pluginchoice, PARAM_ALPHA);
 	$pagetitle = strip_tags($SITE->fullname);
 	// build up navigation links
 
 	echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', format_text($sharedresource_entry->title)));
 	
-	if(has_capability('mod/sharedresource:systemmetadata', context_system::instance())){
+	if(has_capability('repository/sharedresources:systemmetadata', context_system::instance())){
 		$capability = 'system';
 	} else {
 		$capability = 'indexer';
 	}
 
-	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$pluginchoice.'/plugin.class.php');
-	$object = 'sharedresource_plugin_'.$pluginchoice;
+	require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
+	$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 	$mtdstandard = new $object;
 	$nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
 	echo '<center>';

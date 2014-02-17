@@ -36,6 +36,10 @@ class sharedresource_metadata {
     function add_instance() {
         global $DB;
 
+		if ($oldentry = $DB->get_record('sharedresource_metadata', array('entry_id' => $this->entry_id, 'element' => $this->element, 'namespace' => $this->namespace))){
+			$this->id = $oldentry->id;
+			return $DB->update_record('sharedresource_metadata', $this);
+		}
         return $DB->insert_record('sharedresource_metadata', $this);
     }
 }

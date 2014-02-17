@@ -503,6 +503,8 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnum, $islist, $numoccur, $name, $capability, $realoccur = 0) {
 	global $SESSION, $CFG, $DB, $OUTPUT;
 
+	 if (!array_key_exists($fieldnum, $mtdstandard->METADATATREE)) return;
+
 	$lowername = strtolower($mtdstandard->METADATATREE[$fieldnum]['name']);
 	$fieldname = get_string(clean_string_key($lowername), 'sharedresource');
 	$fieldtype = $mtdstandard->METADATATREE[$fieldnum]['type'];
@@ -558,6 +560,14 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
 					for ($i = 1; $i <= $nbrfils; $i++) {
 						$currentfield = $fieldnum.'_'.$i;
 						echo '<table width="100%">';
+
+						// this can happen f.e. if metadata come from a legacy lom shema and is read under another schema
+						// that have disabled some branches (ex. scolomfr).
+						if (!array_key_exists($currentfield, $mtdstandard->METADATATREE[$fieldnum]['childs'])) {
+							print_string('disablednode', 'sharedresource', $currentfield);
+							continue;
+						}
+
 						if ($mtdstandard->METADATATREE[$fieldnum]['childs'][$currentfield] == 'list'){
 							echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $currentfield, true, 1, $name.'n'.$numoccur.'_'.$i, $capability);
 						} else {
@@ -1110,8 +1120,11 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 	$mtdstandard = new $object;
 	$taxumarray = $mtdstandard->getTaxumpath();
 	$keywordnum = $mtdstandard->getKeywordElement();
+	$fieldnamestr = get_string('mtdfieldname', 'sharedresource');
+	$fieldidstr = get_string('mtdfieldid', 'sharedresource');
+	$valuestr = get_string('mtdvalue', 'sharedresource');
 	$error = array();
-	$display = '<table border="1" width="70%"><tr><td align="center" width="25%">Nom du champ</td><td align="center" width="25%">Id du champ</td><td align="center">Valeur du champ</td></tr>';
+	$display = '<table border="1" width="70%"><tr><td align="center" width="25%">'.$fieldnamestr.'</td><td align="center" width="25%">'.$fieldidstr.'</td><td align="center">'.$valuestr.'</td></tr>';
 	foreach ($metadataentries as $key => $value){
 		// we check if the field have been filled for the vcard, select and date
 		if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' && $value != 'basicvalue' && $value != '-year-' && $value != '-month-' && $value != '-day-' && substr($key,-9)!= 'datemonth' && substr($key,-7)!= 'dateday' && substr($key,-3)!= 'Hou' && substr($key,-3)!= 'Min' && substr($key,-3)!= 'Sec'){
@@ -1274,6 +1287,8 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
 }
 
 function clean_string_key($value){
+	$value = str_replace('(', '', $value);
+	$value = str_replace(')', '', $value);
 	$value = str_replace(' ', '', $value);
 	$value = str_replace('_', '', $value);
 	$value = str_replace('-', '', $value);

@@ -18,6 +18,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
 }
+
 /**
 * Interface : provider
 * retrieve all values from a metadata element
@@ -27,7 +28,8 @@ if (!defined('RPC_SUCCESS')) {
 * @param string $namespace the metadata plugin name
 */
 function sharedresource_rpc_get_metadata($remoteuser, $remoteuserhost, $element, $namespace = 'lom') {
-    global $CFG;
+    global $CFG, $DB;
+    
     $response->status = RPC_SUCCESS;
     // Get local identity
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
@@ -39,6 +41,7 @@ function sharedresource_rpc_get_metadata($remoteuser, $remoteuserhost, $element,
 	$response->items = sharedresource_get_by_metadata($element, $namespace, $what = 'values');
     return json_encode($response);
 }
+
 /**
 * Interface : provider
 * retrieve the remote categorisation of resources using LOM taxonomy or any local strategy
@@ -50,7 +53,8 @@ function sharedresource_rpc_get_metadata($remoteuser, $remoteuserhost, $element,
 * @param string $namespace the metadata plugin name
 */
 function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootcategory, $namespace = 'lom') {
-    global $CFG;
+    global $CFG, $DB;
+    
     $response->status = RPC_SUCCESS;
     // Get local identity
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
@@ -64,6 +68,7 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
 	$response->items = sharedresource_get_by_metadata('Taxum', $namespace, $what = 'values');
     return json_encode($response);
 }
+
 /**
 * Interface : provider
 * retrieve the remote list of resources
@@ -74,15 +79,22 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
 * @param int $page
 */
 function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilters = '', $offset = 0, $page = 20) {
-    global $CFG;
+    global $CFG, $DB;
+
+	$systemcontext = context_system::instance();
+	
+	$response = new StdClass();
     $response->status = RPC_SUCCESS;
     // Get local identity
+
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
+
     if (!$localuser = $DB->get_record('user', array('username' => $remoteuser, 'mnethostid' => $userhost->id))){
         $response->status = RPC_FAILURE_USER;
         $response->error = "Calling user has no local account. Register remote user first";
         return json_encode($response);
     }
+
     if (empty($metadatafilters)){
 		debug_trace(" Getting without filters ");
         $sql = "
@@ -92,7 +104,8 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                 {sharedresource_entry}
             WHERE
                 provider = 'local' AND
-                isvalid = 1
+                isvalid = 1 AND
+                context = $systemcontext->id
         ";
         $sqlcount = "
             SELECT 
@@ -101,7 +114,8 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                 {sharedresource_entry}
             WHERE
                 provider = 'local' AND
-                isvalid = 1
+                isvalid = 1 AND
+                context = $systemcontext->id
         ";
         $response->resources['offset'] = $offset;
         $response->resources['page'] = $page;
@@ -109,7 +123,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
         $entrycount = $DB->count_records_sql($sqlcount);
         $response->resources['maxobjects'] = $entrycount;
         debug_trace('without filters. >> '.$sql);
-        $entries = $DB->get_records_sql($sql, $offset, $page);
+        $entries = $DB->get_records_sql($sql, array(), $offset, $page);
     } else {
     	// we have filters
 		// debug_trace(" Getting by filters ");
@@ -141,7 +155,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
 		        $clause
 	    ";
 	    $response->resources['maxobjects'] = count($mtdrecs);
-	    $entries = $DB->get_records_sql($sql, $offset, $page);
+	    $entries = $DB->get_records_sql($sql, array(), $offset, $page);
     }
 	if ($entries){
         foreach($entries as $entry){
@@ -160,6 +174,9 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                                                            'keywords' => $entry->keywords,
                                                            'lang' => $entry->lang,
                                                            'isurlproxy' => empty($entry->file),
+                                                           'scorelike' => $entry->scorelike,
+                                                           'scoreview' => $entry->scoreview,
+                                                           'id' => empty($entry->id),
                                                            'uses' => $uses);
             // get all metadata
             if ($metadata = $DB->get_records('sharedresource_metadata', array('entry_id' => $entry->id), 'element', 'element,namespace,value')){
@@ -171,6 +188,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
     }
     return json_encode($response);
 }
+
 /**
 * Interface : provider
 * allows a consumer to push a sharedresource in the repository assuming
@@ -182,9 +200,12 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
 * @param mixed $metadata if not empty, add or update metadata for this record.
 */
 function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metadata){
-    global $CFG;
+    global $CFG, $DB;
+    
     $response->status = RPC_SUCCESS;
+
     // Get local identity
+
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
     if (!$localuser = $DB->get_record('user', array('username' => $remoteuser, 'mnethostid' => $userhost->id))){
         $response->status = RPC_FAILURE_USER;
@@ -273,6 +294,7 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 	        }
 	    }
 	}
+	
     // finally store eventually provided metadata
     if (!empty($metadata)){
 	    $DB->delete_records('sharedresource_metadata', array('entry_id' => $newid)); // for replacing old metadata by submitted one. May not have any records in case of a new resource.
@@ -283,6 +305,7 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 	}
     return json_encode($response);
 }
+
 /**
 * Interface : consumer
 * @param string $remoteuser the username of the remote user
@@ -290,10 +313,13 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 * @param string $resourceID the resource Unique Identifier
 */
 function sharedresource_rpc_check($remoteuser, $remoteuserhost, $resourceID){
+	global $DB;
+	
     $response = '';    
     $uses = $DB->count_records('sharedresource', array('identifier' => $resourceID));
     return $uses;        
 }
+
 /**
 * Interface : consumer
 * allows a producer to claim for moving the physical location point of a 
@@ -306,6 +332,8 @@ function sharedresource_rpc_check($remoteuser, $remoteuserhost, $resourceID){
 * @param string $url the local url of the provider for the resource
 */
 function sharedresource_rpc_move($remoteuser, $remoteuserhost, $resourceID, $provider, $url){
+	global $DB;
+	
     $response = '';
     // Get local identity
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
@@ -329,4 +357,3 @@ function sharedresource_rpc_move($remoteuser, $remoteuserhost, $resourceID, $pro
     }
     return json_encode($response);
 }
-?>

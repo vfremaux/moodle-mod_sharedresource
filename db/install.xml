@@ -4,89 +4,87 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="sharedresource" COMMENT="each record is one resource and its config data">
+    <TABLE NAME="sharedresource" COMMENT="each record is one resource and its config data" NEXT="sharedresource_entry">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="text format of intro field"/>
-        <FIELD NAME="alltext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="popup" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="options" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course" />
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name" />
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="type" />
+        <FIELD NAME="type" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" PREVIOUS="name" NEXT="identifier" />
+        <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="type" NEXT="intro" />
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="identifier" NEXT="introformat" />
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="text format of intro field" PREVIOUS="intro" NEXT="alltext" />
+        <FIELD NAME="alltext" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="introformat" NEXT="popup" />
+        <FIELD NAME="popup" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="alltext" NEXT="options" />
+        <FIELD NAME="options" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="popup" NEXT="timemodified" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="options" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
-        <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier"/>
+        <INDEX NAME="ix_course" UNIQUE="false" FIELDS="course" NEXT="ix_identifier" />
+        <INDEX NAME="ix_identifier" UNIQUE="false" FIELDS="identifier" PREVIOUS="ix_course" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="sharedresource_entry" COMMENT="each record is one shared resource and its primary metadata">
+    <TABLE NAME="sharedresource_entry" COMMENT="each record is one shared resource and its primary metadata" PREVIOUS="sharedresource" NEXT="sharedresource_metadata">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="mimetype" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="remoteid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="file" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="url" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="lang" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="en" SEQUENCE="false"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="keywords" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="provider" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="isvalid" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="displayed" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="context" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="scoreview" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="scorelike" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="title" />
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="type" />
+        <FIELD NAME="type" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" PREVIOUS="title" NEXT="mimetype"/>
+        <FIELD NAME="mimetype" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="type" NEXT="identifier"/>
+        <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="mimetype" NEXT="remoteid" />
+        <FIELD NAME="remoteid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="identifier" NEXT="file" />
+        <FIELD NAME="file" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="remoteid" NEXT="url" />
+        <FIELD NAME="url" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false" PREVIOUS="file" NEXT="lang" />
+        <FIELD NAME="lang" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="en" SEQUENCE="false" PREVIOUS="url" NEXT="description" />
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="lang" NEXT="keywords" />
+        <FIELD NAME="keywords" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="description" NEXT="timemodified" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="keywords" NEXT="provider" />
+        <FIELD NAME="provider" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" PREVIOUS="timemodified" NEXT="isvalid" />
+        <FIELD NAME="isvalid" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="provider" NEXT="displayed" />
+        <FIELD NAME="displayed" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="isvalid" NEXT="context" />
+        <FIELD NAME="context" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="displayed" NEXT="scoreview" />
+        <FIELD NAME="scoreview" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="context" NEXT="scorelike"/>
+        <FIELD NAME="scorelike" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="scoreview" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="identifier" UNIQUE="true" FIELDS="identifier"/>
-        <INDEX NAME="remoteid" UNIQUE="false" FIELDS="remoteid"/>
-        <INDEX NAME="title" UNIQUE="false" FIELDS="title"/>
-        <INDEX NAME="keywords" UNIQUE="false" FIELDS="keywords"/>
+        <INDEX NAME="ix_identifier" UNIQUE="true" FIELDS="identifier" NEXT="ix_remoteid" />
+        <INDEX NAME="ix_remoteid" UNIQUE="false" FIELDS="remoteid" PREVIOUS="ix_keywords" NEXT="ix_keywords"/>
+        <INDEX NAME="ix_keywords" UNIQUE="false" FIELDS="keywords" PREVIOUS="ix_remoteid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="sharedresource_metadata" COMMENT="each record is one resource metadata element (LOM)">
+    <TABLE NAME="sharedresource_metadata" COMMENT="each record is one resource metadata element (LOM)" PREVIOUS="sharedresource_entry" NEXT="sharedresource_taxonomy">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="entry_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="element" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="namespace" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="entry_id" />
+        <FIELD NAME="entry_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="element" />
+        <FIELD NAME="element" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" PREVIOUS="entry_id" NEXT="namespace" />
+        <FIELD NAME="namespace" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" PREVIOUS="element" NEXT="value"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false" PREVIOUS="namespace"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="entry_id" UNIQUE="false" FIELDS="entry_id"/>
-        <INDEX NAME="element" UNIQUE="false" FIELDS="element"/>
+        <INDEX NAME="ix_unique_entryid" UNIQUE="true" FIELDS="entry_id,namespace,element" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="sharedresource_taxonomy" COMMENT="sharedresource_taxonomy table retrofitted from MySQL">
+    <TABLE NAME="sharedresource_taxonomy" COMMENT="sharedresource_taxonomy table retrofitted from MySQL" PREVIOUS="sharedresource_metadata">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="parent" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="sortorder" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="purpose" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="true" NEXT="parent" />
+        <FIELD NAME="parent" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="sortorder" />
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false" PREVIOUS="parent" NEXT="purpose" />
+        <FIELD NAME="purpose" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" PREVIOUS="sortorder" NEXT="value" />
+        <FIELD NAME="value" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="purpose" />
       </FIELDS>
       <KEYS>
         <KEY NAME="id_pk" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="ix_parent" UNIQUE="false" FIELDS="parent"/>
-        <INDEX NAME="ix_purpose" UNIQUE="false" FIELDS="purpose"/>
+        <INDEX NAME="ix_parent" UNIQUE="false" FIELDS="parent" NEXT="ix_purpose" />
+        <INDEX NAME="ix_purpose" UNIQUE="false" FIELDS="purpose" PREVIOUS="ix_parent" />
       </INDEXES>
     </TABLE>
   </TABLES>

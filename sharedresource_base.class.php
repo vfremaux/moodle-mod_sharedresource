@@ -16,9 +16,7 @@ class sharedresource_base {
 
     var $cm; // if representing a course module.
 
-    var $course; // if representing a course module
-
-    var $sharedresource; // if representing course module
+    var $sharedresource; // the sharedresouce record
 
     var $sharedresourceentry; // if representing both course module or single resource entry
 
@@ -39,26 +37,33 @@ class sharedresource_base {
     * @param identifier   hash, alternative direct identifier for a sharedresource - not set for new sharedresources
     */
     function __construct($cmid = 0, $identifier = false) {
-        global $CFG, $COURSE, $DB,$PAGE,$OUTPUT;
+        global $CFG, $COURSE, $DB, $PAGE, $OUTPUT;
 
     	$this->sharedresource = new StdClass;
+		$this->sharedresource->type = 'file'; // cannot be anything else.    	
+		$this->sharedresource->course = $COURSE->id; // this is a default in case of.    	
+        $this->sharedresource->introformat = FORMAT_MOODLE;
         $this->navlinks = array();
         $this->inpopup = false;
 
+		// If course module is given, we should get all information pulled from the coruse module instance
         if ($cmid) {
             if (! $this->cm = get_coursemodule_from_id('sharedresource', $cmid)) {
                 print_error('invalidcoursemodule');
             }
-            if (! $this->course =  $DB->get_record('course', array('id' => $this->cm->course))) {
-                print_error('coursemisconf');
-            }
-            if (! $this->sharedresource =  $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
+            if (!$this->sharedresource =  $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
                 print_error('invalidsharedresource', 'sharedresource');
             }
+            if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
+                print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $this->sharedresource->identifier);
+            }
+            
+            $coursename = $DB->get_field('course', 'shortname', array('id' => $this->sharedresource->course));
+
             if (!$this->cm->visible and !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
-		        $pagetitle = strip_tags($this->course->shortname.': '.$this->strsharedresource);
+		        $pagetitle = strip_tags($coursename.': '.$this->strsharedresource);
 		        $navigation = build_navigation($this->navlinks, $this->cm);
-		        $course_context = context_course::instance($this->course->id);
+		        $course_context = context_course::instance($this->sharedresource->course);
 		        $PAGE->set_pagelayout('standard');
 		        $PAGE->set_context($course_context);
 		        $url = new moodle_url('/mod/sharedresource/view.php');
@@ -73,27 +78,22 @@ class sharedresource_base {
 		
 		        echo $OUTPUT->header();
 
-                echo $OUTPUT->notification(get_string("activityiscurrentlyhidden"), "$CFG->wwwroot/course/view.php?id={$this->course->id}");
+                echo $OUTPUT->notification(get_string("activityiscurrentlyhidden"), "$CFG->wwwroot/course/view.php?id={$this->sharedresource->course}");
 		        echo $OUTPUT->footer();
 		        die;
             }
-			// we can use it, so get the associate entry
-            if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
-                print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $this->sharedresource->identifier);
+        } elseif($identifier) {
+        	// this may be a new instance so not course module yet
+            if (! $this->sharedresourceentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+                print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $identifier);
             }
-        } else {
-        	// TODO Check effectivity of this code... or we might just create an empty(incomplete) sharedresource instance ? 
-        	// we were just given an identifier
-            $this->course = $COURSE;
-            if ($identifier) {
-                if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
-                    print_error('errorinvalididentifier', 'sharedresource', $CFG->wwwroot.'/course/view.php?id='.$COURSE->id, $identifier);
-                }
-            }
+        	$this->sharedresource->identifier = $identifier;
+        } else {        	
+        	// empty sharedresource
         }
 
-        if (isset($this->sharedresource) && !isset($this->sharedresource->summary) && isset($this->sharedresourceentry)) {
-            $this->sharedresource->summary = $this->sharedresourceentry->description;
+        if (isset($this->sharedresource) && !isset($this->sharedresource->intro) && isset($this->sharedresourceentry)) {
+            $this->sharedresource->intro = $this->sharedresourceentry->description;
         }
 
         $this->strsharedresource  = get_string('modulename', 'sharedresource');
@@ -110,10 +110,12 @@ class sharedresource_base {
     /**
     * form post process for preparing layout parameters properly
     */
-    function _postprocess(&$resource) {
+    function _postprocess() {
         global $SHAREDRESOURCE_WINDOW_OPTIONS;
         
         $alloptions = $SHAREDRESOURCE_WINDOW_OPTIONS;
+        
+        $resource = $this->sharedresource;
 
         if (!empty($resource->forcedownload)) {
             $resource->popup = '';
@@ -148,6 +150,20 @@ class sharedresource_base {
         }
         $resource->alltext = implode(',', $optionlist);
     }
+    
+    // magic setter
+    function __set($field, $value){
+    	if (in_array($field, array('id', 'course', 'name', 'identifier', 'intro', 'introformat', 'alltext', 'popup', 'options'))){
+			$this->sharedresource->$field = $value;
+    	}
+    }
+
+    // magic getter
+    function __get($field){
+    	if (in_array($field, array('id', 'course', 'name', 'identifier', 'intro', 'introformat', 'alltext', 'popup', 'options'))){
+			return $this->sharedresource->$field;
+    	}
+    }
 
     /**
     * Display function does nothing in the base class
@@ -170,7 +186,7 @@ class sharedresource_base {
         
     /// Set up some shorthand variables
         $cm = $this->cm;
-        $course = $this->course;
+        $course = $DB->get_record('course', array('id' => $this->sharedresource->course));
         $resource = $this->sharedresource;
         $sharedresourceentry = $this->sharedresourceentry;
         
@@ -271,7 +287,7 @@ class sharedresource_base {
             if (isset($resource->options) && $resource->options == 'forcedownload') {
                 $querys['forcedownload'] = '1';
             }
-            $fullurl = sharedresource_get_file_url($sharedresourceentry, $querys);
+            $fullurl = sharedresource_get_file_url($this, $sharedresourceentry, $querys);
         }
         
         /// Check whether this is supposed to be a popup, but was called directly
@@ -298,8 +314,8 @@ class sharedresource_base {
             echo "openpopup('{$CFG->wwwroot}/mod/sharedresource/view.php?inpopup=true&id={$cm->id}','resource{$resource->id}','{$resource->popup}');\n";
             echo "\n-->\n";
             echo '</script>';
-            if (trim(strip_tags($resource->summary))) {
-                echo $OUTPUT->box(format_text($resource->summary, FORMAT_MOODLE, $formatoptions), "center");
+            if (trim(strip_tags($resource->intro))) {
+                echo $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions), "center");
             }
             $link = "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?inpopup=true&amp;id={$cm->id}\" "
                   . "onclick=\"this.target='resource{$resource->id}'; return openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id={$cm->id}', "
@@ -353,7 +369,7 @@ class sharedresource_base {
 
             $options = new stdClass();
             $options->para = false;
-            echo '<div class="summary">'.format_text($resource->summary, FORMAT_HTML, $options).'</div>';
+            echo '<div class="summary">'.format_text($resource->intro, $resource->introformat, $options).'</div>';
 
             echo $OUTPUT->footer('empty');
             exit;
@@ -543,8 +559,8 @@ class sharedresource_base {
                 echo '</object>';
                 echo '</div>';
             }
-            if (trim($resource->summary)) {
-                echo $OUTPUT->box(format_text($resource->summary, FORMAT_MOODLE, $formatoptions, $course->id), "center");
+            if (trim($resource->intro)) {
+                echo $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions, $course->id), "center");
             }
             if ($inpopup) {
                 // suppress the banner that gets cutoff with large images
@@ -560,115 +576,6 @@ class sharedresource_base {
     }
 
     /**
-    * Display the sharedresource with the course blocks.
-    * Should be obsolete, as all blocks handled by layout
-    */
-    /*
-    function display_course_blocks_start() {
-        global $CFG;
-        global $USER;
-        global $THEME;
-        require_once($CFG->libdir.'/blocklib.php');
-        require_once($CFG->libdir.'/pagelib.php');
-        require_once($CFG->dirroot.'/course/lib.php'); //required by some blocks
-        $PAGE = page_create_object(PAGE_COURSE_VIEW, $this->course->id);
-        $this->PAGE = $PAGE;
-        $pageblocks = blocks_setup($PAGE);
-        $blocks_preferred_width = bounded_number(180, blocks_preferred_width($pageblocks[BLOCK_POS_LEFT]), 210);
-    /// Print the page headings
-        $edit = optional_param('edit', -1, PARAM_BOOL);
-        if (($edit != -1) and $PAGE->user_allowed_editing()) {
-            $USER->editing = $edit;
-        }
-        $morenavlinks = array($this->strsharedresources   => 'index.php?id='.$this->course->id,
-                                 $this->sharedresource->name => '');
-        $OUTPUT->print_header();
-        echo '<table id="layout-table"><tr>';
-        $lt = (empty($THEME->layouttable)) ? array('left', 'middle', 'right') : $THEME->layouttable;
-        foreach ($lt as $column) {
-            $lt1[] = $column;
-            if ($column == 'middle') break;
-        }
-        foreach ($lt1 as $column) {
-            switch ($column) {
-                case 'left':
-                    if((blocks_have_content($pageblocks, BLOCK_POS_LEFT) || $PAGE->user_is_editing())) {
-                        echo '<td style="width: '.$blocks_preferred_width.'px;" id="left-column">';
-                        echo $OUTPUT->container_start();
-                        blocks_print_group($PAGE, $pageblocks, BLOCK_POS_LEFT);
-                        echo $OUTPUT->container_end();
-                        echo '</td>';
-                    }
-                break;
-                case 'middle':
-                    echo '<td id="middle-column">';
-                    echo $OUTPUT->container_start('middle-column-wrap');
-                    echo '<div id="sharedresource">';
-                break;
-                case 'right':
-                    if((blocks_have_content($pageblocks, BLOCK_POS_RIGHT) || $PAGE->user_is_editing())) {
-                        echo '<td style="width: '.$blocks_preferred_width.'px;" id="right-column">';
-                        echo $OUTPUT->container_start();
-                        blocks_print_group($PAGE, $pageblocks, BLOCK_POS_RIGHT);
-                        echo $OUTPUT->container_end();
-                        echo '</td>';
-                    }
-                break;
-            }
-        }
-    }
-    */
-    /**
-     * Finish displaying the sharedresource with the course blocks
-     * Should be obsolete, as all blocks handled by layout
-     */
-     /*
-    function display_course_blocks_end() {
-        global $CFG;
-        global $THEME;
-        $PAGE = $this->PAGE;
-        $pageblocks = blocks_setup($PAGE);
-        $blocks_preferred_width = bounded_number(180, blocks_preferred_width($pageblocks[BLOCK_POS_RIGHT]), 210);
-        $lt = (empty($THEME->layouttable)) ? array('left', 'middle', 'right') : $THEME->layouttable;
-        foreach ($lt as $column) {
-            if ($column != 'middle') {
-                array_shift($lt);
-            } else if ($column == 'middle') {
-                break;
-            }
-        }
-        foreach ($lt as $column) {
-            switch ($column) {
-                case 'left':
-                    if((blocks_have_content($pageblocks, BLOCK_POS_LEFT) || $PAGE->user_is_editing())) {
-                        echo '<td style="width: '.$blocks_preferred_width.'px;" id="left-column">';
-                        echo $OUTPUT->container_start();
-                        blocks_print_group($PAGE, $pageblocks, BLOCK_POS_LEFT);
-                        echo $OUTPUT->container_end();
-                        echo '</td>';
-                    }
-                break;
-                case 'middle':
-                    echo '</div>';
-                    echo $OUTPUT->container_end();
-                    echo '</td>';
-                break;
-                case 'right':
-                    if((blocks_have_content($pageblocks, BLOCK_POS_RIGHT) || $PAGE->user_is_editing())) {
-                        echo '<td style="width: '.$blocks_preferred_width.'px;" id="right-column">';
-                        echo $OUTPUT->container_start();
-                        blocks_print_group($PAGE, $pageblocks, BLOCK_POS_RIGHT);
-                        echo $OUTPUT->container_end();
-                        echo '</td>';
-                    }
-                break;
-            }
-        }
-        echo '</tr></table>';
-        echo $OUTPUT->footer($this->course);
-    }
-    */
-    /**
      * Finish displaying the sharedresource with the course blocks
      * Given an object containing all the necessary data,
      * (defined by the form in mod.html) this function
@@ -678,12 +585,12 @@ class sharedresource_base {
      * @param sharedresource   object, sharedresource record values
      * @return int, sharedresource id or false      
      */
-    function add_instance($sharedresource) {
-        global  $DB;
+    function add_instance() {
+        global $DB;
         
-        $this->_postprocess($sharedresource);
-        $sharedresource->timemodified = time();
-        return  $DB->insert_record('sharedresource', $sharedresource);
+        $this->_postprocess();
+        $this->sharedresource->timemodified = time();
+        return $DB->insert_record('sharedresource', $this->sharedresource);
     }
     /**
      * Given an object containing all the necessary data,
@@ -693,13 +600,13 @@ class sharedresource_base {
      * @param sharedresource   object, sharedresource record values
      * @return bool sharedresource insert status      
      */
-    function update_instance($sharedresource) {
-        global  $DB;
+    function update_instance() {
+        global $DB;
 
-        $this->_postprocess($sharedresource);
-        $sharedresource->id = $sharedresource->instance;
-        $sharedresource->timemodified = time();
-        return  $DB->update_record('sharedresource', $sharedresource);
+        $this->_postprocess();
+        $this->sharedresource->id = $this->sharedresource->instance;
+        $this->sharedresource->timemodified = time();
+        return $DB->update_record('sharedresource', $this->sharedresource);
     }
     
     /**
@@ -710,11 +617,11 @@ class sharedresource_base {
      * @param sharedresource   object, sharedresource record values
      * @return bool sharedresource delete status
      */
-    function delete_instance($sharedresource) {
-        global  $DB;
+    function delete_instance() {
+        global $DB;
         
         $result = true;
-        if (!  $DB->delete_records('sharedresource', array('id' => $sharedresource->id))) {
+        if (!$DB->delete_records('sharedresource', array('id' => $this->sharedresource->id))) {
             $result = false;
         }
         return $result;
@@ -727,11 +634,13 @@ class sharedresource_base {
     * @uses $CFG   global object
     */
     function set_parameters() {
-        global $USER, $CFG, $PAGE, $OUTPUT, $SITE;
+        global $USER, $CFG, $PAGE, $OUTPUT, $SITE, $DB;
         
         $site = get_site();
         $littlecfg = new stdClass();       // to avoid some notices later
         $littlecfg->wwwroot = $CFG->wwwroot;
+        
+        $course = $DB->get_record('course', array('id' => $this->sharedresource->course));
 
        // print($OUTPUT->header());
         $this->parameters = array(
@@ -740,18 +649,18 @@ class sharedresource_base {
                 'label3'          => array('langstr' => get_string('course'),
                                            'value'   => 'optgroup'),
                 'courseid'        => array('langstr' => 'id',
-                                           'value'   => $this->course->id),
+                                           'value'   => $this->sharedresource->course),
                 'coursefullname'  => array('langstr' => get_string('fullname'),
-                                           'value'   => $this->course->fullname),
+                                           'value'   => $course->fullname),
                 'courseshortname' => array('langstr' => get_string('shortname'),
-                                           'value'   => $this->course->shortname),
+                                           'value'   => $course->shortname),
                 'courseidnumber'  => array('langstr' => get_string('idnumbercourse'),
-                                           'value'   => $this->course->idnumber),
+                                           'value'   => $course->idnumber),
                 'coursesummary'   => array('langstr' => get_string('summary'),
-                                           'value'   => $this->course->summary),
+                                           'value'   => $course->summary),
                 'courseformat'    => array('langstr' => get_string('format'),
-                                           'value'   => $this->course->format),
-                'label4'          => array('langstr' => "",
+                                           'value'   => $course->format),
+                'label4'          => array('langstr' => '',
                                            'value'   =>'/optgroup'),
                 'label5'          => array('langstr' => get_string('miscellaneous'),
                                            'value'   => 'optgroup'),
@@ -851,10 +760,16 @@ class sharedresource_base {
         }
         $this->set_parameters(); // set the parameter array for the form
         $mform->addElement('hidden', 'entry_id', $sharedresource_entry->id);
+        $mform->setType('entry_id', PARAM_INT);
+
         $mform->addElement('hidden', 'identifier', $sharedresource_entry->identifier);
+        $mform->setType('identifier', PARAM_TEXT);
+
         $mform->setDefault('name', $sharedresource_entry->title);
         $mform->setDefault('description', ($sharedresource_entry->description));
+
         $location = $mform->addElement('static', 'origtitle', get_string('title', 'sharedresource').': ', ($sharedresource_entry->title));
+
         $strpreview = get_string('preview','sharedresource');
         if (empty($CFG->sharedresource_foreignurl)){
             $link =  "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?identifier={$sharedresource_entry->identifier}&amp;inpopup=true\" "
@@ -867,10 +782,12 @@ class sharedresource_base {
 //              . "'resource{$sharedresource_entry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
             $link = "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
         }
+
         $location = $mform->addElement('static', 'url', get_string('location', 'sharedresource').': ', $link);
+
         $searchbutton = $mform->addElement('submit', 'searchsharedresource', get_string('searchsharedresource', 'sharedresource'));
         $buttonattributes = array('title'=> get_string('searchsharedresource', 'sharedresource'), 'onclick'=>" window.location.href ='"
-                          . $CFG->wwwroot."/mod/sharedresource/search.php?course={$this->course->id}&section={$section}&type={$type}&add={$add}&return={$return}"."'; return false;");
+                          . $CFG->wwwroot."/mod/sharedresource/search.php?course={$this->sharedresource->course}&section={$section}&type={$type}&add={$add}&return={$return}"."'; return false;");
         $searchbutton->updateAttributes($buttonattributes);
 
         $mform->addElement('header', 'displaysettings', get_string('display', 'sharedresource'));
@@ -885,6 +802,7 @@ class sharedresource_base {
 
         $woptions = array(0 => get_string('pagewindow', 'sharedresource'), 1 => get_string('newwindow', 'sharedresource'));
         $mform->addElement('select', 'windowpopup', get_string('display', 'sharedresource'), $woptions);
+        $mform->setType('windowpopup', PARAM_INT);
         $mform->setDefault('windowpopup', (empty($CFG->sharedresource_popup) ? 1 : 0));
         $mform->disabledIf('windowpopup', 'forcedownload', 'checked');
 
@@ -898,6 +816,7 @@ class sharedresource_base {
         foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $option) {
             if ($option == 'height' or $option == 'width') {
                 $mform->addElement('text', $option, get_string('new'.$option, 'sharedresource'), array('size'=>'4'));
+                $mform->setType($option, PARAM_TEXT);
                 $mform->setDefault($option, $CFG->{'sharedresource_popup'.$option});
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             } else {
