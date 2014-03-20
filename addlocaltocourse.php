@@ -31,13 +31,13 @@
         print_error('coursemisconf');
     }
 
-    $course_context = context_course::instance($course->id);
+    $context = context_course::instance($course->id);
     $strtitle = get_string('addlocal', 'sharedresource');
 
     $url = new moodle_url('/mod/sharedresource/addlocaltocourse.php',array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode));
     $PAGE->set_url($url);
     $PAGE->set_pagelayout('standard');
-    $PAGE->set_context($course_context);
+    $PAGE->set_context($context);
     $PAGE->set_title($strtitle);
     $PAGE->set_heading($SITE->fullname);
 
@@ -66,21 +66,20 @@
 	// the sharedresource has been recognized as a deployable backup. 
 	// take the physical file and deploy it with the activity publisher utiliy
 	if ($mode == 'deploy'){		
-		require_capability('moodle:course:manageactivities', $context);
+		require_capability('moodle/course:manageactivities', $context);
 		
 		if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')){
 			include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
 
-		    echo $OUTPUT->header();
-		    echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
-			$ap = new activity_publisher();
-			echo $OUTPUT->notification(get_string('deploying', 'block_activity_publisher'));
-		    $file = $CFG->dataroot.'/sharedresources/'.required_param('file', PARAM_TEXT);
-		    echo " candidate : ".required_param('identifier', PARAM_TEXT);
+			$fs = get_file_storage();
+			
+			$sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => required_param('identifier', PARAM_TEXT)));
+
+		    $file = $fs->get_file_by_id($sharedresource_entry->file);
 		    activity_publisher::restore_single_module($courseid, $file);
 		    
 		    // TODO : Terminate procedure and return to course silently
-		    echo $OUTPUT->footer();
+		    redirect($CFG->wwwroot.'/course/view.php?id='.$course->id);
 		    die;
 		}
 		
@@ -173,16 +172,11 @@
         $instance->alltext = '';
         $instance->timemodified = time();
 
-        if ($mode == 'local'){
-            // we make a standard resource from the sharedresource
-            $instance->id = sharedresource_convertfrom($sharedresource, false);
-            $modulename = 'resource';
-        } elseif ($mode == 'shared') {
-            if (!$instance->id = $instance->add_instance($instance)){
-                print_error('erroraddinstance', 'sharedresource');
-            }
-            $modulename = 'sharedresource';
-        } 
+        if (!$instance->id = $instance->add_instance($instance)){
+            print_error('erroraddinstance', 'sharedresource');
+        }
+        
+        $modulename = 'sharedresource';
     }
 
     // make a new course module
@@ -222,11 +216,20 @@
     if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
         print_error('errorcmsectionbinding', 'sharedresource');
     }
+
+	// finally if localization was asked, transform the sharedresource in real resource.
+	if ($mode == 'local'){
+        // we make a standard resource from the sharedresource
+        $instance->id = sharedresource_convertfrom($instance);
+    }
     
 /// finish
  
-    $return = $CFG->wwwroot."/course/view.php?id={$courseid}";
 
-    echo $OUTPUT->continue_button($return);
-    echo $OUTPUT->footer($course);
+    // TODO : Terminate procedure and return to course silently
+    redirect($CFG->wwwroot.'/course/view.php?id='.$course->id);
+
+    // $return = $CFG->wwwroot."/course/view.php?id={$courseid}";
+    // echo $OUTPUT->continue_button($return);
+    // echo $OUTPUT->footer($course);
     die;

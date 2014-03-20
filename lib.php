@@ -114,27 +114,29 @@ function sharedresource_get_plugins($entryid = 0) {
 
 /**
 * callback method from modedit.php for adding a new sharedresource instance
+* we receive a record, but need an object to call add_instance on.
 */
 function sharedresource_add_instance($sharedresource) {
     global $CFG;
 
     $sharedresource->type = 'file';
-    $res = new sharedresource_base();
-
-    return $res->add_instance($sharedresource);
+	$instance = new sharedresource_base();
+	$instance->sharedresource = $sharedresource;
+    return $instance->add_instance();
 }
 
 
 /**
 * callback method from modedit.php for updating a sharedresource instance
+* we receive a record, but need an object to call add_instance on.
 */
 function sharedresource_update_instance($sharedresource) {
     global $CFG;
 
-    $sharedresource->type = 'file';   // Just to be safe
-    $res = new sharedresource_base();
-
-    return $res->update_instance($sharedresource);
+    $sharedresource->type = 'file';   // Just to be sure
+	$instance = new sharedresource_base();
+	$instance->sharedresource = $sharedresource;
+    return $instance->update_instance();
 }
 
 
@@ -142,14 +144,14 @@ function sharedresource_update_instance($sharedresource) {
 * callback method from modedit.php for deleting a sharedresource instance
 */
 function sharedresource_delete_instance($id) {
-    global $CFG,$DB;
+    global $CFG, $DB;
 
-    if (! $sharedresource = $DB->get_record('sharedresource', array('id' => $id))) {
+    if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $id))) {
         return false;
     }
-    $res = new sharedresource_base();
-
-    return $res->delete_instance($sharedresource);
+	$instance = new sharedresource_base();
+	$instance->sharedresource = $sharedresource;
+    return $instance->delete_instance();
 }
 
 /**
@@ -239,9 +241,12 @@ function sharedresource_get_coursemodule_info($coursemodule) {
        } else {
        		if ($sharedresource_entry->file){
        			$fs = get_file_storage();
-       			$filerec = $fs->get_file_by_id($sharedresource_entry->file);
-       			$mimetype = $filerec->get_mimetype();
-          		$icon = file_mimetype_icon($mimetype);
+       			if ($filerec = $fs->get_file_by_id($sharedresource_entry->file)){
+	       			$mimetype = $filerec->get_mimetype();
+          			$icon = file_mimetype_icon($mimetype);
+	       		} else {
+       				$icon = 'icon';
+	       		}
        		} else {
        			$icon = 'icon';
        		}
@@ -543,7 +548,7 @@ function sharedresource_sha1file($file) {
  * @param $options array, query string parameters to be passed along
  * @return string, formated URL.
  */
-function sharedresource_get_file_url($sharedresourceentry, $options = null) {
+function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $options = null) {
     global $CFG, $HTTPSPAGEREQUIRED;
 
 
@@ -554,7 +559,13 @@ function sharedresource_get_file_url($sharedresourceentry, $options = null) {
         return false;
     }
     
-    $ffurl = $CFG->wwwroot."/pluginfile.php/".$file->get_contextid()."/".$file->get_component()."/".$file->get_filearea()."/".$file->get_itemid().$file->get_filepath().$file->get_filename();
+    if ($sharedresource->cm){
+    	$viewcontextid = context_module::instance($sharedresource->cm->id)->id;
+    } else {
+		$viewcontextid = $file->get_contextid(); // should be system context
+    }
+    
+    $ffurl = $CFG->wwwroot."/pluginfile.php/".$viewcontextid."/".$file->get_component()."/".$file->get_filearea()."/".$file->get_itemid().$file->get_filepath().$file->get_filename();
 
     return $ffurl;
 }
@@ -580,16 +591,20 @@ function sharedresource_not_found($courseid=0) {
 *
 */
 function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
-    global $CFG;
+    global $CFG, $DB;
 
     require_login($course, true, $cm);
 
     $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
     
+    $itemid = $cm->instance;
+    $identifier = $DB->get_field('sharedresource', 'identifier', array('id' => $cm->instance));
+    $itemid = $DB->get_field('sharedresource_entry', 'id', array('identifier' => $identifier));
+    
     if ($filearea === 'sharedresource') {
         $revision = (int)array_shift($args); // prevents caching problems - ignored here
         $relativepath = implode('/', $args);
-        $fullpath = "/1/mod_sharedresource/sharedresource/0/$relativepath";
+        $fullpath = "/1/mod_sharedresource/sharedresource/$itemid/$relativepath";
         // TODO: add any other access restrictions here if needed!
 
     } else if ($filearea === 'package') {
@@ -597,7 +612,7 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
             return false;
         }
         $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/mod_scorm/package/0/$relativepath";
+        $fullpath = "/$context->id/mod_scorm/package/$itemid/$relativepath";
         $lifetime = 0; // no caching here
 
     } else {

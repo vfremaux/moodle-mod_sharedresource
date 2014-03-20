@@ -63,7 +63,7 @@ function xmldb_sharedresource_install() {
             'select' => 0,
             'restriction' => "purpose = 'discipline'",
             'taxonselect' => array()
-        );
+       ) );
     set_config('classifarray', serialize($classifarray));
     
     return $result;

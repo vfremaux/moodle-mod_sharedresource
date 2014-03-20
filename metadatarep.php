@@ -97,9 +97,9 @@
 		//these two lines in comment can be used if you want to show the user values of saved fields
 		/*echo '<h1>'.get_string('attributes','sharedresource').'</h1><br/>';
 		echo $result['display'];*/
-		if ($mode == 'add' && !$sharedresource_entry->add_instance()) {
+		if ($mode == 'add' && !$sharedresource_entry->exists() && !$sharedresource_entry->add_instance()) {
 			print_error('failadd', 'sharedresource');
-		} else if ($mode != 'add' && !$sharedresource_entry->update_instance()) {
+		} else if (!$sharedresource_entry->update_instance()) {
 			print_error('failupdate', 'sharedresource');
 		} else {
 			// if everything was saved correctly, go back to the search page or to the library

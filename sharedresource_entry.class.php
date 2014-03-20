@@ -492,7 +492,7 @@ class sharedresource_entry {
 				return false;
 			}
 		}
-
+				
 		// now we know the itemid for this resource, if it has a real file 
 		// $this->file still holds the draft area file record at this time
 		if (!empty($file)){
@@ -509,11 +509,12 @@ class sharedresource_entry {
 
 			$definitive = $fs->create_file_from_storedfile($filerec, $file);
 			
-			// now we post udate the sharedresource_entry record to reflect changes 
+			// now we post udate the sharedresource_entry record to reflect changes
+			$this->sharedresource_entry->file = $definitive->get_id();
 			
 			$DB->set_field('sharedresource_entry', 'file', $definitive->get_id(), array('id' => $this->id));
 		}		
-		
+
 		// clean up any prexisting elements (in case of bounces)
 		$DB->delete_records('sharedresource_metadata', array('entry_id' => $this->id));
         
@@ -607,9 +608,15 @@ class sharedresource_entry {
             }
         }
         
-        if (! $DB->delete_records('sharedresource_entry', array('id'=> $this->id))) {
+        if (! $DB->delete_records('sharedresource_entry', array('id' => $this->id))) {
             return false;
         }
         return true;
+    }
+    
+    function exists(){
+    	global $DB;
+    	
+    	return $DB->record_exists('sharedresource_entry', array('identifier' => $this->identifier));
     }
 }

@@ -87,11 +87,11 @@
 
 	echo $OUTPUT->header();
 
-	if(has_capability('mod/sharedresource:systemmetadata', $context)){
+	if(has_capability('repository/sharedresources:systemmetadata', $context)){
 		$capability = 'system';
-	} elseif(has_capability('mod/sharedresource:indexermetadata', $context)){
+	} elseif(has_capability('repository/sharedresources:indexermetadata', $context)){
 		$capability = 'indexer';
-	} elseif(has_capability('mod/sharedresource:authormetadata', $context)){
+	} elseif(has_capability('repository/sharedresources:authormetadata', $context)){
 		$capability = 'author';
 	} else {
 		print_error('noaccessform', 'sharedresource');

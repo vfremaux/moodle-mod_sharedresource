@@ -24,7 +24,11 @@ class mod_sharedresource_mod_form extends moodleform_mod {
         }
 
         require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
-        $this->_resinstance = new sharedresource_base();
+		if (isset($this->_cm)){
+	        $this->_resinstance = new sharedresource_base($this->_cm->id);
+	    } else {
+	        $this->_resinstance = new sharedresource_base();
+	    }
 
 //-------------------------------------------------------------------------------
 

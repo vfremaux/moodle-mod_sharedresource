@@ -64,14 +64,22 @@ class lti_mod_form extends moodleform {
 
 		// Contextual addtolocalresource transaction params
         $mform->addElement('hidden', 'id'); // Course id
+        $mform->setType('id', PARAM_INT);
+
         $mform->addElement('hidden', 'section');
+        $mform->setType('section', PARAM_INT);
+
         $mform->addElement('hidden', 'mode');
+        $mform->setType('mode', PARAM_TEXT);
+
         $mform->addElement('hidden', 'identifier'); // shared resource identifier
+        $mform->setType('identifier', PARAM_TEXT);
 
         //-------------------------------------------------------------------------------
         // Adding the "general" fieldset, where all the common settings are shown
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // Adding the standard "name" field
+
         $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size'=>'64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
@@ -125,11 +133,13 @@ class lti_mod_form extends moodleform {
         $launchoptions[LTI_LAUNCH_CONTAINER_WINDOW] = get_string('new_window', 'lti');
 
         $mform->addElement('select', 'launchcontainer', get_string('launchinpopup', 'lti'), $launchoptions);
+        $mform->setType('launchcontainer', PARAM_TEXT);
         $mform->setDefault('launchcontainer', LTI_LAUNCH_CONTAINER_DEFAULT);
         $mform->addHelpButton('launchcontainer', 'launchinpopup', 'lti');
         $mform->setAdvanced('launchcontainer');
 
         $mform->addElement('hidden', 'resourcekey');
+        $mform->setType('resourcekey', PARAM_TEXT);
         /*
         $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'lti'));
         $mform->setType('resourcekey', PARAM_TEXT);
@@ -142,6 +152,7 @@ class lti_mod_form extends moodleform {
         $mform->addHelpButton('password', 'password', 'lti');
 
         $mform->addElement('hidden', 'instructorcustomparameters');
+        $mform->setType('instructorcustomparameters', PARAM_TEXT);
 		/*
         $mform->addElement('textarea', 'instructorcustomparameters', get_string('custom', 'lti'), array('rows'=>4, 'cols'=>60));
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
@@ -184,6 +195,7 @@ class lti_mod_form extends moodleform {
 
 		// fake standard course module elements adding grade
         $mform->addElement('header', 'gradeheader', get_string('scale'));
+
         $mform->addElement('modgrade', 'grade', get_string('grade'));
         $mform->setDefault('grade', 100);
 
