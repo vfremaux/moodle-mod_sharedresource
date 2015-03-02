@@ -49,7 +49,7 @@ function xmldb_sharedresource_install() {
     $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
 
     if (!$dbman->index_exists($table, $index)) {
-        $result = $dbman->add_index($table, $index, false, false);
+        $dbman->add_index($table, $index, false, false);
     }
     
     // installs default config for discipline classification     
