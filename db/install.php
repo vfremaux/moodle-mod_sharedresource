@@ -51,7 +51,7 @@ function xmldb_sharedresource_install() {
     if (!$dbman->index_exists($table, $index)) {
         $dbman->add_index($table, $index, false, false);
     }
-    
+
     // installs default config for discipline classification     
     $classifarray = array('sharedresource_taxonomy' => array(
             'id' => 'id',
@@ -65,6 +65,6 @@ function xmldb_sharedresource_install() {
             'taxonselect' => array()
        ) );
     set_config('classifarray', serialize($classifarray));
-    
+
     return $result;
 }

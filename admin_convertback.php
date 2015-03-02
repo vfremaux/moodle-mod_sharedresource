@@ -25,7 +25,7 @@
 	    	print_error('coursemisconf');
 	    }
 
-	/// security
+	// Security.
 	
 	    $context = context_course::instance($courseid);
 	    require_login($course);
@@ -45,7 +45,7 @@
     $PAGE->navbar->add(get_string('repositorytoresource', 'sharedresource'));
 
 
-    /// get courses
+    // Get courses.
     if (empty($courseid)){
         $alllps = $DB->get_records_menu('course', array('format' => 'learning'), 'shortname', 'id,id');
         $form = new sharedresource_choosecourse_form($alllps);
@@ -65,8 +65,8 @@
             echo $OUTPUT->footer();
             exit();
         }
-        /// filter convertible resources : 
-        // we only can convert back non effectively shared resources
+        // Filter convertible resources :
+        // We only can convert back non effectively shared resources.
         foreach($sharedresources as $id => $sharedresource){
             if ($DB->count_records_select('sharedresource', " course <> {$courseid} AND identifier = '{$sharedresource->identifier}' ") != 0){
                 unset($sharedresources[$id]);
@@ -92,7 +92,7 @@
                 }
             }
         } else {
-            // print form
+            // Print form.
 		    echo $OUTPUT->header();
 		    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
             $form2->display();

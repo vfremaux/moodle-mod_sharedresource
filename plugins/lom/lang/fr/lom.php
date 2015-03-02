@@ -1,5 +1,6 @@
 <?php
 
+$string['accessibilityrestrictions'] = 'Restrictions d\'accessibilité';
 $string['aggregationlevel'] = 'Niveau d\'aggrégation';
 $string['annotation'] = 'Annotation';
 $string['browserenvironment'] = 'Agent Utilisateur Web';
@@ -168,7 +169,7 @@ $string['graph'] = 'Graphique';
 $string['index'] = 'Index';
 $string['slide'] = 'Diapositives';
 $string['table'] = 'Tableaux';
-$string['narrative text'] = 'Texte narratif';
+$string['narrativetext'] = 'Texte narratif';
 $string['exam'] = 'Examen';
 $string['experiment'] = 'Expérience';
 $string['problemstatement'] = 'Résolution de problèmes';

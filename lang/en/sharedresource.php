@@ -104,6 +104,7 @@ $string['defaultselect'] = 'Reinitialize to the default selection';
 $string['deleteconfirm'] = 'Are you sure you want to delete this classification?';
 $string['description'] = 'Description';
 $string['directlink'] = 'Direct link to this file';
+$string['discipline'] = 'Discipline';
 $string['discouragednode'] = 'Discouraged node';
 $string['display'] = 'Window';
 $string['disablednode'] = 'Node {$a} is disabled in this schema application';
