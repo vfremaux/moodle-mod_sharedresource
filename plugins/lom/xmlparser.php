@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Custom XML parser for XML Metadata (LOM)
  *
@@ -7,20 +22,21 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-require_once $CFG->dirroot.'/mod/sharedresource/metadata_xml_parser.class.php';
-require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php';
+require_once($CFG->dirroot.'/mod/sharedresource/metadata_xml_parser.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php');
 
 /**
  * Custom XML parser class for XML Metadata
  */
 
-class metadata_xml_parser_lom extends metadata_xml_parser{
+class metadata_xml_parser_lom extends metadata_xml_parser {
+
     /**
      * Constructor creates and initialises parser resource and calls initialise
      *
      * @return bool True
      */
-    function metadata_xml_parser_lom() {
+    public function metadata_xml_parser_lom() {
         return $this->initialise();
     }
 
@@ -29,8 +45,8 @@ class metadata_xml_parser_lom extends metadata_xml_parser{
      *
      * @return bool True
      */
-    function initialise() {
-        
+    public function initialise() {
+
         $this->parser = xml_parser_create();
         xml_set_object($this->parser, $this);
 
@@ -379,7 +395,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser{
      */
     function parse($data) {
         $p = xml_parse($this->parser, $data);
-    
+
         return (bool)$p;
     }
 
@@ -393,9 +409,9 @@ class metadata_xml_parser_lom extends metadata_xml_parser{
     /**
      * Reset child nodes iteration
      */
-    function reset_childs($path){
-        foreach($this->nodes_tree as $key => $value){
-            if(strpos($key, $path.'/') === 0){
+    function reset_childs($path) {
+        foreach ($this->nodes_tree as $key => $value) {
+            if (strpos($key, $path.'/') === 0) {
                 $this->nodes_tree[$key]['iteration'] = -1;
             }
         }
