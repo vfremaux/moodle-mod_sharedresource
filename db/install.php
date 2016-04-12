@@ -36,7 +36,7 @@ function xmldb_sharedresource_install() {
     $result = true;
 
     $dbman = $DB->get_manager();
-    
+
     if (preg_match('/^postgres/', $CFG->dbtype)) {
         $idx_field = 'description';
     } else {

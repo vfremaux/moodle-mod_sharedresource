@@ -134,7 +134,7 @@ $string['failupdate'] = 'Resource failed to save (update) to the DB';
 $string['fieldname'] = 'Name of the field';
 $string['file'] = 'File or link';
 $string['fileadvice'] = '<p>The physical representation has been added in local files of the courses. You are going to be redirected to this storage folder.</p>';
-$string['filenotfound'] = 'Sorry, the requested file could not be found';
+$string['filenotfound'] = 'Sorry, the requested file could not be found. Reason: {$a}';
 $string['fileuploadfailed'] = 'File upload failed';
 $string['fillcategory'] = 'All field in this category are empty. Please fill in at least one of these fields.';
 $string['fillprevious'] = 'Please fill in the previous field before adding a new one';
@@ -277,6 +277,7 @@ $string['searchheader'] = 'Search criteria';
 $string['searchin'] = 'Search in';
 $string['searchinlibrary'] = 'Search in Library';
 $string['searchsharedresource'] = 'Search for A shared resource';
+$string['searchorcreate'] = 'Search in library or create a new sharedresource';
 $string['seconds'] = 'Second(s)';
 $string['selectable'] = 'Selectable';
 $string['selectall'] = 'Select all';
@@ -302,6 +303,8 @@ $string['taxon_path'] = 'TAXON Path';
 $string['selecttaxon'] = 'Select taxons';
 $string['taxonchoicetitle'] = 'Selection of visible taxons';
 $string['textsearch'] = 'Research on text field';
+$string['thumbnail'] = 'Thumbnail (35k max)';
+$string['clearthumbnail'] = 'Clear';
 $string['title'] = 'Title';
 $string['typical_age_range'] = 'Typical Age Range';
 $string['typical_learning_time'] = 'Typical Learning Time';
@@ -312,7 +315,7 @@ $string['updateresourcepageoff'] = 'Quit edition mode';
 $string['updateresourcepageon'] = 'Go to edition mode';
 $string['updatesharedresource'] = 'Update shared resource';
 $string['updatesharedresourcetypefile'] = 'Update a shared resource';
-$string['url'] = 'shared resource URL';
+$string['url'] = 'Shared resource URL';
 $string['used'] = 'Used {$a} times';
 $string['validateform'] = 'Validate';
 $string['variablename'] = 'Variable Name';
@@ -322,6 +325,8 @@ $string['vol'] = 'Vol';
 $string['widget'] = 'Search widgets';
 $string['wrongform'] = '<h2>The form was not filled in correctly. Return to the form in 15sec </h2>';
 $string['year'] = '- Year -';
+$string['existsignorechanges'] = 'Data exists but not changed';
+$string['view_pageitem_page_embedded_content'] = 'View resource in page content';
 
 //************* Help Strings ******************/
 $string['description_help'] = "
@@ -436,7 +441,9 @@ A sharedresource can be shared at site level or restructed to a category area (a
 Category attached sharedresources cannot be exposed to network sharing.
 ";
 
+/*
 global $CFG;
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 sharedresource_load_plugin_lang($string, 'en');
 sharedresource_load_pluginsmin_lang($string, 'en');
+*/

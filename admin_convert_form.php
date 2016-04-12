@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * forms for converting resources to sharedresources
  *
@@ -60,6 +62,7 @@ class sharedresource_selectresources_form extends moodleform {
         $mform = & $this->_form;
 
         $mform->addElement('hidden', 'course');
+        $mform->setType('course', PARAM_INT);
         $mform->setDefault('course', $this->course->id);
 
         $hasitems = false;

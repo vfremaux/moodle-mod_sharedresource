@@ -1,11 +1,28 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
+
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package mod_sharedresource
+ * @category mod
  */
 
 define('SHAREDRESOURCE_LOCALPATH', 'LOCALPATH');
@@ -93,15 +110,16 @@ function sharedresource_supports($feature) {
 */
 function sharedresource_get_plugins($entryid = 0) {
     global $CFG;
-    
+
     $plugins = array();
 
-    /// fetch all plugins
+    // Fetch all plugins.
 
-    $sharedentryplugins = get_list_of_plugins('mod/sharedresource/plugins');
+    $sharedentryplugins = core_component::get_plugin_list('sharedmetadata');
 
-    foreach ($sharedentryplugins as $sharedentryplugin) {
-        if (!empty($CFG->{'sharedresource_plugin_hide_'.$sharedentryplugin})) {  // discard hidden plugins in configuration
+    foreach (array_keys($sharedentryplugins) as $sharedentryplugin) {
+        if (!empty($CFG->{'sharedresource_plugin_hide_'.$sharedentryplugin})) {
+            // Discard hidden plugins in configuration.
             continue;
         }
         require_once("{$CFG->dirroot}/mod/sharedresource/plugins/{$sharedentryplugin}/plugin.class.php");
@@ -113,44 +131,46 @@ function sharedresource_get_plugins($entryid = 0) {
 }
 
 /**
-* callback method from modedit.php for adding a new sharedresource instance
-* we receive a record, but need an object to call add_instance on.
-*/
+ * callback method from modedit.php for adding a new sharedresource instance
+ * we receive a record, but need an object to call add_instance on.
+ * @param object $sharedresource data comming from form
+ */
 function sharedresource_add_instance($sharedresource) {
     global $CFG;
 
     $sharedresource->type = 'file';
-	$instance = new sharedresource_base();
-	$instance->sharedresource = $sharedresource;
+    $instance = new sharedresource_base();
+    $instance->sharedresource = $sharedresource;
     return $instance->add_instance();
 }
 
-
 /**
-* callback method from modedit.php for updating a sharedresource instance
-* we receive a record, but need an object to call add_instance on.
-*/
+ * callback method from modedit.php for updating a sharedresource instance
+ * we receive a record, but need an object to call add_instance on.
+ */
 function sharedresource_update_instance($sharedresource) {
     global $CFG;
 
-    $sharedresource->type = 'file';   // Just to be sure
-	$instance = new sharedresource_base();
-	$instance->sharedresource = $sharedresource;
+    $sharedresource->type = 'file'; // Just to be sure
+    $instance = new sharedresource_base();
+    $instance->sharedresource = $sharedresource;
     return $instance->update_instance();
 }
 
 
 /**
-* callback method from modedit.php for deleting a sharedresource instance
-*/
+ * callback method from modedit.php for deleting a sharedresource instance
+ * This will NOT delete sharedresource entries in the library.
+ */
 function sharedresource_delete_instance($id) {
     global $CFG, $DB;
 
     if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $id))) {
         return false;
     }
-	$instance = new sharedresource_base();
-	$instance->sharedresource = $sharedresource;
+
+    $instance = new sharedresource_base();
+    $instance->sharedresource = $sharedresource;
     return $instance->delete_instance();
 }
 
@@ -159,8 +179,15 @@ function sharedresource_delete_instance($id) {
  */
 function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
     global $DB;
-    if ($logs = $DB->get_records_select("log", "userid='$user->id' AND module='sharedresource'
-                                           AND action='view' AND info='$sharedresource->id'", "time ASC")) {
+
+    $select = "
+        userid = ? AND 
+        module = 'sharedresource' AND 
+        action = 'view' AND 
+        info = ?
+    ";
+
+    if ($logs = $DB->get_records_select('log', $select, array($user->id, $sharedresource->id), "time ASC")) {
         $numviews = count($logs);
         $lastlog = array_pop($logs);
 
@@ -180,8 +207,13 @@ function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
 function sharedresource_user_complete($course, $user, $mod, $sharedresource) {
     global $CFG,$DB;
 
-    if ($logs = $DB->get_records_select('log', "userid='$user->id' AND module='sharedresource'
-                                           AND action='view' AND info='$sharedresource->id'", "time ASC")) {
+    $select = "
+        userid = ? AND
+        module='sharedresource' AND
+        action='view' AND 
+        info= ?
+    ";
+    if ($logs = $DB->get_records_select('log', $select, array($user->id, $sharedresource->id), 'time ASC')) {
         $numviews = count($logs);
         $lastlog = array_pop($logs);
 
@@ -210,18 +242,11 @@ function sharedresource_get_participants($sharedresourceid) {
  * in the course module list.
  */
 function sharedresource_get_coursemodule_info($coursemodule) {
-/// Given a course_module object, this function returns any
-/// "extra" information that may be needed when printing
-/// this activity in a course listing.
-///
-/// See get_array_of_activities() in course/lib.php
-///
+    global $CFG,$DB;
 
-   global $CFG,$DB;
+    $info = null;
 
-   $info = NULL;
-
-   if ($sharedresource = $DB->get_record('sharedresource',array('id'=> $coursemodule->instance), 'id, popup, identifier, type, name')) {
+    if ($sharedresource = $DB->get_record('sharedresource',array('id'=> $coursemodule->instance), 'id, popup, identifier, type, name')) {
 
        $sharedresource_entry = sharedresource_entry::read($sharedresource->identifier);
 
@@ -229,9 +254,9 @@ function sharedresource_get_coursemodule_info($coursemodule) {
        $info->name = $sharedresource->name;
        if (!empty($sharedresource->popup)) {
            $info->extra =  urlencode("onclick=\"this.target='sharedresource$sharedresource->id'; return ".
-                            "openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id=".
-                            $coursemodule->id.
-                            "','sharedresource$sharedresource->id','$sharedresource->popup');\"");
+                    "openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id=".
+                    $coursemodule->id.
+                    "','sharedresource$sharedresource->id','$sharedresource->popup');\"");
        }
 
        require_once($CFG->libdir.'/filelib.php');
@@ -239,17 +264,17 @@ function sharedresource_get_coursemodule_info($coursemodule) {
        if (!$sharedresource_entry) {
            $icon = 'unknown';
        } else {
-       		if ($sharedresource_entry->file){
-       			$fs = get_file_storage();
-       			if ($filerec = $fs->get_file_by_id($sharedresource_entry->file)){
-	       			$mimetype = $filerec->get_mimetype();
-          			$icon = file_mimetype_icon($mimetype);
-	       		} else {
-       				$icon = 'icon';
-	       		}
-       		} else {
-       			$icon = 'icon';
-       		}
+           if ($sharedresource_entry->file) {
+               $fs = get_file_storage();
+               if ($filerec = $fs->get_file_by_id($sharedresource_entry->file)) {
+                   $mimetype = $filerec->get_mimetype();
+                  $icon = file_mimetype_icon($mimetype);
+               } else {
+                   $icon = 'icon';
+               }
+           } else {
+               $icon = 'icon';
+           }
        }
 
        if ($icon != 'unknown') {
@@ -263,8 +288,6 @@ function sharedresource_get_coursemodule_info($coursemodule) {
 }
 
 function sharedresource_fetch_remote_file ($cm, $url, $headers = '' ) {
-/// Snoopy is an HTTP client in PHP
-
     global $CFG;
 
     require_once("$CFG->libdir/snoopy/Snoopy.class.inc");
@@ -452,8 +475,8 @@ function sharedresource_get_extra_capabilities() {
  * @return bool, true = dir exists
  */
 function sharedresource_check_and_create_moddata_temp_dir() {
-
     global $CFG;
+
     $status = check_dir_exists($CFG->dataroot.SHAREDRESOURCE_TEMPPATH, true);
     return $status;
 }
@@ -467,8 +490,8 @@ function sharedresource_check_and_create_moddata_temp_dir() {
  * @return bool, true = dir exists
  */
 function sharedresource_check_and_create_moddata_sharedresource_dir() {
-
     global $CFG;
+
     $status = check_dir_exists($CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH, true);
     return $status;
 }
@@ -485,13 +508,9 @@ function sharedresource_check_and_create_moddata_sharedresource_dir() {
  * TODO : reimplement file copy using the files indexes
  */
 function sharedresource_copy_file($from_file, $to_file, $log_clam = false) {
-
     global $CFG;
 
     if (is_file($from_file)) {
-        //echo "<br />Copying ".$from_file." to ".$to_file;              //Debug
-        //$perms=fileperms($from_file);
-        //return copy($from_file,$to_file) && chmod($to_file,$perms);
         umask(0000);
         if (copy($from_file,$to_file)) {
             chmod($to_file,$CFG->directorypermissions);
@@ -502,11 +521,9 @@ function sharedresource_copy_file($from_file, $to_file, $log_clam = false) {
         }
         return false;
     } else {
-        //echo "<br />Error: not file or dir ".$from_file;               //Debug
         return false;
     }
 }
-
 
 /**
  *  delete file - most likely removing temp file
@@ -524,8 +541,7 @@ function sharedresource_delete_file($file) {
             return false;
         }
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
@@ -538,7 +554,7 @@ function sharedresource_delete_file($file) {
  * Obsolete : Relies on file storage now
  */
 function sharedresource_sha1file($file) {
-     return sha1(file_get_contents($file));
+    return sha1(file_get_contents($file));
 }
 
 /**
@@ -558,72 +574,107 @@ function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $opt
     if(!$file){
         return false;
     }
-    
-    if ($sharedresource->cm){
-    	$viewcontextid = context_module::instance($sharedresource->cm->id)->id;
+
+    if ($sharedresource->cm) {
+        $viewcontextid = context_module::instance($sharedresource->cm->id)->id;
     } else {
-		$viewcontextid = $file->get_contextid(); // should be system context
+        $viewcontextid = $file->get_contextid(); // should be system context
     }
-    
+
     $ffurl = $CFG->wwwroot."/pluginfile.php/".$viewcontextid."/".$file->get_component()."/".$file->get_filearea()."/".$file->get_itemid().$file->get_filepath().$file->get_filename();
 
     return $ffurl;
 }
 
-
 /**
  * return a 404 if a shared Resource is not found
  * 
- * @param courseid int, the current context course    
+ * @param courseid int, the current context course
  */
-function sharedresource_not_found($courseid=0) {
+function sharedresource_not_found($courseid = 0, $reason = '') {
     global $CFG;
+
     header('HTTP/1.0 404 not found');
     $url = $CFG->wwwroot;
     if ($courseid != 0) {
         $url = $CFG->wwwroot.'/course/view.php?id='.$courseid;
     }
-    print_error('filenotfound', 'sharedresource', $url);
+    print_error('filenotfound', 'sharedresource', $url, $reason);
 }
 
 /**
-* Sends the files for sharedresources
-*
-*/
+ * Sends the files for sharedresources
+ * @param object $course the course in context of the call. Can be null 
+ * when acceding from a system context
+ * @param object $cm when call comes from a sharedresource instance. denotes the corresponding course module
+ * @param object $context can be a system level context or category context level when addressed from the library, or a course module ocntext
+ * when accessed from the sharedresource instance in the course.
+ */
 function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
     global $CFG, $DB;
 
-    require_login($course, true, $cm);
+    $config = get_config('local_sharedresources');
+    $fs = get_file_storage();
 
-    $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
-    
-    $itemid = $cm->instance;
-    $identifier = $DB->get_field('sharedresource', 'identifier', array('id' => $cm->instance));
-    $itemid = $DB->get_field('sharedresource_entry', 'id', array('identifier' => $identifier));
-    
+    // find the file record
     if ($filearea === 'sharedresource') {
-        $revision = (int)array_shift($args); // prevents caching problems - ignored here
+        $itemid = array_shift($args);
         $relativepath = implode('/', $args);
         $fullpath = "/1/mod_sharedresource/sharedresource/$itemid/$relativepath";
         // TODO: add any other access restrictions here if needed!
 
-    } else if ($filearea === 'package') {
+    } elseif ($filearea === 'package') {
+        // packages are stored instances of activites ready for publishing.
+        require_login($course);
+
         if (!has_capability('moodle/course:manageactivities', $context)) {
             return false;
         }
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/mod_scorm/package/$itemid/$relativepath";
-        $lifetime = 0; // no caching here
+        $lifetime = 0; // No caching here.
 
+        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+            return false;
+        }
+
+        // Finally send the file.
+        send_stored_file($file, $lifetime, 0, false);
+        return;
     } else {
+        // Invalid filearea.
         return false;
     }
 
-    $fs = get_file_storage();
+    // Now finish with sharedresource area.
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
     }
+    $sharedresourceentry = $DB->get_record('sharedresource_entry', array('file' => $file->get_id()));
 
-    // finally send the file
+    // Control course module integrity.
+    if ($filearea && !empty($cm)) {
+        $itemid = $cm->instance;
+        $identifier = $DB->get_field('sharedresource', 'identifier', array('id' => $cm->instance));
+        $entryfilefromcm = $DB->get_field('sharedresource_entry', 'file', array('identifier' => $identifier));
+        if ($entryfilefromcm != $file->get_id()) {
+            // echo "cm check failed : {$identifier} > $entryfilefromcm <> ".$file->get_id();
+            return false;
+        }
+    }
+
+    $systemcontext = context_system::instance();
+    if ($sharedresourceentry->context == $systemcontext->id) {
+        // System resources are naturally publically exposed unless global privacy is required.
+       if (!empty($config->privatecatalog)) {
+            require_login();
+       }
+    } else {
+        require_login();
+    }
+
+    $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
+
+    // Finally send the file.
     send_stored_file($file, $lifetime, 0, false);
 }

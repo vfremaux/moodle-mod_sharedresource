@@ -22,19 +22,19 @@
  * external resource repositories are queried from a course starting context.
  * Adding local resource should always provide identifier.
  *
- * @package    mod-sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/lib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/admin_convert_form.php');
-require_once($CFG->dirroot . '/course/lib.php');
+require('../../config.php');
+require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
+require_once($CFG->dirroot.'/course/lib.php');
 
 $courseid = optional_param('id', '', PARAM_INT);
 $section = optional_param('section', '', PARAM_INT);
@@ -46,10 +46,14 @@ if (empty($course)) {
     print_error('coursemisconf');
 }
 
+// Security.
+
+require_login($course);
+
 $context = context_course::instance($course->id);
 $strtitle = get_string('addlocal', 'sharedresource');
 
-$url = new moodle_url('/mod/sharedresource/addlocaltocourse.php',array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode));
+$url = new moodle_url('/mod/sharedresource/addlocaltocourse.php', array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode));
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context($context);
@@ -67,7 +71,7 @@ if ($mode == 'file') {
     echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
     // this is the simple "file" mode that gets back the resource file into course file scope
     print_string('fileadvice', 'sharedresource');
-    $return = $CFG->wwwroot."/files/index.php?id={$courseid}";
+    $return = new moodle_url('/files/index.php', array('id' => $courseid));
     echo $OUTPUT->continue_button($return);
     echo $OUTPUT->footer($course);
     die;
@@ -77,7 +81,7 @@ if ($mode == 'file') {
 // Take the physical file and deploy it with the activity publisher utility.
 if ($mode == 'deploy') {
     require_capability('moodle/course:manageactivities', $context);
-    
+
     if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
         include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
 
@@ -89,18 +93,18 @@ if ($mode == 'deploy') {
         activity_publisher::restore_single_module($courseid, $file);
 
         // TODO : Terminate procedure and return to course silently
-        redirect($CFG->wwwroot.'/course/view.php?id='.$course->id);
+        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
         die;
     }
-    
+
     // no one should be here....
 }
 
 if ($mode == 'ltiinstall') {
 
     // We build an LTI Tool instance.
-    require_once($CFG->dirroot.'/mod/sharedresource/lti_mod_form.php');
-    require_once($CFG->dirroot.'/mod/lti/lib.php');
+    include_once($CFG->dirroot.'/mod/sharedresource/lti_mod_form.php');
+    include_once($CFG->dirroot.'/mod/lti/lib.php');
 
     $instance = new StdClass();
     $instance->name = $sharedresource_entry->title;
@@ -114,7 +118,7 @@ if ($mode == 'ltiinstall') {
         $instance->toolurl = ''; 
         $instance->securetoolurl = $sharedresource_entry->url;
     } else {
-        $instance->toolurl = $sharedresource_entry->url; 
+        $instance->toolurl = $sharedresource_entry->url;
         $instance->securetoolurl = '';
     }
     $instance->instructorchoicesendname = 1; // default lti form value
@@ -136,7 +140,7 @@ if ($mode == 'ltiinstall') {
 
     $mform = new lti_mod_form();
     if ($mform->is_cancelled()) {
-        redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
+        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
     }
     if ($data = $mform->get_data()) {
         echo $OUTPUT->header();
@@ -145,9 +149,10 @@ if ($mode == 'ltiinstall') {
         $intancearr = (array)$instance;
         $data->intro = $data->introeditor['text'];
         $data->introformat = $data->introeditor['format'];
-        // report changes from form
-        foreach(array_keys($intancearr) as $key){
-            if (isset($data->$key)){
+
+        // Report changes from form.
+        foreach (array_keys($intancearr) as $key) {
+            if (isset($data->$key)) {
                 $instance->$key = $data->$key;
             }
         }
@@ -178,7 +183,8 @@ if ($mode == 'ltiinstall') {
     $instance->identifier = $sharedresource_entry->identifier;
     $instance->name = $sharedresource_entry->title;
     $instance->course = $courseid;
-    $instance->description = $sharedresource_entry->description;
+    $instance->intro = $sharedresource_entry->description;
+    $instance->introformat = 0;
     $instance->alltext = '';
     $instance->timemodified = time();
 
@@ -189,13 +195,15 @@ if ($mode == 'ltiinstall') {
     $modulename = 'sharedresource';
 }
 
+$sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
+
 // Make a new course module.
 $module = $DB->get_record('modules', array('name'=> $modulename));
 $cm = new StdClass;
 $cm->instance = $instance->id;
 $cm->module = $module->id;
 $cm->course = $courseid;
-$cm->section = 1;
+$cm->section = $sectionid;
 
 // Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!;
 // Valid also if LTI tool.
@@ -229,11 +237,26 @@ if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->
 if ($mode == 'local') {
     // We make a standard resource from the sharedresource.
     $instance->id = sharedresource_convertfrom($instance);
+    $modulename = 'resource';
+} else {
+    $modulename = 'sharedresource';
 }
+
+// Fire event
+$modcontext = context_module::instance($cm->id);
+$eventdata = new StdClass();
+$eventdata->modulename = $modulename;
+$eventdata->courseid = $courseid;
+$eventdata->sectionid = $sectionid;
+$eventdata->modname = $eventdata->modulename;
+$eventdata->id = $eventdata->coursemodule = $cm->id;
+$eventdata->instance = $instance->id;
+$eventdata->name = $instance->name;
+$event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
+$event->trigger();
 
 // Finish.
 
-
 // TODO : Terminate procedure and return to course silently.
-redirect($CFG->wwwroot.'/course/view.php?id='.$course->id);
+redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
 die;

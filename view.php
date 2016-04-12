@@ -23,14 +23,14 @@
  *
  */
 
-require_once("../../config.php");
+require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-$id         = optional_param('id', 0, PARAM_INT);    // Course Module ID
+$id = optional_param('id', 0, PARAM_INT);    // Course Module ID
 $identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier
-$inpopup    = optional_param('inpopup', 0, PARAM_BOOL);
+$inpopup = optional_param('inpopup', 0, PARAM_BOOL);
 
-$cm_id = 0;
+$cmid = 0;
 
 $systemcontext = context_system::instance();
 $strtitle = get_string('sharedresourcedetails', 'sharedresource');
@@ -43,27 +43,42 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
 
-$url = new moodle_url('/mod/sharedresource/view.php');
+$url = new moodle_url('/mod/sharedresource/view.php', array('id' => $id));
 $PAGE->set_url($url);
 
 // echo $OUTPUT->header(); // will be done by sharedresource::display();
 
 if ($identifier) {
     if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
-        sharedresource_not_found();
+        sharedresource_not_found(SITEID, 'Code 00');
     }
+
+    if ($resource->file != '' && !$file = $DB->get_record('files', array('contenthash' => $resource->identifier, 'component' => 'mod_sharedresource', 'filearea' => 'sharedresource', 'itemid' => $resource->id))) {
+        sharedresource_not_found($cm->course, 'code 00-04');
+    }
+
     $cmid = 0;
+    $course = new StdClass();
+    $course = $DB->get_record('course', array('id' => SITEID));
 } else {
     if ($id) {
         if (!$cm = get_coursemodule_from_id('sharedresource', $id)) {
-            sharedresource_not_found();
+            sharedresource_not_found(SITEID, 'Code 01');
         }
 
-        if (!$resource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
-            sharedresource_not_found($cm->course);
+        if (!$sharedresource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
+            sharedresource_not_found($cm->course, 'Code 02');
+        }
+
+        if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
+            sharedresource_not_found($cm->course, 'Code 03');
+        }
+
+        if ($resource->file != '' && !$file = $DB->get_record('files', array('contenthash' => $sharedresource->identifier, 'component' => 'mod_sharedresource', 'filearea' => 'sharedresource', 'itemid' => $resource->id))) {
+            sharedresource_not_found($cm->course, 'code 04');
         }
     } else {
-        sharedresource_not_found();
+        sharedresource_not_found(SITEID, 'code 05');
     }
 
     if (!$course =  $DB->get_record('course', array('id'=> $cm->course))) {
@@ -74,7 +89,21 @@ if ($identifier) {
     $cmid = $cm->id;
 }
 
-require_once ($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
+if ($cmid) {
+    $modulecontext = context_module::instance($cmid);
+    $params = array(
+        'context' => $modulecontext,
+        'objectid' => $resource->id
+    );
+
+    $event = \mod_sharedresource\event\course_module_viewed::create($params);
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('sharedresource', $sharedresource);
+    $event->add_record_snapshot('sharedresource_entry', $resource);
+    $event->trigger();
+}
+
+require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
 $resourceinstance = new sharedresource_base($cmid, $identifier);
 
 if ($inpopup) {

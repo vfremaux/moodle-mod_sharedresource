@@ -1,20 +1,31 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Frederic GUILLOU
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
- *
  */
 
 // This php script displays the 
 // metadata form
 //-----------------------------------------------------------
 
-
-require_once("../../config.php");
+require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
@@ -31,7 +42,7 @@ $mode          = required_param('mode', PARAM_ALPHA);
 $courseid      = required_param('course', PARAM_INT);
 $sharingcontext = required_param('context', PARAM_INT);
 
-/// working context check
+// Working context check.
 
 if (! $course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('coursemisconf');
@@ -40,7 +51,9 @@ if (! $course = $DB->get_record('course', array('id' => $courseid))) {
 $system_context = context_system::instance();
 $context = context_course::instance($course->id);
 
-if ($courseid > SITEID){    
+// Security.
+
+if ($courseid > SITEID) {
     require_course_login($course, true);
     $pagecontext = $context;
 } else {
@@ -48,11 +61,11 @@ if ($courseid > SITEID){
     $pagecontext = $system_context;
 }
 
-/// check incoming resource
+// Check incoming resource.
 
-if (!isset($SESSION->sr_entry)){
-    if ($course > SITEID){
-        redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
+if (!isset($SESSION->sr_entry)) {
+    if ($course > SITEID) {
+        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
     } else {
         redirect($CFG->wwwroot);
     }
@@ -61,13 +74,13 @@ if (!isset($SESSION->sr_entry)){
 $sr_entry = $SESSION->sr_entry;
 $sharedresource_entry = unserialize($sr_entry);
 
-/// load working metadata plugin
+// Load working metadata plugin.
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 $mtdstandard = new $object;
 
-/// building $PAGE
+// Building $PAGE.
 
 $strtitle = get_string($mode.'metadataform', 'sharedresource');
 $PAGE->set_pagelayout('standard');
@@ -87,31 +100,28 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-if(has_capability('repository/sharedresources:systemmetadata', $context)){
+if (has_capability('repository/sharedresources:systemmetadata', $context)) {
     $capability = 'system';
-} elseif(has_capability('repository/sharedresources:indexermetadata', $context)){
+} elseif (has_capability('repository/sharedresources:indexermetadata', $context)) {
     $capability = 'indexer';
-} elseif(has_capability('repository/sharedresources:authormetadata', $context)){
+} elseif (has_capability('repository/sharedresources:authormetadata', $context)) {
     $capability = 'author';
 } else {
     print_error('noaccessform', 'sharedresource');
 }
 
-if (!empty($CFG->METADATATREE_DEFAULTS)){
+if (!empty($CFG->METADATATREE_DEFAULTS)) {
     $mtdstandard->load_defaults($CFG->METADATATREE_DEFAULTS);
-    $mtdstandard->setDescription($sharedresource_entry->description);
 }
-$nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
 
-// If a metadata card has already been submitted in an another metadata model, we warn the user about that
-if ($mode != 'add'){
-    echo metadata_detect_change_DM($sharedresource_entry, $CFG->pluginchoice);
-}
+metadata_initialise_core_elements($mtdstandard, $sharedresource_entry);
+
+$nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
 
 echo '<center>';
 echo '<div id="ecform_container" align="center">';
 
-echo '<div align="center" id="ecform_title">'.get_string('metadatadescr','sharedresource').' ('.$mtdstandard->pluginname.')';
+echo '<div align="center" id="ecform_title">'.get_string('metadatadescr', 'sharedresource').' ('.$mtdstandard->pluginname.')';
 echo '</div>';
 echo '<br/>';
 
@@ -128,12 +138,12 @@ echo '<div id="ecform_content" style="margin-right: auto; margin-left: auto">';
 echo '<div id="tab_0" class="on content">';
 echo '<div class="titcontent">';
 
-echo '<h2 >'.get_string('DMuse','sharedresource').' '.$mtdstandard->pluginname.'</h2>';
-echo '<h3>'.get_string('DMdescription','sharedresource').' '.$mtdstandard->pluginname.'</h3><br/>';
+echo '<h2 >'.get_string('DMuse', 'sharedresource').' '.$mtdstandard->pluginname.'</h2>';
+echo '<h3>'.get_string('DMdescription', 'sharedresource').' '.$mtdstandard->pluginname.'</h3><br/>';
 
 echo '<fieldset style="width:90%;margin-right: auto; margin-left: auto">';
 echo '<div style="text-align:justify;align=left;">';
-echo get_string('description'.$mtdstandard->pluginname,'sharedresource');
+echo get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->pluginname);
 echo '</div>';
 echo '</fieldset>';
 
@@ -144,8 +154,8 @@ echo metadata_create_panels($capability, $mtdstandard);
 echo '</div><br/>';
 
 echo '<div align="center">';
-echo '<input type="button" value="'.get_string('validateform','sharedresource').'" id="btsubmit" onClick=\'document.forms["monForm"].submit()\' alt="Submit"/>';
-echo ' <input type="button" value="'.get_string('cancelform','sharedresource').'" OnClick="window.location.href=\''.$CFG->wwwroot."/course/modedit.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}".'/\'">';
+echo '<input type="button" value="'.get_string('validateform', 'sharedresource').'" id="btsubmit" onClick=\'document.forms["monForm"].submit()\' alt="Submit"/>';
+echo ' <input type="button" value="'.get_string('cancelform', 'sharedresource').'" OnClick="window.location.href=\''.$CFG->wwwroot."/course/modedit.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}".'/\'">';
 echo '</div>';
 
 echo '</div>';

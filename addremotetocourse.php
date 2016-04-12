@@ -19,7 +19,7 @@
  * directly in the current course. This possibility will only be available when
  * external resource repositories are queried from a course starting context
  *
- * @package    mod-sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -40,6 +40,10 @@ $course =  $DB->get_record('course', array('id' => "$courseid"));
 if (empty($course)) {
     print_error('coursemisconf');
 }
+
+// Security.
+
+require_login($course);
 
 // If we have a physical file to get, get it.
 if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {

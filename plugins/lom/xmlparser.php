@@ -420,21 +420,21 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
     /**
      * Get Element path (ie 0_0_1)
      */
-    function get_elempath($path){
+    function get_elempath($path) {
         $elempath = '';
         $depth = substr_count($path, '/');
         $tmp_path = $path;
         $elempathtab = array();
-        for($i = 0; $i<$depth; $i++){
+        for ($i = 0; $i<$depth; $i++) {
             $elempathtab[$depth-($i+1)] = $this->nodes_tree[$tmp_path]['iteration'];
             $tmp_path = substr($tmp_path, 0, strrpos($tmp_path,'/'));
         }
         ksort($elempathtab);
-        foreach($elempathtab as $value){
+        foreach ($elempathtab as $value) {
             $elempath .= $value.'_';
         }
         $elempath = substr($elempath, 0, strlen($elempath)-1);
-        
+
         return $elempath;
     }
 
@@ -451,32 +451,34 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @return  bool            True
      */
     function start_element($parser, $name, $attrs) {
-        if(strpos($name,':') !== false){
+        if (strpos($name,':') !== false) {
             $name = substr($name, strpos($name,':')+1);
         }
-        
-        if(in_array($name, $this->ignored_nodes)){
+
+        if (in_array($name, $this->ignored_nodes)) {
             return true;
         }
-        // we need to distinguish the node 4_7 of the duration tag
-        if($name == 'DURATION' && in_array(substr($this->current_path, strrpos($this->current_path, '/')+1), $this->duration_nodes)){
+
+        // We need to distinguish the node 4_7 of the duration tag.
+        if ($name == 'DURATION' && in_array(substr($this->current_path, strrpos($this->current_path, '/')+1), $this->duration_nodes)) {
             return true;
         }
-        // we need to discard content of source node
-        if($name == 'SOURCE' && !(substr($this->current_path, strrpos($this->current_path, '/')+1) == 'TAXONPATH')){
+
+        // We need to discard content of source node.
+        if ($name == 'SOURCE' && !(substr($this->current_path, strrpos($this->current_path, '/')+1) == 'TAXONPATH')) {
             $this->start_discard = 1;
             return true;
         }
-        
+
         $this->current_path .= '/'.$name;
         $this->nodes_tree[$this->current_path]['iteration']++;
         $this->reset_childs($this->current_path);
-        
+
         $elemid = $this->nodes_tree[$this->current_path]['item'];
         $elempath = $this->get_elempath($this->current_path);
         $this->current_meta = new sharedresource_metadata(1, $elemid.':'.$elempath, '', $this->plugin);
         $this->metadata[] = $this->current_meta;
-        
+
         return true;
     }
 
@@ -488,19 +490,19 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @return  bool            True
      */
     function default_data($parser, $data) {
-        if(trim($data) == '' || $this->start_discard){
+        if (trim($data) == '' || $this->start_discard) {
             return true; 
         }
-        if($this->current_path == $this->title_node){
-            if(empty($this->title)){
+        if ($this->current_path == $this->title_node) {
+            if (empty($this->title)) {
                 $this->title = addslashes($data);
-            }else{
+            } else {
                 $this->title .= addslashes($data);
             }
         }
         
-        if($this->current_path == $this->url_node){
-            if(empty($this->url)){
+        if ($this->current_path == $this->url_node) {
+            if (empty($this->url)) {
                 $this->url = addslashes($data);
             } else {
                 $this->url .= addslashes($data);
@@ -508,28 +510,29 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
             $this->url_index = count($this->metadata) - 1;
         }
 
-        if($this->current_path == $this->description_node){
-            if(empty($this->description)){
+        if ($this->current_path == $this->description_node) {
+            if (empty($this->description)) {
                 $this->description = addslashes($data);
-            }else{
+            } else {
                 $this->description .= addslashes($data);
             }
         }
-        if($this->current_path == $this->language_node){
-            if(empty($this->language)){
+
+        if ($this->current_path == $this->language_node) {
+            if (empty($this->language)) {
                 $this->language = addslashes($data);
             } else {
                 $this->language .= addslashes($data);
             }
-        }        
+        }
 
-		// any cas, store value in flatten metadata
-        if(empty($this->current_meta->value)){
+        // Other case, store value in flatten metadata.
+        if (empty($this->current_meta->value)) {
             $this->current_meta->value = addslashes($data);
-        }else{
+        } else {
             $this->current_meta->value .= addslashes($data);
         }
-        
+
         return true;
     }
 
@@ -541,27 +544,29 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @return  bool            True
      */
     function end_element($parser, $name) {
-        if(strpos($name,':') !== false){
+        if (strpos($name,':') !== false) {
             $name = substr($name, strpos($name,':')+1);
         }
-        
-        if(in_array($name, $this->ignored_nodes)){
+
+        if (in_array($name, $this->ignored_nodes)) {
             return true;
         }
-        // we need to distinguish the node 4_7 of the duration tag
-        if($name == 'DURATION' && strpos($this->current_path,'/DURATION') === false){
+
+        // We need to distinguish the node 4_7 of the duration tag.
+        if ($name == 'DURATION' && strpos($this->current_path,'/DURATION') === false) {
             return true;
         }
-        // we need to discard content of source node
-        if($name == 'SOURCE' && $this->start_discard == 1){
+
+        // We need to discard content of source node.
+        if ($name == 'SOURCE' && $this->start_discard == 1) {
             $this->start_discard = 0;
             return true;
         }
-        
+
         $this->current_path = substr($this->current_path, 0, (strrpos($this->current_path,'/')));
-        
+
         $this->current_meta = null;
-        
+
         return true;
     }
 }

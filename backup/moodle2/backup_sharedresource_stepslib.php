@@ -39,27 +39,27 @@ class backup_sharedresource_activity_structure_step extends backup_activity_stru
         // Define each element separated
 
         $sharedresource = new backup_nested_element('sharedresource', array('id'), array(
-           'type', 'identifier', 'intro', 'introformat', 'alltext', 'popup', 'options', 'timemodified'));
+           'name', 'type', 'identifier', 'intro', 'introformat', 'alltext', 'popup', 'options', 'timemodified'));
 
-		if (!empty($CFG->sharedresource_backup_index)){
-	        $entry = new backup_nested_element('sharedresource_entry');
+        if (!empty($CFG->sharedresource_backup_index)) {
+            $entry = new backup_nested_element('sharedresource_entry');
 
-	        $metadata = new backup_nested_element('metadata');
+            $metadata = new backup_nested_element('metadata');
 
-	        $datum = new backup_nested_element('datum', array('entry_id', 'element', 'namespace', 'value'));
+            $datum = new backup_nested_element('datum', array('entry_id', 'element', 'namespace', 'value'));
 
-        	$metadata->add_child($datum);
-        	$entry->add_child($metadata);
-        	$sharedresource->add_child($entry);
-	    }
+            $metadata->add_child($datum);
+            $entry->add_child($metadata);
+            $sharedresource->add_child($entry);
+        }
 
         // Define sources
 
         $sharedresource->set_source_table('sharedresource', array('id' => backup::VAR_ACTIVITYID));
-		if (!empty($CFG->sharedresource_backup_index)){
-	        $entry->set_source_table('sharedresource_entry', array('id' => backup::VAR_ACTIVITYID));
-        	$datum->set_source_table('sharedresource_metadata', array('entry_id' => backup::VAR_PARENTID));
-	    }
+        if (!empty($CFG->sharedresource_backup_index)) {
+            $entry->set_source_table('sharedresource_entry', array('id' => backup::VAR_ACTIVITYID));
+            $datum->set_source_table('sharedresource_metadata', array('entry_id' => backup::VAR_PARENTID));
+        }
 
         // Define id annotations
 

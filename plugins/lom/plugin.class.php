@@ -16,16 +16,14 @@
 
 /**
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @contributor  Valery Fremaux valery@valeisti.fr
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
- *
+ * @subpackage sharedresource_lom
  */
 
 /**
- * Extend the base resource class for file resources
+ * Extend the base resource class for file resources.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
@@ -35,9 +33,11 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
     // we may setup a context in which we can decide where users 
     // can be assigned role regarding metadata
 
-    public $namespace;
+    protected $namespace;
 
-    public $context;
+    protected $context;
+
+    var $ALLSOURCES = array('lom');
 
     public $DEFAULTSOURCE = 'LOMv1.0';
 
@@ -73,10 +73,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '1_8' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 1,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 1,
+            )
         ),
         '1_1' => array(
             'name' => 'Identifier',
@@ -87,20 +87,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '1_1_2' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 1,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 1,
+            )
         ),
         '1_1_1' => array(
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 1,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 1,
+            ),
             'widget' => 'freetext',
         ),
         '1_1_2' => array(
@@ -108,10 +108,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 1,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 1,
+            ),
             'widget' => 'freetext',
         ),
         '1_2' => array(
@@ -119,10 +119,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 1,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 1,
+            ),
             'widget' => 'freetext',
         ),
         '1_3' => array(
@@ -130,10 +130,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '1_4' => array(
@@ -141,10 +141,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '1_5' => array(
@@ -152,10 +152,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '1_6' => array(
@@ -163,10 +163,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '1_7' => array(
@@ -175,10 +175,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('atomic', 'collection', 'networked', 'hierarchical', 'linear'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '1_8' => array(
@@ -187,10 +187,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('1', '2', '3', '4'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '2' => array(
@@ -203,20 +203,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '2_3' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            )
         ),
         '2_1' => array(
             'name' => 'Version',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '2_2' => array(
@@ -225,10 +225,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('draft', 'final', 'revised', 'unavailable'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '2_3' => array(
@@ -241,10 +241,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '2_3_3' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '2_3_1' => array(
             'name' => 'Role',
@@ -252,10 +252,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '2_3_2' => array(
@@ -263,10 +263,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '2_3_3' => array(
@@ -274,10 +274,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'date',
         ),
         '3' => array(
@@ -291,10 +291,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '3_4' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '3_1' => array(
             'name' => 'Identifier',
@@ -305,20 +305,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '3_1_2' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '3_1_1' => array(
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '3_1_2' => array(
@@ -326,10 +326,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '3_2' => array(
@@ -342,10 +342,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '3_2_3' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '3_2_1' => array(
             'name' => 'Role',
@@ -353,10 +353,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('creator', 'validator'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'select',
         ),
         '3_2_2' => array(
@@ -364,10 +364,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '3_2_3' => array(
@@ -375,10 +375,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'date',
         ),
         '3_3' => array(
@@ -386,20 +386,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '3_4' => array(
             'name' => 'Language',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '4' => array(
             'name' => 'Technical',
@@ -415,20 +415,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '4_7' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            )
         ),
         '4_1' => array(
             'name' => 'Format',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_2' => array(
@@ -436,10 +436,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'numeric',
         ),
         '4_3' => array(
@@ -447,10 +447,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_4' => array(
@@ -461,10 +461,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '4_4_1' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '4_4_1' => array(
             'name' => 'OrComposite',
@@ -477,10 +477,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '4_4_1_4' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '4_4_1_1' => array(
             'name' => 'Type',
@@ -488,10 +488,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('operating system', 'browser'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'select',
         ),
         '4_4_1_2' => array(
@@ -500,10 +500,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '4_4_1_3' => array(
@@ -511,10 +511,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_4_1_4' => array(
@@ -522,10 +522,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_5' => array(
@@ -533,10 +533,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_6' => array(
@@ -544,10 +544,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '4_7' => array(
@@ -555,10 +555,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'duration', /// or text TO CHECK
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'duration',
         ),
         '5' => array(
@@ -579,10 +579,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '5_11' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '5_1' => array(
             'name' => 'Interactivity Type',
@@ -590,11 +590,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('active', 'expositive', 'mixed'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
-                ,
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_2' => array(
@@ -603,10 +602,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide', 'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_3' => array(
@@ -615,10 +614,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_4' => array(
@@ -627,10 +626,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_5' => array(
@@ -639,10 +638,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('teacher', 'author', 'learner', 'manager'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_6' => array(
@@ -651,10 +650,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('school', 'higher education', 'training', 'other'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_7' => array(
@@ -662,10 +661,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '5_8' => array(
@@ -674,10 +673,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very easy', 'easy', 'medium', 'difficult', 'very difficult'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '5_9' => array(
@@ -685,10 +684,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'duration', /// or text TO CHECK
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'duration',
         ),
         '5_10' => array(
@@ -696,10 +695,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '5_11' => array(
@@ -707,10 +706,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '6' => array(
@@ -723,10 +722,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '6_3' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            )
         ),
         '6_1' => array(
             'name' => 'Cost',
@@ -734,22 +733,22 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'select',
         ),
         '6_2' => array(
-            'name' => 'Copyright and other restrictions',
+            'name' => 'Copyright And Other Restrictions',
             'source' => 'lom',
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            ),
             'widget' => 'select',
         ),
         '6_3' => array(
@@ -757,10 +756,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '7' => array(
@@ -772,10 +771,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '7_2' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '7_1' => array(
             'name' => 'Kind',
@@ -783,10 +782,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'selectmultiple',
         ),
         '7_2' => array(
@@ -798,10 +797,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '7_2_2' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '7_2_1' => array(
             'name' => 'Identifier',
@@ -812,20 +811,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '7_2_1_2' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '7_2_1_1' => array(
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '7_2_1_2' => array(
@@ -833,10 +832,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '7_2_2' => array(
@@ -844,10 +843,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '8' => array(
@@ -860,20 +859,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '8_3' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '8_1' => array(
             'name' => 'Entity',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '8_2' => array(
@@ -881,10 +880,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'date',
         ),
         '8_3' => array(
@@ -892,10 +891,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'freetext',
         ),
         '9' => array(
@@ -909,10 +908,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '9_4' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            )
         ),
         '9_1' => array(
             'name' => 'Purpose',
@@ -920,10 +919,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency'),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '9_2' => array(
             'name' => 'Taxon Path',
@@ -934,20 +933,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '9_2_2' => 'list'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
         ),
         '9_2_1' => array(
             'name' => 'Source',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '9_2_2' => array(
             'name' => 'Taxum',
@@ -958,30 +957,30 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 '9_2_2_2' => 'single'
             ),
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '9_2_2_1' => array(
             'name' => 'Id',
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '9_2_2_2' => array(
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                ),
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            ),
             'widget' => 'treeselect',
         ),
         '9_3' => array(
@@ -989,20 +988,20 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 0,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 0,
+                'author'  => 0,
+            )
         ),
         '9_4' => array(
             'name' => 'Keyword',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                    'system'  => 1,
-                    'indexer' => 1,
-                    'author'  => 0,
-                )
+                'system'  => 1,
+                'indexer' => 1,
+                'author'  => 0,
+            )
         )
     );
 
@@ -1013,222 +1012,9 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
         $this->namespace = 'lom';
     }
 
-    public function sharedresource_entry_definition(&$mform) {
-        global $CFG;
-
-        foreach (array_keys($this->METADATATREE['0']['childs']) as $fieldid) {
-            if (has_capability('mod/sharedresource:systemmetadata', $this->context)) {
-                $metadataswitch = "config_lom_system_";
-            } elseif (has_capability('mod/sharedresource:indexermetadata', $this->context)) {
-                $metadataswitch = "config_lom_indexer_";
-            } else {
-                $metadataswitch = "config_lom_author_";
-            }
-            $mform->metadataswitch = $metadataswitch;
-            $metadataswitch .= $fieldid;
-            if (!empty($CFG->$metadataswitch)) {
-                $this->sharedresource_entry_definition_rec($mform, $fieldid);
-            }
-        }
-        return true;
-    }
-
-    public function sharedresource_entry_definition_rec(&$mform, $nodeid) {
-        global $CFG;
-
-        if (!array_key_exists($nodeid, $this->METADATATREE)) {
-            print_error('metadatastructureerror', 'sharedresource');
-        }
-
-        // Special trap : Classification taxon,is made of two fields.
-        if ($this->METADATATREE[$nodeid]['name'] == 'Taxum') {
-            $source = $this->METADATATREE['9_2_1'];
-            if (!empty($source['internalref']) && preg_match("/table=(.*?)&idfield=(.*?)&entryfield=(.*?)&treefield=(.*?)&treestart=(.*?)(?:&context\{(.*?)\})?/", $source['internalref'], $matches)) {
-                $table = $matches[1];
-                $idfield = $matches[2];
-                $entryfield = $matches[3];
-                $treefield = $matches[4];
-                $treestart = $matches[5];
-                $context = @$matches[6];
-                // We can get Classification list from internal ref.
-                sharedresource_entry_definition_taxum($mform, $table, $idfield, $entryfield, $treefield, $treestart, $context);
-            }
-            return;
-        }
-
-        // Special traps : Classification.
-        // Common case.
-        if ($this->METADATATREE[$nodeid]['type'] == 'category') {
-            $mform->add('html', get_string(str_replace(' ', '_', strtolower($this->METADATATREE[$nodeid]['name'])), 'sharedresource'));
-            foreach (array_keys($this->METADATATREE[$nodeid]['childs']) as $fieldid) {
-                $metadataswitch = $mform->metadataswitch.$fieldid;
-                if (!empty($CFG->$metadataswitch)) {
-                    $this->sharedresource_entry_definition_rec($mform, $fieldid);
-                }
-            }
-        } else {
-            $metadataswitch = $mform->metadataswitch.$nodeid;
-            if (!empty($CFG->$metadataswitch)) {
-                $this->sharedresource_entry_definition_scalar($mform, $this->METADATATREE[$nodeid]);
-            }
-        }
-    }
-
-    /**
-     * Form handler for scalar value (regular case)
-     */
-    public function sharedresource_entry_definition_scalar(&$mform, &$element){
-        if ($element['type'] == 'select') {
-            $values = $element['values'];
-            $options = array();
-            foreach ($values as $value) {
-                $options[$value] = preg_replace('/\[\[|\]\]/', '', get_string(str_replace(' ', '_', strtolower($value)), 'sharedresource'));
-            }
-            $mform->addElement($element['type'], $field, get_string(strtolower($field), 'sharedresource'), $options);
-        } else {
-            $mform->addElement($element['type'], $field, get_string(strtolower($field), 'sharedresource'));
-        }
-    }
-
-    /**
-     * Special form handler for Taxum
-     *
-     */
-    function sharedresource_entry_definition_taxum(&$mform, $table, $idfield, $entryfield, $context) {
-        global $DB;
-
-        if (empty($idfield) || empty($entryfield)) {
-            $optionsrec = $DB->get_records_select($table, "$context", array(), "$idfield, $entryfield", "$idfield");
-            foreach ($optionssrec as $id => $option) {
-                $options[$id] = " $id $option";
-            }
-            $mform->addElement('select', 'lom_TaxonPath', get_string('TaxonPath', 'sharedresource'), $options);
-        }
-    }
-
-    /**
-     * prints the metadatz schema usage configuration form
-     *
-     */
-    function configure($config) {
-        $selallstr = get_string('selectall', 'sharedresource');
-        $selnonestr = get_string('selectnone', 'sharedresource');
-        echo '<legend><b>&nbsp;'.get_string('lomformat', 'sharedresource').'</b></legend>';
-        echo "<br/><center>";
-        echo '<table border="1px" width="90%"><tr><td colspan="4">';
-        echo '</td></tr>';
-        echo '<tr><td width="30%"><b>&nbsp;'.get_string('fieldname', 'sharedresource').'</b></td>';
-        echo '<td width="15%" align=\'center\'><b>'.get_string('system', 'sharedresource').'</b><br/><a href="javascript:selectall(\'system\', \'lom\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'system\', \'lom\')">'.$selnonestr.'</a></td>';
-        echo '<td width="15%" align=\'center\'><b>'.get_string('indexer', 'sharedresource').'</b><br/><a href="javascript:selectall(\'indexer\', \'lom\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'indexer\', \'lom\')">'.$selnonestr.'</a></td>';
-        echo '<td width="15%" align=\'center\'><b>'.get_string('author', 'sharedresource').'</b><br/><a href="javascript:selectall(\'author\', \'lom\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'author\', \'lom\')">'.$selnonestr.'</a></td>';
-        echo '<td width="15%" align=\'center\'><b>'.get_string('widget', 'sharedresource').'</b></td></tr>';
-        echo '</table>';
-        foreach (array_keys($this->METADATATREE['0']['childs']) as $fieldid) {
-            echo '<table border="1px" width="90%"><tr><td colspan="4">';
-            $this->print_configure_rec($fieldid);
-            echo '</table>';
-        }
-        echo "</center>";
-    }
-
-    function print_configure_rec($fieldid, $parentnode = '0') {
-        static $indent = 0;
-        if (!array_key_exists($fieldid, $this->METADATATREE)) {
-            print_error('metadatastructureerror', 'sharedresource');
-        } 
-        $field = $this->METADATATREE[$fieldid];
-        $checked_system = (get_config('sharedresource_lom', "config_lom_system_{$fieldid}")) ? 'checked="checked"' : '';
-        $checked_indexer = (get_config('sharedresource_lom', "config_lom_indexer_{$fieldid}")) ? 'checked="checked"' : '';
-        $checked_author = (get_config('sharedresource_lom', "config_lom_author_{$fieldid}")) ? 'checked="checked"' : '';
-        $activewidgets = unserialize(get_config(NULL,'activewidgets'));
-        $checked_widget = '';
-
-        foreach ($activewidgets as $key=> $widget) {
-            if ($widget->id == $fieldid) {
-                $checked_widget = 'checked="checked"';
-            }
-        }
-
-        $indentsize = 15 * $indent;
-        $lowername = strtolower($field['name']);
-        $fieldname = get_string(str_replace(' ', '', $lowername), 'sharedresource');
-
-        if ($field['type'] == 'category') {
-            echo "<tr";
-            if ($parentnode == '0') {
-                echo " bgcolor='#E1E2E2'";
-            }
-            echo "><td width='30%' align=\"left\" style=\"padding-left:{$indentsize}px\"><b>&nbsp;{$fieldname}</b></td>";
-        } else {
-            echo "<tr><td width='30%' align=\"left\" style=\"padding-left:{$indentsize}px\">&nbsp;{$fieldname}</td>";
-        }
-        if ($parentnode == '0') {
-            echo "<td width='15%' align='center'><input id=\"lom_system_{$fieldid}\" type=\"checkbox\" name=\"config_lom_system_{$fieldid}\" $checked_system value=\"1\" onclick=\"toggle_childs('lom', 'system', '{$fieldid}')\" /></td>";
-            echo "<td width='15%' align='center'><input id=\"lom_indexer_{$fieldid}\" type=\"checkbox\" name=\"config_lom_indexer_{$fieldid}\" $checked_indexer value=\"1\" onclick=\"toggle_childs('lom', 'indexer', '{$fieldid}')\" /></td>";
-            echo "<td width='15%' align='center'><input id=\"lom_author_{$fieldid}\" type=\"checkbox\" name=\"config_lom_author_{$fieldid}\" $checked_author value=\"1\" onclick=\"toggle_childs('lom', 'author', '{$fieldid}')\" /></td>";
-            if (isset($field['widget'])) {
-                echo "<td width='15%' align='center'><input id=\"lom_widget_{$fieldid}\" type=\"checkbox\" name=\"widget_lom_{$fieldid}\" $checked_widget value=\"1\"/></td></tr>";
-            } else {
-                echo "<td width='15%' align='center'></td></tr>";
-            }
-        } else {
-            if ($checked_system == 'checked="checked"') {
-                echo "<td align='center'><input id=\"lom_system_{$fieldid}\" type=\"checkbox\" name=\"config_lom_system_{$fieldid}\" $checked_system value=\"1\" onclick=\"toggle_childs('lom', 'system', '{$fieldid}')\"/></td>";
-            } else {
-                echo "<td align='center'><input id=\"lom_system_{$fieldid}\" type=\"checkbox\" name=\"config_lom_system_{$fieldid}\" $checked_system value=\"1\" onclick=\"toggle_childs('lom', 'system', '{$fieldid}')\" DISABLED/></td>";
-            }
-
-            if ($checked_indexer == 'checked="checked"') {
-                echo "<td align='center'><input id=\"lom_indexer_{$fieldid}\" type=\"checkbox\" name=\"config_lom_indexer_{$fieldid}\" $checked_indexer value=\"1\" onclick=\"toggle_childs('lom', 'indexer', '{$fieldid}')\" /></td>";
-            } else {
-                echo "<td align='center'><input id=\"lom_indexer_{$fieldid}\" type=\"checkbox\" name=\"config_lom_indexer_{$fieldid}\" $checked_indexer value=\"1\" onclick=\"toggle_childs('lom', 'indexer', '{$fieldid}')\" DISABLED/></td>";
-            }
-
-            if ($checked_author == 'checked="checked"') {
-                echo "<td align='center'><input id=\"lom_author_{$fieldid}\" type=\"checkbox\" name=\"config_lom_author_{$fieldid}\" $checked_author value=\"1\" onclick=\"toggle_childs('lom', 'author', '{$fieldid}')\"/></td>";
-            } else {
-                echo "<td align='center'><input id=\"lom_author_{$fieldid}\" type=\"checkbox\" name=\"config_lom_author_{$fieldid}\" $checked_author value=\"1\" onclick=\"toggle_childs('lom', 'author', '{$fieldid}')\" DISABLED/></td>";
-            }
-
-            if (isset($field['widget'])) {
-                if ($checked_widget == 'checked="checked"') {
-                    echo "<td align='center'><input id=\"lom_widget_{$fieldid}\" type=\"checkbox\" name=\"widget_lom_{$fieldid}\" $checked_widget value=\"1\"/></td></tr>";
-                } else {
-                    echo "<td align='center'><input id=\"lom_widget_{$fieldid}\" type=\"checkbox\" name=\"widget_lom_{$fieldid}\" $checked_widget value=\"1\"/></td></tr>";
-                }
-            } else {
-                echo "<td align='center'></td></tr>";
-            }
-        }
-        $i = 1;
-        if ($field['type'] == 'category') {
-            if (!empty($field['childs'])) {
-                foreach (array_keys($field['childs']) as $childfieldid) {
-                    $indent++;
-                    $this->print_configure_rec($childfieldid, $parentnode.'_'.$i);
-                    $indent--;
-                    $i++;
-                }
-            }
-        }
-    }
-
-    function search_definition(&$mform) {
-        // Search text box.
-        $mform->addElement('text', 'search', get_string('searchfor', 'sharedresource'), array('size'=>'35'));
-        // Checkboxes to choose search scope.
-        $searchin = array();
-        $searchin[] = &MoodleQuickForm::createElement('checkbox', 'title', '', get_string('title', 'sharedresource'));
-        $searchin[] = &MoodleQuickForm::createElement('checkbox', 'description', '', get_string('description', 'sharedresource'));
-        $mform->addGroup($searchin, 'searchin', get_string('searchin', 'sharedresource'), array(' '), false);
-        // Set defaults.
-        $mform->setDefault('title', 1);
-        $mform->setDefault('description', 1);
-        return false;
-    }
-
     function search(&$fromform, &$result) {
         global $CFG, $DB;
+
         $fromform->title = isset($fromform->title) ? true : false;
         $fromform->description = isset($fromform->description) ? true : false;
         // If the search criteria is left blank then this is a complete browse.
@@ -1271,7 +1057,7 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             if ($descriptionsearch) {
                 $descriptionsearch .= ' AND ';
             }
-            if (substr($searchterm,0,1) == '+') {
+            if (substr($searchterm, 0, 1) == '+') {
                 $searchterm          = substr($searchterm,1);
                 $titlesearch        .= " title $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
@@ -1303,9 +1089,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
         if ($fromform->title || $fromform->description) {
             // When given a complete wildcard, then this is browse mode.
             if ($fromform->search == '*') {
-                $resources =  $DB->get_records('sharedresource_entry', array(), $sort);
+                $resources = $DB->get_records('sharedresource_entry', array(), $sort); // A VERIFIER !!!
             } else {
-                $resources = $DB->get_records_sql('SELECT * FROM '. $selectsql .' ORDER BY '. $sort, $page, $recordsperpage);
+                $sql = 'SELECT * FROM '. $selectsql .' ORDER BY '. $sort;
+                $resources = $DB->get_records_sql($sql, array(), $page, $recordsperpage); // A VERIFIER !!!
             }
         }
         // Append the results.
@@ -1316,61 +1103,14 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
         }
     }
 
-    function get_cardinality($element, &$fields, &$cardinality) {
-        if (!($this->METADATATREE[$element]['type'] == 'category' || $this->METADATATREE[$element]['type'] == 'root')) {
-            return;
-        }
-        foreach ($this->METADATATREE[$element]['childs'] as $elem => $value) {
-            if ($value == 'list') {
-                $cardinality[$elem] = 0;
-                foreach ($fields as $field) {
-                    if (strpos($field->element, "$elem:") === 0) {
-                        $cardinality[$elem]++;
-                    }
-                }
-            }
-            $this->get_cardinality($elem, $fields, $cardinality);
-        }
-    }
-
     /**
-    * Generates full metadata as XML
-    * copes with minimal lom requirement
-    */
-    function get_metadata(&$sharedresource_entry) {
-        global $SITE, $DB;
-        // Cleanup some values
-        if ($sharedresource_entry->description == '$@NULL@$') {
-            $sharedresource_entry->description = '';
-        }
-        // Default.
-        $lang = substr(current_language(), 0, 2);
-        $fields = $DB->get_records('sharedresource_metadata', array('entry_id' => $sharedresource_entry->id, 'namespace' => 'lom'));
-        // Construct cardinality table.
-        $cardinality = array();
-        $this->get_cardinality('0', $fields, $cardinality);
-        foreach ($fields as $field) {
-            $parts = explode(':',$field->element);
-            $element = $parts[0];
-            $path = @$parts[1];
-            if (!isset($metadata[$element])) {
-                 $metadata[$element] =  array();
-            }
-            $metadata[$element][$path] = $field->value;
-            if ($element == '3_4') {
-                $lang = $field->value;
-            }
-        }
-        $languageattr = 'language="'.$lang.'"';
-        $lom = "<lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\">";
-        $tmpstr = '';
-        if ($this->generate_xml('0', $metadata, $languageattr, $tmpstr, $cardinality, $tmpstr)) {
-           $lom .= $tmpstr;
-        }
-        $lom .= "
-            </lom:lom>
-            ";
-        return $lom;
+     * Provides lom metadata fragment header
+     */
+    function lomHeader() {
+        return "
+            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\" 
+                        xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\"
+                            xmlns:scolomfr=\"http://www.lom-fr.fr/xsd/SCOLOMFR\">";
     }
 
     /**
@@ -1378,12 +1118,13 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
      *
      */
     function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+
         $value = $this->METADATATREE[$elem];
         $tmpname = str_replace(' ','',$value['name']);
         $name = strtolower(substr($tmpname,0,1)).substr($tmpname,1);
         $valid = 0;
-        $namespace = $value['source'];
-        // Category/root : we have to call generate_xml on each child
+        $namespace = @$value['source'];
+        // Category/root : we have to call generate_xml on each child.
         if ($elem == '0') {
             $tab = array();
             $childnum = 0;
@@ -1399,10 +1140,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                     $childnum++;
                 }
             }
-            for ( $i = 0; $i < count($tab); $i++) {
+            for ($i = 0; $i < count($tab); $i++) {
                 $fatherstr .= $tab[$i];
             }
-        } elseif($value['type'] == 'category') {
+        } elseif ($value['type'] == 'category') {
             $tab = array();
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
@@ -1420,51 +1161,55 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
             // At least one child has content.
             if ($valid) {
                 $fatherstr .= "\n<{$namespace}:{$name}>";
-                for ( $i = 0; $i < count($tab); $i++) {
-                        $fatherstr .= $tab[$i];
-                    }
+                for ($i = 0; $i < count($tab); $i++) {
+                    $fatherstr .= $tab[$i];
+                }
                 $fatherstr .= "
                 </{$namespace}:{$name}>";
             }
-        } elseif(count($metadata[$elem]) > 0) {
+        } elseif (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
                 // a "node" that contains data 
                 if (strpos($path, $pathcode) === 0) {
-                        switch ($value['type']) {
-                    case 'text':
-                        $fatherstr .= "\n<{$namespace}:{$name}>
-                        <{$namespace}:string $languageattr>".$metadata[$elem][$path]."</{$namespace}:string>
-                    </{$namespace}:{$name}>";
-                        break;
-                    case 'select':
-                        if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['LOMv1.0'])) {
-                            $source = 'LOMv1.0';
-                        } else {
-                            $source = $this->DEFAULTSOURCE;
-                        }
-                        $fatherstr .= "
-                    <{$namespace}:{$name}>
-                        <{$namespace}:source>".$source."</{$namespace}:source>
-                        <{$namespace}:value>".$metadata[$elem][$path]."</{$namespace}:value>
-                    </{$namespace}:{$name}>";
-                        break;
-                    case 'date':
-                        $fatherstr .= "
-                    <{$namespace}:{$name}>
-                        <{$namespace}:dateTime>".$metadata[$elem][$path]."</{$namespace}:dateTime>
-                    </{$namespace}:{$name}>";
-                        break;
-                    case 'duration':
-                        $fatherstr .= "
-                    <{$namespace}:{$name}>
-                        <{$namespace}:duration>".$metadata[$elem][$path]."</{$namespace}:duration>
-                    </{$namespace}:{$name}>";
-                        break;
-                    default:
-                        $fatherstr .= "
-                    <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
-                        }
-                $valid = 1;
+                    switch ($value['type']) {
+                        case 'text':
+                            $fatherstr .= "\n<{$namespace}:{$name}>
+                            <{$namespace}:string $languageattr>".$metadata[$elem][$path]."</{$namespace}:string>
+                        </{$namespace}:{$name}>";
+                            break;
+
+                        case 'select':
+                            if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['LOMv1.0'])) {
+                                $source = 'LOMv1.0';
+                            } else {
+                                $source = $this->DEFAULTSOURCE;
+                            }
+                            $fatherstr .= "
+                        <{$namespace}:{$name}>
+                            <{$namespace}:source>".$source."</{$namespace}:source>
+                            <{$namespace}:value>".$metadata[$elem][$path]."</{$namespace}:value>
+                        </{$namespace}:{$name}>";
+                            break;
+
+                        case 'date':
+                            $fatherstr .= "
+                        <{$namespace}:{$name}>
+                            <{$namespace}:dateTime>".$metadata[$elem][$path]."</{$namespace}:dateTime>
+                        </{$namespace}:{$name}>";
+                            break;
+
+                        case 'duration':
+                            $fatherstr .= "
+                        <{$namespace}:{$name}>
+                            <{$namespace}:duration>".$metadata[$elem][$path]."</{$namespace}:duration>
+                        </{$namespace}:{$name}>";
+                            break;
+
+                        default:
+                            $fatherstr .= "
+                        <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
+                    }
+                    $valid = 1;
                 }
             }
         }
@@ -1481,34 +1226,88 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
      *        false to stop the running of any subsequent plugin handlers.
      */
     function after_save(&$sharedresource_entry) {
-        $this->setKeywords($sharedresource_entry->keywords);
+        if (!empty($sharedresource_entry->keywords)) {
+            $this->setKeywords($sharedresource_entry->keywords);
+        }
+
         if (!empty($sharedresource_entry->title)) {
             $this->setTitle($sharedresource_entry->title);
         }
+
         if (!empty($sharedresource_entry->description)) {
             $this->setDescription($sharedresource_entry->description);
         }
+
         return true;
     }
 
     function after_update(&$sharedresource_entry) {
-        $this->setKeywords($sharedresource_entry->keywords);
+        if (!empty($sharedresource_entry->keywords)) {
+            $this->setKeywords($sharedresource_entry->keywords);
+        }
+
         if (!empty($sharedresource_entry->title)) {
             $this->setTitle($sharedresource_entry->title);
         }
+
         if (!empty($sharedresource_entry->description)) {
             $this->setDescription($sharedresource_entry->description);
         }
+
         return true;
+    }
+
+    /**
+     * title is mapped to sharedresource info, so we'll need to get the element often.
+     */
+    function getTitleElement() {
+        $element = (object)$this->METADATATREE['1_2'];
+        $element->node = '1_2';
+        return $element;
+    }
+
+    /**
+     * description is mapped to sharedresource info, so we'll need to get the element often.
+     */
+    function getDescriptionElement() {
+        $element = (object)$this->METADATATREE['1_4'];
+        $element->node = '1_4';
+        return $element;
     }
 
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
     function getKeywordElement() {
-        $element = new StdClass;
-        $element->name = "1_5";
-        $element->type = "list";
+        $element = (object)$this->METADATATREE['1_5'];
+        $element->node = '1_5';
+        return $element;
+    }
+
+    /**
+     * purpose must expose the values, so a function to find the purpose field is usefull
+     */
+    function getFileFormatElement() {
+        $element = (object)$this->METADATATREE['4_1'];
+        $element->node = '4_1';
+        return $element;
+    }
+
+    /**
+     * purpose must expose the values, so a function to find the purpose field is usefull
+     */
+    function getSizeElement() {
+        $element = (object)$this->METADATATREE['4_2'];
+        $element->node = '4_2';
+        return $element;
+    }
+
+    /**
+     * location have a special status in metadata form, so a function to find the location field is necessary
+     */
+    function getLocationElement() {
+        $element = (object)$this->METADATATREE['4_3'];
+        $element->node = '4_3';
         return $element;
     }
 
@@ -1516,10 +1315,8 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
     function getTaxonomyPurposeElement() {
-        $element = new StdClass;
-        $element->name = '9_1';
-        $element->type = 'list';
-        $element->values = $this->METADATATREE['9_1']['values'];
+        $element = (object)$this->METADATATREE['9_1'];
+        $element->node = '9_1';
         return $element;
     }
 
@@ -1530,40 +1327,10 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
         $keyelm = $this->getKeywordElement();
         $keykeys = preg_grep("/{$keyelm->name}:.*/", array_keys($metadata));
         $kwlist = array();
-        foreach($keykeys as $k) {
+        foreach ($keykeys as $k) {
             $kwlist[] = $metadata[$k]->value;
         }
         return implode(', ', $kwlist);
-    }
-
-    /**
-     * title have a special status in metadata form, so a function to find the title field is necessary
-     */
-    function getTitleElement() {
-        $element = new StdClass;
-        $element->name = "1_2";
-        $element->type = "text";
-        return $element;
-    }
-
-    /**
-     * location have a special status in metadata form, so a function to find the location field is necessary
-     */
-    function getLocationElement() {
-        $element = new StdClass;
-        $element->name = "4_3";
-        $element->type = "text";
-        return $element;
-    }
-
-    /**
-     * description have a special status in metadata form, so a function to find the description field is necessary
-     */
-    function getDescriptionElement() {
-        $element = new StdClass;
-        $element->name = "1_4";
-        $element->type = "text";
-        return $element;
     }
 
     /**
@@ -1593,9 +1360,11 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
         global $DB;
 
         if (empty($this->entryid)) {
-            return; // Do not affect metadata to unkown entries
+            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
-        $DB->delete_records_select('sharedresource_metadata', " namespace = 'lom' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
+
+        $keywordSource = $this->METADATATREE['1_5']['source'];
+        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
@@ -1603,11 +1372,32 @@ class sharedresource_plugin_lom extends sharedresource_plugin_base {
                 $mtdrec = new StdClass;
                 $mtdrec->entry_id = $this->entryid;
                 $mtdrec->element = '1_5:0_'.$i;
-                $mtdrec->namespace = 'lom';
+                $mtdrec->namespace = $keywordSource;
                 $mtdrec->value = $aword;
                 $DB->insert_record('sharedresource_metadata', $mtdrec);
                 $i++;
             }
         }
+    }
+
+    /**
+    * records title in metadata flat table from db attributes
+    */
+    function setTitle($title){
+        global $DB;
+
+        if (empty($this->entryid)) {
+            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+        }
+
+        $titleSource = $this->METADATATREE['1_2']['source'];
+        $DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_2:0_0'));
+        $mtdrec = new StdClass;
+        $mtdrec->entry_id = $this->entryid;
+        $mtdrec->element = '1_2:0_0';
+        $mtdrec->namespace = $titleSource;
+        $mtdrec->value = $title;
+
+        return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }
 }
