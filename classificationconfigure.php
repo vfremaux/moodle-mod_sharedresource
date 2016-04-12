@@ -18,8 +18,7 @@
  * @author  Frederic GUILLOU
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @package sharedresource
  *
  * This php script display the admin part of the classification
  * configuration. You can add, delete or apply a restriction
@@ -27,6 +26,7 @@
  * by accessing another page
  *
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
