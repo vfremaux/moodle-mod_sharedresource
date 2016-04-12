@@ -33,8 +33,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $module->version   = 2015072701;       // The current module version (Date: YYYYMMDDXX)
-$module->requires  = 2012062500;       // Requires this Moodle version
+$module->requires  = 2014111000;       // Requires this Moodle version
 $module->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics)
 $module->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
-$module->release = '2.7.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
+$module->release = '2.8.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
 
