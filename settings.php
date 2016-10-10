@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
@@ -10,7 +10,7 @@
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-global $SHAREDRESOURCE_WINDOW_OPTIONS; // make sure we have the pesky global
+global $SHAREDRESOURCE_WINDOW_OPTIONS; // Make sure we have the pesky global.
 
 // configuration for rss feed
 if (empty($CFG->enablerssfeeds)) {
@@ -75,30 +75,11 @@ $checkedoptions = array(0 => get_string('no'), 1 => get_string('yes'));
 
 $pluginsoptions['0'] = get_string('noplugin', 'sharedresource');
 $sharedresourcesplugins = core_component::get_plugin_list('sharedmetadata');
-foreach($sharedresourcesplugins as $p => $ppath){
+foreach ($sharedresourcesplugins as $p => $ppath) {
     $pluginsoptions[$p] = get_string('pluginname', 'sharedmetadata_'.$p);
 }
 $item = new admin_setting_configselect('pluginchoice', get_string('pluginchoice', 'sharedresource'), get_string('basispluginchoice', 'sharedresource'), @$CFG->pluginchoice, $pluginsoptions);
-if (empty($CFG->running_installer)) {
-    $item->set_updatedcallback('redirectmetadata');
-}
 $settings->add($item);
-
-if (!function_exists('redirectmetadata')) {
-
-    function redirectmetadata(){
-        global $CFG;
-        redirect(new moodle_url('/mod/sharedresource/metadataconfigure.php', array('action' => 'reinitialize')));
-    }
-
-}
-
-/*was used to configure each plugin, not used anymore because admin have to choose only one plugin
-foreach($sharedresourcesplugins as $plugin){
-    $pluginkey = "sharedresource_plugin_hide_{$plugin}";
-    $settings->add(new admin_setting_configselect($pluginkey, get_string('plugin_'.$plugin, 'sharedresource'),
-                       get_string($pluginkey, 'sharedresource'), 0, $checkedoptions));
-}*/
 
 $settings->add(new admin_setting_heading('metadataconfig', get_string('metadataconfiguration', 'sharedresource'),
                    get_string('medatadaconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php')));

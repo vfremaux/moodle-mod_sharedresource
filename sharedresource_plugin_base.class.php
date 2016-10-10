@@ -14,18 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Valery Fremaux  valery.fremaux@club-internet.fr
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @package sharedresource
  *
  */
-
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_metadata_exception.class.php');
 /**
  * sharedresource_plugin_base is the base class for sharedresource plugins
@@ -349,7 +345,7 @@ abstract class sharedresource_plugin_base {
         if ($parentnode == '0') {
             echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" /></td>';
             echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$checked_indexer.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" /></td>';
-            echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\'" /></td>';
+            echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" /></td>';
             if (isset($field['widget'])) {
                 echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wk.'" '.$checked_widget.' value="1"/></td></tr>';
             } else {
@@ -357,7 +353,7 @@ abstract class sharedresource_plugin_base {
             }
         } else {
             if ($checked_system == 'checked="checked"') {
-                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\'"/></td>';
+                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')"/></td>';
             } else {
                 echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" DISABLED /></td>';
             }

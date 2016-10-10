@@ -22,15 +22,13 @@
  * @package sharedresource
  *
  */
-require_once('../../config.php');
+require_once("../../config.php");
 
 $id = required_param( 'id', PARAM_INT ); // course
 
 if (!$course =  $DB->get_record("course", array("id" => $id))) {
     print_error('coursemisconf');
 }
-
-// Security.
 
 require_login($course);
 $context = context_course::instance($id);

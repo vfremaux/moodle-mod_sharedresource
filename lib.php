@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @package sharedresource
+ *
  */
 
 define('SHAREDRESOURCE_LOCALPATH', 'LOCALPATH');
@@ -677,4 +675,17 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
 
     // Finally send the file.
     send_stored_file($file, $lifetime, 0, false);
+}
+
+/**
+ * This function allows the tool_dbcleaner to register integrity checks
+ */
+function sharedresource_dbcleaner_add_keys() {
+    $keys = array(
+        array('sharedresource', 'course', 'course', 'id', ''),
+        array('sharedresource_metadata', 'entry_id', 'sharedresource_entry', 'id', ''),
+        array('sharedresource_taxonomy', 'parent', 'sharedresource_taxonomy', 'id', ''),
+    );
+
+    return $keys;
 }

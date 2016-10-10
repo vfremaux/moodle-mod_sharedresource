@@ -233,6 +233,14 @@ if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->
     print_error('errorcmsectionbinding', 'sharedresource');
 }
 
+// If we are in page format, add page_item to section bound page
+if ($course->format == 'page') {
+    require_once($CFG->dirroot.'/course/format/page/page.class.php');
+    require_once($CFG->dirroot.'/course/format/page/lib.php');
+    $coursepage = course_page::get_current_page($course->id);
+    $coursepage->add_cm_to_page($cm->id);
+}
+
 // Finally if localization was asked, transform the sharedresource in real resource.
 if ($mode == 'local') {
     // We make a standard resource from the sharedresource.

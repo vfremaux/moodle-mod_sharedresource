@@ -151,6 +151,7 @@ $string['relation'] = 'Relation';
 $string['requirement'] = 'Contraintes';
 $string['resource'] = 'Ressource';
 $string['ressourceinteractive'] = 'Ressource interactive';
+$string['rights'] = 'Droits d\'exploitation et de diffusion';
 $string['rightsdescription'] = 'Description des droits d\'usage';
 $string['role'] = 'Role';
 $string['safari'] = 'Safari';
