@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
@@ -22,17 +24,16 @@
  * @subpackage mod_sharedresource
  * @category   mod
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
 * This file maps several Moodle typical definitions (modules) to Metadata concepts (LOM based)
 *
 */
 
-// This is used for a build_vcard utility function.
+// this is used for a build_vcard utility function
 require_once $CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php';
 
-// MODRESORUCETYPE addesses LOM 5_2 node (Learning Resource Type).
+// MODRESORUCETYPE addesses LOM 5_2 node (Learning Resource Type)
 global $MODRESOURCETYPES;
 
 $MODRESOURCETYPES = array(

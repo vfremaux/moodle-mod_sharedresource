@@ -30,7 +30,7 @@ function multiMenu(eltId, tabcount) {
 * Méthode qui sera appelée sur le click du bouton
 */
 function go(pluginchoice, fieldnum, islist, numoccur, name, type, keyid, listchildren, capability, realoccur){
-    if (type != 'category') {
+    if(type != 'category'){
         if((type == 'text' || type == 'codetext') && document.getElementById(keyid).value == '') {
             alert('<?php echo get_string('fillprevious','sharedresource'); ?>');
         }

@@ -18,17 +18,64 @@
  * @author  Piers Harding  piers@catalyst.net.nz
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
+ * @subpackage mod_sharedresource
  * @category mod
  */
 
-function xmldb_sharedresource_upgrade($oldversion = 0) {
-    global $CFG, $DB;
+// This file keeps track of upgrades to 
+// the resource module
+//
+// Sometimes, changes between versions involve
+// alterations to database structures and other
+// major things that may break installations.
+//
+// The upgrade function in this file will attempt
+// to perform all the necessary actions to upgrade
+// your older installtion to the current version.
+//
+// If there's something it cannot do itself, it
+// will tell you what you need to do.
+//
+// The commands in here will all be database-neutral,
+// using the functions defined in lib/ddllib.php
 
-    $dbman = $DB->get_manager();
+function xmldb_sharedresource_upgrade($oldversion=0) {
 
-    $return = true;
+    global $CFG, $THEME, $DB;
 
-    if ($oldversion < 2013032600) {
+    $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
+
+	$return = true;
+
+/// And upgrade begins here. For each one, you'll need one 
+/// block of code similar to the next one. Please, delete 
+/// this comment lines once this file start handling proper
+/// upgrade code.
+
+/// if ($result && $oldversion < YYYYMMDD00) { //New version in version.php
+///     $result = result of "/lib/ddllib.php" function calls
+/// }
+
+/*
+    if($result && $oldversion < 2012010109){
+    	// force conversion of all keywords to metadata
+    	if ($sharedresources_entries = $DB->get_records('sharedresource_entry')){
+    		require_once($CFG->dirroot.'/mod/sharedresource/sharedresouce_entry.class.php');
+    		foreach($sharedresources_entries as $se){
+    			$sharedresource_entry = sharedresource_entry::read($se->identifier);
+    			$sharedresource_entry->after_update();
+    		}
+    	}
+    }*/
+
+//===== 1.9.0 upgrade line ======//
+
+	if ($oldversion < 2013030800) {
+	}
+    
+//===== 2.x upgrade line ======//
+
+	if ($oldversion < 2013032600) {
 
         // Define field scoreview to be added to sharedresource_entry
         $table = new xmldb_table('sharedresource_entry');

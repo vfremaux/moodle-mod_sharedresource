@@ -12,8 +12,8 @@ php:
 
 env:
  matrix:
-  - DB=mysqli MOODLE_BRANCH=MOODLE_27_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_27_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_28_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_28_STABLE
 
 
 before_install:
@@ -24,9 +24,7 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci vfremaux/moodle-block_sharedresources
-  - moodle-plugin-ci vfremaux/moodle-repository_sharedresources
-  - moodle-plugin-ci vfremaux/moodle-local_sharedresources
+
   - moodle-plugin-ci install
 
 script:

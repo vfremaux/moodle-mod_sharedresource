@@ -17,21 +17,21 @@
 /**
  * Version details.
  *
- * @author          Piers Harding  piers@catalyst.net.nz
- * @contributor     Valery Fremaux  valery.fremaux@gmail.com
- * @contributor     Wafa Adham  admin@adham.ps
- * @license         http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package         mod_sharedresource
- * @category        mod
+ * @package mod_sharedresource
+ * @category mod
+ * @author  Piers Harding  piers@catalyst.net.nz
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @author  Wafa Adham  admin@adham.ps
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Intel Teach Advanced Online 
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2015072701;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014050800;       // Requires this Moodle version.
+$plugin->requires  = 2014111000;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_RC;
-$plugin->release = '2.7.0 (Build 2015072700)';
+$plugin->release = '2.8.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
 
 // Non moodle attributes.
-$plugin->codeincrement = '2.7.0000';
+$plugin->codeincrement = '2.8.0000';

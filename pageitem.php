@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  *
  * @author  Valery Fremaux  valery.fremaux@gmail.com
@@ -24,8 +26,6 @@
  * implements a hook for the page_module block to construct the
  * access link to a sharedressource 
  */
-defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 function sharedresource_set_instance(&$block) {
@@ -44,7 +44,7 @@ function sharedresource_set_instance(&$block) {
 
     $block->content->text = '<div class="block-page-module-view">'.$renderer->print_cm($COURSE, $modinfo->cms[$block->config->cmid], array()).'</div>';
  
-    // Call each plugin to add something.
+    // call each plugin to add something
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         if (method_exists($plugin, 'sharedresource_set_instance')){

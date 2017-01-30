@@ -55,24 +55,20 @@ function metadara_create_tab($capability, &$mtdstandard) {
 
     $namespace = $mtdstandard->getNamespace();
 
-    $str = '';
-
     $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
     for ($i = 1; $i <= $nbrmenu; $i++) {
         if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$namespace}_{$capability}_{$i}'") == true) {
-            $tabclass = 'mtd-tab-visible';
+            $class = 'mtd-tab-visible';
         } else {
-            $tabclass = 'mtd-tab-hidden';
+            $class = 'mtd-tab-hidden';
         }
-        $str .= '<li id="menu_'.$i.'" class="'.$tabclass.'">';
+        echo "\t\t".'<li id="menu_'.$i.'" class="'.$class.'">'."\n\t\t";
 
         $lowername = strtolower($mtdstandard->METADATATREE[$i]['name']);
         $tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$namespace);
-        $str .= '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>';
-        $str .= '</li>';
+        echo '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>'."\n";
+        echo "\t\t".'</li>'."\n";
     }
-
-    return $str;
 }
 
 /*

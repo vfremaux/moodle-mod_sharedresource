@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  *
  * @author  Frédéric Guillou
@@ -21,8 +23,6 @@
  * @package mod_sharedresource
  * @category mod
  */
-defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
 /**
