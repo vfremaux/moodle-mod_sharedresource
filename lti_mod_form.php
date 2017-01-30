@@ -21,8 +21,6 @@
 // of the Universitat Politecnica de Catalunya http://www.upc.edu
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This file is a clone from main lti client form used by sharedresource to easily 
  * make a new client instance in a course from a tool definition stored in sharedresource
@@ -36,8 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  * LOM compliant. So we still need the secret be known by the user that deployes the LTI tool
  * from the library.
  *
- * @package    mod_sharedresource
- * @category   mod
+ * @package    mod
+ * @subpackage sharedresource
  * @see /mod/lti/mod_form.php
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu

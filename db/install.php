@@ -17,8 +17,8 @@
 /**
  * Post-install code for the customlabel module.
  *
- * @package    mod_sharedresource
- * @category mod
+ * @package    mod
+ * @subpackage sharedresource
  * @copyright  2013 Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -52,7 +52,7 @@ function xmldb_sharedresource_install() {
         $dbman->add_index($table, $index, false, false);
     }
 
-    // installs default config for discipline classification     
+    // installs default config for discipline classification
     $classifarray = array('sharedresource_taxonomy' => array(
             'id' => 'id',
             'classname' => get_string('discipline', 'sharedresource'),

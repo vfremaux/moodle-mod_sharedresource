@@ -133,6 +133,7 @@ $string['fileuploadfailed'] = 'Echec du téléchargement';
 $string['fillcategory'] = 'Tous les champs de la catégorie sont vides. Remplissez-en au moins un.';
 $string['fillprevious'] = 'Le champ précédent est vide. Veuillez le remplir avant de rajouter un autre champ';
 $string['filtername'] = 'Nom du filtre';
+$string['filesharedresource'] = 'Ressource mutualisée (fichier ou url)';
 $string['forcedownload'] = 'Forcer le téléchargement';
 $string['frameifpossible'] = 'Cadre, si posible';
 $string['frameifpossible_help'] = 'Si activé, la ressource est présentée dans un cadre autonome';

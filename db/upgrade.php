@@ -18,7 +18,6 @@
  * @author  Piers Harding  piers@catalyst.net.nz
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
- * @subpackage mod_sharedresource
  * @category mod
  */
 
@@ -70,12 +69,11 @@ function xmldb_sharedresource_upgrade($oldversion=0) {
 
 //===== 1.9.0 upgrade line ======//
 
-	if ($oldversion < 2013030800) {
-	}
-    
+     if ($oldversion < 2013030800) {}
+
 //===== 2.x upgrade line ======//
 
-	if ($oldversion < 2013032600) {
+    if ($oldversion < 2013032600) {
 
         // Define field scoreview to be added to sharedresource_entry
         $table = new xmldb_table('sharedresource_entry');
@@ -107,5 +105,3 @@ function xmldb_sharedresource_upgrade($oldversion=0) {
 
     return $return;
 }
-
-?>

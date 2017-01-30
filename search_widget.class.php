@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Frédéric Guillou
+ * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package mod_sharedresource
- * @category mod
+ * @package sharedresource
+ *
  */
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 

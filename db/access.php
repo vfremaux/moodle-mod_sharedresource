@@ -30,12 +30,6 @@
 //
 // For the core capabilities, the variable is $moodle_capabilities.
 
-/**
- * @package mod_sharedresource
- * @category mod
- * @copyright 2012 Valery Fremaux
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 $capabilities = array(
 

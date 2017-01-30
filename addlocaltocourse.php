@@ -22,8 +22,7 @@
  * external resource repositories are queried from a course starting context.
  * Adding local resource should always provide identifier.
  *
- * @package    sharedresource
- * @subpackage mod_sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -54,7 +53,8 @@ require_login($course);
 $context = context_course::instance($course->id);
 $strtitle = get_string('addlocal', 'sharedresource');
 
-$url = new moodle_url('/mod/sharedresource/addlocaltocourse.php', array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode));
+$params = array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode);
+$url = new moodle_url('/mod/sharedresource/addlocaltocourse.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context($context);
@@ -70,7 +70,7 @@ $sharedresource_entry = sharedresource_entry::read($identifier);
 if ($mode == 'file') {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
-    // this is the simple "file" mode that gets back the resource file into course file scope
+    // This is the simple "file" mode that gets back the resource file into course file scope.
     print_string('fileadvice', 'sharedresource');
     $return = new moodle_url('/files/index.php', array('id' => $courseid));
     echo $OUTPUT->continue_button($return);
@@ -93,12 +93,12 @@ if ($mode == 'deploy') {
         $file = $fs->get_file_by_id($sharedresource_entry->file);
         activity_publisher::restore_single_module($courseid, $file);
 
-        // TODO : Terminate procedure and return to course silently
+        // TODO : Terminate procedure and return to course silently.
         redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
         die;
     }
 
-    // no one should be here....
+    // No one should be here....
 }
 
 if ($mode == 'ltiinstall') {
@@ -116,13 +116,13 @@ if ($mode == 'ltiinstall') {
     $instance->timemodified = $time;
     $instance->typeid = 0;
     if (preg_match('#^https://#', $sharedresource_entry->url)) {
-        $instance->toolurl = ''; 
+        $instance->toolurl = '';
         $instance->securetoolurl = $sharedresource_entry->url;
     } else {
         $instance->toolurl = $sharedresource_entry->url;
         $instance->securetoolurl = '';
     }
-    $instance->instructorchoicesendname = 1; // default lti form value
+    $instance->instructorchoicesendname = 1; // Default lti form value.
     $instance->instructorchoicesendemailaddr = 1;
     $instance->instructorchoiceallowroster = 1;
     $instance->instructorchoiceallowsetting = 1;
@@ -130,12 +130,12 @@ if ($mode == 'ltiinstall') {
     $instance->instructorchoiceacceptgrades = 1;
     $instance->grade = 0;
     $instance->launchcontainer = LTI_LAUNCH_CONTAINER_DEFAULT;
-    $instance->resourcekey = ''; // client identification key for remote service
-    $instance->password = ''; // server password for accessing the service
+    $instance->resourcekey = ''; // Client identification key for remote service.
+    $instance->password = ''; // Server password for accessing the service.
     $instance->debuglaunch = 0;
     $instance->showtitlelaunch = 0;
     $instance->showdescriptionlaunch = 0;
-    $instance->servicesalt = ''; // Unique salt autocalculated
+    $instance->servicesalt = ''; // Unique salt autocalculated.
     $instance->icon = '';
     $instance->secureicon = '';
 
@@ -174,7 +174,6 @@ if ($mode == 'ltiinstall') {
 
     $modulename = 'lti';
 } else {
-
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
     $instance = new sharedresource_base(0, $sharedresource_entry->identifier);
@@ -206,7 +205,7 @@ $cm->module = $module->id;
 $cm->course = $courseid;
 $cm->section = $sectionid;
 
-// Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!;
+// Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!
 // Valid also if LTI tool.
 if (!empty($sharedresource_entry->remoteid)) {
     $cm->idnumber = $sharedresource_entry->remoteid;
@@ -234,7 +233,7 @@ if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->
     print_error('errorcmsectionbinding', 'sharedresource');
 }
 
-// If we are in page format, add page_item to section bound page
+// If we are in page format, add page_item to section bound page.
 if ($course->format == 'page') {
     require_once($CFG->dirroot.'/course/format/page/page.class.php');
     require_once($CFG->dirroot.'/course/format/page/lib.php');
@@ -251,7 +250,7 @@ if ($mode == 'local') {
     $modulename = 'sharedresource';
 }
 
-// Fire event
+// Fire event.
 $modcontext = context_module::instance($cm->id);
 $eventdata = new StdClass();
 $eventdata->modulename = $modulename;

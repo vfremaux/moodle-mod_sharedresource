@@ -15,25 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
  * @author  Valery Fremaux valery.fremaux@club-internet.fr
+ * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
  *
  * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
+ * 
+ * @package sharedresource
+ *
  */
-require('../../config.php');
+require_once("../../config.php");
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
 require_once $CFG->dirroot.'/mod/sharedresource/search_widget.class.php';
-
-$url = new moodle_url('/mod/sharedresource/metadataconfigure.php');
-$PAGE->set_url($url);
-
-// Security.
-
-require_login();
-
 $PAGE->requires->js('/mod/sharedresource/js/mtdform.js');
 $action = optional_param('action',null ,PARAM_ALPHA);
 $system_context = context_system::instance();
@@ -43,6 +38,11 @@ $PAGE->set_context($system_context);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
+$PAGE->set_focuscontrol('');
+$PAGE->set_cacheable(false);
+$PAGE->set_button('');
+$url = new moodle_url('/mod/sharedresource/metadataconfigure.php');
+$PAGE->set_url($url);
 
 $plugins = sharedresource_get_plugins();
 if (empty($plugins)){

@@ -19,8 +19,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * @author   "Sebastián Grignoli" <grignoli@framework2.com.ar>
  * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   encoding
+ * @category   mod
  * @link     http://www.framework2.com.ar/dzone/forceUTF8-es/
  * @example  http://www.framework2.com.ar/dzone/forceUTF8-es/
  */

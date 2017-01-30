@@ -23,9 +23,9 @@ function multiMenu(eltId, tabcount) {
             document.getElementById(arrLinkId[i]).parentNode.className = '';
             document.getElementById(strTab).className = 'off content';
         }
-    }    
+    }
 }
-        
+
 /**
 * Méthode qui sera appelée sur le click du bouton
 */
