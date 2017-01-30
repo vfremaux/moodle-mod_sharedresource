@@ -22,7 +22,8 @@
  * external resource repositories are queried from a course starting context.
  * Adding local resource should always provide identifier.
  *
- * @package    mod_sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -231,6 +232,14 @@ if (!$sectionid = course_add_cm_to_section($course, $cm->id, $section)) {
 
 if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
     print_error('errorcmsectionbinding', 'sharedresource');
+}
+
+// If we are in page format, add page_item to section bound page
+if ($course->format == 'page') {
+    require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
+    require_once($CFG->dirroot.'/course/format/page/lib.php');
+    $coursepage = course_page::get_current_page($course->id);
+    $coursepage->add_cm_to_page($cm->id);
 }
 
 // Finally if localization was asked, transform the sharedresource in real resource.

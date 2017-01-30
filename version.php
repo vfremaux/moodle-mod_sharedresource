@@ -15,26 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details.
  *
+ * @package mod_sharedresource
+ * @category mod
  * @author  Piers Harding  piers@catalyst.net.nz
- * @reauthor  Valery Fremaux  valery.fremaux@gmail.com
- * @contributor  Wafa Adham  admin@adham.ps
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @author  Wafa Adham  admin@adham.ps
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Intel Teach Advanced Online 
  */
-
-////////////////////////////////////////////////////////////////////////////////
-//  Code fragment to define the module version etc.
-//  This fragment is called by /admin/index.php
-////////////////////////////////////////////////////////////////////////////////
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version   = 2015072701;       // The current module version (Date: YYYYMMDDXX)
-$module->requires  = 2014111000;       // Requires this Moodle version
-$module->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics)
-$module->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
-$module->release = '2.8.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2015072701;       // The current module version (Date: YYYYMMDDXX).
+$plugin->requires  = 2014111000;       // Requires this Moodle version.
+$plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
+$plugin->maturity = MATURITY_RC;
+$plugin->release = '2.8.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
 
+// Non moodle attributes.
+$plugin->codeincrement = '2.8.0000';

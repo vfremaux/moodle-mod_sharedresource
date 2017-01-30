@@ -16,14 +16,11 @@
 
 /**
  * @author  Valery Fremaux valery.fremaux@club-internet.fr
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
+ * @package    mod_sharedresource
+ * @category   mod
  *
  * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
- * 
- * @package mod_sharedresource
- * @category mod
- *
  */
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');

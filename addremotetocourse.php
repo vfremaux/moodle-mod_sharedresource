@@ -19,7 +19,8 @@
  * directly in the current course. This possibility will only be available when
  * external resource repositories are queried from a course starting context
  *
- * @package    mod_sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL

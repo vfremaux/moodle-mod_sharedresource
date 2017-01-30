@@ -17,20 +17,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- *
- * @author  Valery Fremaux  valery.fremaux@club-internet.fr
- * @version 0.0.1
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
+ * @package sharedresource
+ * @subpackage mod_sharedresource
  * @category mod
  *
- */
-
-/**
  * implements a hook for the page_module block to construct the
  * access link to a sharedressource 
  */
-
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 function sharedresource_set_instance(&$block) {
