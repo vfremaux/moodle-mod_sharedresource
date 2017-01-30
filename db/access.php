@@ -30,12 +30,6 @@
 //
 // For the core capabilities, the variable is $moodle_capabilities.
 
-/**
- * @package mod_sharedresource
- * @category mod
- * @copyright 2012 Valery Fremaux
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 $capabilities = array(
 
@@ -45,8 +39,8 @@ $capabilities = array(
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW
+			'coursecreator' => CAP_ALLOW,
+			'teacher' => CAP_ALLOW
         )
     ),
 
@@ -58,7 +52,7 @@ $capabilities = array(
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW,
+			'coursecreator' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         )
     ),

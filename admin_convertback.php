@@ -17,8 +17,8 @@
 /**
  * this admin screen allows converting massively sharedresources into local resources or urls.
  *
- * @package    sharedresource
- * @subpackage mod_sharedresource
+ *
+ * @package    mod-sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL

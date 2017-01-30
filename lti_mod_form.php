@@ -36,8 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  * LOM compliant. So we still need the secret be known by the user that deployes the LTI tool
  * from the library.
  *
- * @package    mod_sharedresource
- * @category   mod
+ * @package    mod
+ * @subpackage mod_sharedresource
  * @see /mod/lti/mod_form.php
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu

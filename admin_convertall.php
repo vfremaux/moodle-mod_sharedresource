@@ -18,8 +18,7 @@
  * this admin screen allows converting massively resources into sharedresources
  * indexable entries.
  *
- * @package    sharedresource
- * @subpackage mod_sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
