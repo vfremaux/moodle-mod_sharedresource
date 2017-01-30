@@ -206,6 +206,7 @@ $string['nodescription'] = 'Il n\'y a pas de description disponible pour cette n
 $string['nometadataplugin'] = 'L\'administrateur n\'a pas configuré le schéma de métadonnées applicable aux ressources.';
 $string['noplugin'] = 'Pas de métadonnées';
 $string['noprovidertopushto'] = 'Votre plate-forme n\'est raccordée à aucun fournisseur de mutualisation.';
+$string['nosharedresources'] = 'Aucune ressource mutualisée publiée dans ce cours';
 $string['noresourcesfound'] = 'Aucune ressource dans le catalogue';
 $string['noresourcestoconvert'] = 'Aucune ressource à convertir';
 $string['notselectable'] = 'Non sélectionnables';

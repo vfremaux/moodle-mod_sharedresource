@@ -229,6 +229,7 @@ $string['noprovidertopushto'] = 'Your site is not connected to any Moodle resour
 $string['noresourcesfound'] = 'No resources found';
 $string['noresourcestoconvert'] = 'No resource to convert';
 $string['notselectable'] = 'Not selectable';
+$string['nosharedresources'] = 'No shared resources in this course';
 $string['nowidget'] = 'No search widget defined by the admin !';
 $string['numericsearch'] = 'Research on numeric field';
 $string['onekeyword'] = 'Only one keyword authorized in one text field (no spaces)<br/>';

@@ -19,10 +19,11 @@ defined('MOODLE_INTERNAL') || die();
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   mod
  */
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
