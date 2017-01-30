@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Valery Fremaux  valery.fremaux@club-internet.fr
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package mod_sharedresource
  * @category mod
  *
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_metadata_exception.class.php');
 /**
@@ -313,13 +311,13 @@ abstract class sharedresource_plugin_base {
         $field = $this->METADATATREE[$fieldid];
         $csk = 'config_'.$this->namespace.'_system_'.$fieldid;
         $sk = $this->namespace.'_system_'.$fieldid;
-        $checked_system = (@$config->$csk) ? 'checked="checked"' : '';
+        $checked_system = (!empty($config->$csk)) ? 'checked="checked"' : '';
         $cik = 'config_'.$this->namespace.'_indexer_'.$fieldid;
         $ik = $this->namespace.'_indexer_'.$fieldid;
-        $checked_indexer = (@$config->$cik) ? 'checked="checked"' : '';
+        $checked_indexer = (!empty($config->$cik)) ? 'checked="checked"' : '';
         $cak = 'config_'.$this->namespace.'_author_'.$fieldid;
         $ak = $this->namespace.'_author_'.$fieldid;
-        $checked_author = (@$config->$cak) ? 'checked="checked"' : '';
+        $checked_author = (!empty($config->$cak)) ? 'checked="checked"' : '';
         $wk = $this->namespace.'_widget_'.$fieldid;
         $wn = 'widget_'.$this->namespace.'_'.$fieldid;
 
@@ -349,7 +347,7 @@ abstract class sharedresource_plugin_base {
         if ($parentnode == '0') {
             echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" /></td>';
             echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$checked_indexer.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" /></td>';
-            echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\'" /></td>';
+            echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" /></td>';
             if (isset($field['widget'])) {
                 echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wk.'" '.$checked_widget.' value="1"/></td></tr>';
             } else {
@@ -357,7 +355,7 @@ abstract class sharedresource_plugin_base {
             }
         } else {
             if ($checked_system == 'checked="checked"') {
-                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\'"/></td>';
+                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')"/></td>';
             } else {
                 echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$checked_system.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" DISABLED /></td>';
             }

@@ -17,10 +17,9 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    sharedresource
+ * @category   mod
  */
 require_once('../../config.php');
 
@@ -63,6 +62,7 @@ echo $OUTPUT->header();
 
 if (! $resources = get_all_instances_in_course("sharedresource", $course)) {
     echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), "../../course/view.php?id=$course->id");
+    echo $OUTPUT->footer();
     exit;
 }
 

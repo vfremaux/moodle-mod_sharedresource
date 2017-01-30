@@ -66,6 +66,8 @@
     /* background-image:url(pix/tab/right.gif); */
     background-repeat:no-repeat;
     background-position:top right;
+    height:40px;
+    list-style:none;
 }
 
 #ecform_onglet ul#menu li a{

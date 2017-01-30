@@ -14,16 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @author     Piers Harding  piers@catalyst.net.nz
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package    mod_sharedresource
+ * @category   mod
  */
+defined('MOODLE_INTERNAL') || die();
 
 define('SHAREDRESOURCE_LOCALPATH', 'LOCALPATH');
 define('SHAREDRESOURCE_TEMPPATH', '/temp/sharedresources/');
@@ -634,7 +632,7 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
         $fullpath = "/$context->id/mod_scorm/package/$itemid/$relativepath";
         $lifetime = 0; // No caching here.
 
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        if ((!$file = $fs->get_file_by_hash(sha1($fullpath))) || $file->is_directory()) {
             return false;
         }
 
@@ -677,4 +675,17 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
 
     // Finally send the file.
     send_stored_file($file, $lifetime, 0, false);
+}
+
+/**
+ * This function allows the tool_dbcleaner to register integrity checks
+ */
+function sharedresource_dbcleaner_add_keys() {
+    $keys = array(
+        array('sharedresource', 'course', 'course', 'id', ''),
+        array('sharedresource_metadata', 'entry_id', 'sharedresource_entry', 'id', ''),
+        array('sharedresource_taxonomy', 'parent', 'sharedresource_taxonomy', 'id', ''),
+    );
+
+    return $keys;
 }

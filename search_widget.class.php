@@ -17,11 +17,12 @@
 /**
  *
  * @author  Frédéric Guillou
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package sharedresource
- *
+ * @package mod_sharedresource
+ * @category mod
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
 /**

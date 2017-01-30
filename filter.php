@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package    mod_sharedresource
+ * @category   mod
  *
  */
+defined('MOODLE_INTERNAL') || die();
+
 function sharedresource_filter($courseid, $text) {
     global $CFG, $DB;
-    // Trivial-cache - keyed on $cachedcourseid
+
+    // Trivial-cache - keyed on $cachedcourseid.
     static $nothingtodo;
     static $resourcelist;
     static $cachedcourseid;
@@ -80,7 +81,7 @@ function sharedresource_filter($courseid, $text) {
         foreach ($resources as $resource) {
             $currentname = trim($resource->name);
             $strippedname = strip_tags($currentname);
-            /// Avoid empty or unlinkable resource names
+            // Avoid empty or unlinkable resource names.
             if (!empty($strippedname)) {
                 $resourcelist[] = new filterobject($currentname,
                         '<a class="resource autolink" title="'.$strippedname.'" href="'.
