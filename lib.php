@@ -32,26 +32,26 @@ define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 global $SHAREDRESOURCE_WINDOW_OPTIONS;
 global $SHAREDRESOURCE_CORE_ELEMENTS;
-global $SHAREDRESOURCE_METADATA_ELEMENTS; // must be global because it might be included from a function!
+global $SHAREDRESOURCE_METADATA_ELEMENTS; // Must be global because it might be included from a function!
 
-$SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable', 
-                                    'scrollbars', 
-                                    'directories', 
+$SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
+                                    'scrollbars',
+                                    'directories',
                                     'location',
-                                    'menubar', 
-                                    'toolbar', 
-                                    'status', 
-                                    'width', 
+                                    'menubar',
+                                    'toolbar',
+                                    'status',
+                                    'width',
                                     'height');
 
-$SHAREDRESOURCE_CORE_ELEMENTS = array('id', 
-                                    'identifier', 
-                                    'title', 
-                                    'description', 
-                                    'url', 
-                                    'file', 
-                                    'type', 
-                                    'remoteid', 
+$SHAREDRESOURCE_CORE_ELEMENTS = array('id',
+                                    'identifier',
+                                    'title',
+                                    'description',
+                                    'url',
+                                    'file',
+                                    'type',
+                                    'remoteid',
                                     'mimetype',
                                     'timemodified');
 
@@ -101,11 +101,10 @@ function sharedresource_supports($feature) {
     }
 }
 
-
 /**
-* Find active plugins, load the class files, and instantiate
-* the appropriate plugin object.
-*/
+ * Find active plugins, load the class files, and instantiate
+ * the appropriate plugin object.
+ */
 function sharedresource_get_plugins($entryid = 0) {
     global $CFG;
 
@@ -149,12 +148,11 @@ function sharedresource_add_instance($sharedresource) {
 function sharedresource_update_instance($sharedresource) {
     global $CFG;
 
-    $sharedresource->type = 'file'; // Just to be sure
+    $sharedresource->type = 'file'; // Just to be sure.
     $instance = new sharedresource_base();
     $instance->sharedresource = $sharedresource;
     return $instance->update_instance();
 }
-
 
 /**
  * callback method from modedit.php for deleting a sharedresource instance
@@ -179,9 +177,9 @@ function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
     global $DB;
 
     $select = "
-        userid = ? AND 
-        module = 'sharedresource' AND 
-        action = 'view' AND 
+        userid = ? AND
+        module = 'sharedresource' AND
+        action = 'view' AND
         info = ?
     ";
 
@@ -195,7 +193,7 @@ function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
 
         return $result;
     }
-    return NULL;
+    return null;
 }
 
 
@@ -203,13 +201,13 @@ function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
  * What does this do?
  */
 function sharedresource_user_complete($course, $user, $mod, $sharedresource) {
-    global $CFG,$DB;
+    global $CFG, $DB;
 
     $select = "
         userid = ? AND
-        module='sharedresource' AND
-        action='view' AND 
-        info= ?
+        module = 'sharedresource' AND
+        action = 'view' AND
+        info = ?
     ";
     if ($logs = $DB->get_records_select('log', $select, array($user->id, $sharedresource->id), 'time ASC')) {
         $numviews = count($logs);
@@ -229,8 +227,6 @@ function sharedresource_user_complete($course, $user, $mod, $sharedresource) {
  * What does this do?
  */
 function sharedresource_get_participants($sharedresourceid) {
-//Returns the users with data in one sharedresource
-//(NONE, byt must exists on EVERY mod !!)
 
     return false;
 }
@@ -244,14 +240,14 @@ function sharedresource_get_coursemodule_info($coursemodule) {
 
     $info = null;
 
-    if ($sharedresource = $DB->get_record('sharedresource',array('id'=> $coursemodule->instance), 'id, popup, identifier, type, name')) {
+    if ($sharedresource = $DB->get_record('sharedresource', array('id' => $coursemodule->instance), 'id, popup, identifier, type, name')) {
 
        $sharedresource_entry = sharedresource_entry::read($sharedresource->identifier);
 
        $info = new StdClass;
        $info->name = $sharedresource->name;
        if (!empty($sharedresource->popup)) {
-           $info->extra =  urlencode("onclick=\"this.target='sharedresource$sharedresource->id'; return ".
+           $info->extra = urlencode("onclick=\"this.target='sharedresource$sharedresource->id'; return ".
                     "openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id=".
                     $coursemodule->id.
                     "','sharedresource$sharedresource->id','$sharedresource->popup');\"");
@@ -323,9 +319,9 @@ function sharedresource_fetch_remote_file ($cm, $url, $headers = '' ) {
         }
     } else {
         if ( $client->status >= 400 && $client->status < 500) {
-            $client->results = get_string('fetchclienterror', 'sharedresource');  // Client error
-        } elseif ( $client->status >= 500 && $client->status < 600) {
-            $client->results = get_string('fetchservererror', 'sharedresource');  // Server error
+            $client->results = get_string('fetchclienterror', 'sharedresource');  // Client error.
+        } else if ( $client->status >= 500 && $client->status < 600) {
+            $client->results = get_string('fetchservererror', 'sharedresource');  // Server error.
         } else {
             $client->results = get_string('fetcherror', 'sharedresource');     // Redirection? HEAD? Unknown error.
         }
@@ -363,7 +359,7 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
 
         $regex = "/<$tagtoparse (.+?)>/is";
         $count = preg_match_all($regex, $text, $hrefs);
-        for ( $i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $tag = $hrefs[1][$i];
 
             $poshref = strpos(strtolower($tag),strtolower($keytoparse));
@@ -375,7 +371,7 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
             }
             $posspace   = strpos($tag, ' ', $start + 1);
             $right = "";
-            if ( $posspace != FALSE) {
+            if ( $posspace != false) {
                 $right = substr($tag, $posspace);
             }
             $end = strlen($tag) - 1;
@@ -398,13 +394,13 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
             // Special case: If finalurl contains a ?, it won't be parsed
             $valid = 1;
 
-            if ( strpos($finalurl, "?") == FALSE ) {
+            if (strpos($finalurl, "?") == false) {
                 $valid = 1;
             }
             if ( $valid ) {
-                if ( $finalurl[0] == '/' ) {
+                if ($finalurl[0] == '/') {
                     $finalurl = $mainroot . $finalurl;
-                } elseif ( strtolower(substr($finalurl, 0, 7)) != 'http://' and
+                } else if (strtolower(substr($finalurl, 0, 7)) != 'http://' &&
                            strtolower(substr($finalurl, 0, 8)) != 'https://') {
                      if ( $finalurl[0] == '/') {
                         $finalurl = $mainroot . $finalurl;
@@ -428,10 +424,11 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
  * @return bool, true = is URL
  */
 function sharedresource_is_url($path) {
-    if (strpos($path, '://')) {     // eg http:// https:// ftp://  etc
+    if (strpos($path, '://')) {
+        // Eg http:// https:// ftp: // etc.
         return true;
     }
-    if (strpos($path, '/') === 0) { // Starts with slash
+    if (strpos($path, '/') === 0) { // Starts with slash.
         return true;
     }
     return false;
@@ -535,7 +532,7 @@ function sharedresource_delete_file($file) {
 
     if (is_file($file)) {
         chmod($file, 0777);
-        if (((unlink($file))) == FALSE) {
+        if (((unlink($file))) == false) {
             return false;
         }
         return true;
@@ -556,8 +553,8 @@ function sharedresource_sha1file($file) {
 }
 
 /**
- * format the URL correctly for local files    
- * 
+ * format the URL correctly for local files
+ *
  * @param $sharedresourceentry object, actual sharedresource object
  * @param $options array, query string parameters to be passed along
  * @return string, formated URL.
@@ -565,11 +562,10 @@ function sharedresource_sha1file($file) {
 function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $options = null) {
     global $CFG, $HTTPSPAGEREQUIRED;
 
-
     $fs = get_file_storage();
     $file = $fs->get_file_by_id($sharedresourceentry->file);
-    
-    if(!$file){
+
+    if (!$file) {
         return false;
     }
 

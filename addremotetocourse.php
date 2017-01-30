@@ -50,9 +50,9 @@ if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
     $url = required_param('url', PARAM_URL);
     $filename = required_param('file', PARAM_TEXT);
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // set it to pretty big files
+    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // Set it to pretty big files.
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // set it to retrieve any content type
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
     curl_setopt($ch, CURLOPT_POST, false);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // important
     curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
@@ -60,26 +60,29 @@ if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     if ($rawresponse = curl_exec($ch)) {
-        $filename = preg_replace('/[0-9a-f]+-/i', '', basename($filename));  // removes the unique shacode
+        $filename = preg_replace('/[0-9a-f]+-/i', '', basename($filename));  // Removes the unique shacode.
         $path = $CFG->dataroot.'/'.$course->id.'/'.$filename;
         $FILE = fopen($path, 'wb');
         fwrite($FILE, $rawresponse);
         fclose($FILE);
     }
-    // if we are just getting the file, that's enough
+    // If we are just getting the file, that's enough.
     if ($mode == 'file') {
         redirect($CFG->wwwroot.'/files/index.php?id='.$course->id);
     }
 }
 if ($mode != 'file') {
-    // The resource IS NOT known in the local repository but we may have the identifier and the provider
-    // if identifier is empty the resource is submitted from an external search interface.
-    // if not empty, the resource comes from another MNET shared repository
+    /*
+     * The resource IS NOT known in the local repository but we may have the identifier and the provider
+     * if identifier is empty the resource is submitted from an external search interface.
+     * if not empty, the resource comes from another MNET shared repository
+     */
     $title = required_param('title', PARAM_TEXT);
     $desc = required_param('description', PARAM_TEXT);
     $provider = required_param('provider', PARAM_TEXT);
     $keywords = required_param('keywords', PARAM_TEXT);
-    // make a sharedresource_entry
+
+    // Make a sharedresource_entry.
     $sharedresource_entry = new sharedresource_entry(false);
     $sharedresource_entry->title = $title;
     $sharedresource_entry->description = $desc;
@@ -99,7 +102,8 @@ if ($mode != 'file') {
             print_error('errorinvalididentifier', 'sharedresource');
         }
     }
-    // Add a sharedresource
+
+    // Add a sharedresource.
     $sharedresource = new sharedresource_base(0, $sharedresource_entry->identifier);
     $sharedresource->options = 0;
     $sharedresource->popup = 0;
@@ -116,7 +120,7 @@ if ($mode != 'file') {
         $modulename = 'resource';
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource =  $DB->get_record('resource',array( 'id'=> $resourceid));
+            $resource = $DB->get_record('resource',array( 'id'=> $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
@@ -132,38 +136,39 @@ if ($mode != 'file') {
     $cm->module = $module->id;
     $cm->course = $courseid;
     $cm->section = 1;
-    // Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!;
+    // Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!
     if (!empty($sharedresource_entry->remoteid)) {
         $cm->idnumber = $sharedresource_entry->remoteid;
     }
-    // insert the course module in course
+    // Insert the course module in course.
     if (!$cm->coursemodule = add_course_module($cm)) {
         print_error('errorcmaddition', 'sharedresource');
     }
     if (!$sectionid = add_mod_to_section($cm)) {
         print_error('errorsectionaddition', 'sharedresource');
     }
-    if (! $DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->coursemodule))) {
+    if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->coursemodule))) {
         print_error('errorcmsectionbinding', 'sharedresource');
     }
 }
 
 // Finish.
 
-$PAGE->set_url($CFG->wwwroot.'/mod/sharedresource/addremotetocourse.php?id='.$courseid.'&url='.$url.'&file='.$filename);
+$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', array('id' => $courseid, 'url' => $url, 'file' => $filename));
+$PAGE->set_url($url);
 $PAGE->set_title('');
 $PAGE->set_heading('');
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(true);
 $PAGE->set_button('');
 $PAGE->set_pagelayout('standard');
-$PAGE->navbar->add($course->shortname, $CFG->wwwroot."/course/view.php?id={$course->id}");
+$PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', array('id' => $course->id)));
 $PAGE->navbar->add(get_string('addremote', 'sharedresource'));
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('addremote', 'sharedresource'));
 
-echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}");
+echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid)));
 echo $OUTPUT->footer($course);
 die;
