@@ -34,8 +34,8 @@
  * LOM compliant. So we still need the secret be known by the user that deployes the LTI tool
  * from the library.
  *
- * @package    mod
- * @subpackage sharedresource
+ * @package    mod_sharedresource
+ * @category   mod
  * @see /mod/lti/mod_form.php
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
@@ -47,7 +47,6 @@
  * @author     Chris Scribner
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');

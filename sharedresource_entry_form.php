@@ -26,7 +26,7 @@ require_once $CFG->libdir.'/formslib.php';
 
 class mod_sharedresource_entry_form extends moodleform {
 
-    public function __construct($mode) {
+    public function mod_sharedresource_entry_form($mode) {
         $this->sharedresource_entry_mode = $mode;
         parent::moodleform();
     }

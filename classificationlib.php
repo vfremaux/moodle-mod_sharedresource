@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Frederic GUILLOU
@@ -23,13 +21,15 @@ defined('MOODLE_INTERNAL') || die();
  * @package    sharedresource
  * @category   mod
  */
+defined('MOODLE_INTERNAL') || die();
 
-/* This php script contains all the stuff to use classifications
+/*
+ * This php script contains all the stuff to use classifications
  * This is used in the metadata form of a sharedresource and 
  * in the search engine of a sharedresource.
  */
 
-/*
+/**
  * These two functions (create_classif and create_classif_rec) create a useable array representing a classification.
  */
 function metadata_create_classification($classtable, $classifarray, $classification) {

@@ -17,7 +17,8 @@
 /**
  * @author  Frederic GUILLOU
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
  * @category   mod
  *
  * This php script display the admin part of the classification
