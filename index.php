@@ -17,18 +17,20 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   mod
  */
-require_once("../../config.php");
+require_once('../../config.php');
 
 $id = required_param( 'id', PARAM_INT ); // course
 
 if (!$course =  $DB->get_record("course", array("id" => $id))) {
     print_error('coursemisconf');
 }
+
+// Security.
 
 require_login($course);
 $context = context_course::instance($id);

@@ -17,16 +17,16 @@
 /**
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   mod
  *
  * This php script display the admin part of a specific 
  * classification. You can modify the classification and
  * select the taxon path which are displayed.
  *
  */
-
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');

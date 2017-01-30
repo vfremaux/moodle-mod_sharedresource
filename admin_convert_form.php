@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * forms for converting resources to sharedresources
  *
- * @package    mod-sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL

@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @author   "Sebastián Grignoli" <grignoli@framework2.com.ar>
- * @package  Encoding
- * @version  1.1
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   encoding
  * @link     http://www.framework2.com.ar/dzone/forceUTF8-es/
  * @example  http://www.framework2.com.ar/dzone/forceUTF8-es/
  */

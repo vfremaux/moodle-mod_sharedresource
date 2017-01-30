@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package mod_sharedresource
+ * @category mod
+ */
 require('../../config.php');
 require_once($CFG->dirroot."/mod/sharedresource/lib.php");
 require_once($CFG->dirroot."/mod/sharedresource/sharedresource_plugin_base.class.php");

@@ -20,12 +20,11 @@
  * when a classification is displayed
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   mod
  */
-
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 

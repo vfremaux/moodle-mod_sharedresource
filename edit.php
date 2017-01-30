@@ -18,10 +18,10 @@
  *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package sharedresource
- *
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
+ * @category   mod
  */
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry_form.php');

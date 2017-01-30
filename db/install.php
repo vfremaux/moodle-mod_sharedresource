@@ -17,8 +17,8 @@
 /**
  * Post-install code for the customlabel module.
  *
- * @package    mod
- * @subpackage sharedresource
+ * @package    mod_sharedresource
+ * @category mod
  * @copyright  2013 Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
