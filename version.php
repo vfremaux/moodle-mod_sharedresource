@@ -31,8 +31,8 @@ $plugin->version   = 2015072701;       // The current module version (Date: YYYY
 $plugin->requires  = 2016052300;       // Requires this Moodle version
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
-$plugin->release = '3.1.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
+$plugin->release = '3.2.0 (Build 2015072700)';     // Full name of the plugin (used for diagnostics)
 $plugin->dependencies = array('local_sharedresources' => 2014032700);
 
 // Non Moodle attributes.
-$plugin->codeincrement = '3.1.0001';
+$plugin->codeincrement = '3.2.0001';
