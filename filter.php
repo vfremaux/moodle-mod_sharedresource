@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author      Piers Harding  piers@catalyst.net.nz
- * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package     sharedresource
- * @category    mod
+ *
+ * @author  Piers Harding  piers@catalyst.net.nz
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
+ * @package    mod_sharedresource
+ * @category   mod
  *
  */
 defined('MOODLE_INTERNAL') || die();

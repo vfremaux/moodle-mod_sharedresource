@@ -62,12 +62,12 @@ $PAGE->navbar->add(get_string('resourcetorepository', 'sharedresource'));
 
 // Get courses.
 
-if (empty($courseid)){
+if (empty($courseid)) {
     // If no course choosen (comming from general sections) make the choice of one.
     $allcourses = $DB->get_records_menu('course', null, 'shortname', 'id,fullname');
     $form = new sharedresource_choosecourse_form($allcourses);
-    if ($form->is_cancelled()){
-        redirect($CFG->wwwroot.'/resources/index.php');
+    if ($form->is_cancelled()) {
+        redirect(new moodle_url('/resources/index.php'));
     }
     echo $OUTPUT->header();
     $form->display();
@@ -76,37 +76,37 @@ if (empty($courseid)){
 } else {
     // Back to library if cancelled.
     $form = new sharedresource_choosecourse_form(null);
-    if ($form->is_cancelled()){
-        redirect($CFG->wwwroot.'/resources/index.php');
+    if ($form->is_cancelled()) {
+        redirect(new moodle_url('/resources/index.php'));
     }
     $resources = $DB->get_records('resource', array('course' => $courseid), 'name');
     $urls = $DB->get_records('url', array('course' => $courseid),'name');
-    if (empty($resources) && empty($urls)){
-        echo $OUTPUT->header();  
+    if (empty($resources) && empty($urls)) {
+        echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
-        echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
+        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
         echo $OUTPUT->footer();
         exit();
     }
 
     $form2 = new sharedresource_selectresources_form($course, $resources, $urls);
 
-    /// if data submitted, proceed
-    if ($data = $form2->get_data()){
-        if ($form2->is_cancelled()){
-            if ($courseid){
+    // If data submitted, proceed.
+    if ($data = $form2->get_data()) {
+        if ($form2->is_cancelled()) {
+            if ($courseid) {
                 print_string('conversioncancelledtocourse', 'sharedresource');
-                redirect($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
+                redirect(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
             } else {
                 print_string('conversioncancelledtolibrary', 'sharedresource');
-                redirect($CFG->wwwroot."/resources/index.php");
+                redirect(new moodle_url('/resources/index.php'));
             }
         }
         $reskeys = preg_grep("/rcnv_/" , array_keys(get_object_vars($data)));
-        if (!empty($reskeys)){
-            foreach($reskeys as $reskey){
-                // convert selected resources.
-                if ($data->$reskey == 1){
+        if (!empty($reskeys)) {
+            foreach ($reskeys as $reskey) {
+                // Convert selected resources.
+                if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
                     $resource = $DB->get_record('resource', array('id' => $resid));
                     mtrace("converting resource {$resource->id} : {$resource->name}<br/>\n");
@@ -116,9 +116,9 @@ if (empty($courseid)){
         }
         $reskeys = preg_grep("/ucnv_/" , array_keys(get_object_vars($data)));
         if (!empty($reskeys)){
-            foreach($reskeys as $reskey){
-                // convert selected resources.
-                if ($data->$reskey == 1){
+            foreach ($reskeys as $reskey) {
+                // Convert selected resources.
+                if ($data->$reskey == 1) {
                     $resid = str_replace('ucnv_', '', $reskey);
                     $url = $DB->get_record('url', array('id' => $resid));
                     mtrace("converting url {$url->id} : {$url->name}<br/>\n");
@@ -127,10 +127,10 @@ if (empty($courseid)){
             }
         }
     } else {
-        // print form
+        // Print form.
         echo $OUTPUT->header();
         $form2->display();
-        if ($course){
+        if ($course) {
              print ($OUTPUT->footer($course));
         } else {
             print ($OUTPUT->footer());

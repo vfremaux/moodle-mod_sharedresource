@@ -17,9 +17,9 @@
 /**
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package    mod_sharedresource
+ * @category   mod
  *
  * Important design note about namespace processing:
  * 
@@ -55,20 +55,24 @@ function metadara_create_tab($capability, &$mtdstandard) {
 
     $namespace = $mtdstandard->getNamespace();
 
+    $str = '';
+
     $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
     for ($i = 1; $i <= $nbrmenu; $i++) {
         if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$namespace}_{$capability}_{$i}'") == true) {
-            $class = 'mtd-tab-visible';
+            $tabclass = 'mtd-tab-visible';
         } else {
-            $class = 'mtd-tab-hidden';
+            $tabclass = 'mtd-tab-hidden';
         }
-        echo "\t\t".'<li id="menu_'.$i.'" class="'.$class.'">'."\n\t\t";
+        $str .= '<li id="menu_'.$i.'" class="'.$tabclass.'">';
 
         $lowername = strtolower($mtdstandard->METADATATREE[$i]['name']);
         $tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$namespace);
-        echo '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>'."\n";
-        echo "\t\t".'</li>'."\n";
+        $str .= '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>';
+        $str .= '</li>';
     }
+
+    return $str;
 }
 
 /*

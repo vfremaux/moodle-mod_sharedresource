@@ -54,7 +54,7 @@ if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
     curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // important
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
     curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -120,7 +120,7 @@ if ($mode != 'file') {
         $modulename = 'resource';
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource = $DB->get_record('resource',array( 'id'=> $resourceid));
+            $resource =  $DB->get_record('resource',array( 'id' => $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
@@ -131,7 +131,7 @@ if ($mode != 'file') {
         $modulename = 'sharedresource';
     }
     // Make a new course module.
-    $module =  $DB->get_record('modules', array('name'=> $modulename));
+    $module =  $DB->get_record('modules', array('name' => $modulename));
     $cm->instance = $resourceid;
     $cm->module = $module->id;
     $cm->course = $courseid;
@@ -153,8 +153,8 @@ if ($mode != 'file') {
 }
 
 // Finish.
-
-$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', array('id' => $courseid, 'url' => $url, 'file' => $filename));
+$params = array('id' => $courseid, 'url' => $url, 'file' => $filename);
+$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_title('');
 $PAGE->set_heading('');

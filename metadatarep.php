@@ -22,10 +22,9 @@
  * to the metadata form
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    mod_sharedresource
+ * @category   mod
  */
 
 require_once('../../config.php');
@@ -64,7 +63,8 @@ $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 
-/* navigation */
+// Navigation.
+
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'),"{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id",'activity');
 $PAGE->navbar->add($strtitle,'metadatarep.php','misc');
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
@@ -118,7 +118,7 @@ if ($result['error'] != array()) {
     echo '</center>';
     echo $OUTPUT->footer();
 } else {
-    //these two lines in comment can be used if you want to show the user values of saved fields
+    // These two lines in comment can be used if you want to show the user values of saved fields.
     /*echo '<h1>'.get_string('attributes','sharedresource').'</h1><br/>';
     echo $result['display'];*/
     if ($mode == 'add' && !$sharedresource_entry->exists() && !$sharedresource_entry->add_instance()) {
@@ -126,7 +126,7 @@ if ($result['error'] != array()) {
     } elseif (!$sharedresource_entry->update_instance()) {
         print_error('failupdate', 'sharedresource');
     } else {
-        // if everything was saved correctly, go back to the search page or to the library
+        // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
             $fullurl = $CFG->wwwroot."/local/sharedresources/index.php?course={$course->id}";
             redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);

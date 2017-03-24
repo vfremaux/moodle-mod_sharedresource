@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Frederic GUILLOU
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  */
+defined('MOODLE_INTERNAL') || die();
 
-/* This php script contains all the stuff to use classifications
+/*
+ * This php script contains all the stuff to use classifications
  * This is used in the metadata form of a sharedresource and 
  * in the search engine of a sharedresource.
  */
 
-/*
+/**
  * These two functions (create_classif and create_classif_rec) create a useable array representing a classification.
  */
 function metadata_create_classification($classtable, $classifarray, $classification) {
@@ -42,17 +42,22 @@ function metadata_create_classification($classtable, $classifarray, $classificat
                                     );
     $i = 0;
     foreach ($classtable as $key => $taxon) {
-        if ($taxon->$classifarray[$classification]['parent'] == '' || $taxon->$classifarray[$classification]['parent'] == 0) {
-            if ($taxon->$classifarray[$classification]['ordering'] != '' && $taxon->$classifarray[$classification]['ordering'] != 0) {
-                $newclassif[$classification]['childs'][$taxon->$classifarray[$classification]['ordering']] = $taxon->$classifarray[$classification]['id'];
+        if ($taxon->$classifarray[$classification]['parent'] == '' ||
+                $taxon->$classifarray[$classification]['parent'] == 0) {
+            if (($taxon->$classifarray[$classification]['ordering'] != '') &&
+                    ($taxon->$classifarray[$classification]['ordering'] != 0)) {
+                $ordering = $taxon->$classifarray[$classification]['ordering'];
+                $newclassif[$classification]['childs'][$ordering] = $taxon->$classifarray[$classification]['id'];
             } else {
                 $newclassif[$classification]['childs']['none'.$i] = $taxon->$classifarray[$classification]['id'];
                 $i++;
             }
-            $newclassif[$taxon->$classifarray[$classification]['id']] = array('label' => $taxon->$classifarray[$classification]['label'], 
-                                                                              'ordering' => $taxon->$classifarray[$classification]['ordering'], 
-                                                                              'childs' => array()
-                                                                        );
+            $classifkey = $taxon->$classifarray[$classification]['id'];
+            $newclassif[$classifkey] = array(
+                'label' => $taxon->$classifarray[$classification]['label'],
+                'ordering' => $taxon->$classifarray[$classification]['ordering'],
+                'childs' => array()
+            );
             unset($tempclassif[$key]);
         }
     }
@@ -73,18 +78,21 @@ function metadata_create_classification_rec($tempclassif, $newclassif, $classifa
                 if ($classif->$classifarray[$classification]['parent'] == $key) {
                     // If the ordering is defined, it is the key in the child array.
                     $minordering = $classifarray[$classification]['orderingmin'];
-                    if ($classif->$classifarray[$classification]['ordering'] != '' && $classif->$classifarray[$classification]['ordering'] >= $minordering) {
-                        $newclassif[$key]['childs'][$classif->$classifarray[$classification]['ordering']] = $classif->$classifarray[$classification]['id'];
+                    if ($classif->$classifarray[$classification]['ordering'] != '' &&
+                            $classif->$classifarray[$classification]['ordering'] >= $minordering) {
+                        $childid = $classif->$classifarray[$classification]['ordering'];
+                        $newclassif[$key]['childs'][$childid] = $classif->$classifarray[$classification]['id'];
                     } else {
                         // Else, the key "none" followed by a number is given as the key in the child array.
                         $newclassif[$key]['childs']['none'.$i] = $classif->$classifarray[$classification]['id'];
                         $i++;
                     }
-                    $newclassif[$classif->$classifarray[$classification]['id']] = array(
-                            'label' => $classif->$classifarray[$classification]['label'], 
-                            'ordering' => $classif->$classifarray[$classification]['ordering'], 
-                            'childs' => array()
-                        );
+                    $classifid = $classif->$classifarray[$classification]['id'];
+                    $newclassif[$classifid] = array(
+                        'label' => $classif->$classifarray[$classification]['label'], 
+                        'ordering' => $classif->$classifarray[$classification]['ordering'], 
+                        'childs' => array()
+                    );
                     unset($tempclassif[$id]);
                 }
             }
@@ -106,7 +114,14 @@ function metadata_print_classification_options($classifarray, $selectedlabel = '
             if ($infos['restriction'] == '') {
                 $classtable =  $DB->get_records($name);
             } else {
-                $sql = "SELECT * FROM {{$name}} WHERE {$classifarray[$name]['restriction']}";
+                $sql = "
+                    SELECT
+                        *
+                    FROM
+                        {{$name}}
+                    WHERE
+                        {$classifarray[$name]['restriction']}
+                ";
                 $classtable =  $DB->get_records_sql($sql, array());
             }
             $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
@@ -120,7 +135,8 @@ function metadata_print_classification_options($classifarray, $selectedlabel = '
                 } else {
                     echo '<option value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
                 }
-                echo metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $finalclassif[$id]['label'], $selectedlabel);
+                echo metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id,
+                                                               $finalclassif[$id]['label'], $selectedlabel);
             }
         }
     }
@@ -130,7 +146,7 @@ function metadata_print_classification_options($classifarray, $selectedlabel = '
  * Recursive exploration of the classification
  *
  */
-function metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $path='', $selectedlabel=''){
+function metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $path='', $selectedlabel='') {
     foreach ($finalclassif[$id]['childs'] as $ordering => $taxonid) {
         if (in_array($taxonid,$classifarray[$name]['taxonselect'])) {
             $temppath = $path.'/'.$finalclassif[$taxonid]['label'];
@@ -150,7 +166,7 @@ function metadata_print_classification_options_rec($name, $classifarray, $finalc
  * print a complete classification path
  * @see metadatanotice.php
  */
-function metadata_print_classification_value($classifarray, $selectedlabel = ''){
+function metadata_print_classification_value($classifarray, $selectedlabel = '') {
     global $DB;
 
     if ($classifarray) {
@@ -175,9 +191,9 @@ function metadata_print_classification_value($classifarray, $selectedlabel = '')
     }
 }
 
-function metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $id, $selectedlabel='') {
+function metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $id, $selectedlabel = '') {
     foreach ($finalclassif[$id]['childs'] as $ordering => $taxonid) {
-        if (in_array($taxonid,$classifarray[$name]['taxonselect'])) {
+        if (in_array($taxonid, $classifarray[$name]['taxonselect'])) {
             if ($name.':'.$taxonid == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
                 echo '/ '.$finalclassif[$taxonid]['label']. ' ';
             }
@@ -193,8 +209,8 @@ function metadata_print_classification_value_rec($name, $classifarray, $finalcla
  */
 function print_classif2($classifarray) {
     if (!empty($classifarray)) {
-        foreach($classifarray as $name => $infos) {
-            if($infos['select'] == 1) {
+        foreach ($classifarray as $name => $infos) {
+            if ($infos['select'] == 1) {
                 echo '<option class="sharedresource-listsection" value="'.$name.'">'.$infos['classname'].'</option>';
             }
         }
@@ -240,7 +256,7 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
         }
     // If we are searching the childs of a taxon.
     } else {
-        if(!empty($classif)) {
+        if (!empty($classif)) {
             if ($classifarray[$classif]['restriction'] == '') {
                 $classtable = $DB->get_records($classif);
             } else {
@@ -250,7 +266,7 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
             $restriction = $classifarray[$classif]['taxonselect'];
             if (!empty($finalclassif[substr($value, 0, strpos($value, '\\'))]['childs'])) {
                 echo '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num + 1).',';
-                if($key != '') {
+                if ($key != '') {
                     echo '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
                 } else {
                     echo 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
