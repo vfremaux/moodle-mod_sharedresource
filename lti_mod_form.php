@@ -62,7 +62,11 @@ class lti_mod_form extends moodleform {
 
         $mform =& $this->_form;
 
+<<<<<<< HEAD
 		// Contextual addtolocalresource transaction params
+=======
+        // Contextual addtolocalresource transaction params.
+>>>>>>> MOODLE_32_STABLE
         $mform->addElement('hidden', 'id'); // Course id
         $mform->setType('id', PARAM_INT);
 
@@ -72,6 +76,7 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'mode');
         $mform->setType('mode', PARAM_TEXT);
 
+<<<<<<< HEAD
         $mform->addElement('hidden', 'identifier'); // shared resource identifier
         $mform->setType('identifier', PARAM_TEXT);
 
@@ -79,10 +84,20 @@ class lti_mod_form extends moodleform {
         // Adding the "general" fieldset, where all the common settings are shown
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // Adding the standard "name" field
+=======
+        // Shared resource identifier.
+        $mform->addElement('hidden', 'identifier');
+        $mform->setType('identifier', PARAM_TEXT);
+
+        // Adding the "general" fieldset, where all the common settings are shown.
+        $mform->addElement('header', 'general', get_string('general', 'form'));
+        // Adding the standard "name" field.
+>>>>>>> MOODLE_32_STABLE
 
         $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size'=>'64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
+<<<<<<< HEAD
         /*
         // Adding the optional "intro" and "introformat" pair of fields
         $this->add_intro_editor(false, get_string('basicltiintro', 'lti'));
@@ -91,6 +106,13 @@ class lti_mod_form extends moodleform {
         $mform->setAdvanced('introeditor');
 
         // Display the label to the right of the checkbox so it looks better & matches rest of the form
+=======
+
+        $mform->addElement('editor', 'introeditor', get_string('description'), null, array());
+        $mform->setAdvanced('introeditor');
+
+        // Display the label to the right of the checkbox so it looks better & matches rest of the form.
+>>>>>>> MOODLE_32_STABLE
         $mform->addElement('checkbox', 'showdescription', get_string('showdescription'));
         $mform->setAdvanced('showdescription');
 
@@ -98,7 +120,11 @@ class lti_mod_form extends moodleform {
         $mform->setAdvanced('showtitlelaunch');
         $mform->addHelpButton('showtitlelaunch', 'display_name', 'lti');
 
+<<<<<<< HEAD
         $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' ' . get_string('display_description', 'lti'));
+=======
+        $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' '. get_string('display_description', 'lti'));
+>>>>>>> MOODLE_32_STABLE
         $mform->setAdvanced('showdescriptionlaunch');
         $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'lti');
 
@@ -140,12 +166,15 @@ class lti_mod_form extends moodleform {
 
         $mform->addElement('hidden', 'resourcekey');
         $mform->setType('resourcekey', PARAM_TEXT);
+<<<<<<< HEAD
         /*
         $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'lti'));
         $mform->setType('resourcekey', PARAM_TEXT);
         $mform->setAdvanced('resourcekey');
         $mform->addHelpButton('resourcekey', 'resourcekey', 'lti');
         */
+=======
+>>>>>>> MOODLE_32_STABLE
 
         $mform->addElement('passwordunmask', 'password', get_string('password', 'lti'));
         $mform->setType('password', PARAM_TEXT);
@@ -153,12 +182,15 @@ class lti_mod_form extends moodleform {
 
         $mform->addElement('hidden', 'instructorcustomparameters');
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
+<<<<<<< HEAD
 		/*
         $mform->addElement('textarea', 'instructorcustomparameters', get_string('custom', 'lti'), array('rows'=>4, 'cols'=>60));
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
         $mform->setAdvanced('instructorcustomparameters');
         $mform->addHelpButton('instructorcustomparameters', 'custom', 'lti');
         */
+=======
+>>>>>>> MOODLE_32_STABLE
 
         $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size'=>'64'));
         $mform->setType('icon', PARAM_TEXT);
@@ -170,8 +202,12 @@ class lti_mod_form extends moodleform {
         $mform->setAdvanced('secureicon');
         $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
 
+<<<<<<< HEAD
         //-------------------------------------------------------------------------------
         // Add privacy preferences fieldset where users choose whether to send their data
+=======
+        // Add privacy preferences fieldset where users choose whether to send their data.
+>>>>>>> MOODLE_32_STABLE
         $mform->addElement('header', 'privacy', get_string('privacy', 'lti'));
 
         $mform->addElement('checkbox', 'instructorchoicesendname', '&nbsp;', ' ' . get_string('share_name', 'lti'));
@@ -186,21 +222,34 @@ class lti_mod_form extends moodleform {
         $mform->setDefault('instructorchoiceacceptgrades', '1');
         $mform->addHelpButton('instructorchoiceacceptgrades', 'accept_grades', 'lti');
 
+<<<<<<< HEAD
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules
+=======
+        // Add standard elements, common to all modules.
+
+>>>>>>> MOODLE_32_STABLE
         /*
         $this->standard_coursemodule_elements();
         $mform->setAdvanced('cmidnumber');
         */
 
+<<<<<<< HEAD
 		// fake standard course module elements adding grade
+=======
+        // Fake standard course module elements adding grade.
+>>>>>>> MOODLE_32_STABLE
         $mform->addElement('header', 'gradeheader', get_string('scale'));
 
         $mform->addElement('modgrade', 'grade', get_string('grade'));
         $mform->setDefault('grade', 100);
 
+<<<<<<< HEAD
         //-------------------------------------------------------------------------------
         // add standard buttons, common to all modules
+=======
+        // Add standard buttons, common to all modules.
+>>>>>>> MOODLE_32_STABLE
         $this->add_action_buttons();
 
         $editurl = new moodle_url("/mod/lti/instructor_edit_tool_type.php?sesskey={$USER->sesskey}&course={$COURSE->id}");
@@ -261,4 +310,7 @@ class lti_mod_form extends moodleform {
 
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> MOODLE_32_STABLE

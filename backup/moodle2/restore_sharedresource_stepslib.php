@@ -32,6 +32,7 @@
 class restore_sharedresource_activity_structure_step extends restore_activity_structure_step {
 
     protected function define_structure() {
+        global $CFG;
 
         $paths = array();
 
@@ -51,42 +52,45 @@ class restore_sharedresource_activity_structure_step extends restore_activity_st
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
-
         $newitemid = $DB->insert_record('sharedresource', $data);
         $this->apply_activity_instance($newitemid);
     }
 
     protected function process_sharedresourceentry($data) {
-        global $DB;
+        global $DB, $CFG;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-		if ($oldres = $DB->get_record('sharedresource_entry', array('identifier' => $data->identifier))){
-			if ($CFG->sharedresource_freeze_index){
-        		$newid = $DB->update_record('sharedresource_entry', $data);
-		        $this->set_mapping('sharedresource_entry', $oldid, $newid);
-		    }
-		} else {
-        	$newid = $DB->insert_record('sharedresource_entry', $data);
-	        $this->set_mapping('sharedresource_entry', $oldid, $newid);
-		}
+        if ($oldres = $DB->get_record('sharedresource_entry', array('identifier' => $data->identifier))) {
+            if (!empty($CFG->sharedresource_freeze_index)) {
+                $newid = $DB->update_record('sharedresource_entry', $data);
+                $this->set_mapping('sharedresource_entry', $oldid, $newid);
+            }
+        } else {
+            $newid = $DB->insert_record('sharedresource_entry', $data);
+            $this->set_mapping('sharedresource_entry', $oldid, $newid);
+        }
     }
 
     protected function process_datum($data) {
-    	global $DB;
+        global $DB, $CFG;
 
         $data = (object)$data;
         $oldid = $data->id;
         $data->entry_id = $this->get_mappingid('sharedresource_entry', $data->entry_id);
 
-		if ($oldres = $DB->get_record('sharedresource_metadata', array('entry_id' => $data->entry_id, 'namespace' => $data->namespace, 'element' => $data->element))){
-			if ($CFG->sharedresource_freeze_index){
-        		$newid = $DB->update_record('sharedresource_metadata', $data);
-		    }
-		} else {
-        	$newid = $DB->insert_record('sharedresource_metadata', $data);
-		}
+        if ($oldres = $DB->get_record('sharedresource_metadata', array('entry_id' => $data->entry_id, 'namespace' => $data->namespace, 'element' => $data->element))) {
+            if ($CFG->sharedresource_freeze_index) {
+                $newid = $DB->update_record('sharedresource_metadata', $data);
+            }
+        } else {
+            $newid = $DB->insert_record('sharedresource_metadata', $data);
+        }
     }
-
+    
+    public function after_execute() {
+        $courseid = $this->get_courseid();
+        rebuild_course_cache($courseid, true);
+    }
 }

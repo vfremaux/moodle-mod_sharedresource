@@ -1,5 +1,7 @@
 <?php
 
+$string['pluginname'] = 'Learning Object Model (LOM)';
+$string['accessibilityrestrictions'] = 'Restrictions d\'accessibilité';
 $string['aggregationlevel'] = 'Niveau d\'aggrégation';
 $string['annotation'] = 'Annotation';
 $string['browserenvironment'] = 'Agent Utilisateur Web';
@@ -55,6 +57,12 @@ $string['semanticdensity'] = 'Densité sémantique';
 $string['size'] = 'Taille';
 $string['source'] = 'Référentiel source';
 $string['status'] = 'Etat de publication';
+$string['title'] = 'Titre';
+$string['language'] = 'Langue';
+$string['name'] = 'Nom';
+$string['metametadata'] = 'Description des métadonnées';
+$string['description'] = 'Description';
+$string['location'] = 'Emplacement';
 $string['structure'] = 'Structure';
 $string['taxonpath'] = 'Classification taxonomique';
 $string['taxum'] = 'Entrée de classification';
@@ -64,7 +72,7 @@ $string['typicalagerange'] = 'Tranche d\'âge typique';
 $string['typicallearningtime'] = 'Temps d\'apprentissage';
 $string['version'] = 'Version';
 $string['orcomposite'] = 'OrComposite';
-$string['descriptionlom']='Le LOM (Learning Object Metadata) est un schéma de description de ressources d’enseignement et d’apprentissage. Il consiste en un ensemble de métadonnées permettant de décrire la nature, la syntaxe et la sémantique d\'un objet pédagogique. Il peut être utilisé pour décrire des ressources tant numériques que non numériques. Techniquement, son nom est IEEE 1484.12.1-2002 (LOM)1.<br/><br/>
+$string['standarddescription'] = 'Le LOM (Learning Object Metadata) est un schéma de description de ressources d’enseignement et d’apprentissage. Il consiste en un ensemble de métadonnées permettant de décrire la nature, la syntaxe et la sémantique d\'un objet pédagogique. Il peut être utilisé pour décrire des ressources tant numériques que non numériques. Techniquement, son nom est IEEE 1484.12.1-2002 (LOM)1.<br/><br/>
 
 Ce standard a été conçu, en 2002, par le comité « IEEE-LTSC-LOM, Institute of Electrical and Electronics Engineers, Inc. - Learning Technology Standards Committee - Learning Objects Metadata Working Group », organisme international regroupant des représentants du Canada, des États-Unis, de plusieurs pays d’Europe, d’Afrique, d’Amérique latine, d’Asie et de certaines régions du Pacifique.<br/><br/>
 Ses objectifs sont les suivants :<br/>
@@ -168,7 +176,7 @@ $string['graph'] = 'Graphique';
 $string['index'] = 'Index';
 $string['slide'] = 'Diapositives';
 $string['table'] = 'Tableaux';
-$string['narrative text'] = 'Texte narratif';
+$string['narrativetext'] = 'Texte narratif';
 $string['exam'] = 'Examen';
 $string['experiment'] = 'Expérience';
 $string['problemstatement'] = 'Résolution de problèmes';

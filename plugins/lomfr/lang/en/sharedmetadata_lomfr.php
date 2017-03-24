@@ -1,11 +1,17 @@
 <?php
 
+$string['pluginname'] = 'Learning Object Model. Version franÃ§aise (LOMFR)';
+$string['accessibilityrestrictions'] = 'Accessibility restrictions';
+$string['activity'] = 'Activity';
 $string['aggregationlevel'] = 'Aggregation level';
+$string['apourprerequis'] = 'Has as prerequisite';
 $string['annotation'] = 'Annotation';
+$string['animation'] = 'Animation';
+$string['assessment'] = 'Assessment';
 $string['browserenvironment'] = 'Browser Environment';
 $string['catalog'] = 'Catalog';
 $string['classification'] = 'Classification';
-$string['classification'] = 'Classification';
+$string['classificationpurpose'] = 'Classification purpose';
 $string['classificationtaxonpath'] = 'Classification taxon path';
 $string['context'] = 'Context';
 $string['contribute'] = 'Contribute';
@@ -17,17 +23,36 @@ $string['copyrightandotherrestrictions'] = 'Copyright and other restrictions';
 $string['cost'] = 'Cost';
 $string['coverage'] = 'Coverage';
 $string['date'] = 'Date';
+$string['demonstration'] = 'Demonstration';
+$string['description'] = 'Description';
 $string['difficulty'] = 'Difficulty';
+$string['documenttype'] = 'Document type';
+$string['doctorat'] = 'PhD';
 $string['duration'] = 'Duration';
 $string['educational'] = 'Educational';
 $string['enduserrole'] = 'End User Role';
+$string['ensemblededonnees'] = 'Data set';
 $string['entity'] = 'Entity';
 $string['entry'] = 'Entry';
 $string['environmenttype'] = 'Environment Type';
+$string['enseignementprimaire'] = 'Primary Education';
+$string['enseignementsecondaire'] = 'Secondary Education';
+$string['estassociea'] = 'Is linked to';
+$string['estlatraductionde'] = 'Is translation of';
+$string['estprerequisde'] = 'Is prerequisite of';
+$string['evenement'] = 'Event';
+$string['faitlobjetdunetraduction'] = 'Has translation';
+$string['format'] = 'Format';
+$string['formationcontinue'] = 'Life Long Learning';
+$string['formationentreprise'] = 'Profesional Development';
 $string['format'] = 'Format';
 $string['general'] = 'General';
+$string['glossary'] = 'Glossary';
 $string['id'] = 'Id';
 $string['identifier'] = 'Identifier';
+$string['image'] = 'Image';
+$string['imageenmouvement'] = 'Animated image';
+$string['imagefixe'] = 'Still image';
 $string['installationremarks'] = 'Installation remarks';
 $string['intendedenduserrole'] = 'Intended end user role';
 $string['interactivitylevel'] = 'Level of interactivity';
@@ -35,13 +60,21 @@ $string['interactivitytype'] = 'Interactivity Type';
 $string['issuedate'] = 'Issue date';
 $string['keyword'] = 'Keyword';
 $string['kind'] = 'Kind';
+$string['language'] = 'Language';
 $string['learningresourcetype'] = 'Learning resource type';
 $string['lifecycle'] = 'Life Cycle';
-$string['lomformat'] = 'Learning Object Model (LOM)';
+$string['license'] = 'License';
+$string['location'] = 'Location';
+$string['logiciel'] = 'Software';
+$string['lomfrformat'] = 'Learning Object Model FR (LOMFR)';
+$string['master'] = 'Master';
+$string['mastere'] = 'Postgraduate Master';
 $string['maximumversion'] = 'Maximum version';
-$string['meta-metadata'] = 'Meta-metadata';
+$string['metametadata'] = 'Meta-metadata';
 $string['metadataschema'] = 'Metadata schema';
 $string['minimumversion'] = 'Minimum version';
+$string['name'] = 'Name';
+$string['objetphysique'] = 'Real life object';
 $string['orcomposite'] = 'OrComposite';
 $string['osenvironment'] = 'OS Environment';
 $string['otherplatformrequirements'] = 'Other platform requirements';
@@ -49,26 +82,47 @@ $string['purpose'] = 'Purpose';
 $string['relation'] = 'Relation';
 $string['requirement'] = 'Requirement';
 $string['resource'] = 'Resource';
+$string['ressourceinteractive'] = 'Interactive resource';
 $string['rights'] = 'Rights';
 $string['rightsdescription'] = 'Rights description';
 $string['role'] = 'Role';
 $string['semanticdensity'] = 'Semantic Density';
+$string['service'] = 'Service';
 $string['size'] = 'Size';
+$string['son'] = 'Sound';
 $string['source'] = 'Source';
 $string['status'] = 'Status';
 $string['structure'] = 'Structure';
 $string['taxonpath'] = 'Taxon Path';
 $string['taxum'] = 'Taxum';
 $string['technical'] = 'Technical';
+$string['texte'] = 'Text';
+$string['title'] = 'Title';
+$string['tutoriel'] = 'Tutorial';
 $string['type'] = 'Type';
 $string['typicalagerange'] = 'Typical age range';
 $string['typicallearningtime'] = 'Typical learning time';
 $string['version'] = 'Version';
+$string['glossaire'] = 'Glossary';
+$string['guide'] = 'Guidance';
+$string['materieldereference'] = 'Reference material';
+$string['methodologie'] = 'Method';
+$string['outil'] = 'Teaching tool';
+$string['scenariopedagogique'] = 'Learning scenario';
+$string['vcard'] = 'VCard';
 
-$string['description_lom'] = 'Learning Object Metadata is a data model, usually encoded in XML, used to describe a learning object and similar digital resources used to support learning. The purpose of learning object metadata is to support the reusability of learning objects, to aid discoverability, and to facilitate their interoperability, usually in the context of online learning management systems (LMS). <br/><br/>
-
-The IEEE 1484.12.1 - 2002 Standard for Learning Object Metadata is an internationally-recognised open standard (published by the Institute of Electrical and Electronics Engineers Standards Association, New York) for the description of “learning objects”. Relevant attributes of learning objects to be described include: type of object; author; owner; terms of distribution; format; and pedagogical attributes, such as teaching or interaction style. <br/><br>
-<center>More informations here : <a href=\"http://en.wikipedia.org/wiki/Learning_Object_Metadata\">Wikipedia page of LOM</a></center>';
+$string['standarddescription'] = 'LOMFR is the french application profile of LOM. <br/><br/>
+LOMFR describe pedagogical objects (resources).
+Any entity (numeric or not) used in a educational process, a formation process or a learning process is considered as a pedagogical resource.<br/><br/>
+LOMFR objectives are :<br/>
+- allowing a better visibility of the pedagogical objects offer (numeric or not).<br/>
+- having models to respect and to ensure the continued existence, the interoperability, and an openess of produced numeric resources, linked to distribution plate-forms or consultation plate-forms.<br/><br/>
+It concern the whole educative community :<br/>
+- the french educative community (primary, secondary or superior cycle)<br/>
+- the formation community (professional formation, continueing formation)<br/>
+- archivists and librarians<br/>
+- publishers, companies <br/><br/>
+<center>More informations here : <a href=\"http://www.lom-fr.fr\">Page of the lomfr profile</a></center>';
 
 //Aggregation level
 $string['1'] = '1';
@@ -106,7 +160,7 @@ $string['linear'] = 'Linear';
 // Status
 $string['draft'] = 'Draft';
 $string['final'] = 'Final';
-$string['revised'] = 'Révised';
+$string['revised'] = 'RÃ©vised';
 $string['unavailable'] = 'Unavailable';
 
 // Role
@@ -151,7 +205,7 @@ $string['amaya'] = 'Amaya';
 $string['firefox'] = 'Firefox';
 $string['googlechrome'] = 'Google Chrome';
 
-// Type d'interactivité
+// Type d'interactivitÃ©
 $string['active'] = 'Active';
 $string['expositive'] = 'Expositive';
 $string['mixed'] = 'Mixed';
@@ -166,7 +220,7 @@ $string['graph'] = 'Graph';
 $string['index'] = 'Index';
 $string['slide'] = 'Slide';
 $string['table'] = 'Table';
-$string['narrative text'] = 'Narrative text';
+$string['narrativetext'] = 'Narrative text';
 $string['exam'] = 'Exam';
 $string['experiment'] = 'Experiment';
 $string['problemstatement'] = 'Problem statement';
@@ -209,3 +263,25 @@ $string['isbasedon'] = 'is based on';
 $string['isbasisfor'] = 'is basis for';
 $string['requires'] = 'requires';
 $string['isrequiredby'] = 'is required by';
+
+$string['animer'] = 'Animate';
+$string['apprendre'] = 'Learn';
+$string['collaborer'] = 'Collaborate';
+$string['communiquer'] = 'Communicate';
+$string['cooperer'] = 'Cooperate';
+$string['creer'] = 'Create';
+$string['echanger'] = 'Exchange';
+$string['lire'] = 'Read';
+$string['observer'] = 'Observe';
+$string['organiser'] = 'Organize';
+$string['produire'] = 'Produce';
+$string['publier'] = 'Publish';
+$string['rechercher'] = 'Seek';
+$string['sautoformer'] = 'Self-train';
+$string['sexercer'] = 'Train';
+$string['sinformer'] = 'Self-inform';
+$string['seformer'] = 'Self-teach';
+$string['simuler'] = 'Simulate';
+$string['sevaluer'] = 'Self-evaluate';
+
+

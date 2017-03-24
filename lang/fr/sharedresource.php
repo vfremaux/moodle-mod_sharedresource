@@ -122,16 +122,21 @@ $string['errorsectionaddition'] = 'Impossible de créer une nouvelle section';
 $string['errorupdatecm'] = 'Erreur de mise à jour de la resosurce mutualisée (instance)';
 $string['existothermetadata'] = 'Une fiche de métadonnées pour cette ressource existe déjà dans une autre norme. <br/>La validation de ce formulaire pour une nouvelle fiche entraînera la suppression des anciennes métadonnées.';
 $string['export'] = 'Exporter vers un référentiel externe';
+$string['existsignorechanges'] = 'la donnée existe mais n\'est pas modifiée';
 $string['failadd'] = 'Echec de la sauvegarde (ajout) de la ressource à la base de données';
 $string['failupdate'] = 'Echec de la sauvegarde (mise à jour) de la ressource à la base de données';
 $string['fieldname'] = 'Nom du champ';
 $string['file'] = 'Fichier ou lien';
 $string['fileadvice'] = '<p>La représentation physique de la ressource a été ajoutée dans les fichiers locaux du cours. Vous allez être redirigé vers cet espace des fichiers. Aucun module n\'a cependant été ajouté au cours.</p>';
-$string['filenotfound'] = 'Désolé, le fichier demandé ne peut être trouvé';
+$string['filenotfound'] = 'Désolé, le fichier demandé ne peut être trouvé. Raison : {$a}';
 $string['fileuploadfailed'] = 'Echec du téléchargement';
 $string['fillcategory'] = 'Tous les champs de la catégorie sont vides. Remplissez-en au moins un.';
 $string['fillprevious'] = 'Le champ précédent est vide. Veuillez le remplir avant de rajouter un autre champ';
 $string['filtername'] = 'Nom du filtre';
+<<<<<<< HEAD
+=======
+$string['filesharedresource'] = 'Ressource mutualisée (fichier ou url)';
+>>>>>>> MOODLE_32_STABLE
 $string['forcedownload'] = 'Forcer le téléchargement';
 $string['frameifpossible'] = 'Cadre, si posible';
 $string['frameifpossible_help'] = 'Si activé, la ressource est présentée dans un cadre autonome';
@@ -205,6 +210,7 @@ $string['nodescription'] = 'Il n\'y a pas de description disponible pour cette n
 $string['nometadataplugin'] = 'L\'administrateur n\'a pas configuré le schéma de métadonnées applicable aux ressources.';
 $string['noplugin'] = 'Pas de métadonnées';
 $string['noprovidertopushto'] = 'Votre plate-forme n\'est raccordée à aucun fournisseur de mutualisation.';
+$string['nosharedresources'] = 'Aucune ressource mutualisée publiée dans ce cours';
 $string['noresourcesfound'] = 'Aucune ressource dans le catalogue';
 $string['noresourcestoconvert'] = 'Aucune ressource à convertir';
 $string['notselectable'] = 'Non sélectionnables';
@@ -255,6 +261,7 @@ $string['searchheader'] = 'Critères de recherche';
 $string['searchin'] = 'Rechercher dans';
 $string['searchinlibrary'] = 'Rechercher dans la librairie';
 $string['searchsharedresource'] = 'Chercher une ressource mutualisée';
+$string['searchorcreate'] = 'Chercher une ressource mutualisée ou enregistrer une nouvelle ressource';
 $string['seconds'] = 'Seconde(s)';
 $string['selectable'] = 'Sélectionnables';
 $string['selectall'] = 'tout';
@@ -282,6 +289,11 @@ $string['technical'] = 'Technique';
 $string['taxonchoicetitle'] = 'Sélection des taxons apparents';
 $string['textsearch'] = 'Recherche en champ de type texte';
 $string['title'] = 'Titre';
+<<<<<<< HEAD
+=======
+$string['thumbnail'] = 'Vignette (35k max)';
+$string['clearthumbnail'] = 'Supprimer la vignette';
+>>>>>>> MOODLE_32_STABLE
 $string['typical_age_range'] = 'Tranche d\'âge typique';
 $string['typical_learning_time'] = 'Temps d\'apprentissage nominal';
 $string['unselectall'] = 'aucun';
@@ -301,6 +313,7 @@ $string['vol'] = 'Vol';
 $string['widget'] = 'Widgets de recherche';
 $string['wrongform'] = '<h2> Le formulaire n\'a pas été renseigné correctement. Retour au formulaire dans 15sec</h2>';
 $string['year'] = '- Année -';
+$string['view_pageitem_page_embedded_content'] = 'Voir la ressource dans la page';
 
 //************* Help Strings ******************/
 $string['description_help'] = "
@@ -417,8 +430,13 @@ Le contexte de partage de la ressource peut être le site entier ou seulement un
 Les ressources limitéées à des catégories ne peuvent être mutualisée via le réseau.
 ";
 
+/*
 global $CFG;
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 sharedresource_load_plugin_lang($string, 'fr');
 sharedresource_load_pluginsmin_lang($string, 'fr');
+<<<<<<< HEAD
 
+=======
+*/
+>>>>>>> MOODLE_32_STABLE

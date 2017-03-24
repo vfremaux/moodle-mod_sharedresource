@@ -36,7 +36,11 @@ function xmldb_sharedresource_install() {
     $result = true;
 
     $dbman = $DB->get_manager();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> MOODLE_32_STABLE
     if (preg_match('/^postgres/', $CFG->dbtype)) {
         $idx_field = 'description';
     } else {
@@ -49,10 +53,15 @@ function xmldb_sharedresource_install() {
     $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
 
     if (!$dbman->index_exists($table, $index)) {
-        $result = $dbman->add_index($table, $index, false, false);
+        $dbman->add_index($table, $index, false, false);
     }
+<<<<<<< HEAD
     
     // installs default config for discipline classification     
+=======
+
+    // installs default config for discipline classification
+>>>>>>> MOODLE_32_STABLE
     $classifarray = array('sharedresource_taxonomy' => array(
             'id' => 'id',
             'classname' => get_string('discipline', 'sharedresource'),
@@ -65,6 +74,10 @@ function xmldb_sharedresource_install() {
             'taxonselect' => array()
        ) );
     set_config('classifarray', serialize($classifarray));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> MOODLE_32_STABLE
     return $result;
 }

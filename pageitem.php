@@ -9,37 +9,31 @@
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-function sharedresource_set_instance(&$block){
-    global $CFG, $DB;
+function sharedresource_set_instance(&$block) {
+    global $CFG, $DB, $COURSE, $PAGE;
 
     $modinfo = get_fast_modinfo($block->course);
+    $renderer = $PAGE->get_renderer('format_page');
 
-    // Get module icon
-    if (!empty($modinfo->cms[$block->cm->id]->icon)) {
-        $icon = $CFG->pixpath.'/'.urldecode($modinfo->cms[$block->cm->id]->icon);
-    } else {
-        $icon = "$CFG->modpixpath/{$block->module->name}/icon.gif";
+    if (empty($block->config)) {
+        return;
     }
 
-    $name = format_string($block->moduleinstance->name);
-    $alt  = get_string('modulename', $block->module->name);
-    $alt  = s($alt);
+    if (!array_key_exists($block->config->cmid, $modinfo->cms)) {
+        return;
+    }
 
-    $block->content->text  = "<img src=\"$icon\" alt=\"$alt\" class=\"icon\" />";
-    $block->content->text .= "<a title=\"$alt\" href=\"$CFG->wwwroot/mod/{$block->module->name}/view.php?id={$block->cm->id}\">$name</a>";
+    $block->content->text = '<div class="block-page-module-view">'.$renderer->print_cm($COURSE, $modinfo->cms[$block->config->cmid], array()).'</div>';
  
     // call each plugin to add something
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         if (method_exists($plugin, 'sharedresource_set_instance')){
             $cm = get_coursemodule_from_id('sharedresource', $block->cm->id);
-            $sharedresource =  $DB->get_record('sharedresource', array('id'=> $cm->instance));
+            $sharedresource =  $DB->get_record('sharedresource', array('id' => $cm->instance));
             $plugin->sharedresource_set_instance($block, $sharedresource);
         }
     }
 
     return true;
-    
 }
-
-?>
