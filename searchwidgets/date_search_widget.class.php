@@ -33,8 +33,8 @@ class date_search_widget extends search_widget{
     /**
      * Constructor for the search_widget class
      */
-    function date_search_widget($pluginchoice, $id, $label, $type) {
-        parent::search_widget($pluginchoice, $id, $label, $type);
+    function __construct($pluginchoice, $id, $label, $type) {
+        parent::__construct($pluginchoice, $id, $label, $type);
     }
 
     /**

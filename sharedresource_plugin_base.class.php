@@ -272,6 +272,13 @@ abstract class sharedresource_plugin_base {
     * regarding to metadata
     */
     function configure($config) {
+        global $CFG;
+
+        $widgetclassefiles = glob($CFG->dirroot.'/mod/sharedresource/searchwidgets/*.php');
+        foreach ($widgetclassefiles as $swf) {
+            require_once($swf);
+        }
+
         // Initiate.
         $selallstr = get_string('selectall', 'sharedresource');
         $selnonestr = get_string('selectnone', 'sharedresource');
@@ -295,7 +302,7 @@ abstract class sharedresource_plugin_base {
     }
 
     /**
-     * widget classes are automagically loaded when gound in activewidgets
+     * widget classes are automagically loaded when bound in activewidgets
      * @see .§configure()
      */
     function print_configure_rec($fieldid, $parentnode = '0') {
@@ -320,11 +327,11 @@ abstract class sharedresource_plugin_base {
         $wn = 'widget_'.$this->namespace.'_'.$fieldid;
 
         $activewidgets = unserialize(get_config(null, 'activewidgets'));
-        $checked_widget = '';
+        $checkedwidget = '';
         if (!empty($activewidgets)) {
             foreach ($activewidgets as $key => $widget) {
                 if ($widget->id == $fieldid) {
-                    $checked_widget = 'checked="checked"';
+                    $checkedwidget = 'checked="checked"';
                 }
             }
         }
@@ -347,7 +354,7 @@ abstract class sharedresource_plugin_base {
             echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$checked_indexer.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" /></td>';
             echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" /></td>';
             if (isset($field['widget'])) {
-                echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wk.'" '.$checked_widget.' value="1"/></td></tr>';
+                echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wk.'" '.$checkedwidget.' value="1"/></td></tr>';
             } else {
                 echo '<td class="mtdsetting"></td></tr>';
             }
@@ -368,10 +375,10 @@ abstract class sharedresource_plugin_base {
                 echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$checked_author.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" DISABLED/></td>';
             }
             if (isset($field['widget'])) {
-                if ($checked_widget == 'checked="checked"') {
-                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$checked_widget.' value="1"/></td></tr>';
+                if ($checkedwidget == 'checked="checked"') {
+                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$checkedwidget.' value="1"/></td></tr>';
                 } else {
-                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$checked_widget.' value="1"/></td></tr>';
+                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$checkedwidget.' value="1"/></td></tr>';
                 }
             } else {
                 echo '<td class="mtdsetting"></td></tr>';

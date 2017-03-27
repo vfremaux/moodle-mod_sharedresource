@@ -18,7 +18,7 @@
  *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package sharedresource
  *
  */
@@ -28,7 +28,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
     public function __construct($mode) {
         $this->sharedresource_entry_mode = $mode;
-        parent::moodleform();
+        parent::__construct();
     }
 
     public function definition() {
@@ -38,7 +38,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
-        $return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+        $return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
         $type          = optional_param('type', '', PARAM_ALPHANUM);
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
@@ -65,7 +65,10 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
         // Sharing context :
-        // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories)
+        /*
+         * Users can share a sharedresource at public system context level, or share privately to a specific
+         * course category (and subcatgories)
+         */
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
@@ -84,7 +87,8 @@ class mod_sharedresource_entry_form extends moodleform {
         }
 
         $group = array();
-        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), array('accepted_types' => array('.jpg','.gif','.png')));
+        $options = array('accepted_types' => array('.jpg','.gif','.png'));
+        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
         $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
         $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
 
@@ -111,7 +115,7 @@ class mod_sharedresource_entry_form extends moodleform {
         $this->add_action_buttons(true, $btext);
     }
 
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);
@@ -126,7 +130,7 @@ class mod_sharedresource_entry_form extends moodleform {
         return $errors;
     }
 
-    function get_data($slashed = true) {
+    public function get_data($slashed = true) {
         $data = parent::get_data($slashed);
         if ($data == NULL) {
             return $data;
@@ -142,13 +146,14 @@ class mod_sharedresource_entry_form extends moodleform {
         return $data;
     }
 
-    function set_data($default_values, $slashed = false) {
+    public function set_data($default_values, $slashed = false) {
 
         // Thumbnail.
         $draftitemid = file_get_submitted_draft_itemid('thumbnail');
         $maxbytes = 35*1024;
         $maxfiles = 1;
-        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'local_sharedresources', 'thumbnail', 0, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles));
+        $options = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
+        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'local_sharedresources', 'thumbnail', 0, $options);
         $groupname = 'thumbnailgroup';
         $default_values->$groupname = array('thumbnail' => $draftitemid);
 

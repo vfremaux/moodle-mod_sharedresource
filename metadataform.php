@@ -1,17 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Frederic GUILLOU
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package mod_sharedresource
  */
-
-// This php script displays the 
-// metadata form
-//-----------------------------------------------------------
 
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -22,12 +30,12 @@ $PAGE->requires->js('/mod/sharedresource/js/jquery-1.8.2.min.js');
 $PAGE->requires->js('/mod/sharedresource/js/metadata.php');
 $PAGE->requires->js('/mod/sharedresource/js/metadata_yui.php');
 
-$add           = optional_param('add', 0, PARAM_ALPHA);
-$update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
-$section       = optional_param('section', 0, PARAM_INT);
-$mode          = required_param('mode', PARAM_ALPHA);
-$courseid      = required_param('course', PARAM_INT);
+$add = optional_param('add', 0, PARAM_ALPHA);
+$update = optional_param('update', 0, PARAM_INT);
+$return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$section = optional_param('section', 0, PARAM_INT);
+$mode = required_param('mode', PARAM_ALPHA);
+$courseid = required_param('course', PARAM_INT);
 $sharingcontext = required_param('context', PARAM_INT);
 
 // Working context check.
@@ -88,9 +96,9 @@ echo $OUTPUT->header();
 
 if (has_capability('repository/sharedresources:systemmetadata', $context)) {
     $capability = 'system';
-} elseif (has_capability('repository/sharedresources:indexermetadata', $context)) {
+} else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
     $capability = 'indexer';
-} elseif (has_capability('repository/sharedresources:authormetadata', $context)) {
+} else if (has_capability('repository/sharedresources:authormetadata', $context)) {
     $capability = 'author';
 } else {
     print_error('noaccessform', 'sharedresource');
@@ -140,13 +148,21 @@ echo metadata_create_panels($capability, $mtdstandard);
 echo '</div><br/>';
 
 echo '<div align="center">';
-echo '<input type="button" value="'.get_string('validateform', 'sharedresource').'" id="btsubmit" onClick=\'document.forms["monForm"].submit()\' alt="Submit"/>';
-echo ' <input type="button" value="'.get_string('cancelform', 'sharedresource').'" OnClick="window.location.href=\''.$CFG->wwwroot."/course/modedit.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}".'/\'">';
+$jshandler = 'document.forms["monForm"].submit()';
+echo '<input type="button"
+             value="'.get_string('validateform', 'sharedresource').'"
+             id="btsubmit"
+             onClick="'.$jshandler.'" alt="Submit"/>';
+
+$params = array('course' => $course->id, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
+$returl = new moodle_url('/course/modedit.php', $params);
+
+echo ' <input type="button"
+              value="'.get_string('cancelform', 'sharedresource').'"
+              onClick="window.location.href="'.$returl.'">';
 echo '</div>';
 
 echo '</div>';
 echo '</center>';
-
-// echo "<script src=\"{$CFG->wwwroot}/mod/sharedresource/js/metadata.php\"></script>";
 
 echo $OUTPUT->footer($course);

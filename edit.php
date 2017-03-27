@@ -28,6 +28,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
 
+if (empty($CFG->pluginchoice)) {
+    set_config('pluginchoice', 'lom');
+    $CFG->pluginchoice = 'lom';
+}
+
 // Load metadata plugin.
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
@@ -201,7 +206,7 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
 
     // Prepare thumbnail if any
     if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
-        $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
+        $thumbnailpickeritemid =  @$formdata->thumbnailgroup['thumbnail'];
         $thumbnailfile = false;
         if (!$draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $thumbnailpickeritemid, 'id DESC', false)) {
             $thumbnailfile = reset($draftfiles);

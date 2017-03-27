@@ -33,14 +33,14 @@ class numeric_search_widget extends search_widget {
     /**
      * Constructor for the search_widget class
      */
-    function numeric_search_widget($pluginchoice, $id, $label, $type) {
-        parent::search_widget($pluginchoice, $id, $label, $type);
+    function __construct($pluginchoice, $id, $label, $type) {
+        parent::__construct($pluginchoice, $id, $label, $type);
     }
 
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget() {
+    function print_search_widget($layout, $value = 0) {
         echo $OUTPUT;
 
         $str = '';
