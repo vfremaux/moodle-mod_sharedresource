@@ -27,18 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Event for when a sharedresource activity is viewed.
- *
- * @property-read array $other {
- *      Extra information about event.
- *
- *      @type int anonymous if sharedresource is anonymous.
- *      @type int cmid course module id.
- * }
- *
- * @package    mod_sharedresource
- * @since      Moodle 2.7
- * @copyright  2015 Valery Fremaux
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_viewed extends \core\event\course_module_viewed {
 

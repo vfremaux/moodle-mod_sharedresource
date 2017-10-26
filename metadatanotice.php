@@ -17,12 +17,10 @@
 /**
  *
  * @author  Frédéric GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
  *
- * This php script displays the 
- * metadata form
+ * This php script displays the metadata form
  */
 
 require_once("../../config.php");
@@ -46,25 +44,23 @@ $PAGE->set_headingmenu('');
 $url = new moodle_url('/mod/sharedresource/metadatanotice.php');
 $PAGE->set_url($url);
 
-echo $OUTPUT->header();
+$config = get_config('sharedresource');
 
 $id = optional_param('id', 0, PARAM_INT);
 $identifier = optional_param('identifier', 0, PARAM_TEXT);
 if ($identifier) {
-    if (!$sharedresource_entry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+    if (!$shrentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
         sharedresource_not_found();
     }
 } else {
     if ($id) {
         if (! $cm = get_coursemodule_from_id('sharedresource', $id)) {
             sharedresource_not_found();
-//                error('Course Module ID was incorrect');
         }
         if (!$resource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
             sharedresource_not_found($cm->course);
-//                error('Resource ID was incorrect');
         }
-        if (!$sharedresource_entry_rec =  $DB->get_record('sharedresource_entry', array('identifier'=> $resource->identifier))) {
+        if (!$shrentry_rec =  $DB->get_record('sharedresource_entry', array('identifier'=> $resource->identifier))) {
             sharedresource_not_found($cm->course);
         }
         if (!$course =  $DB->get_record('course',array('id'=> $cm->course))) {
@@ -72,15 +68,16 @@ if ($identifier) {
         }
     } else {
         sharedresource_not_found();
-//            error('No valid parameters!!');
     }
 }
 
-$sharedresource_entry = sharedresource_entry::read($sharedresource_entry->identifier);
+$shrentry = \mod_sharedresource\entry::read($shrentry->identifier);
 $pagetitle = strip_tags($SITE->fullname);
 // build up navigation links
 
-echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', format_text($sharedresource_entry->title)));
+echo $OUTPUT->header();
+
+echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', format_text($shrentry->title)));
 
 if (has_capability('repository/sharedresources:systemmetadata', context_system::instance())) {
     $capability = 'system';
@@ -88,18 +85,19 @@ if (has_capability('repository/sharedresources:systemmetadata', context_system::
     $capability = 'indexer';
 }
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
-$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-$mtdstandard = new $object;
+$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+$mtdstandard = new $mtdclass();
 $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
+
 echo '<center>';
 echo '<div id="ecform_container" align="center">';
 echo '<div align="center" id="ecform_title">'.get_string('metadatadescr','sharedresource').' ('.$mtdstandard->getNamespace().')</div><br/>';
 echo '<div id="ecform_onglet" class="ecformtab">';
-echo '<ul id="notice-menu" class="tabrow0">';
+echo '<ul id="notice-menu" class="nav nav-tabs">';
 echo '<li class="first onerow here selected" style="float: none;float: left;display: inline;">';
-echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('DMused','sharedresource').'</span></a>';
+echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('dmused','sharedresource').'</span></a>';
 echo '</li>';
 echo metadara_create_tab($capability, $mtdstandard);
 echo '</ul>';
@@ -107,15 +105,15 @@ echo '</div><br/>';
 echo '<div id="ecform_content" style="margin-right: auto; margin-left: auto">';
 echo '<div id="tab_0" class="on content">';
 echo '<div class="mtd-description-panel">';
-echo '<h2>'.get_string('DMuse','sharedresource').' '.$mtdstandard->getNamespace().'</h2>';
-echo '<h3>'.get_string('DMdescription','sharedresource').' '.$mtdstandard->getNamespace().'</h3>';
-echo '<fieldset style="width:90%;margin-right: auto; margin-left: auto">';
+echo '<h2>'.get_string('dmuse','sharedresource').' '.$mtdstandard->getNamespace().'</h2>';
+echo '<h3>'.get_string('dmdescription','sharedresource').' '.$mtdstandard->getNamespace().'</h3>';
+echo '<fieldset style="margin-right: auto; margin-left: auto">';
 echo get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->getNamespace());
 echo '</fieldset>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
-echo metadata_create_notice_panels($sharedresource_entry, $capability, $mtdstandard);
+echo metadata_create_notice_panels($shrentry, $capability, $mtdstandard);
 echo '</div><br/>';
 echo '<div align="center">';
 echo '</div>';

@@ -14,28 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * @author  Frederic Guillou
+ *
+ * @author  Piers Harding  piers@catalyst.net.nz
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
+ * @package sharedresource
+ *
  */
+namespace mod_sharedresource;
 
-abstract class metadata_xml_parser {
+defined('MOODLE_INTERNAL') || die;
 
-    public function __construct() {
-    }
-
-    abstract function add_identifier(&$metadata, $catalog, $identifier, $entry_id);
-
-    public function get_metadata_value($path) {
-        foreach ($this->metadata as $id => $elem) {
-            if ($this->metadata[$id]->element == $path) {
-                return $this->metadata[$id]->value;
-            }
-        }
-    }
-
+class exception extends \Exception {
 }

@@ -21,8 +21,6 @@
 // of the Universitat Politecnica de Catalunya http://www.upc.edu
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This file is a clone from main lti client form used by sharedresource to easily 
  * make a new client instance in a course from a tool definition stored in sharedresource
@@ -49,7 +47,6 @@ defined('MOODLE_INTERNAL') || die();
  * @author     Chris Scribner
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');

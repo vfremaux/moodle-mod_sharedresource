@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    sharedresource
- * @subpackage mod_sharedresource
+ * @package    mod_sharedresource
  * @category   mod
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -42,11 +41,11 @@ require_capability('moodle/course:manageactivities', $context);
 unset($SESSION->sr_entry);
 
 if (!$return && ($courseid > SITEID)) {
-    redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
+    redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
 } else {
     $systemcontext = context_system::instance();
     if (has_capability('repository/sharedresources:view', $systemcontext)) {
-        redirect($CFG->wwwroot.'/local/sharedresources/index.php');
+        redirect(new moodle_url('/local/sharedresources/index.php'));
     } else {
         $redirect($CFG->wwwroot);
     }
