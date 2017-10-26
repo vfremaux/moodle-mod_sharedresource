@@ -23,31 +23,33 @@
  * @category   mod
  */
 require('../../config.php');
-require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/sharedresource_entry_form.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
 
-// Load metadata plugin.
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
-$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-$mtdstandard = new $object;
+$config = get_config('sharedresource');
 
-$ignore_list = array(
-    'mform_showadvanced_last', 
-    /* 'pagestep', */ 
-    'MAX_FILE_SIZE', 
-    'add', 
-    'update', 
-    'return', 
-    'type', 
-    'section', 
-    'mode', 
-    'course', 
+// Load metadata plugin.
+require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
+$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+$mtdstandard = new $mtdclass();
+
+$ignorelist = array(
+    'mform_showadvanced_last',
+    /* 'pagestep', */
+    'MAX_FILE_SIZE',
+    'add',
+    'update',
+    'return',
+    'type',
+    'section',
+    'mode',
+    'course',
     'submitbutton'
 );
 
-$ignore_list = array_merge($ignore_list, $mtdstandard->sharedresource_get_ignored());
+$ignorelist = array_merge($ignorelist, $mtdstandard->sharedresource_get_ignored());
 
 // Get params.
 
@@ -96,32 +98,32 @@ $formdata = new StdClass();
 
 if ($mode == 'update') {
 
-    $entryid = required_param('entry_id', PARAM_INT);
-    $sharedresource_entry = sharedresource_entry::get_by_id($entryid);
+    $entryid = required_param('entryid', PARAM_INT);
+    $shrentry = \mod_sharedresource\entry::get_by_id($entryid);
     $strpreview = get_string('preview', 'sharedresource');
 
     // Make a flat record for feeding the form.
-    $formdata = $sharedresource_entry->sharedresource_entry;
+    $formdata = $shrentry->get_record();
 
-    if (empty($CFG->sharedresource_foreignurl)) {
+    if (empty($config->foreignurl)) {
         // Resource preview is on the same server it is accessible. openpopup can be used.
-        $displayurl = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $sharedresource_entry->identifier, 'inpopup' => true));
-        $jshandler = 'this.target=\'resource'.$sharedresource_entry->id.'\';';
-        $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&amp;identifier={$sharedresource_entry->identifier}\', ';
-        $jshandler .= '\'resource'.$sharedresource_entry->id.'\', \'resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
+        $displayurl = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $shrentry->identifier, 'inpopup' => true));
+        $jshandler = 'this.target=\'resource'.$shrentry->id.'\';';
+        $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&amp;identifier={$shrentry->identifier}\', ';
+        $jshandler .= '\'resource'.$shrentry->id.'\', \'resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
         $formdata->url_display = '<a href="'.$displayurl.'" onclick="'.$jshandler.'">('.$strpreview.')</a>';
     } else {
         // Resource preview changes apparent domain of the resource. openpopup fails.
-        $url = str_replace('<%%ID%%>', $sharedresource_entry->identifier, $CFG->sharedresource_foreignurl);
+        $url = str_replace('<%%ID%%>', $shrentry->identifier, $CFG->sharedresource_foreignurl);
         $formdata->url_display = '<a href="'.$url.'" target="_blank">('.$strpreview.')</a>';
     }
 
     // @TODO : this should call the file storage API
-    $formdata->filename = $DB->get_field('files', 'filename', array('id' => $sharedresource_entry->file));
+    $formdata->filename = $DB->get_field('files', 'filename', array('id' => $shrentry->file));
 
 } else {
     $mode = 'add';
-    $sharedresource_entry = new sharedresource_entry(false);
+    $shrentry = new \mod_sharedresource\entry(null, null);
 }
 
 $mform = false;
@@ -156,31 +158,31 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
     foreach ($formdata as $key => $value) {
         if (in_array($key, $SHAREDRESOURCE_CORE_ELEMENTS) && !empty($value)) {
             if ($key == 'url') {
-                $sharedresource_entry->add_element($key, clean_param($value, PARAM_URL));
+                $shrentry->add_element($key, clean_param($value, PARAM_URL));
             } else {
                 if (is_array($value)) {
-                    $sharedresource_entry->add_element($key, clean_param_array($value, PARAM_CLEANHTML));
+                    $shrentry->add_element($key, clean_param_array($value, PARAM_CLEANHTML));
                 } else {
-                    $sharedresource_entry->add_element($key, clean_param($value, PARAM_CLEANHTML));
+                    $shrentry->add_element($key, clean_param($value, PARAM_CLEANHTML));
                 }
             }
         }
     }
 
-    $sharedresource_entry->lang = $USER->lang;
+    $shrentry->lang = $USER->lang;
 
     $fs = get_file_storage();
 
     if ($mode == 'add') {
         // Locally defined resource ie. we are the master.
-        $sharedresource_entry->type = 'file'; // Obsolete ?
+        $shrentry->type = 'file'; // Obsolete ?
 
         // Is this a local resource or a remote one?
         if (!empty($formdata->url)) {
-            $sharedresource_entry->url = $formdata->url;
-            $sharedresource_entry->file = '';
-            $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
-            $sharedresource_entry->mimetype = mimeinfo('type', $sharedresource_entry->url);
+            $shrentry->url = $formdata->url;
+            $shrentry->file = '';
+            $shrentry->identifier = sha1($shrentry->url);
+            $shrentry->mimetype = mimeinfo('type', $shrentry->url);
         } else {
             // If resource is a real file we necessarily have one in the user's filepicker temp file area.
             $filepickeritemid = $formdata->sharedresourcefile;
@@ -190,9 +192,9 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
             }
             $file = reset($draftfiles);
 
-            $sharedresource_entry->identifier = $file->get_contenthash();
-            $sharedresource_entry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
-            $sharedresource_entry->url = '';
+            $shrentry->identifier = $file->get_contenthash();
+            $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
+            $shrentry->url = '';
         }
     }
 
@@ -200,18 +202,19 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
     if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
         $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
         $thumbnailfile = false;
-        if (!$draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $thumbnailpickeritemid, 'id DESC', false)) {
+        $usercontext = context_user::instance($USER->id);
+        if ($draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $thumbnailpickeritemid, 'id DESC', false)) {
             $thumbnailfile = reset($draftfiles);
         }
         if ($thumbnailfile) {
             // This temp file will be post processed at the end of the storage process.
-            $sharedresource_entry->thumbnail = $thumbnailfile->get_id();
+            $shrentry->thumbnail = $thumbnailfile->get_id();
         }
     } else {
         unset($formdata->thumbnailgroup);
     }
 
-    $sr_entry = serialize($sharedresource_entry);
+    $sr_entry = serialize($shrentry);
     $SESSION->sr_entry = $sr_entry;
     $error = 'no error';
     $SESSION->error = $error;
@@ -223,7 +226,7 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
                     'return' => $return,
                     'mode' => $mode,
                     'context' => $sharingcontext);
-    $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
+    $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
     redirect($fullurl);
 }
 

@@ -24,11 +24,10 @@
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
 
@@ -52,9 +51,12 @@ if ($courseid > SITEID) {
 
 $PAGE->set_title(get_string('resourceconversion', 'sharedresource'));
 $PAGE->set_heading(get_string('resourceconversion', 'sharedresource'));
-$PAGE->set_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
+$url = new moodle_url('/mod/sharedresource/admin_convertback.php', array('course' => $courseid));
+$PAGE->set_url($url);
 $PAGE->navbar->add(get_string('resourceconversion', 'sharedresource'));
 $PAGE->navbar->add(get_string('repositorytoresource', 'sharedresource'));
+
+$report = '';
 
 // Get courses.
 if (empty($courseid)) {
@@ -72,7 +74,7 @@ if (empty($courseid)) {
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
-        echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
+        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
         echo $OUTPUT->footer();
         exit();
     }
@@ -83,33 +85,53 @@ if (empty($courseid)) {
             unset($sharedresources[$id]);
         }
     }
-    $form2 = new sharedresource_selectresources_form($course, $sharedresources);
+    $form2 = new sharedresource_selectresources_form($url,  array('resources' => $sharedresources));
+
+    if ($form2->is_cancelled()) {
+        echo $OUTPUT->header();
+        echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'));
+        echo $OUTPUT->notification(get_string('conversioncancelled', 'sharedresource'));
+        $buttonurl = new moodle_url('/course/view.php', array('id' => $courseid));
+        echo $OUTPUT->continue_button($buttonurl);
+        echo $OUTPUT->footer();
+        exit;
+    }
+
     // If data submitted, proceed.
     if ($data = $form2->get_data()) {
-        if ($form2->is_cancelled()) {
-            print_string('conversioncancelled', 'sharedresource');
-            redirect(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities'));
-        }
         $reskeys = preg_grep("/cnv_/" , array_keys(get_object_vars($data)));
         if (!empty($reskeys)) {
             foreach ($reskeys as $reskey) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
-                    $sharedresource = $DB->get_record('sharedresource', array('id'=> $resid));
-                    print_string('convertingsharedresource', 'sharedresource', $sharedresource);
-                    sharedresource_convertfrom($sharedresource);
+                    $sharedresource = $DB->get_record('sharedresource', array('id' => $resid));
+                    $report .= get_string('convertingsharedresource', 'sharedresource', $sharedresource);
+                    sharedresource_convertfrom($sharedresource, $report);
                 }
             }
         }
+        rebuild_course_cache($courseid);
     } else {
         // Print form.
         echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
+        echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'));
+        $formdata = new StdClass;
+        $formdata->course = $courseid;
+        $form2->set_data($formdata);
         $form2->display();
         echo $OUTPUT->footer();
         exit;
     }
 }
-echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid));
+
+echo $OUTPUT->header();
+
+if (!empty($report)) {
+    echo '<pre>';
+    echo $report;
+    echo '</pre>';
+}
+
+echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid)));
 echo $OUTPUT->footer();

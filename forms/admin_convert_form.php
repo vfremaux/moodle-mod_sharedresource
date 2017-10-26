@@ -31,7 +31,7 @@ class sharedresource_choosecourse_form extends moodleform {
 
     public function __construct($courses) {
         $this->courses = $courses;
-        parent::moodleform();
+        parent::__construct();
     }
  
     public function definition() {
@@ -50,42 +50,35 @@ class sharedresource_choosecourse_form extends moodleform {
 
 class sharedresource_selectresources_form extends moodleform {
 
-    public function __construct(&$course, &$resources, $urls = null) {
-        $this->course = $course;
-        $this->resources = $resources;
-        $this->urls = $urls;
-        parent::moodleform();
-    }
-
     public function definition() {
+
         $mform = & $this->_form;
 
         $mform->addElement('hidden', 'course');
         $mform->setType('course', PARAM_INT);
-        $mform->setDefault('course', $this->course->id);
 
         $hasitems = false;
 
-        if (!empty($this->resources)) {
+        if (!empty($this->_customdata['resources'])) {
+
             $hasitems = true;
-            foreach ($this->resources as $r) {
+
+            foreach ($this->_customdata['resources'] as $r) {
                 $name = format_string($r->name);
-                $mform->addElement('header', 'hdr_'.$r->id, $name);
                 $label = get_string('resource').':';
                 $mform->addElement('advcheckbox', 'rcnv_'.$r->id, $label, $name, array('group' => 1), array(0,1));
                 $mform->setDefault('rcnv_'.$r->id, 1);
-                $label = get_string('description').':';
-                $mform->addElement('static', 'lbl_'.$r->id, $label, format_string($r->intro, $r->introformat));
+                $mform->addElement('static', 'lbl_'.$r->id, '', format_string($r->intro, $r->introformat));
             }
 
             $convertstr = get_string('convert', 'sharedresource');
         }
 
-        if (!empty($this->urls)) {
+        if (!empty($this->_customdata['urls'])) {
+
             $hasitems = true;
-            foreach ($this->urls as $u) {
-                $name = format_string($u->name);
-                $mform->addElement('header', 'hdu_'.$u->id, $name);
+
+            foreach ($this->_customdata['urls'] as $u) {
                 $label = get_string('url').':';
                 $mform->addElement('advcheckbox', 'ucnv_'.$u->id, $label, $u->externalurl, array('group' => 1), array(0,1));
                 $mform->setDefault('ucnv_'.$u->id, 1);
@@ -96,6 +89,7 @@ class sharedresource_selectresources_form extends moodleform {
         if ($hasitems) {
             $this->add_checkbox_controller(1, '', '');
         }
+
         $convertstr = get_string('convert', 'sharedresource');
         $this->add_action_buttons(true, $convertstr);
     }

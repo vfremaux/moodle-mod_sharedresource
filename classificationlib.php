@@ -224,7 +224,9 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
         return ;
     }
 
-    $classifarray = unserialize($CFG->classifarray);
+    $config = get_config('sharedresource');
+
+    $classifarray = unserialize($config->classifarray);
     // If we are searching for taxons just after choosing a classification (taxons without parents).
     if (array_key_exists($name,$classifarray)) {
         if ($classifarray[$name]['restriction'] == '') {

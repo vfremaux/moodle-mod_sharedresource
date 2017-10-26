@@ -304,6 +304,8 @@ function sharedresource_append_metadata_elements(&$elements, $name, $value, $plu
 function sharedresource_append_author_data(&$backupmetadataelements, $courseid = 0, $authoringdate = -1) {
     global $COURSE;
 
+    $config = get_config('sharedresource');
+
     if (!$courseid) {
         $courseid = $COURSE->id;
     }
@@ -320,9 +322,9 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
 
             $vcard = file_importer_base::build_vcard($et);
 
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $CFG->pluginchoice);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $CFG->pluginchoice);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $CFG->pluginchoice);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $config->schema);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $config->schema);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $config->schema);
         }
     }
 }

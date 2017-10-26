@@ -1,0 +1,51 @@
+{{!
+    This file is part of The Dashboard Block
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresource/searchform
+
+    Classes required for JS:
+    * none
+
+}}
+<table width="90%" class="generaltable">
+{{#classification}}
+    <tr height="50px">
+        <td width="80%" align="left" class="{{nameclass}}">
+            {{{tablename}}}
+        </td>
+        <td align="left" width="10%">
+            {{#enabled}}
+            <a title="{{strdisable}}" href="{{diableurl}}"><img src="{{enablediconurl}}" alt="{{strdisable}}"/></a>
+            {{/enabled}}
+            {{^enabled}}
+            <a title="{{strenable}}" href="{{enableurl}}"><img src="{{disablediconurl}}" alt="{{strenable}}"/></a>
+            {{/enabled}}
+
+            <a title="{{stredit}}" href="{{editurl}}"><img src="{{editiconurl}}" class="iconsmall" alt="{{stredit}}"/></a>
+
+            {{#isdeletable}}
+            <a title="{{strdelete}}" href="{{deleteurl}}"><img src="{{deleteiconurl}}" class="iconsmall" alt="{{strdelete}}"/></a>
+            {{/isdeletable}}
+            {{^isdeletable}}
+            <img src="{{deleteiconurl}}" class="iconsmall shadowed" alt="{{strdelete}}"/>
+            {{/isdeletable}}
+        </td>';
+        <td align="right" width="25%">
+    </td>
+    </tr>
+{{/classification}}}
+</table>

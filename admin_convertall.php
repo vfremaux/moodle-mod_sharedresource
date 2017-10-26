@@ -29,12 +29,13 @@ require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
+$url = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
 
 if ($courseid > SITEID) {
-    if (!$course = $DB->get_record('course', array('id'=> "$courseid"))){
+    if (!$course = $DB->get_record('course', array('id'=> "$courseid"))) {
         print_error('coursemisconf');
     }
 
@@ -66,51 +67,61 @@ if (empty($courseid)) {
     // If no course choosen (comming from general sections) make the choice of one.
     $allcourses = $DB->get_records_menu('course', null, 'shortname', 'id,fullname');
     $form = new sharedresource_choosecourse_form($allcourses);
+
     if ($form->is_cancelled()) {
         redirect(new moodle_url('/resources/index.php'));
     }
+
     echo $OUTPUT->header();
     $form->display();
     echo $OUTPUT->footer();
     die;
+
 } else {
+
     // Back to library if cancelled.
     $form = new sharedresource_choosecourse_form(null);
     if ($form->is_cancelled()) {
         redirect(new moodle_url('/resources/index.php'));
     }
+
     $resources = $DB->get_records('resource', array('course' => $courseid), 'name');
-    $urls = $DB->get_records('url', array('course' => $courseid),'name');
+
+    $urls = $DB->get_records('url', array('course' => $courseid), 'name');
+
+    $buttonurl = new moodle_url('/course/view.php', array('id' => $courseid));
     if (empty($resources) && empty($urls)) {
         echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
-        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
+        echo $OUTPUT->continue_button($buttonurl);
         echo $OUTPUT->footer();
         exit();
     }
 
-    $form2 = new sharedresource_selectresources_form($course, $resources, $urls);
+    $form2 = new sharedresource_selectresources_form($url, array('resources' => $resources, 'urls' => $urls));
+
+    if ($form2->is_cancelled()) {
+        if ($courseid) {
+            redirect($buttonurl);
+        } else {
+            redirect(new moodle_url('/resources/index.php'));
+        }
+    }
 
     // If data submitted, proceed.
     if ($data = $form2->get_data()) {
-        if ($form2->is_cancelled()) {
-            if ($courseid) {
-                print_string('conversioncancelledtocourse', 'sharedresource');
-                redirect(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
-            } else {
-                print_string('conversioncancelledtolibrary', 'sharedresource');
-                redirect(new moodle_url('/resources/index.php'));
-            }
-        }
         $reskeys = preg_grep("/rcnv_/" , array_keys(get_object_vars($data)));
+        $report = '';
         if (!empty($reskeys)) {
             foreach ($reskeys as $reskey) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
                     $resource = $DB->get_record('resource', array('id' => $resid));
-                    mtrace("converting resource {$resource->id} : {$resource->name}<br/>\n");
-                    sharedresource_convertto($resource, 'resource');
+                    if (debugging()) {
+                        $report .= "converting resource {$resource->id} : {$resource->name}\n";
+                    }
+                    $report .= sharedresource_convertto($resource, 'resource');
                 }
             }
         }
@@ -121,26 +132,32 @@ if (empty($courseid)) {
                 if ($data->$reskey == 1) {
                     $resid = str_replace('ucnv_', '', $reskey);
                     $url = $DB->get_record('url', array('id' => $resid));
-                    mtrace("converting url {$url->id} : {$url->name}<br/>\n");
-                    sharedresource_convertto($url, 'url');
+                    if (debugging()) {
+                        $report .= "converting url $url->id : $url->name \n";
+                    }
+                    $report .= sharedresource_convertto($url, 'url');
                 }
             }
         }
+        rebuild_course_cache($courseid);
     } else {
         // Print form.
         echo $OUTPUT->header();
+        $form2->set_data(array('course' => $course->id));
         $form2->display();
-        if ($course) {
-             print ($OUTPUT->footer($course));
-        } else {
-            print ($OUTPUT->footer());
-        }
+        echo $OUTPUT->footer();
         die;
     }
 }
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
+
+if (!empty($report)) {
+    echo '<pre>';
+    echo $report;
+    echo '</pre>';
+}
 
 echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
 echo $OUTPUT->footer();

@@ -17,18 +17,23 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+use \moodle_url;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * sharedresource_base is the base class for sharedresource types
+ * \mod_sharedresource\base is the base class for sharedresource types
  *
  * This class provides all the functionality for a sharedresource
  */
-class sharedresource_base {
+class base {
 
     public $cm; // If representing a course module.
 
@@ -67,21 +72,23 @@ class sharedresource_base {
             if (! $this->cm = get_coursemodule_from_id('sharedresource', $cmid)) {
                 print_error('invalidcoursemodule');
             }
-            if (!$this->sharedresource =  $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
+            if (!$this->sharedresource = $DB->get_record('sharedresource', array('id' => $this->cm->instance))) {
                 print_error('invalidsharedresource', 'sharedresource');
             }
-            if (! $this->sharedresourceentry =  $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
-                print_error('errorinvalididentifier', 'sharedresource', new moodle_url('/course/view.php', array('id' => $COURSE->id)), $this->sharedresource->identifier);
+            if (! $this->sharedresourceentry = $DB->get_record('sharedresource_entry', array('identifier' => $this->sharedresource->identifier))) {
+                $returnurl = new moodle_url('/course/view.php', array('id' => $COURSE->id));
+                print_error('errorinvalididentifier', 'sharedresource', $returnurl, $this->sharedresource->identifier);
             }
 
             $coursename = $DB->get_field('course', 'shortname', array('id' => $this->sharedresource->course));
 
-            if (!$this->cm->visible && !has_capability('moodle/course:viewhiddenactivities', context_module::instance($this->cm->id))) {
+            if (!$this->cm->visible &&
+                    !has_capability('moodle/course:viewhiddenactivities', \context_module::instance($this->cm->id))) {
                 $pagetitle = strip_tags($coursename.': '.$this->strsharedresource);
                 $navigation = build_navigation($this->navlinks, $this->cm);
-                $course_context = context_course::instance($this->sharedresource->course);
+                $coursecontext = \context_course::instance($this->sharedresource->course);
                 $PAGE->set_pagelayout('standard');
-                $PAGE->set_context($course_context);
+                $PAGE->set_context($coursecontext);
                 $url = new moodle_url('/mod/sharedresource/view.php');
                 $PAGE->set_url($url);
                 $PAGE->set_title($SITE->fullname);
@@ -93,7 +100,8 @@ class sharedresource_base {
 
                 echo $OUTPUT->header();
 
-                echo $OUTPUT->notification(get_string("activityiscurrentlyhidden"), new moodle_url('/course/view.php', array('id' => $this->sharedresource->course)));
+                $returnurl = new moodle_url('/course/view.php', array('id' => $this->sharedresource->course));
+                echo $OUTPUT->notification(get_string("activityiscurrentlyhidden"), $returnurl);
                 echo $OUTPUT->footer();
                 die;
             }
@@ -188,7 +196,9 @@ class sharedresource_base {
      *
      */
     public function display() {
-        global $CFG, $THEME, $USER, $PAGE, $OUTPUT, $SITE, $DB;
+        global $CFG, $THEME, $USER, $PAGE, $OUTPUT, $SITE, $DB, $FULLME;
+
+        $config = get_config('sharedresource');
 
         // Set up some shorthand variables.
         $cm = $this->cm;
@@ -259,7 +269,7 @@ class sharedresource_base {
         }
         $isteamspeak = (stripos($resource->reference, 'teamspeak://') === 0);
 
-        // Form the parse string
+        // Form the parse string.
         $querys = array();
         if (!empty($resource->alltext)) {
             $parray = explode(',', $resource->alltext);
@@ -278,28 +288,36 @@ class sharedresource_base {
 
         // Set up some variables.
         $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
-        if (sharedresource_is_url($resource->reference)) { // shared resource is a pure URL.
-            $fullurl = $resource->reference;
+        if (sharedresource_is_url($sharedresourceentry->url)) {
+
+            // Shared resource is a pure URL.
+            $fullurl = $sharedresourceentry->url;
             if (!empty($querystring)) {
-                $urlpieces = parse_url($resource->reference);
+                $urlpieces = parse_url($sharedresourceentry->url);
                 if (empty($urlpieces['query']) or $isteamspeak) {
                     $fullurl .= '?'.$querystring;
                 } else {
                     $fullurl .= '&amp;'.$querystring;
                 }
             }
-        } else {   // Normal uploaded file.
+
+            if ($fullurl == $FULLME) {
+                print_error(get_string('sharedresourcelooperror', 'sharedresource'));
+            }
+        } else {
+
+            // Normal uploaded file.
             $forcedownloadsep = '?';
             if (isset($resource->options) && $resource->options == 'forcedownload') {
                 $querys['forcedownload'] = '1';
             }
             $fullurl = sharedresource_get_file_url($this, $sharedresourceentry, $querys);
         }
-        
-        // Check whether this is supposed to be a popup, but was called directly.
-        if (isset($resource->popup) && $resource->popup and !$inpopup) {    /// Make a page and a pop-up window.
 
-            $course_context = context_course::instance($course->id);
+        // Check whether this is supposed to be a popup, but was called directly.
+        if (isset($resource->popup) && $resource->popup and !$inpopup) {
+            // Make a page and a pop-up window.
+            $coursecontext = \context_course::instance($course->id);
             $url = new moodle_url('/mod/sharedresource/view.php');
             $PAGE->set_url($url);
             $PAGE->set_pagelayout('popup');
@@ -311,38 +329,46 @@ class sharedresource_base {
             $PAGE->set_cacheable(false);
             $PAGE->set_button('');
 
+            $viewdata = array();
+            $viewdata['popupoptions'] = $resource->popup;
+            $viewdata['cmid'] = $cm->id;
+            $PAGE->amd_js_call('mod_sharedresource/view', 'init', $data);
+
             echo $OUTPUT->header();
 
-            echo "\n<script type=\"text/javascript\">";
-            echo "\n<!--\n";
-            echo "openpopup('{$CFG->wwwroot}/mod/sharedresource/view.php?inpopup=true&id={$cm->id}','resource{$resource->id}','{$resource->popup}');\n";
-            echo "\n-->\n";
-            echo '</script>';
+            $template = new StdClass;
+            $template->resid = $resource->id;
             if (trim(strip_tags($resource->intro))) {
-                echo $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions), "center");
+                $template->infobox = $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions), "center");
             }
-            $link = "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?inpopup=true&amp;id={$cm->id}\" "
-                  . "onclick=\"this.target='resource{$resource->id}'; return openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id={$cm->id}', "
-                  . "'resource{$resource->id}','{$resource->popup}');\">".format_string($resource->title,true)."</a>";
-            echo '<div class="popupnotice">';
-            print_string('popupresource', 'resource');
-            echo '<br />';
-            print_string('popupresourcelink', 'resource', $link);
-            echo '</div>';
-            print($OUTPUT->footer($course));
-            exit;
+            $template->linkurl = new moodle_url('/mod/sharedresource/view.php', array('inpopup' => true, 'id' => $cm->id));
+            $template->popupoptions = $resource->popup;
+
+            $template->title = format_string($resource->title, true);
+            $template->strpopupresource = get_string('popupresource', 'resource');
+            $template->strpopupresourcelink = get_string('popupresourcelink', 'resource', $template->linkurl);
+
+            echo $OUTPUT->render_from_template('mod_sharedresource/directpopup', $template);
+
+            echo $OUTPUT->footer($course);
+            die;
         }
-        
+
         // Now check whether we need to display a frameset.
         $frameset = optional_param('frameset', '', PARAM_ALPHA);
-        if (empty($frameset) and !$embedded and !$inpopup and (isset($resource->options) && $resource->options == "frame") and empty($USER->screenreader)) {
+        if (empty($frameset) &&
+                !$embedded &&
+                        !$inpopup &&
+                                (isset($resource->options) &&
+                                        $resource->options == "frame") &&
+                                                empty($USER->screenreader)) {
             @header('Content-Type: text/html; charset=utf-8');
             echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n";
             echo '<html dir="ltr">'."\n";
             echo '<head>';
             echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
             echo '<title>' . format_string($course->shortname) . ': '.strip_tags(format_string($resource->title,true)).'</title></head>'."\n";
-            echo '<frameset rows="'.$CFG->sharedresource_framesize.',*">';
+            echo '<frameset rows="'.$config->framesize.',*">';
             $topurl = new moodle_url('/mod/sharedresource/view.php', array('id' => $cm->id, 'type' => $resource->type, 'frameset' => 'top'));
             echo '<frame src="'.$topurl.'" title="'. get_string('modulename','resource').'"/>';
             echo '<frame src="'.$fullurl.'" title="'.get_string('modulename','sharedresource').'"/>';
@@ -376,11 +402,12 @@ class sharedresource_base {
             echo $OUTPUT->footer('empty');
             exit;
         }
+
         // Display the actual resource.
         if ($embedded) {
             // Display resource embedded in page.
             $strdirectlink = get_string('directlink', 'sharedresource');
-            $course_context = context_course::instance($course->id);
+            $coursecontext = context_course::instance($course->id);
 
             if ($inpopup) {
                 $PAGE->set_pagelayout('embedded');
@@ -570,7 +597,7 @@ class sharedresource_base {
                 echo "<div class=\"popupnotice\">(<a href=\"$fullurl\">$strdirectlink</a>)</div>";
                 echo "</div>"; // MDL-12098
             } else {
-                print_spacer(20,20);
+                print_spacer(20, 20);
             }
         } else {
             // Display the resource on it's own.
@@ -590,7 +617,7 @@ class sharedresource_base {
      */
     public function add_instance() {
         global $DB;
-        
+
         $this->_postprocess();
         $this->sharedresource->timemodified = time();
         return $DB->insert_record('sharedresource', $this->sharedresource);
@@ -712,7 +739,7 @@ class sharedresource_base {
                 'usercity'        => array('langstr' => get_string('city'),
                                            'value'   => $USER->city),
                 'usertimezone'    => array('langstr' => get_string('timezone'),
-                                           'value'   => get_user_timezone_offset()),
+                                           'value'   => 0),
                 'userurl'         => array('langstr' => get_string('webpage'),
                                            'value'   => $USER->url)
              );
@@ -728,24 +755,31 @@ class sharedresource_base {
     public function setup_elements(&$mform) {
         global $CFG, $USER, $SHAREDRESOURCE_WINDOW_OPTIONS, $DB, $OUTPUT;
 
+        $config = get_config('sharedresource');
+
         $add     = optional_param('add', 0, PARAM_ALPHA);
         $update  = optional_param('update', 0, PARAM_INT);
-        $return  = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+        $return  = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
         $type    = optional_param('type', 'file', PARAM_ALPHANUM);
         $section = optional_param('section',null, PARAM_INT);
         $courseid  = optional_param('course', null,PARAM_INT);
 
         if (!empty($add)) {
-            $entry_id = optional_param('entry_id', false, PARAM_INT);
+            // We may just have created one.
+            $entryid = optional_param('entryid', false, PARAM_INT);
             // Have we selected a resource yet ?
-            if (empty($entry_id)) {
-                $params = array('course' => $courseid, 'section' => $section, 'type' => $type, 'add' => $add, 'return' => $return);
+            if (empty($entryid)) {
+                $params = array('course' => $courseid,
+                                'section' => $section,
+                                'type' => $type,
+                                'add' => $add,
+                                'return' => $return,
+                                'entryid' => $entryid);
                 redirect(new moodle_url('/mod/sharedresource/search.php', $params));
-            }
-            // We have our reference Shared resource.
-            else {
-                if (!$sharedresource_entry = sharedresource_entry::read_by_id($entry_id)) {
-                    print_error('errorinvalididentifier', 'sharedresource', $entry_id);
+            } else {
+                // We have our reference Shared resource.
+                if (!$shrentry = \mod_sharedresource\entry::read_by_id($entryid)) {
+                    print_error('errorinvalididentifier', 'sharedresource', $entryid);
                 }
             }
         } else if (!empty($update)) {
@@ -755,40 +789,46 @@ class sharedresource_base {
             if (! $resource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
                 print_error('errorinvalidresource', 'sharedresource');
             }
-            if (!$sharedresource_entry = sharedresource_entry::read($resource->identifier)) {
+            if (!$shrentry = \mod_sharedresource\entry::read($resource->identifier)) {
                 print_error('errorinvalididentifier', 'sharedresource', $resource->identifier);
             }
         }
-        $this->set_parameters(); // set the parameter array for the form
-        $mform->addElement('hidden', 'entry_id', $sharedresource_entry->id);
-        $mform->setType('entry_id', PARAM_INT);
+        // Set the parameter array for the form.
+        $this->set_parameters();
+        $mform->addElement('hidden', 'entryid', $shrentry->id);
+        $mform->setType('entryid', PARAM_INT);
 
-        $mform->addElement('hidden', 'identifier', $sharedresource_entry->identifier);
+        $mform->addElement('hidden', 'identifier', $shrentry->identifier);
         $mform->setType('identifier', PARAM_TEXT);
 
-        $mform->setDefault('name', $sharedresource_entry->title);
-        $mform->setDefault('description', ($sharedresource_entry->description));
+        $mform->setDefault('name', $shrentry->title);
+        $mform->setDefault('description', ($shrentry->description));
 
-        $location = $mform->addElement('static', 'origtitle', get_string('title', 'sharedresource').': ', ($sharedresource_entry->title));
+        $location = $mform->addElement('static', 'origtitle', get_string('title', 'sharedresource').': ', ($shrentry->title));
 
         $strpreview = get_string('preview','sharedresource');
-        if (empty($CFG->sharedresource_foreignurl)) {
-            $params = array('identifier' => $sharedresource_entry->identifier, 'inpopup' => true);
+        if (empty($config->foreignurl)) {
+            $params = array('identifier' => $shrentry->identifier, 'inpopup' => true);
             $resurl = new moodle_url('/mod/sharedresource/view.php', $params);
             $link =  '<a href="'.$resurl.'" '
-              . "onclick=\"this.target='resource{$sharedresource_entry->id}'; return openpopup('".$resurl."', "
-              . "'resource{$sharedresource_entry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
+              . "onclick=\"this.target='resource{$shrentry->id}'; return openpopup('".$resurl."', "
+              . "'resource{$shrentry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
         } else {
-            $url = str_replace('<%%ID%%>', $sharedresource_entry->identifier, $CFG->sharedresource_foreignurl);
+            $url = str_replace('<%%ID%%>', $shrentry->identifier, $config->foreignurl);
             $link = '<a href="'.$url.'" target="_blank">('.$strpreview.')</a>';
         }
 
         $location = $mform->addElement('static', 'url', get_string('location', 'sharedresource').': ', $link);
 
         $searchbutton = $mform->addElement('submit', 'searchsharedresource', get_string('searchsharedresource', 'sharedresource'));
-        $params = array('course' => $this->sharedresource->course, 'section' => $section, 'type' => $type, 'add' => $add, 'return' => $return);
+        $params = array('course' => $this->sharedresource->course,
+                        'section' => $section,
+                        'type' => $type,
+                        'add' => $add,
+                        'return' => $return);
         $searchurl = new moodle_url('/mod/sharedresource/search.php', $params);
-        $buttonattributes = array('title' => get_string('searchsharedresource', 'sharedresource'), 'onclick' => " window.location.href ='".$searchurl."'; return false;");
+        $buttonattributes = array('title' => get_string('searchsharedresource', 'sharedresource'),
+                                  'onclick' => " window.location.href ='".$searchurl."'; return false;");
         $searchbutton->updateAttributes($buttonattributes);
 
         $mform->addElement('header', 'displaysettings', get_string('display', 'sharedresource'));
@@ -799,7 +839,7 @@ class sharedresource_base {
         $woptions = array(0 => get_string('pagewindow', 'sharedresource'), 1 => get_string('newwindow', 'sharedresource'));
         $mform->addElement('select', 'windowpopup', get_string('display', 'sharedresource'), $woptions);
         $mform->setType('windowpopup', PARAM_INT);
-        $mform->setDefault('windowpopup', (empty($CFG->sharedresource_popup) ? 1 : 0));
+        $mform->setDefault('windowpopup', (empty($config->popup) ? 1 : 0));
         $mform->disabledIf('windowpopup', 'forcedownload', 'checked');
 
         $mform->addElement('checkbox', 'framepage', get_string('keepnavigationvisible', 'sharedresource'));
@@ -813,11 +853,11 @@ class sharedresource_base {
             if ($option == 'height' or $option == 'width') {
                 $mform->addElement('text', $option, get_string('new'.$option, 'sharedresource'), array('size'=>'4'));
                 $mform->setType($option, PARAM_TEXT);
-                $mform->setDefault($option, $CFG->{'sharedresource_popup'.$option});
+                $mform->setDefault($option, $config->{'popup'.$option});
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             } else {
                 $mform->addElement('checkbox', $option, get_string('new'.$option, 'sharedresource'));
-                $mform->setDefault($option, $CFG->{'sharedresource_popup'.$option});
+                $mform->setDefault($option, $config->{'popup'.$option});
                 $mform->setType($option, PARAM_INT); 
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             }
@@ -843,9 +883,10 @@ class sharedresource_base {
             $parametername = "parameter$i";
             $parsename = "parse$i";
             $group = array();
-            $group[] =& $mform->createElement('text', $parsename, '', array('size'=>'12'));//TODO: accessiblity
-            $group[] =& $mform->createElement('select', $parametername, '', $options);//TODO: accessiblity
-            $mform->addGroup($group, 'pargroup'.$i, get_string('variablename', 'sharedresource').'='.get_string('parameter', 'sharedresource'), ' ', false);
+            $group[] =& $mform->createElement('text', $parsename, '', array('size'=>'12')); // TODO: accessiblity.
+            $group[] =& $mform->createElement('select', $parametername, '', $options); // TODO: accessiblity.
+            $label = get_string('variablename', 'sharedresource').'='.get_string('parameter', 'sharedresource');
+            $mform->addGroup($group, 'pargroup'.$i, $label, ' ', false);
             $mform->setAdvanced('pargroup'.$i);
             $mform->setType($parsename, PARAM_RAW);
             $mform->setDefault($parametername, '-');
@@ -857,7 +898,8 @@ class sharedresource_base {
      *
      * @param default_values   object, reference to form default values object
      */
-    public function setup_preprocessing(&$default_values){
+    public function setup_preprocessing(&$default_values) {
         // Override to add your own options.
+        assert(1);
     }
 }

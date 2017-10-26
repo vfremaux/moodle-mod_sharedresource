@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
 
 function sharedresource_set_instance(&$block) {
     global $CFG, $DB, $COURSE, $PAGE;
@@ -34,8 +35,7 @@ function sharedresource_set_instance(&$block) {
     $modinfo = get_fast_modinfo($block->course);
 
     $cm = get_coursemodule_from_id('sharedresource', $block->cm->id);
-    require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
-    $resourceinstance = new sharedresource_base($cmid, null);
+    $resourceinstance = new \mod_sharedresource\base($cmid, null);
     $resourceinstance->embedded = true;
     $block->content->text = '<div class="block-page-module-view">'.$sharedresource->display().'</div>';
  

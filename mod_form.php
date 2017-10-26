@@ -24,27 +24,31 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
 
 class mod_sharedresource_mod_form extends moodleform_mod {
-    public $_resinstance;
+
+    public $resourceinstance;
 
     public function definition() {
         global $CFG, $DB;
 
         $mform =& $this->_form;
 
-        // This hack is needed for different settings of each subtype.
-        if (!empty($this->_instance)) {
-            if (!$res = $DB->get_record('sharedresource', array('id' => (int)$this->_instance))) {
-                print_error('errorinstance', 'sharedresource');
-            }
-        }
-
-        require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_base.class.php');
         if (isset($this->_cm)) {
-            $this->_resinstance = new sharedresource_base($this->_cm->id);
+            $this->resourceinstance = new \mod_sharedresource\base($this->_cm->id);
         } else {
-            $this->_resinstance = new sharedresource_base();
+            /*
+             * this is a new instance we do not have cm yet, but should have received entryid from query string
+             * as an addition result.
+             */
+            $entryid = optional_param('entryid', false, PARAM_INT);
+            if ($entryid) {
+                $identifier = $DB->get_field('sharedresource_entry', 'identifier', array('id' => $entryid));
+                $this->resourceinstance = new \mod_sharedresource\base(null, $identifier);
+            } else {
+                $this->resourceinstance = new \mod_sharedresource\base(null, null);
+            }
         }
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -61,7 +65,7 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'typedesc', get_string('resourcetypefile', 'sharedresource'));
 
-        $this->_resinstance->setup_elements($mform);
+        $this->resourceinstance->setup_elements($mform);
 
         $this->standard_coursemodule_elements(array('groups' => false, 'groupmembersonly' => true, 'gradecat' => false));
 
@@ -69,7 +73,7 @@ class mod_sharedresource_mod_form extends moodleform_mod {
     }
 
     public function data_preprocessing(&$default_values) {
-        $this->_resinstance->setup_preprocessing($default_values);
+        $this->resourceinstance->setup_preprocessing($default_values);
     }
 
     function validation($data, $files) {
