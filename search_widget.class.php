@@ -37,7 +37,7 @@ abstract class search_widget {
     /**
      * Constructor for the search_widget class
      */
-    function search_widget($pluginchoice, $id, $label, $type) {
+    function __construct($pluginchoice, $id, $label, $type) {
         $this->pluginchoice = $pluginchoice;
         $this->id = $id;
         $this->label = $label;

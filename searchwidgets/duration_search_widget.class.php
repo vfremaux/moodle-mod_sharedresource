@@ -33,8 +33,8 @@ class duration_search_widget extends search_widget {
     /**
      * Constructor for the search_widget class
      */
-    function duration_search_widget($pluginchoice, $id, $label, $type) {
-        parent::search_widget($pluginchoice, $id, $label, $type);
+    function __construct($pluginchoice, $id, $label, $type) {
+        parent::__construct($pluginchoice, $id, $label, $type);
     }
 
     /**
