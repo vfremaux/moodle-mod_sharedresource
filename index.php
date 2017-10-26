@@ -16,19 +16,20 @@
 
 /**
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @author      Piers Harding  piers@catalyst.net.nz
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package     mod_sharedresource
+ * @category    mod
  */
 require_once('../../config.php');
 
-$id = required_param('id', PARAM_INT); // Course ID.
+$id = required_param( 'id', PARAM_INT ); // Course.
 
 if (!$course =  $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
+
+// Security.
 
 require_login($course);
 $context = context_course::instance($id);
@@ -36,6 +37,13 @@ $context = context_course::instance($id);
 if ($course->id != SITEID) {
     require_login($course->id);
 }
+
+$params = array(
+    'context' => context_course::instance($course->id)
+);
+$event = \mod_sharedresource\event\course_module_instance_list_viewed::create($params);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
 $strresource = get_string('modulename', 'sharedresource');
 $strweek = get_string('week');
@@ -59,7 +67,9 @@ $PAGE->set_button('');
 echo $OUTPUT->header();
 
 if (! $resources = get_all_instances_in_course("sharedresource", $course)) {
-    echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), "../../course/view.php?id=$course->id");
+    $courseurl = new moodle_url('../../course/view.php', array('id' => $course->id));
+    echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), $courseurl);
+    echo $OUTPUT->footer();
     exit;
 }
 
@@ -71,10 +81,10 @@ if ($course->format == 'weeks') {
     $table->align = array ('center', 'left', 'left');
 } else {
     $table->head  = array ($strlastmodified, $strname, $strsummary);
-    $table->align = array ("left", "left", "left");
+    $table->align = array ('left', 'left', 'left');
 }
 
-$currentsection = "";
+$currentsection = '';
 $options->para = false;
 foreach ($resources as $resource) {
     if ($course->format == 'weeks' or $course->format == 'topics') {
@@ -96,15 +106,17 @@ foreach ($resources as $resource) {
     } else {
         $extra = '';
     }
+
+    $resurl = new moodle_url('/mod/sharedresource/view.php', array('id' => $resource->coursemodule));
     if (!$resource->visible) {
         // Show dimmed if the mod is hidden.
         $table->data[] = array($printsection,
-                "<a class=\"dimmed\" $extra href=\"view.php?id=$resource->coursemodule\">".format_string($resource->name,true).'</a>',
+                '<a class="dimmed" '.$extra.' href="$resurl">'.format_string($resource->name, true).'</a>',
                 format_text($resource->summary, FORMAT_MOODLE, $options));
     } else {
         // Show normal if the mod is visible.
         $table->data[] = array($printsection, 
-                "<a $extra href=\"view.php?id=$resource->coursemodule\">".format_string($resource->name,true)."</a>",
+                '<a '.$extra.' href="'.$resurl.'">'.format_string($resource->name, true).'</a>',
                 format_text($resource->description, FORMAT_MOODLE, $options));
     }
 }

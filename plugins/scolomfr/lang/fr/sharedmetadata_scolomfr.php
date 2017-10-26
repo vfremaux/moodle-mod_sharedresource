@@ -173,7 +173,7 @@ $string['typicallearningtime'] = 'Durée d\'apprentissage';
 $string['webmedia'] = 'Web média';
 
 $string['descriptionscolomfr'] = 'Le LOMFR est le profil français d\'application du LOM. <br/><br/>
-Le schéma d\'application ScoLOMFR est une applciation du schéma LOMFR élaboré par les acteurs de l\'éducation 
+Le schéma d\'application ScoLOMFR est une application du schéma LOMFR élaboré par les acteurs de l\'éducation 
 nationale publique française pour décrire des objets (ressources) pédagogiques dans le contexte scolaire.
 Est considérée comme ressource pédagogique toute entité (numérique ou non) utilisée dans un processus d\'enseignement, de formation ou d\'apprentissage.<br/><br/>
 Ses objectifs sont les suivants :<br/>

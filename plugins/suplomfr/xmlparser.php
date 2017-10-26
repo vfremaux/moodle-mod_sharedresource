@@ -3,63 +3,66 @@
  * Custom XML parser for XML Metadata (LOMFR)
  *
  * @author  Vincent Micheli
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
- 
-require_once $CFG->dirroot.'/mod/sharedresource/metadata_xml_parser.class.php';
-require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php';
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once $CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php';
+require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php';
 
 /**
  * Custom XML parser class for XML Metadata
  */
+class metadata_xml_parser_scolomfr extends metadata_xml_parser {
 
-
-class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Constructor creates and initialises parser resource and calls initialise
      *
      * @return bool True
      */
     function __construct() {
-    	parent::__construct();
+        parent::__construct();
         return $this->initialise();
     }
-    
+
     /**
      * Set default element handlers and initialise properties to empty.
      *
      * @return bool True
      */
     function initialise() {
-        
+
         $this->parser = xml_parser_create();
         xml_set_object($this->parser, $this);
 
-        xml_set_element_handler($this->parser, "start_element", "end_element");
-        xml_set_character_data_handler($this->parser, "default_data");
+        xml_set_element_handler($this->parser, 'start_element', 'end_element');
+        xml_set_character_data_handler($this->parser, 'default_data');
 
         $this->current_path = '';
         $this->start_discard = 0;
         $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
         $this->duration_nodes = array('DURATION', 'TYPICALLEARNINGTIME');
-        
+
         $this->current_meta = null;
         $this->metadata = array();
-        
+
         $this->title_node = '/GENERAL/TITLE';
         $this->url_node = '/TECHNICAL/LOCATION';
         $this->description_node = '/GENERAL/DESCRIPTION';
         $this->language_node = '/GENERAL/LANGUAGE';
-        
+
         $this->title = '';
         $this->url = '';
         $this->description = '';
         $this->url_index = 0;
         $this->language = '';
-        
+
         $this->plugin = 'scolomfr';
-        
+
         $this->nodes_tree = array(
             '/GENERAL' => array(
                 'item' => '1',
@@ -405,7 +408,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Parse a block of XML text
      *
-     * @return  bool            True on success - false on failure
+     * @return bool True on success - false on failure
      */
     function parse($data) {
         $p = xml_parse($this->parser, $data);
@@ -422,9 +425,9 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Reset child nodes iteration
      */
-    function reset_childs($path){
-        foreach($this->nodes_tree as $key => $value){
-            if(strpos($key, $path.'/') === 0){
+    function reset_childs($path) {
+        foreach($this->nodes_tree as $key => $value) {
+            if (strpos($key, $path.'/') === 0) {
                 $this->nodes_tree[$key]['iteration'] = -1;
             }
         }
@@ -433,21 +436,21 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Get Element path (ie 0_0_1)
      */
-    function get_elempath($path){
+    function get_elempath($path) {
         $elempath = '';
         $depth = substr_count($path, '/');
-        $tmp_path = $path;
+        $tmppath = $path;
         $elempathtab = array();
-        for($i = 0; $i<$depth; $i++){
-            $elempathtab[$depth-($i+1)] = $this->nodes_tree[$tmp_path]['iteration'];
-            $tmp_path = substr($tmp_path, 0, strrpos($tmp_path,'/'));
+        for ($i = 0; $i < $depth; $i++) {
+            $elempathtab[$depth - ($i + 1)] = $this->nodes_tree[$tmppath]['iteration'];
+            $tmppath = substr($tmppath, 0, strrpos($tmppath, '/'));
         }
         ksort($elempathtab);
-        foreach($elempathtab as $value){
+        foreach ($elempathtab as $value) {
             $elempath .= $value.'_';
         }
-        $elempath = substr($elempath, 0, strlen($elempath)-1);
-        
+        $elempath = substr($elempath, 0, strlen($elempath) - 1);
+
         return $elempath;
     }
 
@@ -464,82 +467,86 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      * @return  bool            True
      */
     function start_element($parser, $name, $attrs) {
-        if(strpos($name,':') !== false){
-            $name = substr($name, strpos($name,':')+1);
+        if (strpos($name,':') !== false) {
+            $name = substr($name, strpos($name, ':') + 1);
         }
-        
-        if(in_array($name, $this->ignored_nodes)){
+
+        if (in_array($name, $this->ignored_nodes)) {
             return true;
         }
-        // we need to distinguish the node 4_7 of the duration tag
-        if($name == 'DURATION' && in_array(substr($this->current_path, strrpos($this->current_path, '/')+1), $this->duration_nodes)){
+
+        // We need to distinguish the node 4_7 of the duration tag.
+        if ($name == 'DURATION' &&
+                in_array(substr($this->current_path, strrpos($this->current_path, '/') + 1), $this->duration_nodes)) {
             return true;
         }
-        // we need to discard content of source node
-        if($name == 'SOURCE' && !(substr($this->current_path, strrpos($this->current_path, '/')+1) == 'TAXONPATH')){
+
+        // We need to discard content of source node.
+        if ($name == 'SOURCE' &&
+                !(substr($this->current_path, strrpos($this->current_path, '/') + 1) == 'TAXONPATH')) {
             $this->start_discard = 1;
             return true;
         }
-        
+
         $this->current_path .= '/'.$name;
         $this->nodes_tree[$this->current_path]['iteration']++;
         $this->reset_childs($this->current_path);
-        
+
         $elemid = $this->nodes_tree[$this->current_path]['item'];
         $elempath = $this->get_elempath($this->current_path);
-        $this->current_meta = new sharedresource_metadata(1, $elemid.':'.$elempath, '', $this->plugin);
+        $this->current_meta = new metadata(1, $elemid.':'.$elempath, '', $this->plugin);
         $this->metadata[] = $this->current_meta;
-        
+
         return true;
     }
 
     /**
      * Text handler
      *
-     * @param   mixed   $parser The XML parser
-     * @param   string  $data   The content of the current tag (1024 byte chunk)
-     * @return  bool            True
+     * @param mixed $parser The XML parser
+     * @param string $data The content of the current tag (1024 byte chunk)
+     * @return bool true
      */
     function default_data($parser, $data) {
-        if(trim($data) == '' || $this->start_discard){
+        if (trim($data) == '' || $this->start_discard) {
             return true; 
         }
-        if($this->current_path == $this->title_node){
-            if(empty($this->title)){
+        if ($this->current_path == $this->title_node) {
+            if (empty($this->title)) {
                 $this->title = addslashes($data);
             } else {
                 $this->title .= addslashes($data);
             }
         }
-        if($this->current_path == $this->url_node){
-            if(empty($this->url)){
+        if ($this->current_path == $this->url_node) {
+            if (empty($this->url)) {
                 $this->url = addslashes($data);
             } else {
                 $this->url .= addslashes($data);
             }
             $this->url_index = count($this->metadata) - 1;
         }
-        if($this->current_path == $this->description_node){
-            if(empty($this->description)){
+        if ($this->current_path == $this->description_node) {
+            if (empty($this->description)) {
                 $this->description = addslashes($data);
             } else {
                 $this->description .= addslashes($data);
             }
         }
-        if($this->current_path == $this->language_node){
-            if(empty($this->language)){
+        if ($this->current_path == $this->language_node) {
+            if (empty($this->language)) {
                 $this->language = addslashes($data);
             } else {
                 $this->language .= addslashes($data);
             }
         }
-        
-        if(empty($this->current_meta->value)){
+
+        if (empty($this->current_meta->value)) {
             $this->current_meta->value = addslashes($data);
-        }else{
+        } else {
             $this->current_meta->value .= addslashes($data);
         }
-        
+
         return true;
     }
 
@@ -551,61 +558,64 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      * @return  bool            True
      */
     function end_element($parser, $name) {
-        if(strpos($name,':') !== false){
-            $name = substr($name, strpos($name,':')+1);
+        if (strpos($name, ':') !== false) {
+            $name = substr($name, strpos($name, ':') + 1);
         }
-        
-        if(in_array($name, $this->ignored_nodes)){
+
+        if (in_array($name, $this->ignored_nodes)) {
             return true;
         }
-        // we need to distinguish the node 4_7 of the duration tag
-        if($name == 'DURATION' && strpos($this->current_path,'/DURATION') === false){
+
+        // We need to distinguish the node 4_7 of the duration tag.
+        if ($name == 'DURATION' &&
+                strpos($this->current_path, '/DURATION') === false) {
             return true;
         }
-        // we need to discard content of source node
-        if($name == 'SOURCE' && $this->start_discard == 1){
+
+        // We need to discard content of source node.
+        if ($name == 'SOURCE' &&
+                $this->start_discard == 1) {
             $this->start_discard = 0;
             return true;
         }
-        
-        $this->current_path = substr($this->current_path, 0, (strrpos($this->current_path,'/')));
-        
+
+        $this->current_path = substr($this->current_path, 0, (strrpos($this->current_path, '/')));
+
         $this->current_meta = null;
-        
+
         return true;
     }
-    
-    // other utility functions to deal and change metadata
-    function add_identifier(&$metadata, $catalog, $identifier, $entry_id){
 
-		// Add identifier record
-    	$identifiernodeID = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];
-    	$identifiernodeID++;
-    	$lastidentifierinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER']['item'].':0_'.$identifiernodeID;
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $lastidentifierinstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = '';
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+    // Other utility functions to deal and change metadata.
+    function add_identifier(&$metadata, $catalog, $identifier, $entryid) {
 
-		// Add catalog record
-    	$cataloginstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/CATALOG']['item'].':0_'.$identifiernodeID.'_0';
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $cataloginstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = $catalog;
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+        // Add identifier record.
+        $identifiernodeid = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];
+        $identifiernodeid++;
+        $lastidentifierinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER']['item'].':0_'.$identifiernodeid;
+        $metadatarec = new StdClass();
+        $metadatarec->element = $lastidentifierinstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = '';
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
 
-		// Add entry value record
-    	$entryinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/ENTRY']['item'].':0_'.$identifiernodeID.'_0';
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $cataloginstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = $identifier;
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+        // Add catalog record.
+        $cataloginstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/CATALOG']['item'].':0_'.$identifiernodeid.'_0';
+        $metadatarec = new StdClass();
+        $metadatarec->element = $cataloginstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = $catalog;
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
+
+        // Add entry value record.
+        $entryinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/ENTRY']['item'].':0_'.$identifiernodeid.'_0';
+        $metadatarec = new StdClass();
+        $metadatarec->element = $cataloginstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = $identifier;
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
     }
 }
-

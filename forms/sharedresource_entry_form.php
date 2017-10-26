@@ -26,24 +26,30 @@ require_once $CFG->libdir.'/formslib.php';
 
 class mod_sharedresource_entry_form extends moodleform {
 
+    protected $entryid;
+
+    protected $sharedresourceentrymode;
+
     public function __construct($mode) {
-        $this->sharedresource_entry_mode = $mode;
-        parent::moodleform();
+        $this->sharedresourceentrymode = $mode;
+        $this->entryid = optional_param('entryid', 0, PARAM_INT);
+        parent::__construct();
     }
 
     public function definition() {
         global $CFG, $USER, $DB;
 
+        $config = get_config('sharedresource');
+
         $mform =& $this->_form;
 
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
-        $return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+        $return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
         $type          = optional_param('type', '', PARAM_ALPHANUM);
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
         $course        = required_param('course', PARAM_INT);
-        $entry_id      = optional_param('entry_id', 1, PARAM_INT);
 
         $mform->addElement('header', 'resourceheader', get_string('resource'));
 
@@ -65,16 +71,48 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
         // Sharing context :
-        // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories)
+        // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories).
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
         $mform->setType('context', PARAM_INT);
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
 
-        // Url or file
-        // On update as soon as a sharedresource exists, it cannot be muted any more
-        if ($this->sharedresource_entry_mode == 'update') {
+        // Resource access :
+        if (!empty($config->accesscontrol) && !empty($config->defaultuserfield)) {
+            $userfieldoptions = $DB->get_records_menu('user_info_field', array(), 'id, name', 'id, name');
+            $userfieldoptions = array_merge(array('' => get_string('disabled', 'sharedresource')), $userfieldoptions);
+
+            $label = get_string('accessuserfield', 'sharedresource');
+            $mform->addElement('select', 'userfield', $label, $userfieldoptions);
+            $mform->setDefault('userfield', $config->defaultuserfield);
+            $mform->setType('userfield', PARAM_INT);
+
+            if (!empty($this->_customdata['rc'])) {
+                // Take the actual resoruce one.
+                $params = array('id' => $this->_customdata['rc']->userfield);
+            } else {
+                // Get options of the default field
+                $params = array('id' => $config->defaultuserfield);
+            }
+            $userfield = $DB->get_record('user_info_field', $params);
+            $options = array();
+            if ($userfield->datatype == 'menu') {
+                $optionsarr = explode("\n", $userfield->param1);
+                $options = array_combine($optionsarr, $optionsarr);
+            }
+            $label = get_string('accessuserfieldvalues', 'sharedresource');
+            $select = & $mform->addElement('select', 'userfieldvalues', $label, $options);
+            $mform->setType('userfieldvalues', PARAM_TEXT);
+
+            if ($config->allowmultipleaccessvalues) {
+                $select->setMultiple(true);
+            }
+        }
+
+        // Url or file.
+        // On update as soon as a sharedresource exists, it cannot be muted any more.
+        if ($this->sharedresourceentrymode == 'update') {
             $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
             $mform->addElement('static', 'filename', get_string('file').': ', '');
         } else {
@@ -84,7 +122,8 @@ class mod_sharedresource_entry_form extends moodleform {
         }
 
         $group = array();
-        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), array('accepted_types' => array('.jpg','.gif','.png')));
+        $options = array('accepted_types' => array('.jpg','.gif','.png'));
+        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
         $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
         $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
 
@@ -94,29 +133,29 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('course', PARAM_INT); 
 
         $mform->addElement('hidden', 'add', $add);
-           $mform->setType('add', PARAM_ALPHA); 
+        $mform->setType('add', PARAM_ALPHA); 
 
         $mform->addElement('hidden', 'return', $return);
         $mform->setType('return', PARAM_BOOL); 
-        
+
         $mform->addElement('hidden', 'section', $section);
         $mform->setType('section', PARAM_INT);
-        
+
         $mform->addElement('hidden', 'mode', $mode);
         $mform->setType('mode', PARAM_ALPHA); 
-        
-        $mform->addElement('hidden', 'entry_id', $entry_id);
-        $mform->setType('entry_id', PARAM_INT);
+
+        $mform->addElement('hidden', 'entryid', $this->entryid);
+        $mform->setType('entryid', PARAM_INT);
 
         $this->add_action_buttons(true, $btext);
     }
 
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);
 
-        if ($this->sharedresource_entry_mode == 'add') {
+        if ($this->sharedresourceentrymode == 'add') {
             // Make sure that either the file or the URL are supplied.
             if (empty($data['url']) && $data['sharedresourcefile'] == null) {
                 $errors['url'] = get_string('missingresource','sharedresource');
@@ -126,9 +165,9 @@ class mod_sharedresource_entry_form extends moodleform {
         return $errors;
     }
 
-    function get_data($slashed = true) {
+    public function get_data($slashed = true) {
         $data = parent::get_data($slashed);
-        if ($data == NULL) {
+        if ($data == null) {
             return $data;
         }
 
@@ -142,21 +181,22 @@ class mod_sharedresource_entry_form extends moodleform {
         return $data;
     }
 
-    function set_data($default_values, $slashed = false) {
+    public function set_data($defaultvalues, $slashed = false) {
 
         // Thumbnail.
         $draftitemid = file_get_submitted_draft_itemid('thumbnail');
-        $maxbytes = 35*1024;
+        $maxbytes = 35 * 1024;
         $maxfiles = 1;
-        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'local_sharedresources', 'thumbnail', 0, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles));
+        $fileoptions = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
+        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource', 'thumbnail', $this->entryid, $fileoptions);
         $groupname = 'thumbnailgroup';
-        $default_values->$groupname = array('thumbnail' => $draftitemid);
+        $defaultvalues->$groupname = array('thumbnail' => $draftitemid);
 
-        // process description 
-        $description = @$default_values->description;
-        $default_values->description = array();
-        $default_values->description['text'] = $description;
-        $default_values->description['format'] = FORMAT_HTML;
-        $errors = parent::set_data($default_values, $slashed = false);
+        // Resource description .
+        $description = @$defaultvalues->description;
+        $defaultvalues->description = array();
+        $defaultvalues->description['text'] = $description;
+        $defaultvalues->description['format'] = FORMAT_HTML;
+        $errors = parent::set_data($defaultvalues, $slashed = false);
     }
 }

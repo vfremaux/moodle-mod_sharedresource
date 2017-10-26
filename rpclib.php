@@ -15,9 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Implements MNET cross moodle strategy
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package mod_sharedresource
+ * @category mod
  *
+ * Implements MNET cross moodle strategy
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -89,9 +95,9 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
  * retrieve the remote list of resources
  * @param string $remoteuser the username of the remote user
  * @param string $remoteuserhost the MNET hostname of the remote user
- * @param string $metadatafilters 
- * @param string $offset
- * @param int $page
+ * @param array $metadatafilters an array of key/value defines for filtering the metadata
+ * @param int $offset record offset of the result page
+ * @param int $page the page size
  */
 function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $DB;
@@ -113,7 +119,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
     if (empty($metadatafilters)) {
         debug_trace(" Getting without filters ");
         $sql = "
-            SELECT 
+            SELECT
                 *
             FROM
                 {sharedresource_entry}
@@ -123,7 +129,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                 context = ?
         ";
         $sqlcount = "
-            SELECT 
+            SELECT
                 COUNT(*)
             FROM
                 {sharedresource_entry}
@@ -170,6 +176,7 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
         $response->resources['maxobjects'] = count($mtdrecs);
         $entries = $DB->get_records_sql($sql, array(), $offset, $page);
     }
+
     if ($entries) {
         foreach ($entries as $entry) {
             // Get usage indicators in the network.
@@ -193,13 +200,14 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                                                            'id' => empty($entry->id),
                                                            'uses' => $uses);
             // Get all metadata.
-            if ($metadata = $DB->get_records('sharedresource_metadata', array('entry_id' => $entry->id), 'element', 'element,namespace,value')) {
+            if ($metadata = $DB->get_records('sharedresource_metadata', array('entryid' => $entry->id), 'element', 'element,namespace,value')) {
                 $response->resources['entries'][$entry->identifier]['metadata'] = $metadata;
             }
         }
     } else {
         $response->resources['entries'] = array();
     }
+
     return json_encode($response);
 }
 
@@ -317,10 +325,10 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
     
     // finally store eventually provided metadata
     if (!empty($metadata)) {
-        $DB->delete_records('sharedresource_metadata', array('entry_id' => $newid)); 
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $newid)); 
         // For replacing old metadata by submitted one. May not have any records in case of a new resource.
         foreach ($metadata as $datum) {
-            $datum->entry_id = $newid;
+            $datum->entryid = $newid;
             $DB->insert_record('sharedresource_metadata', $datum);
         }
     }

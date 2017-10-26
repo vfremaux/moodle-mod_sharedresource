@@ -78,9 +78,9 @@ class restore_sharedresource_activity_structure_step extends restore_activity_st
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->entry_id = $this->get_mappingid('sharedresource_entry', $data->entry_id);
+        $data->entryid = $this->get_mappingid('sharedresource_entry', $data->entryid);
 
-        if ($oldres = $DB->get_record('sharedresource_metadata', array('entry_id' => $data->entry_id, 'namespace' => $data->namespace, 'element' => $data->element))) {
+        if ($oldres = $DB->get_record('sharedresource_metadata', array('entryid' => $data->entryid, 'namespace' => $data->namespace, 'element' => $data->element))) {
             if ($CFG->sharedresource_freeze_index) {
                 $newid = $DB->update_record('sharedresource_metadata', $data);
             }
