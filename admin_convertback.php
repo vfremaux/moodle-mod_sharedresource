@@ -24,14 +24,12 @@
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/lib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot . '/mod/sharedresource/admin_convert_form.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
 
-// admin_externalpage_setup('sharedresource_convertall');
-// admin_externalpage_print_header();
 $courseid = optional_param('course', SITEID, PARAM_INT);
 
 if ($courseid > SITEID) {
@@ -86,15 +84,15 @@ if (empty($courseid)) {
         }
     }
     $form2 = new sharedresource_selectresources_form($course, $sharedresources);
-    /// If data submitted, proceed.
+    // If data submitted, proceed.
     if ($data = $form2->get_data()) {
         if ($form2->is_cancelled()) {
             print_string('conversioncancelled', 'sharedresource');
-            redirect($CFG->wwwroot."/course/view.php?id={$courseid}&amp;action=activities");
+            redirect(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities'));
         }
         $reskeys = preg_grep("/cnv_/" , array_keys(get_object_vars($data)));
         if (!empty($reskeys)) {
-            foreach($reskeys as $reskey) {
+            foreach ($reskeys as $reskey) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
@@ -107,11 +105,11 @@ if (empty($courseid)) {
     } else {
         // Print form.
         echo $OUTPUT->header();
-        print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
+        echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
         $form2->display();
         echo $OUTPUT->footer();
         exit;
     }
 }
-echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
+echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid));
 echo $OUTPUT->footer();

@@ -139,6 +139,7 @@ $string['fileuploadfailed'] = 'File upload failed';
 $string['fillcategory'] = 'All field in this category are empty. Please fill in at least one of these fields.';
 $string['fillprevious'] = 'Please fill in the previous field before adding a new one';
 $string['filtername'] = 'Filter Name';
+$string['filesharedresource'] = 'Shared resource (file or url)';
 $string['forcedownload'] = 'Force Download';
 $string['frameifpossible'] = 'Frame if possible';
 $string['frameifpossible_help'] = 'Help on Frame if possible';

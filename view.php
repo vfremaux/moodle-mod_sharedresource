@@ -26,8 +26,8 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-$id = optional_param('id', 0, PARAM_INT);    // Course Module ID
-$identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier
+$id = optional_param('id', 0, PARAM_INT);    // Course Module ID.
+$identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier.
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
 
 $cmid = 0;

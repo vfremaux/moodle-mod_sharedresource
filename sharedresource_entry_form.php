@@ -111,7 +111,7 @@ class mod_sharedresource_entry_form extends moodleform {
         $this->add_action_buttons(true, $btext);
     }
 
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);
@@ -126,9 +126,9 @@ class mod_sharedresource_entry_form extends moodleform {
         return $errors;
     }
 
-    function get_data($slashed = true) {
+    public function get_data($slashed = true) {
         $data = parent::get_data($slashed);
-        if ($data == NULL) {
+        if ($data == null) {
             return $data;
         }
 
@@ -142,7 +142,7 @@ class mod_sharedresource_entry_form extends moodleform {
         return $data;
     }
 
-    function set_data($default_values, $slashed = false) {
+    public function set_data($default_values, $slashed = false) {
 
         // Thumbnail.
         $draftitemid = file_get_submitted_draft_itemid('thumbnail');

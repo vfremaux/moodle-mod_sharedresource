@@ -23,9 +23,9 @@
  */
 namespace mod_sharedresource\plugininfo;
 
-use core\plugininfo\base, core_plugin_manager, moodle_url;
-
 defined('MOODLE_INTERNAL') || die();
+
+use core\plugininfo\base, core_plugin_manager, moodle_url;
 
 class sharedmetadata extends base {
     /**
@@ -99,7 +99,8 @@ class sharedmetadata extends base {
             return;
         }
 
-        if (!$hassiteconfig or !file_exists($this->full_path('settings.php'))) {
+        if (!$hassiteconfig ||
+                !file_exists($this->full_path('settings.php'))) {
             return;
         }
 

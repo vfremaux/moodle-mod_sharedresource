@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * forms for converting resources to sharedresources
  *
@@ -25,12 +23,13 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 if ($mode == 'delete' && !empty($target)) {
-    // when a restriction is deleted
+    // When a restriction is deleted.
     if (substr($target, 0, 8) == 'restrict' && !array_key_exists($target, $classifarray)) {
         $classifarray[substr($target, 8)]['restriction'] = '';
-    // when a classification is deleted
+    // When a classification is deleted.
     } else {
         $plugins = get_list_of_plugins('mod/sharedresource/plugins');
         foreach ($plugins as $num => $plugin) {
@@ -39,7 +38,7 @@ if ($mode == 'delete' && !empty($target)) {
             $norme = new $object;
             $numclassification = $norme->getClassification();
             $sql = "
-                SELECT 
+                SELECT
                     *
                 FROM
                     {sharedresource_metadata}
@@ -57,34 +56,35 @@ if ($mode == 'delete' && !empty($target)) {
             }
 
             $tabinstance = array();
-            // tabinstances contains the number of all ressources which have a taxon from the deleted classification
+            // Tabinstances contains the number of all ressources which have a taxon from the deleted classification.
             if (!empty($elementinstances)) {
                 foreach ($elementinstances as $key => $value) {
                     $chaine = '';
                     $temp = $classifdepth;
-                    $occur = substr($value->element,strpos($value->element,':') + 1);
+                    $occur = substr($value->element, strpos($value->element, ':') + 1);
                     while ($temp > 0) {
                         if ($chaine != '') {
                             $chaine .= '_';
                         }
-                        $chaine .= substr($occur, 0, strpos($occur,'_'));
-                        $occur = substr($occur, strpos($occur,'_') + 1);
+                        $chaine .= substr($occur, 0, strpos($occur, '_'));
+                        $occur = substr($occur, strpos($occur, '_') + 1);
                         $temp--;
                     }
-                    if (!in_array($chaine,$tabinstance)) {
-                        array_push($tabinstance,$chaine);
+                    if (!in_array($chaine, $tabinstance)) {
+                        array_push($tabinstance, $chaine);
                     }
                 }
                 foreach ($tabinstance as $key => $value) {
-                    // Metadata which contain elements of this classification are deleted
-                    $elementinstances2 = $DB->delete_records_select('sharedresource_metadata', "namespace = '{$plugin}' and element LIKE '{$numclassification}%:{$value}%'" );
+                    // Metadata which contain elements of this classification are deleted.
+                    $select = "namespace = '{$plugin}' and element LIKE '{$numclassification}%:{$value}%'";
+                    $elementinstances2 = $DB->delete_records_select('sharedresource_metadata', $select);
                 }
             }
         }
         unset($classifarray[$target]);
     }
-    set_config('classifarray',serialize($classifarray));
-} elseif ($mode == 'add') {
+    set_config('classifarray', serialize($classifarray));
+} else if ($mode == 'add') {
     if (!isset($table) || $table == '') {
         $recordclassif = false;
         $erroradd .= get_string('missingnametable', 'sharedresource');
@@ -93,12 +93,12 @@ if ($mode == 'delete' && !empty($target)) {
         $metatables = array_flip($metatables);
         $metatables = array_change_key_case($metatables, CASE_LOWER);
         if (strstr($table,$CFG->prefix) == false) {
-            $tablename =$table ;//$CFG->prefix.$table;
+            $tablename = $table;
         } else {
             $tablename = $table;
-            $table = substr($table,strlen($CFG->prefix));
+            $table = substr($table, strlen($CFG->prefix));
         }
-        if (!array_key_exists($tablename,  $metatables)) {
+        if (!array_key_exists($tablename, $metatables)) {
             $recordclassif = false;
             $erroradd .= get_string('missingtable', 'sharedresource');
         }
@@ -106,32 +106,32 @@ if ($mode == 'delete' && !empty($target)) {
     if ($recordclassif) {
         $listfield = array();
         foreach ($DB->get_columns($tablename) as $key => $value) {
-            array_push($listfield,$value->name);
+            array_push($listfield, $value->name);
         }
         if (!isset($id) || $id == '') {
             $recordclassif = false;
-            $erroradd .= get_string('missingnameid','sharedresource');
-        } elseif (!in_array($id,$listfield)) {
+            $erroradd .= get_string('missingnameid', 'sharedresource');
+        } else if (!in_array($id, $listfield)) {
             $recordclassif = false;
-            $erroradd .= get_string('missingid','sharedresource');
+            $erroradd .= get_string('missingid', 'sharedresource');
         }
         if (!isset($parent) || $parent == '') {
             $recordclassif = false;
-            $erroradd .= get_string('missingnameid','sharedresource');
-        } elseif (!in_array($parent, $listfield)) {
+            $erroradd .= get_string('missingnameid', 'sharedresource');
+        } else if (!in_array($parent, $listfield)) {
             $recordclassif = false;
-            $erroradd .= get_string('missingparent','sharedresource');
+            $erroradd .= get_string('missingparent', 'sharedresource');
         }
         if (!isset($label) || $label == '') {
             $recordclassif = false;
-            $erroradd .= get_string('missingnamelabel','sharedresource');
-        } elseif (!in_array($label, $listfield)) {
+            $erroradd .= get_string('missingnamelabel', 'sharedresource');
+        } else if (!in_array($label, $listfield)) {
             $recordclassif = false;
-            $erroradd .= get_string('missinglabel','sharedresource');
+            $erroradd .= get_string('missinglabel', 'sharedresource');
         }
         if (isset($ordering) && !in_array($ordering, $listfield)) {
             $recordclassif = false;
-            $erroradd .= get_string('missingordering','sharedresource');
+            $erroradd .= get_string('missingordering', 'sharedresource');
         }
     }
     if ($recordclassif) {
@@ -151,9 +151,9 @@ if ($mode == 'delete' && !empty($target)) {
             $num = count($classifarray) + 1;
             $classifarray[$table] = $newclassif;
         }
-        set_config('classifarray',serialize($classifarray));
+        set_config('classifarray', serialize($classifarray));
     }
-} elseif ($mode == 'select') {
+} else if ($mode == 'select') {
     foreach ($classifarray as $classif => $value) {
         $classifarray[$classif]['select'] = optional_param($classif, 0, PARAM_BOOL);
     }
