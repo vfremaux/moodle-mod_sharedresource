@@ -16,19 +16,20 @@
 
 /**
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @author      Piers Harding  piers@catalyst.net.nz
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package     mod_sharedresource
+ * @category    mod
  */
 require_once('../../config.php');
 
-$id = required_param('id', PARAM_INT); // Course ID.
+$id = required_param( 'id', PARAM_INT ); // Course.
 
 if (!$course =  $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
+
+// Security.
 
 require_login($course);
 $context = context_course::instance($id);
@@ -37,12 +38,19 @@ if ($course->id != SITEID) {
     require_login($course->id);
 }
 
-$strresource = get_string('modulename', 'sharedresource');
-$strweek = get_string('week');
-$strtopic = get_string('topic');
-$strname = get_string('name');
-$strsummary = get_string('summary');
-$strlastmodified = get_string('lastmodified');
+$params = array(
+    'context' => context_course::instance($course->id)
+);
+$event = \mod_sharedresource\event\course_module_instance_list_viewed::create($params);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
+
+$strresource = get_string("modulename", "sharedresource");
+$strweek = get_string("week");
+$strtopic = get_string("topic");
+$strname = get_string("name");
+$strsummary = get_string("summary");
+$strlastmodified = get_string("lastmodified");
 
 $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
 $url = new moodle_url('/mod/sharedresource/index.php');
@@ -60,6 +68,7 @@ echo $OUTPUT->header();
 
 if (! $resources = get_all_instances_in_course("sharedresource", $course)) {
     echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), "../../course/view.php?id=$course->id");
+    echo $OUTPUT->footer();
     exit;
 }
 
@@ -111,3 +120,4 @@ foreach ($resources as $resource) {
 echo '<br/>';
 echo html_writer::table($table);
 echo $OUTPUT->footer($course);
+

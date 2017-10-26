@@ -22,32 +22,35 @@
  * to the metadata form
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    mod_sharedresource
+ * @category   mod
  */
 
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
+
+$config = get_config('sharedresource');
+
+require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
 $mode          = required_param('mode', PARAM_ALPHA);
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+$return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
 $section       = optional_param('section', 0, PARAM_INT);
 $course        = required_param('course', PARAM_INT);
+$type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 $entries = preg_grep("#^\d#", array_keys($_POST));
 $metadataentries = array();
 
-foreach($entries as $key => $value){
+foreach ($entries as $key => $value) {
     $metadataentries[$value] = required_param($value, PARAM_TEXT);
 }
 
-if (! $course = $DB->get_record('course', array('id'=> $course))) {
+if (! $course = $DB->get_record('course', array('id' => $course))) {
     print_error('badcourseid', 'sharedresource');
 }
 
@@ -64,7 +67,8 @@ $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 
-/* navigation */
+// Navigation.
+
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'),"{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id",'activity');
 $PAGE->navbar->add($strtitle,'metadatarep.php','misc');
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
@@ -75,29 +79,32 @@ $PAGE->set_button('');
 $PAGE->set_headingmenu('');
 
 $SESSION->error = '';
-$sr_entry = $SESSION->sr_entry;
-$sharedresource_entry = unserialize($sr_entry);
+$srentry = $SESSION->sr_entry;
+$shrentry = unserialize($srentry);
 
 // If it's an update, metadata of the sharedresource should be deleted before adding new ones.
 
 if ($mode != 'add') {
-    foreach ($sharedresource_entry->metadata_elements as $key => $metadata) {
-        unset($sharedresource_entry->metadata_elements[$key]);
+    foreach ($shrentry->metadata_elements as $key => $metadata) {
+        unset($shrentry->metadata_elements[$key]);
     }
 }
-$result = metadata_display_and_check($sharedresource_entry, $CFG->pluginchoice, $metadataentries);
+$result = metadata_display_and_check($shrentry, $metadataentries);
 
 // If there are errors in fields filled in by the user.
 
 if ($result['error'] != array()) {
-    $sr_entry = serialize($sharedresource_entry);
-    $SESSION->sr_entry = $sr_entry;
+    $srentry = serialize($shrentry);
+    $SESSION->sr_entry = $srentry;
     $error = serialize($result['error']);
     $SESSION->error = $error;
-    $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-    $mtdstandard = new $object;
+    $mtdclass = 'sharedresource_plugin_'.$config->schema;
+    $mtdstandard = new $mtdclass();
+
     echo $OUTPUT->header();
+
     echo $OUTPUT->heading(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
+
     echo '<center>';
     echo get_string('errormetadata', 'sharedresource');
     echo '<br/><br/>';
@@ -116,27 +123,30 @@ if ($result['error'] != array()) {
     $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
     $OUTPUT->continue($fullurl, get_string('wrongform', 'sharedresource'), 15);
     echo '</center>';
+
     echo $OUTPUT->footer();
+
 } else {
-    //these two lines in comment can be used if you want to show the user values of saved fields
-    /*echo '<h1>'.get_string('attributes','sharedresource').'</h1><br/>';
-    echo $result['display'];*/
-    if ($mode == 'add' && !$sharedresource_entry->exists() && !$sharedresource_entry->add_instance()) {
+    // These two lines in comment can be used if you want to show the user values of saved fields.
+    if ($mode == 'add' && !$shrentry->exists() && !$shrentry->add_instance()) {
         print_error('failadd', 'sharedresource');
-    } elseif (!$sharedresource_entry->update_instance()) {
+    } else if (!$shrentry->update_instance()) {
         print_error('failupdate', 'sharedresource');
     } else {
-        // if everything was saved correctly, go back to the search page or to the library
+        // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
-            $fullurl = $CFG->wwwroot."/local/sharedresources/index.php?course={$course->id}";
+            // We are coming from the library. Go back to it.
+            $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
             redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
         } else {
-            $params = array('id' => $sharedresource_entry->id,
-                            'course' => $course->id,
+            // We are coming from a new sharedresource instance call.
+            $params = array('course' => $course->id,
                             'section' => $section,
-                            '&add' => $add,
-                            'return' => $return);
-            $fullurl = new moodle_url('/mod/sharedresource/search.php', $params);
+                            'type' => $type,
+                            'add' => 'sharedresource',
+                            'return' => $return,
+                            'entryid' => $shrentry->id);
+            $fullurl = new moodle_url('/course/modedit.php', $params);
             redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
         }
         die;

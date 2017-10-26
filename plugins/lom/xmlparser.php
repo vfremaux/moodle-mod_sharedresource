@@ -21,9 +21,14 @@
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+namespace mod_sharedresource;
 
-require_once($CFG->dirroot.'/mod/sharedresource/metadata_xml_parser.class.php');
-require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php');
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 /**
  * Custom XML parser class for XML Metadata
@@ -57,23 +62,23 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
         $this->start_discard = 0;
         $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
         $this->duration_nodes = array('DURATION', 'TYPICALLEARNINGTIME');
-        
+
         $this->current_meta = null;
         $this->metadata = array();
-        
+
         $this->title_node = '/GENERAL/TITLE';
         $this->url_node = '/TECHNICAL/LOCATION';
         $this->description_node = '/GENERAL/DESCRIPTION';
         $this->language_node = '/GENERAL/LANGUAGE';
-        
+
         $this->title = '';
         $this->url = '';
         $this->description = '';
         $this->language = '';
         $this->url_index = 0;
-        
+
         $this->plugin = 'lom';
-        
+
         $this->nodes_tree = array(
             '/GENERAL' => array(
                 'item' => '1',
@@ -425,15 +430,15 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
         $depth = substr_count($path, '/');
         $tmp_path = $path;
         $elempathtab = array();
-        for ($i = 0; $i<$depth; $i++) {
-            $elempathtab[$depth-($i+1)] = $this->nodes_tree[$tmp_path]['iteration'];
-            $tmp_path = substr($tmp_path, 0, strrpos($tmp_path,'/'));
+        for ($i = 0; $i < $depth; $i++) {
+            $elempathtab[$depth - ($i + 1)] = $this->nodes_tree[$tmp_path]['iteration'];
+            $tmp_path = substr($tmp_path, 0, strrpos($tmp_path, '/'));
         }
         ksort($elempathtab);
         foreach ($elempathtab as $value) {
             $elempath .= $value.'_';
         }
-        $elempath = substr($elempath, 0, strlen($elempath)-1);
+        $elempath = substr($elempath, 0, strlen($elempath) - 1);
 
         return $elempath;
     }
@@ -451,8 +456,8 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @return  bool            True
      */
     function start_element($parser, $name, $attrs) {
-        if (strpos($name,':') !== false) {
-            $name = substr($name, strpos($name,':')+1);
+        if (strpos($name, ':') !== false) {
+            $name = substr($name, strpos($name, ':') + 1);
         }
 
         if (in_array($name, $this->ignored_nodes)) {
@@ -460,12 +465,14 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
         }
 
         // We need to distinguish the node 4_7 of the duration tag.
-        if ($name == 'DURATION' && in_array(substr($this->current_path, strrpos($this->current_path, '/')+1), $this->duration_nodes)) {
+        if ($name == 'DURATION' &&
+                in_array(substr($this->current_path, strrpos($this->current_path, '/') + 1), $this->duration_nodes)) {
             return true;
         }
 
         // We need to discard content of source node.
-        if ($name == 'SOURCE' && !(substr($this->current_path, strrpos($this->current_path, '/')+1) == 'TAXONPATH')) {
+        if ($name == 'SOURCE' &&
+                !(substr($this->current_path, strrpos($this->current_path, '/') + 1) == 'TAXONPATH')) {
             $this->start_discard = 1;
             return true;
         }
@@ -476,7 +483,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
 
         $elemid = $this->nodes_tree[$this->current_path]['item'];
         $elempath = $this->get_elempath($this->current_path);
-        $this->current_meta = new sharedresource_metadata(1, $elemid.':'.$elempath, '', $this->plugin);
+        $this->current_meta = new metadata(1, $elemid.':'.$elempath, '', $this->plugin);
         $this->metadata[] = $this->current_meta;
 
         return true;
@@ -491,7 +498,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      */
     function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {
-            return true; 
+            return true;
         }
         if ($this->current_path == $this->title_node) {
             if (empty($this->title)) {
@@ -500,7 +507,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
                 $this->title .= addslashes($data);
             }
         }
-        
+
         if ($this->current_path == $this->url_node) {
             if (empty($this->url)) {
                 $this->url = addslashes($data);
@@ -539,13 +546,13 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
     /**
      * Switch the character-data handler to ignore the next chunk of data
      *
-     * @param   mixed   $parser The XML parser
-     * @param   string  $name   The name of the tag, e.g. method_call
-     * @return  bool            True
+     * @param mixed $parser  The XML parser
+     * @param string name  The name of the tag, e.g. method_call
+     * @return bool true
      */
     function end_element($parser, $name) {
         if (strpos($name,':') !== false) {
-            $name = substr($name, strpos($name,':')+1);
+            $name = substr($name, strpos($name, ':') + 1);
         }
 
         if (in_array($name, $this->ignored_nodes)) {
@@ -553,17 +560,19 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
         }
 
         // We need to distinguish the node 4_7 of the duration tag.
-        if ($name == 'DURATION' && strpos($this->current_path,'/DURATION') === false) {
+        if ($name == 'DURATION' &&
+                strpos($this->current_path, '/DURATION') === false) {
             return true;
         }
 
         // We need to discard content of source node.
-        if ($name == 'SOURCE' && $this->start_discard == 1) {
+        if ($name == 'SOURCE' &&
+                $this->start_discard == 1) {
             $this->start_discard = 0;
             return true;
         }
 
-        $this->current_path = substr($this->current_path, 0, (strrpos($this->current_path,'/')));
+        $this->current_path = substr($this->current_path, 0, (strrpos($this->current_path, '/')));
 
         $this->current_meta = null;
 

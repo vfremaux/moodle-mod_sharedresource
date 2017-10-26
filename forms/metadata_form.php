@@ -1,30 +1,42 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package    mod_sharedresource
+ * @category   mod
  */
 
 // This php script displays the 
 // metadata form
 //-----------------------------------------------------------
 
-require('../../config.php');
+require('../../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
-$PAGE->requires->js('/mod/sharedresource/js/jquery-1.8.2.min.js');
+$PAGE->requires->jquery();
 $PAGE->requires->js('/mod/sharedresource/js/metadata.php');
 $PAGE->requires->js('/mod/sharedresource/js/metadata_yui.php');
 
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+$return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
 $courseid      = required_param('course', PARAM_INT);
@@ -36,15 +48,18 @@ if (! $course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('coursemisconf');
 }
 
-$system_context = context_system::instance();
+$systemcontext = context_system::instance();
 $context = context_course::instance($course->id);
+$config = get_config('sharedresource');
+
+// Security.
 
 if ($courseid > SITEID) {
     require_course_login($course, true);
     $pagecontext = $context;
 } else {
     require_login();
-    $pagecontext = $system_context;
+    $pagecontext = $systemcontext;
 }
 
 // Check incoming resource.
@@ -57,14 +72,14 @@ if (!isset($SESSION->sr_entry)) {
     }
 }
 
-$sr_entry = $SESSION->sr_entry;
-$sharedresource_entry = unserialize($sr_entry);
+$tempentry = $SESSION->sr_entry;
+$shrentry = unserialize($tempentry);
 
 // Load working metadata plugin.
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
-$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-$mtdstandard = new $object;
+require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
+$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+$mtdstandard = new $mtdclass();
 
 // Building $PAGE.
 
@@ -73,7 +88,8 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_context($pagecontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'),"{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id");
+$resurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
+$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $resurl);
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 
 $PAGE->set_focuscontrol('');
@@ -88,9 +104,9 @@ echo $OUTPUT->header();
 
 if (has_capability('repository/sharedresources:systemmetadata', $context)) {
     $capability = 'system';
-} elseif (has_capability('repository/sharedresources:indexermetadata', $context)) {
+} else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
     $capability = 'indexer';
-} elseif (has_capability('repository/sharedresources:authormetadata', $context)) {
+} else if (has_capability('repository/sharedresources:authormetadata', $context)) {
     $capability = 'author';
 } else {
     print_error('noaccessform', 'sharedresource');
@@ -100,7 +116,7 @@ if (!empty($CFG->METADATATREE_DEFAULTS)) {
     $mtdstandard->load_defaults($CFG->METADATATREE_DEFAULTS);
 }
 
-metadata_initialise_core_elements($mtdstandard, $sharedresource_entry);
+metadata_initialise_core_elements($mtdstandard, $shrentry);
 
 $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
 
@@ -114,7 +130,7 @@ echo '<br/>';
 echo '<div id="ecform_onglet" class="ecformtab tabtree">';
 echo '<ul id="menu" class="tabrow0">';
 echo '<li id="menu_0" class="first onerow here selected" style="float: left;display: inline;">';
-echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('DMused','sharedresource').'</span></a>';
+echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('dmused', 'sharedresource').'</span></a>';
 echo '</li>';
 echo metadara_create_tab($capability, $mtdstandard);
 echo '</ul>';
@@ -124,8 +140,8 @@ echo '<div id="ecform_content" style="margin-right: auto; margin-left: auto">';
 echo '<div id="tab_0" class="on content">';
 echo '<div class="titcontent">';
 
-echo '<h2 >'.get_string('DMuse', 'sharedresource').' '.$mtdstandard->pluginname.'</h2>';
-echo '<h3>'.get_string('DMdescription', 'sharedresource').' '.$mtdstandard->pluginname.'</h3><br/>';
+echo '<h2 >'.get_string('dmuse', 'sharedresource').' '.$mtdstandard->pluginname.'</h2>';
+echo '<h3>'.get_string('dmdescription', 'sharedresource').' '.$mtdstandard->pluginname.'</h3><br/>';
 
 echo '<fieldset style="width:90%;margin-right: auto; margin-left: auto">';
 echo '<div style="text-align:justify;align=left;">';
@@ -146,7 +162,5 @@ echo '</div>';
 
 echo '</div>';
 echo '</center>';
-
-// echo "<script src=\"{$CFG->wwwroot}/mod/sharedresource/js/metadata.php\"></script>";
 
 echo $OUTPUT->footer($course);
