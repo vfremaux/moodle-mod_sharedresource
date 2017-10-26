@@ -28,12 +28,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 $courseid = optional_param('id', '', PARAM_INT);
@@ -65,7 +64,7 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
 
-$sharedresource_entry = sharedresource_entry::read($identifier);
+$shrentry = \mod_sharedresource\entry::read($identifier);
 
 if ($mode == 'file') {
     echo $OUTPUT->header();
@@ -88,9 +87,9 @@ if ($mode == 'deploy') {
 
         $fs = get_file_storage();
 
-        $sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => required_param('identifier', PARAM_TEXT)));
+        $shrentry = $DB->get_record('sharedresource_entry', array('identifier' => required_param('identifier', PARAM_TEXT)));
 
-        $file = $fs->get_file_by_id($sharedresource_entry->file);
+        $file = $fs->get_file_by_id($shrentry->file);
         activity_publisher::restore_single_module($courseid, $file);
 
         // TODO : Terminate procedure and return to course silently.
@@ -104,22 +103,22 @@ if ($mode == 'deploy') {
 if ($mode == 'ltiinstall') {
 
     // We build an LTI Tool instance.
-    include_once($CFG->dirroot.'/mod/sharedresource/lti_mod_form.php');
+    include_once($CFG->dirroot.'/mod/sharedresource/forms/lti_mod_form.php');
     include_once($CFG->dirroot.'/mod/lti/lib.php');
 
     $instance = new StdClass();
-    $instance->name = $sharedresource_entry->title;
-    $instance->intro = $sharedresource_entry->description;
+    $instance->name = $shrentry->title;
+    $instance->intro = $shrentry->description;
     $instance->introformat = FORMAT_MOODLE;
     $time = time();
     $instance->timecreated = $time;
     $instance->timemodified = $time;
     $instance->typeid = 0;
-    if (preg_match('#^https://#', $sharedresource_entry->url)) {
+    if (preg_match('#^https://#', $shrentry->url)) {
         $instance->toolurl = '';
-        $instance->securetoolurl = $sharedresource_entry->url;
+        $instance->securetoolurl = $shrentry->url;
     } else {
-        $instance->toolurl = $sharedresource_entry->url;
+        $instance->toolurl = $shrentry->url;
         $instance->securetoolurl = '';
     }
     $instance->instructorchoicesendname = 1; // Default lti form value.
@@ -176,14 +175,14 @@ if ($mode == 'ltiinstall') {
 } else {
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
-    $instance = new sharedresource_base(0, $sharedresource_entry->identifier);
+    $instance = new \mod_sharedresource\base(0, $shrentry->identifier);
     $instance->options = 0;
     $instance->popup = 0;
     $instance->type = 'file';
-    $instance->identifier = $sharedresource_entry->identifier;
-    $instance->name = $sharedresource_entry->title;
+    $instance->identifier = $shrentry->identifier;
+    $instance->name = $shrentry->title;
     $instance->course = $courseid;
-    $instance->intro = $sharedresource_entry->description;
+    $instance->intro = $shrentry->description;
     $instance->introformat = 0;
     $instance->alltext = '';
     $instance->timemodified = time();
@@ -205,10 +204,10 @@ $cm->module = $module->id;
 $cm->course = $courseid;
 $cm->section = $sectionid;
 
-// Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!
+// Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
 // Valid also if LTI tool.
-if (!empty($sharedresource_entry->remoteid)) {
-    $cm->idnumber = $sharedresource_entry->remoteid;
+if (!empty($shrentry->remoteid)) {
+    $cm->idnumber = $shrentry->remoteid;
 }
 
 // Insert the course module in course.
@@ -235,7 +234,7 @@ if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->
 
 // If we are in page format, add page_item to section bound page.
 if ($course->format == 'page') {
-    require_once($CFG->dirroot.'/course/format/page/page.class.php');
+    require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
     require_once($CFG->dirroot.'/course/format/page/lib.php');
     $coursepage = course_page::get_current_page($course->id);
     $coursepage->add_cm_to_page($cm->id);

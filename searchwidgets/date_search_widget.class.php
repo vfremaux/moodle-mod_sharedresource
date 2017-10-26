@@ -15,36 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Valery Fremaux
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 
 /**
  * search_widget defines a widget element for the search engine of metadata.
  */
-class date_search_widget extends search_widget{
-
-    /**
-     * Constructor for the search_widget class
-     */
-    function __construct($pluginchoice, $id, $label, $type) {
-        parent::__construct($pluginchoice, $id, $label, $type);
-    }
+class date_search_widget extends search_widget {
 
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget($layout, $value = 0) {
+    public function print_search_widget($layout, $value = 0) {
         global $OUTPUT;
 
         $lowername = strtolower($this->label);
-        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->pluginchoice);
+        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
 
         echo $OUTPUT->box($widgetname.' '.$OUTPUT->help_icon('datesearch', 'sharedresource', false), 'header');
         echo $OUTPUT->box_start('content');
@@ -57,8 +54,8 @@ class date_search_widget extends search_widget{
         echo $OUTPUT->box_end();
     }
 
-    // catchs a value in session from CGI input
-    function catch_value(&$searchfields) {
+    // Catchs a value in session from CGI input.
+    public function catch_value(&$searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {
@@ -68,7 +65,10 @@ class date_search_widget extends search_widget{
         $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
 
-        if ((isset($_GET[$paramkey.'_startdate']) && $_GET[$paramkey.'_startdate'] != 'Begin') || (isset($_GET[$paramkey.'_enddate']) && $_GET[$paramkey.'_enddate'] != 'End')) {
+        if ((isset($_GET[$paramkey.'_startdate']) &&
+                $_GET[$paramkey.'_startdate'] != 'Begin') ||
+                        (isset($_GET[$paramkey.'_enddate']) &&
+                                $_GET[$paramkey.'_enddate'] != 'End')) {
             $searchfields[$this->id] = $_GET[$paramkey.'_startdate'].':'.$_GET[$paramkey.'_enddate'];
         }
     }

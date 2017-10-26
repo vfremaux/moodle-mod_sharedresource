@@ -22,8 +22,14 @@
  * @package mod_sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 
 /**
  * search_widget defines a widget element for the search engine of metadata.
@@ -31,30 +37,26 @@ require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
 class treeselect_search_widget extends search_widget {
 
     /**
-     * Constructor for the search_widget class
-     */
-    function __construct($pluginchoice, $id, $label, $type) {
-        parent::__construct($pluginchoice, $id, $label, $type);
-    }
-
-    /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget($layout, $value = 0) {
-        global $CFG, $OUTPUT;
+    public function print_search_widget($layout, $value = 0) {
+        global $OUTPUT, $CFG;
 
         $str = '';
+        $config = get_config('sharedresource');
 
         $lowername = strtolower($this->label);
-        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->pluginchoice);
+        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
 
-        require_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$this->pluginchoice.'/plugin.class.php';
-        $classifarray = unserialize(@$CFG->classifarray);
+        require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$this->schema.'/plugin.class.php');
+        $classifarray = unserialize($config->classifarray);
         require_once $CFG->dirroot.'/mod/sharedresource/classificationlib.php';
-        $str .= $OUTPUT->box('<h2>'.get_string('taxonpath', 'sharedmetadata_'.$this->pluginchoice).' '.$OUTPUT->help_icon('classificationsearch', 'sharedresource', false).'</h2>', 'header');
+        $helpicon = $OUTPUT->help_icon('classificationsearch', 'sharedresource', false);
+        $str .= $OUTPUT->box('<h2>'.get_string('taxonpath', 'sharedmetadata_'.$this->schema).' '.$helpicon.'</h2>', 'header');
         $str .= $OUTPUT->box_start('content');
         $str .= '<div id="classif0">';
-        $str .= '<select name="classif:0" onChange="javascript:classif(this.options[selectedIndex].value,1,\'\',this.options[selectedIndex].value,this.options[this.selectedIndex].value);">';
+        $jshandler = 'javascript:classif(this.options[selectedIndex].value,1,\'\',this.options[selectedIndex].value,this.options[this.selectedIndex].value);';
+        $str .= '<select name="classif:0" onChange="'.$jshandler.'">';
         $str .= '<option selected value="defaultvalue"> </option>';
         $str .= print_classif2($classifarray, $value);
         $str .= '</select></div>';
@@ -64,8 +66,8 @@ class treeselect_search_widget extends search_widget {
         return $str;
     }
 
-    // catchs a value in session from CGI input
-    function catch_value(&$searchfields) {
+    // Catchs a value in session from CGI input.
+    public function catch_value(&$searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

@@ -25,7 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -54,7 +53,7 @@ if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
     curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // important
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
     curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -83,32 +82,32 @@ if ($mode != 'file') {
     $keywords = required_param('keywords', PARAM_TEXT);
 
     // Make a sharedresource_entry.
-    $sharedresource_entry = new sharedresource_entry(false);
-    $sharedresource_entry->title = $title;
-    $sharedresource_entry->description = $desc;
-    $sharedresource_entry->keywords = $keywords;
-    $sharedresource_entry->url = $url;
-    $sharedresource_entry->sharedresourcefile = '';
+    $shrentry = new \mod_sharedresource\entry(false);
+    $shrentry->title = $title;
+    $shrentry->description = $desc;
+    $shrentry->keywords = $keywords;
+    $shrentry->url = $url;
+    $shrentry->sharedresourcefile = '';
     if (!empty($identifier)) {
-        $sharedresource_entry->identifier = $identifier;
+        $shrentry->identifier = $identifier;
     } else {
-        $sharedresource_entry->identifier = sha1($url);
+        $shrentry->identifier = sha1($url);
     }
-    $sharedresource_entry->provider = $provider;
-    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $sharedresource_entry->identifier))) {
-        $sharedresource_entry->add_instance();
+    $shrentry->provider = $provider;
+    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $shrentry->identifier))) {
+        $shrentry->add_instance();
     } else {
-        if (!$sharedresource_entry = sharedresource_entry::read($identifier)) {
+        if (!$shrentry = \mod_sharedresource\entry::read($identifier)) {
             print_error('errorinvalididentifier', 'sharedresource');
         }
     }
 
     // Add a sharedresource.
-    $sharedresource = new sharedresource_base(0, $sharedresource_entry->identifier);
+    $sharedresource = new \mod_sharedresource\base(0, $shrentry->identifier);
     $sharedresource->options = 0;
     $sharedresource->popup = 0;
     $sharedresource->type = 'file';
-    $sharedresource->identifier = $sharedresource_entry->identifier;
+    $sharedresource->identifier = $shrentry->identifier;
     $sharedresource->name = $title;
     $sharedresource->course = $courseid;
     $sharedresource->description = $desc;
@@ -120,7 +119,7 @@ if ($mode != 'file') {
         $modulename = 'resource';
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource = $DB->get_record('resource',array( 'id'=> $resourceid));
+            $resource = $DB->get_record('resource',array( 'id' => $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
@@ -131,14 +130,14 @@ if ($mode != 'file') {
         $modulename = 'sharedresource';
     }
     // Make a new course module.
-    $module =  $DB->get_record('modules', array('name'=> $modulename));
+    $module = $DB->get_record('modules', array('name' => $modulename));
     $cm->instance = $resourceid;
     $cm->module = $module->id;
     $cm->course = $courseid;
     $cm->section = 1;
-    // Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!
-    if (!empty($sharedresource_entry->remoteid)) {
-        $cm->idnumber = $sharedresource_entry->remoteid;
+    // Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
+    if (!empty($shrentry->remoteid)) {
+        $cm->idnumber = $shrentry->remoteid;
     }
     // Insert the course module in course.
     if (!$cm->coursemodule = add_course_module($cm)) {
@@ -153,8 +152,8 @@ if ($mode != 'file') {
 }
 
 // Finish.
-
-$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', array('id' => $courseid, 'url' => $url, 'file' => $filename));
+$params = array('id' => $courseid, 'url' => $url, 'file' => $filename);
+$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_title('');
 $PAGE->set_heading('');

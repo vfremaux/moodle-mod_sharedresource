@@ -22,8 +22,14 @@
  * @package mod_sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 
 /**
 * search_widget defines a widget element for the search engine of metadata.
@@ -31,22 +37,15 @@ require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
 class freetext_search_widget extends search_widget {
 
     /**
-     * Constructor for the search_widget class
-     */
-    function __construct($pluginchoice, $id, $label, $type) {
-        parent::__construct($pluginchoice, $id, $label, $type);
-    }
-
-    /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget($layout, $value = '') {
+    public function print_search_widget($layout, $value = '') {
         global $OUTPUT;
 
         $str = '';
 
         $lowername = strtolower($this->label);
-        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->pluginchoice);
+        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
 
         if (!empty($value)) {
             preg_match('/^([^:]+):(.*)/', $value, $matches);
@@ -57,10 +56,10 @@ class freetext_search_widget extends search_widget {
             $value = '';
         }
 
-        $includesselected = ($operator == 'includes') ? 'selected="selected"' : '' ;
-        $equalsselected = ($operator == 'equals') ? 'selected="selected"' : '' ;
-        $beginswithselected = ($operator == 'beginswith') ? 'selected="selected"' : '' ;
-        $endswithselected = ($operator == 'endswith') ? 'selected="selected"' : '' ;
+        $includesselected = ($operator == 'includes') ? 'selected="selected"' : '';
+        $equalsselected = ($operator == 'equals') ? 'selected="selected"' : '';
+        $beginswithselected = ($operator == 'beginswith') ? 'selected="selected"' : '';
+        $endswithselected = ($operator == 'endswith') ? 'selected="selected"' : '';
 
         $str .= $OUTPUT->box('<h2>'.$widgetname.' '.$OUTPUT->help_icon('textsearch', 'sharedresource', false).'</h2>', 'header');
         $str .= $OUTPUT->box_start('content');
@@ -81,7 +80,7 @@ class freetext_search_widget extends search_widget {
      * @param arrayref &$searchfields
      * @return true if filter configuration has changed
      */
-    function catch_value(&$searchfields) {
+    public function catch_value(&$searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

@@ -17,9 +17,9 @@
 /**
  *
  * @author  Frederic GUILLOU
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package    mod_sharedresource
+ * @category   mod
  *
  * Important design note about namespace processing:
  * 
@@ -30,6 +30,7 @@
  * schema and all its subschemas.
  * Moodle active namespace should also be used to fetch moodle GUI behaviour configuration regarding the metadata administration.
  */
+defined('MOODLE_INTERNAL') || die();
 
 /*
  * Detects a change in the metadata model used et display a message to a inform the user of the loss of the old metadata 
@@ -37,15 +38,6 @@
  */
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/encoding.php');
-
-function metadata_detect_change_DM($sharedresource_entry) {
-    global $CFG, $DB;
-
-    // Deprecated : As fields are being stored along with their source schema, there is no more
-    // issue and metadata breack when changing schema. When downgrading to a more restrictive schéma, 
-    // values of surrounding standard will be simply ignored, as not any more required. when reverting 
-    // to the highe standard, the notices will recover all values.
-}
 
 /*
  * Creates tabs.
@@ -55,20 +47,24 @@ function metadara_create_tab($capability, &$mtdstandard) {
 
     $namespace = $mtdstandard->getNamespace();
 
+    $str = '';
+
     $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
     for ($i = 1; $i <= $nbrmenu; $i++) {
         if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$namespace}_{$capability}_{$i}'") == true) {
-            $class = 'mtd-tab-visible';
+            $tabclass = 'mtd-tab-visible';
         } else {
-            $class = 'mtd-tab-hidden';
+            $tabclass = 'mtd-tab-hidden';
         }
-        echo "\t\t".'<li id="menu_'.$i.'" class="'.$class.'">'."\n\t\t";
+        $str .= '<li id="menu_'.$i.'" class="'.$tabclass.'">';
 
         $lowername = strtolower($mtdstandard->METADATATREE[$i]['name']);
         $tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$namespace);
-        echo '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>'."\n";
-        echo "\t\t".'</li>'."\n";
+        $str .= '<a id="_'.$i.'" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu'.$i.'"><span>'.$tabname.'</span></a>';
+        $str .= '</li>';
     }
+
+    return $str;
 }
 
 /*
@@ -82,16 +78,17 @@ function metadata_create_panels($capability, &$mtdstandard) {
     $namespace = $mtdstandard->getNamespace();
 
     // Get context params in.
-    $add = optional_param('add', 0, PARAM_ALPHA);
-    $update = optional_param('update', 0, PARAM_INT);
-    $return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
-    $section = optional_param('section', 0, PARAM_INT);
+    $add           = optional_param('add', 0, PARAM_ALPHA);
+    $update        = optional_param('update', 0, PARAM_INT);
+    $return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+    $section       = optional_param('section', 0, PARAM_INT);
     $sharingcontext = optional_param('context', 1, PARAM_INT);
-    $mode = required_param('mode', PARAM_ALPHA);
-    $course = required_param('course', PARAM_INT);
+    $mode          = required_param('mode', PARAM_ALPHA);
+    $course        = required_param('course', PARAM_INT);
 
     echo '<div style="margin-left: 67px;">';
-    echo '<form id="monForm" action="metadatarep.php" method="post">';
+    $receiverurl = new moodle_url('/mod/sharedresource/metadatarep.php');
+    echo '<form id="monForm" action="'.$receiverurl.'" method="post">';
     echo '<input type="hidden"  name="mode"  value="'.$mode.'">';
     echo '<input type="hidden"  name="course"  value="'.$course.'">';
     echo '<input type="hidden"  name="section"  value="'.$section.'">';
@@ -119,7 +116,7 @@ function metadata_create_panels($capability, &$mtdstandard) {
 /*
  * This function creates content of tabs.
  */
-function metadata_create_notice_panels(&$sharedresource_entry, $capability, &$mtdstandard) {
+function metadata_create_notice_panels(&$shrentry, $capability, &$mtdstandard) {
 
     $nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
     echo '<div style="margin-left: 67px;">';
@@ -132,9 +129,9 @@ function metadata_create_notice_panels(&$sharedresource_entry, $capability, &$mt
         echo '<h2>'.get_string('node', 'sharedresource').' '.$tabname.'</h2>';
         echo '<table width="100%">';
         if ($mtdstandard->METADATATREE[0]['childs'][$i] == 'list') {
-            echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $i, true, 1, $i, $capability);
+            echo metadata_make_part_view($shrentry, $mtdstandard, $i, true, 1, $i, $capability);
         } else {
-            echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $i, false, 1, $i, $capability);
+            echo metadata_make_part_view($shrentry, $mtdstandard, $i, false, 1, $i, $capability);
         }
         echo '</table>';
         echo '</div>';
@@ -144,7 +141,6 @@ function metadata_create_notice_panels(&$sharedresource_entry, $capability, &$mt
 
 /**
  * This function is used to display the entire form using reccurence. The parameter are in the correct order:
- * @param string $pluginchoice the name of the datamodel choosen (lom for instance)
  * @param string $fieldnum the number of the field in the metadata tree
  * @param boolean $islist 
  * @param int $numoccur the number of occurence of the field displayed,
@@ -156,6 +152,8 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
     global $SESSION, $CFG, $DB, $OUTPUT;
 
     $namespace = $mtdstandard->getNamespace();
+
+    $config = get_config('sharedresource');
 
     $lowername = strtolower($mtdstandard->METADATATREE[$fieldnum]['name']);
     $fieldname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$namespace);
@@ -170,7 +168,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
     $keyid =  $newkey['pos'].':'.$newkey['occ'];
 
     $sr_entry = $SESSION->sr_entry;
-    $sharedresource_entry = unserialize($sr_entry);
+    $shrentry = unserialize($sr_entry);
     $error = @$SESSION->error; // It's an array containing field which contains error and the name of this error.
     if ($error == 'no error' || !is_array(unserialize($error))) {
         $error = array();
@@ -180,22 +178,21 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 
     $listresult = array();
     if ($fieldtype == 'category') {
-        if ($mtdstandard->METADATATREE[$fieldnum]['name'] == $taxumarray['main']) { // If the field concerns classification.
+        if ($mtdstandard->METADATATREE[$fieldnum]['name'] == $taxumarray['main']) {
+            // If the field concerns classification.
             echo '<br/><p>';
             if ($numoccur == 1) {
                 echo '<label for="'.$keyid.'">'.$fieldnum.' '.$fieldname.'</label>';
             } else {
                 echo '<label for="'.$keyid.'">'.$fieldnum.' '.$fieldname.' '.$numoccur.'</label>';
             }
-            $classifarray = unserialize(@$CFG->classifarray);
-            // We check if there is metadata saved for this field.
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            $classifarray = unserialize(@$config->classifarray);
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry); // We check if there is metadata saved for this field.
             echo '<select id="'.$keyid.'" name="'.$name.'n'.$numoccur.'">';
             if ($fill != '') {
                 echo metadata_print_classification_options($classifarray);
             } else {
-                // The second parameter will make the correct option selected.
-                echo metadata_print_classification_options($classifarray, $fill);
+                echo metadata_print_classification_options($classifarray, $fill); //the second parameter will make the correct option selected
             }
             echo '</select>';
             echo '</p>';
@@ -208,11 +205,10 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 } else {
                     $search = ':';
                 }
-                $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresource_entry);
+                $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $shrentry);
                 $listresult = metadata_get_children_nodes($mtdstandard, $fieldnum, $capability);
-                if (!empty($listresult)) {
-                    // We verify if all children of this category have been filled.
-                    $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $sharedresource_entry);
+                if (!empty($listresult)) { // We verify if all children of this category have been filled.
+                    $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $shrentry);
                 }
             }
             if (!isset($isfill) || $isfill || $maxoccur == 1) {
@@ -230,7 +226,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                     echo '<legend>'.$fieldnum.' '.$fieldname.' '.$numoccur.'</legend>';
                 }
                 $nbrfils = count($mtdstandard->METADATATREE[$fieldnum]['childs']);
-                for ($i = 1 ; $i <= $nbrfils; $i++) {
+                for ($i = 1; $i <= $nbrfils; $i++) {
                     $currentfield = $fieldnum.'_'.$i;
                     if (array_key_exists($currentfield, $mtdstandard->METADATATREE[$fieldnum]['childs'])) {
                         if ($mtdstandard->METADATATREE[$fieldnum]['childs'][$currentfield] == 'list') {
@@ -245,7 +241,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 echo '</fieldset>';
                 $exist = true;
             } else {
-                // In case we have a category which is empty, so we don't display it.
+                // In the case we have a category which is empty, so we don't display it.
                 $exist = false;
             }
         }
@@ -266,14 +262,14 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
             echo 'for="'.$keyid.'">'.$fieldnum.' '.$fieldname.' '.$numoccur.'</label>';
         }
 
-        $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+        $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
 
         echo '<input type="text" id="'.$keyid.'" name="'.$name.'n'.$numoccur.'"';
         if ($fieldnum == $mtdstandard->getTitleElement()->name) {
-            echo 'value="'.$sharedresource_entry->title.'" readonly="readonly"';
-        } else if ($fieldnum == $mtdstandard->getLocationElement()->name && $fill == '') {
-            echo 'value="'.$sharedresource_entry->url.'" ';
-        } else if ($fill != '') {
+            echo 'value="'.$shrentry->title.'" readonly="readonly"';
+        } elseif($fieldnum == $mtdstandard->getLocationElement()->name && $fill == '') {
+            echo 'value="'.$shrentry->url.'" ';
+        } elseif ($fill != '') {
             echo 'value="'.$fill.'"';
         }
         echo '/>';
@@ -282,7 +278,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
             echo '<br/>'.$error[$keyid];
         }
         echo '</p>';
-        } else if ($fieldtype == 'select') {
+        } elseif ($fieldtype == 'select') {
             echo '<br/><p>';
             if ($numoccur ==1) {
                 echo '<label for="'.$keyid.'">'.$fieldnum.' '.$fieldname.'</label>';
@@ -290,7 +286,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 echo '<label for="'.$keyid.'">'.$fieldnum.' '.$fieldname.' '.$numoccur.'</label>';
             }
 
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
 
             echo '<select id="'.$keyid.'" name="'.$name.'n'.$numoccur.'">';
             if ($fill == '') {
@@ -326,7 +322,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
 
             echo '</p>';
 
-        } else if ($fieldtype == 'date') {
+        } elseif ($fieldtype == 'date') {
             echo '<br/><p>';
             if ($numoccur == 1) {
                 echo '<label ';
@@ -341,7 +337,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 }
                 echo 'for="'.$keyid.'_dateyear">'.$fieldnum.' '.$fieldname.' '.$numoccur.'</label>';
             }
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
             if ($fill != '') {
                 $date = date("Y-m-d", $fill);
             }
@@ -401,8 +397,8 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 echo '<br/>'.$error[$keyid];
             }
             echo '</p>';
-        } else if ($fieldtype == 'duration') {
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+        } elseif ($fieldtype == 'duration') {
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
             $duration = get_string('durationdescr', 'sharedresource');
             echo '<br/><p>';
             if ($numoccur == 1) {
@@ -448,8 +444,8 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                 echo '<br/>'.$error[$keyid];
             }
             echo '</p>';
-        } else if ($fieldtype == 'vcard') {
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+        } elseif ($fieldtype == 'vcard') {
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
             echo '<br/><p>';
             $vcard = get_string('vcard', 'sharedresource');
             if ($numoccur == 1) {
@@ -474,7 +470,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
         } else {
             $search = ':';
         }
-        $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresource_entry);
+        $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $shrentry);
         $listchildren = implode(';', $listresult);
         if ($maxoccur == 1) {
             // If there is only one occurrence of a field, we display the add button.
@@ -497,14 +493,14 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                     if ($fieldtype == 'category') {
                         $listresult = metadata_get_children_nodes($mtdstandard, $fieldnum, $capability);
                         $newkey = metadata_convert_key($name.'n'.$i);
-                        if (strpos($fieldnum,'_') != false) {
+                        if (strpos($fieldnum,'_') != FALSE) {
                             $search = ':'.substr($newkey['occ'], 0, strrpos($newkey['occ'],'_'));
                         } else {
                             $search = ':';
                         }
-                        $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresource_entry);
+                        $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $shrentry);
                         if (!empty($listresult)) {
-                            $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $sharedresource_entry);
+                            $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $shrentry);
                         }
                         if (!isset($isfill) || $isfill) {
                             if($realoccur != 1) {
@@ -521,11 +517,7 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
                         $keyid = substr($keyid, 0, -1).($maxoccur - 1);
                         $numoccur = $maxoccur;
                         echo '<div id="add_'.$keyid.'">';
-                        echo '<input style="margin-bottom: 20px;"
-                                    type="button"
-                                    class="addbutton"
-                                    value="'.get_string('add', 'sharedresource').' '.$fieldname.'"
-                                    onClick="javascript:go(\''.$mtdstandard->pluginname.'\',\''.$fieldnum.'\',\''.$islist.'\',\''.$numoccur.'\',\''.$name.'\',\''.$fieldtype.'\',\''.$keyid.'\',\''.$listchildren.'\',\''.$capability.'\',\''.$realoccur.'\')">';
+                        echo '<input style="margin-bottom: 20px;" type="button" class="addbutton" value="'.get_string('add', 'sharedresource').' '.$fieldname.'" onClick="javascript:go(\''.$mtdstandard->pluginname.'\',\''.$fieldnum.'\',\''.$islist.'\',\''.$numoccur.'\',\''.$name.'\',\''.$fieldtype.'\',\''.$keyid.'\',\''.$listchildren.'\',\''.$capability.'\',\''.$realoccur.'\')">';
                         echo '</div>';
                         echo '<div id="zone_'.$name.'_'.$numoccur.'"></div>';
                     }
@@ -545,12 +537,14 @@ function metadata_make_part_form(&$mtdstandard, $fieldnum, $islist, $numoccur, $
  * @param string $capability tells if the field is visible or not depending of the role of the user regarding metadata
  * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
  */
-function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnum, $islist, $numoccur, $name, $capability, $realoccur = 0) {
+function metadata_make_part_view(&$shrentry, &$mtdstandard, $fieldnum, $islist, $numoccur, $name, $capability, $realoccur = 0) {
     global $SESSION, $CFG, $DB, $OUTPUT;
 
     if (!array_key_exists($fieldnum, $mtdstandard->METADATATREE)) {
         return;
     }
+
+    $config = get_config('sharedresource');
 
     $namespace = $mtdstandard->getNamespace();
 
@@ -571,9 +565,9 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                 } else {
                     echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'">'.$fieldname.' '.$numoccur.'</td>';
                 }
-                $classifarray = unserialize(@$CFG->classifarray);
+                $classifarray = unserialize(@$config->classifarray);
                 // We check if there is metadata saved for this field.
-                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
                 echo '<td class="mtdvalue">';
                 // The second parameter will make the correct option selected:
                 echo metadata_print_classification_value($classifarray, $fill);
@@ -589,11 +583,11 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                     } else {
                         $search = ':';
                     }
-                    $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresource_entry);
+                    $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $shrentry);
                     $listresult = metadata_get_children_nodes($mtdstandard, $fieldnum, $capability);
                     if (!empty($listresult)){
                         // We verify if all children of this category have been filled.
-                        $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $sharedresource_entry);
+                        $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $shrentry);
                     }
                 }
                 if (!isset($isfill) || $isfill || $maxoccur == 1){
@@ -602,7 +596,7 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                     echo '<fieldset class="subbranch">';
                     if ($numoccur == 1) {
                         echo '<legend>'.$fieldnum.' '.$fieldname.'</legend>';
-                    } else if ($realoccur != 0) {
+                    } elseif ($realoccur != 0) {
                         if ($realoccur == 1) {
                             echo '<legend>'.$fieldnum.' '.$fieldname.'</legend>';
                         } else {
@@ -625,9 +619,9 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                         }
 
                         if ($mtdstandard->METADATATREE[$fieldnum]['childs'][$currentfield] == 'list') {
-                            echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $currentfield, true, 1, $name.'n'.$numoccur.'_'.$i, $capability);
+                            echo metadata_make_part_view($shrentry, $mtdstandard, $currentfield, true, 1, $name.'n'.$numoccur.'_'.$i, $capability);
                         } else {
-                            echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $currentfield, false, 1, $name.'n'.$numoccur.'_'.$i, $capability);
+                            echo metadata_make_part_view($shrentry, $mtdstandard, $currentfield, false, 1, $name.'n'.$numoccur.'_'.$i, $capability);
                         }
                         echo '</table>';
                     }
@@ -647,23 +641,23 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
             } else {
                 echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'">'.$fieldname.' '.$numoccur.'</td>';
             }
-            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
             echo '<td class="mtdvalue">';
             if ($fieldnum == $mtdstandard->getTitleElement()->name) {
-                echo $sharedresource_entry->title;
-            } else if ($fill != '') {
+                echo $shrentry->title;
+            } elseif ($fill != '') {
                 echo $fill;
             }
             echo '</td>';
             echo '</tr>';
-            } else if ($fieldtype == 'select') {
+            } elseif ($fieldtype == 'select') {
                 echo '<tr>';
                 if ($numoccur == 1) {
                     echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'">'.$fieldname.'</label>';
                 } else {
                     echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'">'.$fieldname.' '.$numoccur.'</label>';
                 }
-                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
                 echo '<td class="mtdvalue">';
                 if ($fill != '') {
                     if (is_numeric($fill)) {
@@ -675,14 +669,14 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                 }
                 echo '</td>';
                 echo '</tr>';
-            } else if ($fieldtype == 'date') {
+            } elseif ($fieldtype == 'date') {
                 echo '<tr>';
                 if ($numoccur == 1) {
                     echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'_dateyear">'.$fieldname.'</td>';
                 } else {
                     echo '<td class="mtdnum '.$keyid.'">'.$fieldnum.'</td><td class="mtdfield '.$keyid.'_dateyear">'.$fieldname.' '.$numoccur.'</td>';
                 }
-                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
                 echo '<td class="mtdvalue">';
                 if ($fill != '') {
                     $date = date("Y-m-d", $fill);
@@ -690,8 +684,8 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                 }
                 echo '</td>';
                 echo '</tr>';
-            } else if ($fieldtype == 'duration') {
-                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            } elseif ($fieldtype == 'duration') {
+                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
                 $duration = get_string('durationdescr', 'sharedresource');
                 echo '<tr>';
                 if ($numoccur == 1) {
@@ -710,8 +704,8 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                 echo $OUTPUT->help_icon('durationdescr', 'sharedresource', $duration);
                 echo '</td>';
                 echo '</tr>';
-            } else if ($fieldtype == 'vcard') {
-                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $sharedresource_entry);
+            } elseif ($fieldtype == 'vcard') {
+                $fill = metadata_get_stored_value($newkey, $fieldtype, $islist, $mtdstandard, $shrentry);
                 echo '<tr>';
                 $vcard = get_string('vcard', 'sharedmetadata_'.$namespace);
                 if ($numoccur == 1) {
@@ -737,10 +731,10 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
             } else {
                 $search = ':';
             }
-            $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresource_entry);
+            $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $shrentry);
             $listchildren = implode(';', $listresult);
             if ($maxoccur > 1) {
-                // If there is only one occurrence of a field, we display the add button.
+                // If there is only one occurrence of a field, we display the add button
                 if ($numoccur == 1) {
                     // If we are treating the first occurence, we are going to display all other occurence and the add button at the end.
                     if (isset($exist) && $exist) {
@@ -755,13 +749,14 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                         if ($fieldtype == 'category') {
                             $listresult = metadata_get_children_nodes($mtdstandard, $fieldnum, $capability);
                             $newkey = metadata_convert_key($name.'n'.$i);
-                            if (strpos($fieldnum,'_') != false) {
+                            if (strpos($fieldnum,'_') != FALSE) {
                                 $search = ':'.substr($newkey['occ'], 0, strrpos($newkey['occ'],'_'));
                             } else {
                                 $search = ':';
                             }
+                            // $maxoccur =  metadata_find_max_occurrence($fieldnum, $search, $mtdstandard, $sharedresoruce_entry);
                             if (!empty($listresult)) {
-                                $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $sharedresource_entry);
+                                $isfill = metadata_check_subcats_filled($listresult, $newkey['occ'], $namespace, $shrentry);
                             }
                             if (!isset($isfill) || $isfill) {
                                 if ($realoccur != 1) {
@@ -769,13 +764,13 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
                                 }
                                 echo '<tr><td></td><td></td><td>';
                                 echo '<table width="100%">';
-                                echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $fieldnum, true, $i, $name, $capability, $realoccur);
+                                echo metadata_make_part_view($shrentry, $mtdstandard, $fieldnum, true, $i, $name, $capability, $realoccur);
                                 echo '</table>';
                                 echo '</td></tr>';
                                 $realoccur ++;
                             }
                         } else {
-                            echo metadata_make_part_view($sharedresource_entry, $mtdstandard, $fieldnum, true, $i, $name, $capability);
+                            echo metadata_make_part_view($shrentry, $mtdstandard, $fieldnum, true, $i, $name, $capability);
                         }
                     }
                 }
@@ -788,40 +783,40 @@ function metadata_make_part_view(&$sharedresource_entry, &$mtdstandard, $fieldnu
  * This function converts the key of the field to the correct form recorded in the database (for instance, 1n2_3n4 becomes 1_3:2_4)
  */
 function metadata_convert_key($key){
-    $Position = '';
-    $occur = '';
+    $position = '';
+    $occurrence = '';
     while (strlen($key) != 0) {
-        if (strlen($Position) != 0 && strlen($occur) != 0) {
-            $Position .= '_';
-            $occur .= '_';
+        if (strlen($position) != 0 && strlen($occurrence) != 0) {
+            $position .= '_';
+            $occurrence .= '_';
         }
-        for ($i = 0; $i < stripos($key, 'n'); $i++) {
-            $Position .= $key[$i];
+        for ($i = 0 ; $i < stripos($key, 'n') ; $i++) {
+            $position .= $key[$i];
         }
         $temp = '';
-        if (stripos($key,'_') != false) {
-            for ($i = stripos($key, 'n') + 1; $i < stripos($key, '_'); $i++) {
+        if (stripos($key,'_') != FALSE) {
+            for ($i = stripos($key, 'n') + 1;$i < stripos($key, '_') ; $i++) {
                 $temp .= $key[$i];
             }
-            $occur .= $temp - 1;
+            $occurrence .= $temp - 1;
             $key = substr(strstr($key,'_'), 1);
         } else {
-            for ($i = stripos($key, 'n') + 1; $i < strlen($key); $i++) {
+            for ($i = stripos($key, 'n') + 1 ; $i < strlen($key) ; $i++) {
                 $temp .= $key[$i];
             }
-            $occur .= $temp - 1;
+            $occurrence .= $temp - 1;
             $key = '';
         }
     }
-    $newkey['pos'] = $Position;
-    $newkey['occ'] = $occur;
+    $newkey['pos'] = $position;
+    $newkey['occ'] = $occurrence;
     return $newkey;
 }
 
 /*
  * This function is used to fill fields which have already been completed (in case of an update)
  */
-function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$sharedresource_entry) {
+function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shrentry) {
 
     $taxumarray = $mtdstandard->getTaxumpath();
     $field = $key['pos'].':'.$key['occ'];
@@ -836,24 +831,24 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
         while (strlen($keysource) < (2 * $sourcelength) + 1) {
             $keysource .= '_0';
         }
-        $source = $sharedresource_entry->element($keysource, $fieldnamespace);
+        $source = $shrentry->element($keysource, $fieldnamespace);
         $keyid = $taxumarray['id'];
         $idlength = strlen($keyid);
         $keyid .= ':'.$key['occ'];
         while (strlen($keyid) < (2 * $idlength) + 1) {
             $keyid .= '_0';
         }
-        $id = $sharedresource_entry->element($keyid, $fieldnamespace);
+        $id = $shrentry->element($keyid, $fieldnamespace);
         $keyentry = $taxumarray['entry'];
         $entrylength = strlen($keyentry);
         $keyentry .= ':'.$key['occ'];
         while (strlen($keyentry) < (2 * $entrylength) + 1) {
             $keyentry .= '_0';
         }
-        $entry = $sharedresource_entry->element($keyentry, $fieldnamespace);
+        $entry = $shrentry->element($keyentry, $fieldnamespace);
         return $source.':'.$id.':'.$entry;
     } else {
-        $value = $sharedresource_entry->element($field, $fieldnamespace);
+        $value = $shrentry->element($field, $fieldnamespace);
         list ($fieldkey, $occurrence) = explode(':', $field);
         $default = $mtdstandard->defaultValue($fieldkey);
         if (empty($value) && isset($default)) {
@@ -863,41 +858,28 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
                 $value = @$default[$occurrence];
             }
         }
-
         switch ($type) {
-            case 'text': {
+            case 'text':
                 return $value;
-                break;
-            }
-
-            case 'codetext': {
+            break;
+            case 'codetext':
                 return $value;
-                break;
-            }
-
-            case 'select': {
+            break;
+            case 'select':
                 return $value;
-                break;
-            }
-
-            case 'date': {
+            break;
+            case 'date':
                 return $value;
-                break;
-            }
-
-            case 'duration': {
+            break;
+            case 'duration':
                 return $value;
-                break;
-            }
-
-            case 'vcard': {
+            break;
+            case 'vcard':
                 return $value;
-                break;
-            }
-
+            break;
             default:
-                return '';
-                break;
+            return '';
+            break;
         }
     }
 }
@@ -905,18 +887,18 @@ function metadata_get_stored_value($key, $type, $islist, &$mtdstandard, &$shared
 /**
  * This function is used to find the maximum number of occurrence of a field
  */
-function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$sharedresource_entry) {
+function metadata_find_max_occurrence($fieldnum, $search, &$mtdstandard, &$shrentry) {
     global $SESSION;
 
     $maxoccur = 1;
-    if (!empty($sharedresource_entry->metadata_elements)) {
-        foreach ($sharedresource_entry->metadata_elements as $key => $metadata) {
-            if (substr_compare($fieldnum, $metadata->element, 0, strlen($fieldnum)) == 0 && strpos($metadata->element, $search) != false) {
+    if (!empty($shrentry->metadata_elements)) {
+        foreach ($shrentry->metadata_elements as $key => $metadata) {
+            if (substr_compare($fieldnum, $metadata->element, 0, strlen($fieldnum)) == 0 && strpos($metadata->element, $search) != FALSE) {
                 $nbroccur = substr($metadata->element, stripos($metadata->element, ':') + 1);
                 if (substr_count($fieldnum, '_') == 0) {
                     $nbroccur = substr($nbroccur, 0, 1);
                 } else {
-                    for ($i = 0; $i < substr_count($fieldnum, '_'); $i++) {
+                    for ($i = 0 ; $i < substr_count($fieldnum, '_') ; $i++) {
                         $nbroccur = substr($nbroccur, stripos($metadata->element, '_') + 1);
                     }
                 }
@@ -967,7 +949,7 @@ function metadata_get_children_nodes(&$mtdstandard, $fieldnum, $capability, $lis
  * checks that children of a category have been filled 
  * (in case of a suppression of a classification, because there can be empty categories).
  */
-function metadata_check_subcats_filled($listresult, $numoccur, $pluginchoice, &$sharedresource_entry) {
+function metadata_check_subcats_filled($listresult, $numoccur, &$shrentry) {
 
     $isfilled = false;
 
@@ -975,8 +957,8 @@ function metadata_check_subcats_filled($listresult, $numoccur, $pluginchoice, &$
         $listresult[$key] .= ':'.$numoccur;
     }
 
-    if (!empty($sharedresource_entry->metadata_elements)) {
-        foreach ($sharedresource_entry->metadata_elements as $fookey => $metadata) {
+    if (!empty($shrentry->metadata_elements)) {
+        foreach ($shrentry->metadata_elements as $fookey => $metadata) {
             foreach ($listresult as $fookey => $field) {
                 if (substr_compare($field, $metadata->element, 0, strlen($field)) == 0) {
                     $isfilled = true;
@@ -993,7 +975,6 @@ function metadata_check_subcats_filled($listresult, $numoccur, $pluginchoice, &$
  */
 function metadata_build_time($time) {
     $result = array();
-
     if ($time >= 86400) {
         $result['day'] = floor($time / 86400);
         $reste = $time % 86400;
@@ -1001,18 +982,18 @@ function metadata_build_time($time) {
         $reste = $reste % 3600;
         $result['minute'] = floor($reste / 60);
         $result['second'] = $reste % 60;
-    } else if ($time < 86400 && $time >= 3600) {
+    } elseif ($time < 86400 && $time >= 3600) {
         $result['day'] = '';
         $result['hour'] = floor($time / 3600);
         $reste = $time % 3600;
         $result['minute'] = floor($reste / 60);
         $result['second'] = $reste % 60;
-    } else if ($time < 3600 && $time >= 60) {
+    } elseif ($time < 3600 && $time >= 60) {
         $result['day'] = '';
         $result['hour'] = '';
         $result['minute'] = floor($time / 60);
         $result['second'] = $reste % 60;
-    } else if ($time < 60) {
+    } elseif ($time < 60) {
         $result['day'] = '';
         $result['hour'] = '';
         $result['minute'] = '';
@@ -1028,7 +1009,7 @@ function metadata_is_integer ($x){
     return (is_numeric($x)? intval($x) == $x : false);
 }
 
-/**
+/*
  * used to display a part of the form. The parameter are in order: 
  * @param string $mtdstandard the instance of activated metadata plugin, 
  * @param string $fieldnum the number of the field in the metadata tree, 
@@ -1065,7 +1046,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
                 } else {
                     $str .= '<label for="'.$keyid.'">'.$fieldnum.' '.$fieldname.' '.$numoccur.'</label>';
                 }
-                $classifarray = unserialize(get_config(null, 'classifarray'));
+                $classifarray = unserialize(get_config('sharedresource', 'classifarray'));
                 $str .= '<select id="'.$keyid.'" name="'.$name.'n'.$numoccur.'">';
                 $str .= '<option value="basicvalue"></option>';
                 $str .= metadata_print_classification_options($classifarray);
@@ -1079,7 +1060,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
                 }
                 if ($numoccur == 1) {
                     $str .= '<legend>'.$fieldnum.' '.$fieldname.'</legend>';
-                } else if ($realoccur != 0) {
+                } elseif ($realoccur != 0) {
                     $str .= '<legend>'.$fieldnum.' '.$fieldname.' '.$realoccur.'</legend>';
                 } else {
                     $str .= '<legend>'.$fieldnum.' '.$fieldname.' '.$numoccur.'</legend>';
@@ -1119,7 +1100,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
                 }
                 $str .= '</select>';
                 $str .= '</p>';
-            } else if ($fieldtype == 'date') {
+            } elseif ($fieldtype == 'date') {
                 $str .= '<br/><p>';
                 if ($numoccur == 1) {
                     $str .= '<label for="'.$keyid.'_dateyear">'.$fieldnum.' '.$fieldname.'</label>';
@@ -1130,7 +1111,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
                 $str .= '<option value="-year-">';
                 $str .= get_string('year', 'sharedresource'); 
                 $str .= '</option>';
-                for ($i = date('Y'); $i >= 1970 ; $i--) {
+                for ($i = date('Y'); $i >= 1970; $i--) {
                     $str .= '<option value="'.$i.'">'.$i.'</option>';
                 }
                 $str .= '</select>';
@@ -1138,7 +1119,7 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
                 $str .= '<option value="-month-">';
                 $str .= get_string('month', 'sharedresource'); 
                 $str .= '</option>';
-                for ($i = 1 ; $i <= 12; $i++) {
+                for ($i = 1; $i <= 12; $i++) {
                     if ($i < 10) {
                         $str .= '<option value="0'.$i.'">0'.$i.'</option>';
                     } else {
@@ -1203,10 +1184,11 @@ function metadata_make_part_form2(&$mtdstandard, $fieldnum, $islist, $numoccur, 
 /*
  * Function which display and check the metadata submitted by the form
  */
-function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $metadataentries) {
-    global $CFG;
+function metadata_display_and_check(&$shrentry, $metadataentries) {
 
-    $mtdclass = 'sharedresource_plugin_'.$pluginchoice;
+    $config = get_config('sharedresource');
+
+    $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
     $mtdstandard = new $mtdclass();
 
     $taxumarray = $mtdstandard->getTaxumpath();
@@ -1217,7 +1199,13 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
     $valuestr = get_string('mtdvalue', 'sharedresource');
 
     $error = array();
-    $display = '<table border="1" width="70%"><tr><td align="center" width="25%">'.$fieldnamestr.'</td><td align="center" width="25%">'.$fieldidstr.'</td><td align="center">'.$valuestr.'</td></tr>';
+    $display = '<table border="1" width="70%">';
+    $display .= '<tr>';
+    $display .= '<td align="center" width="25%">'.$fieldnamestr.'</td>';
+    $display .= '<td align="center" width="25%">'.$fieldidstr.'</td>';
+    $display .= '<td align="center">'.$valuestr.'</td>';
+    $display .= '</tr>';
+
     foreach ($metadataentries as $key => $value) {
         // We check if the field have been filled for the vcard, select and date.
         if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' 
@@ -1237,7 +1225,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
                 $temp = 0;
                 if ($_POST[$keytemp.'_Day'] != '' && !metadata_is_integer($_POST[$keytemp.'_Day'])) {
                     $errortemp .= get_string('integerday', 'sharedresource');
-                } else if ($_POST[$keytemp.'_Day'] != '' && metadata_is_integer($_POST[$keytemp.'_Day']) && $_POST[$keytemp.'_Day'] < 0) {
+                } else if($_POST[$keytemp.'_Day'] != '' && metadata_is_integer($_POST[$keytemp.'_Day']) && $_POST[$keytemp.'_Day'] < 0) {
                     $errortemp .= get_string('incorrectday', 'sharedresource');
                 }
                 if ($_POST[$keytemp.'_Day'] != '' && $_POST[$keytemp.'_Day'] != '0') {
@@ -1245,7 +1233,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
                 }
                 if ($_POST[$keytemp.'_Hou'] != '' && !metadata_is_integer($_POST[$keytemp.'_Hou'])) {
                     $errortemp .= get_string('integerhour', 'sharedresource');
-                } else if ($_POST[$keytemp.'_Hou'] != '' && metadata_is_integer($_POST[$keytemp.'_Hou']) && $_POST[$keytemp.'_Hou'] < 0) {
+                } else if($_POST[$keytemp.'_Hou'] != '' && metadata_is_integer($_POST[$keytemp.'_Hou']) && $_POST[$keytemp.'_Hou'] < 0) {
                     $errortemp .= get_string('incorrecthour', 'sharedresource');
                 }
                 if ($_POST[$keytemp.'_Hou'] != '' && $_POST[$keytemp.'_Hou'] != '0') {
@@ -1253,7 +1241,7 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
                 }
                 if ($_POST[$keytemp.'_Min'] != '' && !metadata_is_integer($_POST[$keytemp.'_Min'])) {
                     $errortemp .= get_string('integerminute', 'sharedresource');
-                } else if ($_POST[$keytemp.'_Min'] != '' && metadata_is_integer($_POST[$keytemp.'_Min']) && $_POST[$keytemp.'_Min'] < 0) {
+                } else if($_POST[$keytemp.'_Min'] != '' && metadata_is_integer($_POST[$keytemp.'_Min']) && $_POST[$keytemp.'_Min'] < 0) {
                     $errortemp .= get_string('incorrectminute', 'sharedresource');
                 }
                 if ($_POST[$keytemp.'_Min'] != '' && $_POST[$keytemp.'_Min'] != '0') {
@@ -1292,90 +1280,92 @@ function metadata_display_and_check(&$sharedresource_entry, $pluginchoice, $meta
                 }
                 $value =  mktime(0, 0, 0, substr($value, 5, 2),  substr($value, 8, 2), substr($value, 0, 4));
             }
-            $Position = '';
-            $occur = '';
+            $position = '';
+            $occurrence = '';
             while (strlen($key) != 0) {
-                if (strlen($Position) != 0 && strlen($occur) != 0) {
-                    $Position .= '_';
-                    $occur .= '_';
+                if (strlen($position) != 0 && strlen($occurrence) != 0) {
+                    $position .= '_';
+                    $occurrence .= '_';
                 }
-                for ($i = 0 ; $i < stripos($key, 'n') ; $i++) {
-                    $Position .= $key[$i];
+                for ($i = 0; $i < stripos($key, 'n'); $i++) {
+                    $position .= $key[$i];
                 }
                 $temp = '';
                 if (stripos($key, '_') != false) {
-                    for ($i = stripos($key, 'n') + 1 ; $i < stripos($key, '_') ; $i++) {
+                    for ($i = stripos($key, 'n') + 1; $i < stripos($key, '_'); $i++) {
                         $temp .= $key[$i];
                     }
-                    $occur .= $temp-1;
+                    $occurrence .= $temp-1;
                     $key = substr(strstr($key,'_'), 1);
                 } else {
-                    for ($i = stripos($key, 'n') + 1 ; $i < strlen($key) ; $i++) {
+                    for ($i = stripos($key, 'n') + 1; $i < strlen($key); $i++) {
                         $temp .= $key[$i];
                     }
-                    $occur .= $temp - 1;
+                    $occurrence .= $temp - 1;
                     $key = '';
                 }
             }
             // In case of a keyword element, we have to check there is only one keyword, with no punctuation.
-            if ($Position == $keywordnum->name) {
+            if ($position == $keywordnum->name) {
                 if (preg_match('/[[,;:.\/\\]]/', $value)) {
                     $errortemp .= get_string('keywordpunct', 'sharedresource');
                 }
             }
             // In case of a taxon path, we have to process the result and divide it into three fields : source, id and entry.
-            if ($mtdstandard->METADATATREE[$Position]['name'] == $taxumarray['main']) {
-                $display .= '<tr><td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['source']]['name'].'</strong></td>';
+            if ($mtdstandard->METADATATREE[$position]['name'] == $taxumarray['main']) {
+                $display .= '<tr>';
+                $display .= '<td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['source']]['name'].'</strong></td>';
                 $display .= '<td align="center"><strong>';
                 $source = $taxumarray['source'];
                 $sourcelength = strlen($source);
-                $source .= ':'.$occur;
+                $source .= ':'.$occurrence;
                 while (strlen($source) < (2 * $sourcelength) + 1) {
                     $source .= '_0';
                 }
-                $display .= $source.'</strong></td><td align="center">';
+                $display .= $source.'</strong></td>';
+                $display .= '<td align="center">';
                 $display .= substr($value, 0, stripos($value, ':')).'</td></tr>';
                 $fieldnamespace = $mtdstandard->METADATATREE[$taxumarray['source']]['source'];
-                $sharedresource_entry->add_element($source, substr($value, 0, stripos($value, ':')), $fieldnamespace);
+                $shrentry->add_element($source, substr($value, 0, stripos($value, ':')), $fieldnamespace);
                 $value = substr($value, stripos($value, ':') + 1);
                 $display .= '<tr><td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['id']]['name'].'</strong></td>';
                 $display .= '<td align="center"><strong>';
                 $id = $taxumarray['id'];
                 $idlength = strlen($id);
-                $id .= ':'.$occur;
+                $id .= ':'.$occurrence;
                 while (strlen($id) < (2 * $idlength)+1) {
                     $id .= '_0';
                 }
                 $display .= $id.'</strong></td><td align="center">';
                 $display .= substr($value,0,stripos($value,':')).'</td></tr>';
                 $fieldnamespace = $mtdstandard->METADATATREE[$taxumarray['id']]['source'];
-                $sharedresource_entry->add_element($id, substr($value, 0, stripos($value,':')), $fieldnamespace);
+                $shrentry->add_element($id, substr($value, 0, stripos($value,':')), $fieldnamespace);
                 $value = substr($value, stripos($value, ':') + 1);
                 $display .= '<tr><td align="center"><strong>'.$mtdstandard->METADATATREE[$taxumarray['entry']]['name'].'</strong></td>';
                 $display .= '<td align="center"><strong>';
                 $entry = $taxumarray['entry'];
                 $entrylength = strlen($entry);
-                $entry .= ':'.$occur;
+                $entry .= ':'.$occurrence;
                 while (strlen($entry) < (2 * $entrylength) + 1) {
                     $entry .= '_0';
                 }
                 $display .= $entry.'</strong></td><td align="center">';
                 $display .= $value.'</td></tr>';
                 $fieldnamespace = $mtdstandard->METADATATREE[$taxumarray['entry']]['source'];
-                $sharedresource_entry->add_element($entry, $value, $fieldnamespace);
+                $shrentry->add_element($entry, $value, $fieldnamespace);
                 $value = '';
             }
-            $key2 = $Position.':'.$occur;
+            $key2 = $position.':'.$occurrence;
             if ($errortemp != '') {
                 $error[$key2] = $errortemp;
             }
             if ($value != '') {
-                $name = $mtdstandard->METADATATREE[$Position]['name'];
+                $name = $mtdstandard->METADATATREE[$position]['name'];
                 $display .= '<tr><td align="center"><strong>'.$name.'</strong></td>';
                 $display .= '<td align="center"><strong>'.$key2. '</strong></td>';
                 $display .= '<td align="center">'.$value.'</td></tr>';
-                $fieldnamespace = $mtdstandard->METADATATREE[$Position]['source'];
-                $sharedresource_entry->add_element($key2, $value, $fieldnamespace);
+                $fieldnamespace = $mtdstandard->METADATATREE[$position]['source'];
+                $shrentry->add_element($key2, $value, $fieldnamespace);
             }
         }
     }
@@ -1409,55 +1399,56 @@ function clean_string_key($value) {
     return $value;
 }
 
-function metadata_initialise_core_elements($mtdstandard, &$sharedresource_entry) {
+function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
     global $USER, $DB, $CFG, $SESSION;
 
-    // Initialise metadata elements from core : description and title.
+    $config = get_config('sharedresource');
+
+    // Initialise metadata elements from core : description and title
     $descriptionelement = $mtdstandard->getDescriptionElement();
     $fieldnamespace = $descriptionelement->source;
-    $sharedresource_entry->update_element($descriptionelement->node.':0_0', @$sharedresource_entry->sharedresource_entry->description, $fieldnamespace);
+    $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $fieldnamespace);
     $titleelement = $mtdstandard->getTitleElement();
     $fieldnamespace = $titleelement->source;
-    $title = @$sharedresource_entry->sharedresource_entry->title;
-    $sharedresource_entry->update_element($titleelement->node.':0_0', $title, $fieldnamespace);
+    $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $fieldnamespace);
 
-    // If we have a file, find the size element and update value from known size.
+    // If we have a file, find the size element and update value from known size
     $usercontext = context_user::instance($USER->id);
-    $filerecid = $sharedresource_entry->sharedresource_entry->file;
+    $filerecid = $shrentry->file;
     if (!empty($filerecid)) {
         if (method_exists($mtdstandard, 'getSizeElement')) {
             $draftsize = $DB->get_field('files', 'filesize', array('id' => $filerecid));
             $element = $mtdstandard->getSizeElement();
             $fieldnamespace = $element->source;
-            $sharedresource_entry->update_element($element->node.':0_0', $draftsize, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $draftsize, $fieldnamespace);
         }
     }
 
-    // If we have a file, find the format element and update value from known mimetype as technical format.
+    // If we have a file, find the format element and update value from known mimetype as technical format
     if (!empty($filerecid)) {
         if (method_exists($mtdstandard, 'getFileFormatElement')) {
             $mimetype = $DB->get_field('files', 'mimetype', array('id' => $filerecid));
             $element = $mtdstandard->getFileFormatElement();
             $fieldnamespace = $element->source;
-            $sharedresource_entry->update_element($element->node.':0_0', $mimetype, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $mimetype, $fieldnamespace);
         }
     }
 
-    // If we have a file, find the location element and update value from known access url as location.
-    $identifier = $sharedresource_entry->sharedresource_entry->identifier;
+    // If we have a file, find the location element and update value from known access url as location
+    $identifier = $shrentry->identifier;
     if ($identifier) {
         if (method_exists($mtdstandard, 'getLocationElement')) {
-            if (empty($CFG->sharedresource_foreignurl)) {
+            if (empty($config->foreignurl)) {
                 $url = $CFG->wwwroot.'/local/sharedresources/view.php?identifier='.$identifier;
             } else {
-                $url = str_replace('<%%ID%%>', $identifier, $CFG->sharedresource_foreignurl);
+                $url = str_replace('<%%ID%%>', $identifier, $config->foreignurl);
             }
             $element = $mtdstandard->getLocationElement();
             $fieldnamespace = $element->source;
-            $sharedresource_entry->update_element($element->node.':0_0', $url, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $url, $fieldnamespace);
         }
     }
 
     // Push back in session for metadata_get_stored_value calls.
-    $SESSION->sr_entry = serialize($sharedresource_entry);
+    $SESSION->sr_entry = serialize($shrentry);
 }

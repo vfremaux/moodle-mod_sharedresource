@@ -17,13 +17,18 @@
 /**
  *
  * @author  Valery Fremaux
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package mod_sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 
 /**
  * search_widget defines a widget element for the search engine of metadata.
@@ -31,22 +36,15 @@ require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
 class duration_search_widget extends search_widget {
 
     /**
-     * Constructor for the search_widget class
-     */
-    function __construct($pluginchoice, $id, $label, $type) {
-        parent::__construct($pluginchoice, $id, $label, $type);
-    }
-
-    /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget($layout, $value = 0) {
+    public function print_search_widget($layout, $value = 0) {
         global $OUTPUT, $CFG;
 
         $str = '';
 
         $lowername = strtolower($this->label);
-        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$CFG->pluginchoice);
+        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
 
         if (!empty($value)) {
             preg_match('/^([^:]+):(.*)/', $value, $matches);
@@ -88,8 +86,8 @@ class duration_search_widget extends search_widget {
         return $str;
     }
 
-    // catchs a value in session from CGI input
-    function catch_value(&$searchfields) {
+    // Catchs a value in session from CGI input.
+    public function catch_value(&$searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {
@@ -100,11 +98,24 @@ class duration_search_widget extends search_widget {
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
 
         // check we have operator and at least one field is fed
-        if ((isset($_GET[$paramkey.'_day']) || isset($_GET[$paramkey.'_hour']) || isset($_GET[$paramkey.'_min']) || isset($_GET[$paramkey.'_sec'])) && isset($_GET[$paramkey.'_symbol']) && $_GET[$paramkey.'_symbol'] != 'defaultvalue') {
-            // check of numeric values
-            if (($_GET[$paramkey.'_day'] == '' || is_numeric($_GET[$paramkey.'_day'])) && ($_GET[$paramkey.'_hour'] == '' || is_numeric($_GET[$paramkey.'_hour'])) && ($_GET[$paramkey.'_min'] == '' || is_numeric($_GET[$paramkey.'_min'])) && ($_GET[$paramkey.'_sec'] == '' || is_numeric($_GET[$paramkey.'_sec']))) {
+        if ((isset($_GET[$paramkey.'_day']) ||
+                isset($_GET[$paramkey.'_hour']) ||
+                        isset($_GET[$paramkey.'_min']) ||
+                                isset($_GET[$paramkey.'_sec'])) &&
+                                        isset($_GET[$paramkey.'_symbol']) &&
+                                                $_GET[$paramkey.'_symbol'] != 'defaultvalue') {
+            // Check of numeric values.
+            if (($_GET[$paramkey.'_day'] == '' ||
+                    is_numeric($_GET[$paramkey.'_day'])) &&
+                            ($_GET[$paramkey.'_hour'] == '' ||
+                                    is_numeric($_GET[$paramkey.'_hour'])) &&
+                                            ($_GET[$paramkey.'_min'] == '' ||
+                                                    is_numeric($_GET[$paramkey.'_min'])) &&
+                                                            ($_GET[$paramkey.'_sec'] == '' ||
+                                                                    is_numeric($_GET[$paramkey.'_sec']))) {
                 $searchduration = 0;
-                // find number of seconds of the duration
+
+                // Find number of seconds of the duration.
                 if (isset($_GET[$paramkey.'_day'])) {
                     $searchduration += $_GET[$paramkey.'_day'] * DAYSECS;
                 }
@@ -115,20 +126,21 @@ class duration_search_widget extends search_widget {
                     $searchduration += $_GET[$paramkey.'_min'] * 60;
                 }
                 if (isset($_GET[$paramkey.'_sec'])) {
-                $searchduration += $_GET[$paramkey.'_sec'];
+                    $searchduration += $_GET[$paramkey.'_sec'];
                 }
 
                 $searchfields[$this->id] = $_GET[$paramkey.'_symbol'].':'.$searchduration;
                 $SESSION->searchbag->$paramkey = $_GET[$paramkey.'_symbol'].':'.$searchduration;
             }
         }
-        if (isset($_GET[$paramkey.'_symbol']) && $_GET[$paramkey.'_symbol'] == 'defaultvalue') {
+        if (isset($_GET[$paramkey.'_symbol']) &&
+                $_GET[$paramkey.'_symbol'] == 'defaultvalue') {
             $searchfields[$this->id] = '';
             $SESSION->searchbag->$paramkey = '';
         }
     }
 
-    function durationsplit($duration) {
+    public function durationsplit($duration) {
         $return->days = floor($duration / DAYSECS);
         $duration -= $return->days * DAYSECS;
         $return->hours = floor($duration / HOURSECS);

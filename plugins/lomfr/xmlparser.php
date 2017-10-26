@@ -7,8 +7,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
  
-require_once $CFG->dirroot.'/mod/sharedresource/metadata_xml_parser.class.php';
-require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php';
+require_once $CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php';
+require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php';
 
 /**
  * Custom XML parser class for XML Metadata
@@ -22,7 +22,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      * @return bool True
      */
     function __construct() {
-    	parent::__construct();
+        parent::__construct();
         return $this->initialise();
     }
     
@@ -471,7 +471,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
         
         $elemid = $this->nodes_tree[$this->current_path]['item'];
         $elempath = $this->get_elempath($this->current_path);
-        $this->current_meta = new sharedresource_metadata(1, $elemid.':'.$elempath, '', $this->plugin);
+        $this->current_meta = new metadata(1, $elemid.':'.$elempath, '', $this->plugin);
         $this->metadata[] = $this->current_meta;
         
         return true;
@@ -560,36 +560,36 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
     }
     
     // other utility functions to deal and change metadata
-    function add_identifier(&$metadata, $catalog, $identifier, $entry_id){
+    function add_identifier(&$metadata, $catalog, $identifier, $entryid){
 
-		// Add identifier record
-    	$identifiernodeID = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];
-    	$identifiernodeID++;
-    	$lastidentifierinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER']['item'].':0_'.$identifiernodeID;
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $lastidentifierinstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = '';
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+        // Add identifier record
+        $identifiernodeID = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];
+        $identifiernodeID++;
+        $lastidentifierinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER']['item'].':0_'.$identifiernodeID;
+        $metadatarec = new StdClass();
+        $metadatarec->element = $lastidentifierinstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = '';
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
 
-		// Add catalog record
-    	$cataloginstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/CATALOG']['item'].':0_'.$identifiernodeID.'_0';
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $cataloginstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = $catalog;
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+        // Add catalog record
+        $cataloginstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/CATALOG']['item'].':0_'.$identifiernodeID.'_0';
+        $metadatarec = new StdClass();
+        $metadatarec->element = $cataloginstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = $catalog;
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
 
-		// Add entry value record
-    	$entryinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/ENTRY']['item'].':0_'.$identifiernodeID.'_0';
-    	$metadatarec = new StdClass();
-    	$metadatarec->element = $cataloginstanceid;
-    	$metadatarec->namespace = 'lomfr';
-    	$metadatarec->value = $identifier;
-    	$metadatarec->entry_id = $entry_id;
-    	$metadata[] = $metadatarec;
+        // Add entry value record
+        $entryinstanceid = $this->nodes_tree['/GENERAL/IDENTIFIER/ENTRY']['item'].':0_'.$identifiernodeID.'_0';
+        $metadatarec = new StdClass();
+        $metadatarec->element = $cataloginstanceid;
+        $metadatarec->namespace = 'lomfr';
+        $metadatarec->value = $identifier;
+        $metadatarec->entryid = $entryid;
+        $metadata[] = $metadatarec;
     }
 }
 

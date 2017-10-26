@@ -17,7 +17,8 @@
 /**
  * @author  Frederic GUILLOU
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
+ * @package    sharedresource
+ * @subpackage mod_sharedresource
  * @category   mod
  *
  * This php script display the admin part of the classification
@@ -63,10 +64,10 @@ echo $OUTPUT->heading(get_string('classificationconfiguration', 'sharedresource'
 $recordclassif = true;
 $erroradd = '';
 $errorrestrict = '';
-$classifarray = unserialize(get_config(NULL, 'classifarray'));
+$classifarray = unserialize(get_config('sharedresource', 'classifarray'));
 
 if (!empty($mode)) {
-    include $CFG->dirroot.'/mod/sharedresource/classificationconfigure.controller.php';
+    include($CFG->dirroot.'/mod/sharedresource/classificationconfigure.controller.php');
 }
 
 echo '<br/><form name="classconfform" action="classificationconfigure.php?mode=add" method="post" class="mform">';
@@ -125,26 +126,35 @@ echo get_string('selectclassification','sharedresource');
 echo $OUTPUT->help_icon('selectclassification', 'sharedresource');
 echo '</legend><br/>';
 
-if (!get_config(null, 'classifarray') || unserialize(get_config(null, 'classifarray')) == array()) {
+if (!get_config('sharedresource', 'classifarray') || unserialize(get_config('sharedresource', 'classifarray')) == array()) {
     echo '<center>'.get_string('noclassification','sharedresource').'</center>';
 } else {
-    echo '<form name="classselectform" action="classificationconfigure.php?mode=select" method="post" class="mform">';
+    $classifurl = new moodle_url('/mod/sharedresource/classificationconfigure.php');
+    echo '<form name="classselectform" action="'.$classifurl.'" method="post" class="mform">';
+    echo '<input type="hidden" name="mode" value="select">';
     echo '<table align="center" width="65%">';
     foreach ($classifarray as $table => $contenu) {
         echo '<tr height="50px">';
-        echo '<td width="25%">
-            <input type="checkbox"';
+        echo '<td width="25%">';
+        echo '<input type="checkbox"';
         if ($classifarray[$table]['select'] == 1) {
             echo 'checked="yes"';
         }
-        echo 'name="'.$table.'" value"'.$table.'"> '.$table.'</td>';
+        echo 'name="'.$table.'" value"'.$table.'"> '.$table;
+        echo '</td>';
         echo '<td align="left" width="10%">';
         $deleteconfirmstr = get_string('deleteconfirm', 'sharedresource');
         $deletestr = get_string('delete');
-        echo "<a title=\"$deletestr\" href=\"classificationconfigure.php?mode=delete&target={$table}\" onclick=\"return(confirm('$deleteconfirmstr'));\">";
-        echo "<img src=\"{$OUTPUT->pix_url('t/delete','sharedresource')}\" class=\"iconsmall\" alt=\"{$deletestr}\"/></a>";
+        $deleteurl = new moodle_url('/mod/sharedresource/classificationconfigure.php', array('mode' => 'delete', 'target' => $table));
+        $pixurl = $OUTPUT->pix_url('t/delete','sharedresource');
+        $pix = '<img src="'.$pixurl.'" class="iconsmall" alt="'.$deletestr.'"/>';
+        echo '<a title="'.$deletestr.'" href="'.$deleteurl.'" onclick="return(confirm(\''.$deleteconfirmstr.'\'));\">'.$pix.'</a>';
         echo '</td>';
-        echo '<td align="right" width="25%"><input type="button" value="'.get_string('configclassification','sharedresource').'" OnClick="window.location.href=\'classificationconfigure2.php?classification='.$table.'\'"></td>';
+        echo '<td align="right" width="25%">';
+        $buttonvalue = get_string('configclassification', 'sharedresource');
+        $classifurl = new moodle_url('/mod/sharedresource/classificationconfigure2.php', array('classification' => $table));
+        echo '<input type="button" value="'.$buttonvalue.'" OnClick="window.location.href=\''.$classifurl.'\';">';
+        echo '</td>';
         echo '</tr>';
     }
     echo '</table><br/>';
@@ -160,47 +170,46 @@ echo '</legend><br/>';
 
 $deletestr = get_string('delete', 'sharedresource');
 
-if (!get_config(null, 'classifarray') || unserialize(get_config(null, 'classifarray')) == array()) {
+if (!get_config('sharedresource', 'classifarray') || unserialize(get_config('sharedresource', 'classifarray')) == array()) {
     echo '<center>'.get_string('noclassification', 'sharedresource').'</center>';
 } else {
-    echo '<center>'.get_string('SQLrestriction', 'sharedresource').'</center><br/>';
-    echo '<table align="center" width="85%">';
+    echo '<center>'.get_string('sqlrestriction', 'sharedresource').'</center><br/>';
     if ($mode == 'restriction' && !empty($target)) {
         $restrictclause = optional_param('restrict'.$target, '', PARAM_TEXT);
-        if(!preg_match('/^(SELECT|WHERE)/', $restrictclause)){
+        if (!preg_match('/^(SELECT|WHERE)/', $restrictclause)) {
             $classifarray[$target]['restriction'] = $restrictclause;
-            set_config('classifarray', serialize($classifarray));
+            set_config('classifarray', serialize($classifarray), 'sharedresource');
         } else {
-            $errorrestrict .= get_string('badSQLrestrict','sharedresource');
+            $errorrestrict .= get_string('badsqlrestrict','sharedresource');
         }
     }
     if ($errorrestrict != '') {
         echo '<br/><center style="color:red;">'.$errorrestrict.'</center>';
     }
+    echo '<table align="center" width="85%">';
     foreach ($classifarray as $table => $params) {
-        echo '<form name="'.$table.'restrictionform" action="classificationconfigure.php?mode=restriction&target='.$table.'" method="post" class="mform">';
+        $classifurl = new moodle_url('/mod/sharedresource/classificationconfigure.php', array('mode' => 'restriction', 'target' => $table));
+        echo '<form name="'.$table.'restrictionform" action="'.$classifurl.'" method="post" class="mform">';
         echo '<tr height="45px">';
         echo '<td width="35%"><b>'.$CFG->prefix.$table.'</b></td>';
-        echo '<td align="center" width="35%"><input type="text" name="restrict'.$table.'" size="65" value="'.$params['restriction'].'" /></td>';
-        echo '<td align="center" width="25%"><input type="submit" value="'.get_string('saveSQLrestrict', 'sharedresource').'"/></td>';
+        echo '<td align="center" width="35%">';
+        echo '<input type="text" name="restrict'.$table.'" size="65" value="'.$params['restriction'].'" />';
+        echo '</td>';
+        echo '<td align="center" width="25%">';
+        echo '<input type="submit" value="'.get_string('savesqlrestrict', 'sharedresource').'"/>';
+        echo '</td>';
         echo '</tr>';
-        /*
-        if(!empty($params['restriction'])){
-            echo '<tr>';
-            echo '<td>'.get_string('appliedSQLrestrict', 'sharedresource').'</td>';
-            echo '<td align="center" width="40%">';
-            echo $params['restriction'];
-            echo '</td>';
-            echo '<td align="center" width="10%"><a title="'.$deletestr.'" href="classificationconfigure.php?mode=delete&target=restrict'.$table.'"><img src="'.$OUTPUT->pix_url('t/delete').'" class="iconsmall" alt="'.$deletestr.'"></a></td>';
-            echo '</tr>';
-            echo '<tr height="40px">';
-            echo '</tr>';
-        }
-        */
         echo '</form>';
     }
-    echo '</table><br/>';
+    echo '</table>';
+    echo '<br/>';
 }
 echo '</fieldset>';
-echo '<center><hr><br/><input type="button" value="'.get_string('backadminpage','sharedresource').'" onclick="window.location.href=\''.$CFG->wwwroot.'/admin/settings.php?section=modsettingsharedresource\'"/></center><br/>';
+echo '<center>';
+echo '<hr><br/>';
+$label = get_string('backadminpage','sharedresource');
+$hrefurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
+echo '<input type="button" value="'.$label.'" onclick="window.location.href=\''.$hrefurl.'\'"/>';
+echo '</center>';
+echo '<br/>';
 echo $OUTPUT->footer();
