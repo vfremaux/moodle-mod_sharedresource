@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
@@ -24,16 +22,17 @@ defined('MOODLE_INTERNAL') || die();
  * @subpackage mod_sharedresource
  * @category   mod
  */
+defined('MOODLE_INTERNAL') || die();
 
 /**
 * This file maps several Moodle typical definitions (modules) to Metadata concepts (LOM based)
 *
 */
 
-// this is used for a build_vcard utility function
+// This is used for a build_vcard utility function.
 require_once $CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php';
 
-// MODRESORUCETYPE addesses LOM 5_2 node (Learning Resource Type)
+// MODRESORUCETYPE addesses LOM 5_2 node (Learning Resource Type).
 global $MODRESOURCETYPES;
 
 $MODRESOURCETYPES = array(
@@ -305,6 +304,8 @@ function sharedresource_append_metadata_elements(&$elements, $name, $value, $plu
 function sharedresource_append_author_data(&$backupmetadataelements, $courseid = 0, $authoringdate = -1) {
     global $COURSE;
 
+    $config = get_config('sharedresource');
+
     if (!$courseid) {
         $courseid = $COURSE->id;
     }
@@ -321,9 +322,9 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
 
             $vcard = file_importer_base::build_vcard($et);
 
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $CFG->pluginchoice);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $CFG->pluginchoice);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $CFG->pluginchoice);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $config->schema);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $config->schema);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $config->schema);
         }
     }
 }

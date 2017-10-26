@@ -17,40 +17,42 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
  *
  */
- 
+namespace mod_sharedresource;
+
+defined('MOODLE_INTERNAL') || die;
+
 /**
- * sharedresource_metadata defines a sharedresource_metadata element
+ * \mod_sharedresource\metadata defines a sharedresource_metadata element
  *
  * This class provides all the functionality for a sharedresource_metadata
- * You dont really need to be here, as this is managed through the 
- * sharedresource_entry object.
+ * You dont really need to be here, as this is managed through the
+ * \mod_sharedresource\entry object.
  */
-class sharedresource_metadata {
+class metadata {
 
     public $element;
     public $namespace;
     public $value;
-    public $entry_id;
+    public $entryid;
 
     /**
      * Constructor for the sharedresource_metadata class
      */
-    function __construct($entry_id, $element, $value, $namespace = '') {
-        $this->entry_id = $entry_id;
+    public function __construct($entryid, $element, $value, $namespace = '') {
+        $this->entryid = $entryid;
         $this->element = $element;
         $this->namespace = $namespace;
         $this->value = $value;
     }
 
-    function add_instance() {
+    public function add_instance() {
         global $DB;
 
-        $conditions = array('entry_id' => $this->entry_id, 'element' => $this->element, 'namespace' => $this->namespace);
+        $conditions = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
         if ($oldentry = $DB->get_record('sharedresource_metadata', $conditions)) {
             $this->id = $oldentry->id;
             return $DB->update_record('sharedresource_metadata', $this);

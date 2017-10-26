@@ -17,36 +17,34 @@
 /**
  *
  * @author  Valery Fremaux
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package mod_sharedresource
  *
  */
+namespace mod_sharedresource;
+
+use \StdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 
 /**
-* search_widget defines a widget element for the search engine of metadata.
-*/
+ * search_widget defines a widget element for the search engine of metadata.
+ */
 class numeric_search_widget extends search_widget {
-
-    /**
-     * Constructor for the search_widget class
-     */
-    function numeric_search_widget($pluginchoice, $id, $label, $type) {
-        parent::search_widget($pluginchoice, $id, $label, $type);
-    }
 
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget() {
+    public function print_search_widget($layout, $value = 0) {
         echo $OUTPUT;
 
         $str = '';
 
         $lowername = strtolower($this->label);
-        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->pluginchoice);
+        $widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
 
         $str .= $OUTPUT->box('<h2>'.$widgetname.' '.$OUTPUT->help_icon('numericsearch', 'sharedresource', false).'</h2>', 'header');
         $str .= $OUTPUT->box_start('content');
@@ -65,8 +63,8 @@ class numeric_search_widget extends search_widget {
         return $str;
     }
 
-    // catchs a value in session from CGI input
-    function catch_value(&$searchfields) {
+    // Catchs a value in session from CGI input.
+    public function catch_value(&$searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

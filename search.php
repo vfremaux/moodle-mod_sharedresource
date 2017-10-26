@@ -22,10 +22,10 @@
  * @category mod
  */
 require('../../config.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/search_form.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-$courseid         = required_param('course', PARAM_INT);
+$courseid       = required_param('course', PARAM_INT);
 $add            = optional_param('add', 0, PARAM_ALPHA);
 $return         = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or local/sharedresources/index.php if true
 $type           = optional_param('type', 'file', PARAM_ALPHANUM);
@@ -35,7 +35,7 @@ $page           = optional_param('page', false, PARAM_INT);
 
 // Query string parameters to ignore.
 
-$exclude_inputs = array('course', 'section', 'add', 'update', 'return', 'type', 'id', 'page', 'MAX_FILE_SIZE', 'submitbutton');
+$excludeinputs = array('course', 'section', 'add', 'update', 'return', 'type', 'id', 'page', 'MAX_FILE_SIZE', 'submitbutton');
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('coursemisconf');
@@ -43,7 +43,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 // Security.
 
-$system_context = context_system::instance();
+$systemcontext = context_system::instance();
 $context = context_course::instance($course->id);
 require_course_login($course, false);
 require_capability('moodle/course:manageactivities', $context);
@@ -61,18 +61,18 @@ $PAGE->set_pagelayout('standard');
 $params = array('course' => $courseid, 'add' => $add, 'return' => $return, 'section' => $section, 'id' => $id);
 $url = new moodle_url('/mod/sharedresource/search.php', $params);
 $PAGE->set_url($url);
-$PAGE->set_context($system_context);
+$PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
-$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), "{$CFG->wwwroot}/mod/sharedresource/index.php?id={$course->id}&section={$section}", 'activity');
+$linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id, 'section' => $section));
+$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add(get_string('searchsharedresource', 'sharedresource'));
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
 
 // Process search form.
-
 
 echo $OUTPUT->header();
 
@@ -84,7 +84,8 @@ echo $OUTPUT->single_button($libraryurl, get_string('searchinlibrary', 'sharedre
 echo '</div>';
 
 echo '<div id="sharedresource-create">';
-$editurl = new moodle_url('/mod/sharedresource/edit.php', array('course' => $courseid, 'section' => $section, 'return' => $return, 'add' => 'sharedresource', 'mode' => 'add'));
+$params = array('course' => $courseid, 'section' => $section, 'return' => $return, 'add' => 'sharedresource', 'mode' => 'add');
+$editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
 echo $OUTPUT->single_button($editurl, get_string('addsharedresource', 'sharedresource'));
 echo '</div>';
 

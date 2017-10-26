@@ -27,12 +27,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111600;       // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2017041701;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2015111600;       // Requires this Moodle version
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
-$plugin->release = '3.0.0 (Build 2015111600)';     // Full name of the plugin (used for diagnostics)
+$plugin->release = '3.0.0 (Build 2017041701)';     // Full name of the plugin (used for diagnostics)
+$plugin->dependencies = array('local_sharedresources' => 2014032700);
 
-// Non Moodle fields
-// This fields will help overmanagement code builders without forcing upgrade to play
-$plugin->codeincrement = '3.0.0000';
+// Non moodle attributes.
+$plugin->codeincrement = '3.0.0001';

@@ -21,14 +21,17 @@
  * @package sharedresource
  * @subpackage sharedresource_scolomfr
  */
+namespace mod_sharedresource;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Extend the base resource class for file resources.
  */
-require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
 
-class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
+class plugin_scolomfr extends plugin_base {
 
     // we may setup a context in which we can decide where users 
     // can be assigned role regarding metadata
@@ -1147,7 +1150,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 
     public function __construct($entryid = 0) {
         $this->entryid = $entryid;
-        $this->context = context_system::instance();
+        $this->context = \context_system::instance();
         $this->pluginname = 'scolomfr';
         $this->namespace = 'scolomfr';
     }
@@ -1276,33 +1279,33 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    function after_save(&$sharedresource_entry) {
-        if (!empty($sharedresource_entry->keywords)) {
-            $this->setKeywords($sharedresource_entry->keywords);
+    function after_save(&$shrentry) {
+        if (!empty($shrentry->keywords)) {
+            $this->setKeywords($shrentry->keywords);
         }
 
-        if (!empty($sharedresource_entry->title)) {
-            $this->setTitle($sharedresource_entry->title);
+        if (!empty($shrentry->title)) {
+            $this->setTitle($shrentry->title);
         }
 
-        if (!empty($sharedresource_entry->description)) {
-            $this->setDescription($sharedresource_entry->description);
+        if (!empty($shrentry->description)) {
+            $this->setDescription($shrentry->description);
         }
 
         return true;
     }
 
-    function after_update(&$sharedresource_entry) {
-        if (!empty($sharedresource_entry->keywords)) {
-            $this->setKeywords($sharedresource_entry->keywords);
+    function after_update(&$shrentry) {
+        if (!empty($shrentry->keywords)) {
+            $this->setKeywords($shrentry->keywords);
         }
 
-        if (!empty($sharedresource_entry->title)) {
-            $this->setTitle($sharedresource_entry->title);
+        if (!empty($shrentry->title)) {
+            $this->setTitle($shrentry->title);
         }
 
-        if (!empty($sharedresource_entry->description)) {
-            $this->setDescription($sharedresource_entry->description);
+        if (!empty($shrentry->description)) {
+            $this->setDescription($shrentry->description);
         }
 
         return true;
@@ -1376,7 +1379,7 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
      */
     function getKeywordValues($metadata) {
         $keyelm = $this->getKeywordElement();
-        $keykeys = preg_grep("/{$keyelm->name}:.*/", array_keys($metadata));
+        $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
         foreach ($keykeys as $k) {
             $kwlist[] = $metadata[$k]->value;
@@ -1411,17 +1414,17 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
         $keywordSource = $this->METADATATREE['1_5']['source'];
-        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
+        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ", array($this->entryid));
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
                 $aword = trim($aword);
-                $mtdrec = new StdClass;
-                $mtdrec->entry_id = $this->entryid;
+                $mtdrec = new \StdClass;
+                $mtdrec->entryid = $this->entryid;
                 $mtdrec->element = '1_5:0_'.$i;
                 $mtdrec->namespace = $keywordSource;
                 $mtdrec->value = $aword;
@@ -1438,13 +1441,13 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
         $titleSource = $this->METADATATREE['1_2']['source'];
-        $DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_2:0_0'));
-        $mtdrec = new StdClass;
-        $mtdrec->entry_id = $this->entryid;
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_2:0_0'));
+        $mtdrec = new \StdClass;
+        $mtdrec->entryid = $this->entryid;
         $mtdrec->element = '1_2:0_0';
         $mtdrec->namespace = $titleSource;
         $mtdrec->value = $title;
