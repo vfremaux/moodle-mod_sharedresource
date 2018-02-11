@@ -1,4 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package sharedresource
+ * @subpackage sharedresource_lomfr
+ */
 
 $string['pluginname'] = 'Learning Object Model. Version française (LOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
@@ -44,7 +65,7 @@ $string['evenement'] = 'Event';
 $string['faitlobjetdunetraduction'] = 'Has translation';
 $string['format'] = 'Format';
 $string['formationcontinue'] = 'Life Long Learning';
-$string['formationentreprise'] = 'Profesional Development';
+$string['formationenentreprise'] = 'Profesional Development';
 $string['format'] = 'Format';
 $string['general'] = 'General';
 $string['glossary'] = 'Glossary';
@@ -122,7 +143,7 @@ It concern the whole educative community :<br/>
 - the formation community (professional formation, continueing formation)<br/>
 - archivists and librarians<br/>
 - publishers, companies <br/><br/>
-<center>More informations here : <a href=\"http://www.lom-fr.fr\">Page of the lomfr profile</a></center>';
+<center>More informations here : <a href="http://www.lom-fr.fr">Page of the lomfr profile</a></center>';
 
 //Aggregation level
 $string['1'] = '1';
@@ -204,6 +225,8 @@ $string['opera'] = 'Opera';
 $string['amaya'] = 'Amaya';
 $string['firefox'] = 'Firefox';
 $string['googlechrome'] = 'Google Chrome';
+$string['safari'] = 'Safari';
+$string['linux'] = 'Linux';
 
 // Type d'interactivité
 $string['active'] = 'Active';
@@ -251,6 +274,7 @@ $string['securitylevel'] = 'Security level';
 $string['competency'] = 'Competency';
 
 // Kind 
+$string['estassocieea'] = 'Is related to';
 $string['ispartof'] = 'is part of';
 $string['haspart'] = 'has part';
 $string['isversionof'] = 'is version of';

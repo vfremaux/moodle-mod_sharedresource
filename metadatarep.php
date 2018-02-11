@@ -26,31 +26,33 @@
  * @package    mod_sharedresource
  * @category   mod
  */
-
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 $config = get_config('sharedresource');
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
-$mode          = required_param('mode', PARAM_ALPHA);
-$add           = optional_param('add', 0, PARAM_ALPHA);
-$update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
-$section       = optional_param('section', 0, PARAM_INT);
-$course        = required_param('course', PARAM_INT);
+$mode = required_param('mode', PARAM_ALPHA);
+$add = optional_param('add', 0, PARAM_ALPHA);
+$update = optional_param('update', 0, PARAM_INT);
+$return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$section = optional_param('section', 0, PARAM_INT);
+$course = required_param('course', PARAM_INT);
 $type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
-$entries = preg_grep("#^\d#", array_keys($_POST));
-$metadataentries = array();
 
-foreach ($entries as $key => $value) {
-    $metadataentries[$value] = required_param($value, PARAM_TEXT);
+$metadataentries = data_submitted();
+
+if (array_key_exists('cancel', $metadataentries)) {
+    $params = array('course' => $course, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
+    $cancelurl = new moodle_url('/course/modedit.php', $params);
+    redirect($cancelurl);
 }
 
-if (! $course = $DB->get_record('course', array('id' => $course))) {
+if (!$course = $DB->get_record('course', array('id' => $course))) {
     print_error('badcourseid', 'sharedresource');
 }
 
@@ -69,13 +71,13 @@ $PAGE->set_heading($SITE->fullname);
 
 // Navigation.
 
-$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'),"{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id",'activity');
+$linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
+$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add($strtitle,'metadatarep.php','misc');
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
-$PAGE->set_button('');
 $PAGE->set_headingmenu('');
 
 $SESSION->error = '';
@@ -85,11 +87,12 @@ $shrentry = unserialize($srentry);
 // If it's an update, metadata of the sharedresource should be deleted before adding new ones.
 
 if ($mode != 'add') {
-    foreach ($shrentry->metadata_elements as $key => $metadata) {
-        unset($shrentry->metadata_elements[$key]);
+    foreach ($shrentry->metadataelements as $key => $metadata) {
+        unset($shrentry->metadataelements[$key]);
     }
 }
 $result = metadata_display_and_check($shrentry, $metadataentries);
+\mod_sharedresource\metadata::normalize_storage($shrentry->id);
 
 // If there are errors in fields filled in by the user.
 
@@ -105,14 +108,21 @@ if ($result['error'] != array()) {
 
     echo $OUTPUT->heading(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 
-    echo '<center>';
-    echo get_string('errormetadata', 'sharedresource');
-    echo '<br/><br/>';
+    $errortpl = new StdClass;
 
     foreach ($result['error'] as $field => $errortype) {
-        $fieldnum = substr($field,0,strpos($field,':'));
-        echo '<strong> - '.$fieldnum.' : '.$mtdstandard->METADATATREE[$fieldnum]['name'].'</strong><br/><br/>';
+        $fieldnum = substr($field, 0, strpos($field,':'));
+        $errtpl = new StdClass;
+        $errtpl->fieldnum = $fieldnum;
+        $errtpl->fieldname = $mtdstandard->METADATATREE[$fieldnum]['name'];
+        $errortpl->errors[] = $errtpl;
     }
+
+    $errortpl->errormetadatastr = get_string('errormetadata', 'sharedresource');
+
+    $OUTPUT->render_from_template('mod_sharedresource/metadatacheckerrors', $errortpl);
+
+    $OUTPUT->render_from_template('mod_sharedresource/metadatacheckreport', $result['display']);
 
     $params = array('course' => $course->id,
                     'section' => $section,
@@ -120,7 +130,10 @@ if ($result['error'] != array()) {
                     'return' => $return,
                     'mode' => $mode,
                     'context' => $sharingcontext);
+
     $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
+
+    echo '<center>';
     $OUTPUT->continue($fullurl, get_string('wrongform', 'sharedresource'), 15);
     echo '</center>';
 

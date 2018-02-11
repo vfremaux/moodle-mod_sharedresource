@@ -196,7 +196,7 @@ class base {
      *
      */
     public function display() {
-        global $CFG, $THEME, $USER, $PAGE, $OUTPUT, $SITE, $DB;
+        global $CFG, $THEME, $USER, $PAGE, $OUTPUT, $SITE, $DB, $FULLME;
 
         $config = get_config('sharedresource');
 
@@ -289,7 +289,8 @@ class base {
         // Set up some variables.
         $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
         if (sharedresource_is_url($sharedresourceentry->url)) {
-            // shared resource is a pure URL.
+
+            // Shared resource is a pure URL.
             $fullurl = $sharedresourceentry->url;
             if (!empty($querystring)) {
                 $urlpieces = parse_url($sharedresourceentry->url);
@@ -299,7 +300,12 @@ class base {
                     $fullurl .= '&amp;'.$querystring;
                 }
             }
+
+            if ($fullurl == $FULLME) {
+                print_error(get_string('sharedresourcelooperror', 'sharedresource'));
+            }
         } else {
+
             // Normal uploaded file.
             $forcedownloadsep = '?';
             if (isset($resource->options) && $resource->options == 'forcedownload') {
@@ -323,27 +329,29 @@ class base {
             $PAGE->set_cacheable(false);
             $PAGE->set_button('');
 
+            $viewdata = array();
+            $viewdata['popupoptions'] = $resource->popup;
+            $viewdata['cmid'] = $cm->id;
+            $PAGE->amd_js_call('mod_sharedresource/view', 'init', $data);
+
             echo $OUTPUT->header();
 
-            echo "\n<script type=\"text/javascript\">";
-            echo "\n<!--\n";
-            $linkurl = new moodle_url('/mod/sharedresource/view.php', array('inpopup' => true, 'id' => $cm->id));
-            echo "openpopup('".$linkurl."', 'resource{$resource->id}', '{$resource->popup}');\n";
-            echo "\n-->\n";
-            echo '</script>';
+            $template = new StdClass;
+            $template->resid = $resource->id;
             if (trim(strip_tags($resource->intro))) {
-                echo $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions), "center");
+                $template->infobox = $OUTPUT->box(format_text($resource->intro, $resource->introformat, $formatoptions), "center");
             }
-            $jshandler = 'this.target = \'resource'.$resource->id.'\';';
-            $jshandler .= 'return openpopup(\''.$linkurl.'\', \'resource'.$resource->id.'\', \''.$resource->popup.'\');';
-            $link = '<a href="'.$linkurl.'" onclick="'.$jshandler.'">'.format_string($resource->title, true).'</a>';
-            echo '<div class="popupnotice">';
-            print_string('popupresource', 'resource');
-            echo '<br />';
-            print_string('popupresourcelink', 'resource', $link);
-            echo '</div>';
-            print($OUTPUT->footer($course));
-            exit;
+            $template->linkurl = new moodle_url('/mod/sharedresource/view.php', array('inpopup' => true, 'id' => $cm->id));
+            $template->popupoptions = $resource->popup;
+
+            $template->title = format_string($resource->title, true);
+            $template->strpopupresource = get_string('popupresource', 'resource');
+            $template->strpopupresourcelink = get_string('popupresourcelink', 'resource', $template->linkurl);
+
+            echo $OUTPUT->render_from_template('mod_sharedresource/directpopup', $template);
+
+            echo $OUTPUT->footer($course);
+            die;
         }
 
         // Now check whether we need to display a frameset.

@@ -89,10 +89,11 @@ if (empty($courseid)) {
 
     $urls = $DB->get_records('url', array('course' => $courseid), 'name');
 
+    $buttonurl = new moodle_url('/course/view.php', array('id' => $courseid));
     if (empty($resources) && empty($urls)) {
         echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
-        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
+        echo $OUTPUT->continue_button($buttonurl);
         echo $OUTPUT->footer();
         exit();
     }
@@ -101,10 +102,8 @@ if (empty($courseid)) {
 
     if ($form2->is_cancelled()) {
         if ($courseid) {
-            print_string('conversioncancelledtocourse', 'sharedresource');
-            redirect(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
+            redirect($buttonurl);
         } else {
-            print_string('conversioncancelledtolibrary', 'sharedresource');
             redirect(new moodle_url('/resources/index.php'));
         }
     }

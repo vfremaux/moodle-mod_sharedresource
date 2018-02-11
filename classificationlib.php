@@ -23,6 +23,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
+
 /*
  * This php script contains all the stuff to use classifications
  * This is used in the metadata form of a sharedresource and 
@@ -70,6 +72,7 @@ function metadata_create_classification($classtable, $classifarray, $classificat
  * Recursive function in classification tree
  *
  */
+ /*
 function metadata_create_classification_rec($tempclassif, $newclassif, $classifarray, $classification){
     while (!empty($tempclassif)) {
         foreach ($newclassif as $key => $value) {
@@ -101,13 +104,17 @@ function metadata_create_classification_rec($tempclassif, $newclassif, $classifa
     }
     return $newclassif;
 }
+*/
 
 /*
  * prints all classification, recursively, in one SELECT
  * @see metadata_form.php
  */
+ /*
 function metadata_print_classification_options($classifarray, $selectedlabel = '') {
-    global $DB;
+    global $DB, $USER;
+
+    $str = '';
 
     foreach ($classifarray as $name => $infos) {
         if ($infos['select'] == 1) {
@@ -124,109 +131,165 @@ function metadata_print_classification_options($classifarray, $selectedlabel = '
                 ";
                 $classtable =  $DB->get_records_sql($sql, array());
             }
+
             $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
-            echo '<option class="sharedresource-listsection" disabled="disabled" value="'.$name.'">'.$name.'</option>';
+
+            $str .= '<option class="sharedresource-listsection" disabled="disabled" value="'.$name.'">'.$name.'</option>';
+
             foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
                 if (!empty($infos['taxonselect']) && !in_array($id, $infos['taxonselect'])) {
                     continue;
                 }
                 if ($name.':'.$id == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
-                    echo '<option selected value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
+                    $str .= '<option selected value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
                 } else {
-                    echo '<option value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
+                    $str .= '<option value="'.$name.':'.$id.':'.$finalclassif[$id]['label'].'">'.$finalclassif[$id]['label'].'</option>';
                 }
-                echo metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id,
+                $str .= metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id,
                                                                $finalclassif[$id]['label'], $selectedlabel);
             }
         }
     }
+
+    return $str;
+}
+*/
+
+/**
+ * get all classification options, recursively
+ * @see metadata_form.php
+ * @param int $taxonomy the taxonomy id. If 0, retrieves all active taxonomies.
+ * @return an optgroup structure for a list
+ */
+function metadata_get_classification_options($taxonomyid = 0) {
+
+    $taxonomies = \local_sharedresources\browser\navigation::get_taxonomies();
+
+    if ($taxonomyid != 0) {
+        $taxonomy = $taxonomies[$taxonomyid];
+        $classification = new \local_sharedresources\browser\navigation($taxonomy);
+        $options = $classification->get_full_tree('flat');
+        return $options;
+    }
+
+    $optgroups = array();
+    foreach ($taxonomies as $taxonomy) {
+        $classification = new \local_sharedresources\browser\navigation($taxonomy);
+        if (!$classification->can_use()) {
+            continue;
+        }
+        $optgroup = $classification->get_full_tree('flat');
+        $optgroups[][$taxonomy->name] = $optgroup;
+    }
+
+    return $optgroups;
 }
 
 /**
  * Recursive exploration of the classification
  *
  */
-function metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $id, $path='', $selectedlabel='') {
+function metadata_get_classification_option_rec($name, $finalclassif, $id, $path='', $selectedlabel='') {
+
+    $str = '';
+
     foreach ($finalclassif[$id]['childs'] as $ordering => $taxonid) {
         if (in_array($taxonid,$classifarray[$name]['taxonselect'])) {
             $temppath = $path.'/'.$finalclassif[$taxonid]['label'];
             if ($name.':'.$taxonid == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
-                echo '<option selected="selected" value="'.$name.':'.$taxonid.':'.$temppath.'">'.$temppath.'</option>';
+                $str .= '<option selected="selected" value="'.$name.':'.$taxonid.':'.$temppath.'">'.$temppath.'</option>';
             } else {
-                echo '<option value="'.$name.':'.$taxonid.':'.$temppath.'">'.$temppath.'</option>';
+                $str .= '<option value="'.$name.':'.$taxonid.':'.$temppath.'">'.$temppath.'</option>';
             }
             if (!empty($finalclassif[$taxonid]['childs'])) {
-                metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $taxonid, $temppath, $selectedlabel);
+                $str .= metadata_print_classification_options_rec($name, $classifarray, $finalclassif, $taxonid, $temppath, $selectedlabel);
             }
         }
     }
+
+    return $str;
 }
 
 /*
  * print a complete classification path
  * @see metadatanotice.php
  */
-function metadata_print_classification_value($classifarray, $selectedlabel = '') {
+function metadata_print_classification_value($selectedlabel = '') {
     global $DB;
 
-    if ($classifarray) {
-        foreach ($classifarray as $name => $infos) {
-            if ($infos['select'] == 1) {
-                if ($infos['restriction'] == '') {
-                    $classtable = $DB->get_records($name);
-                } else {
-                    $classtable = $DB->get_records_sql("SELECT * FROM {{$name}} WHERE ".$classifarray[$name]['restriction']);
-                }
-                $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
-                foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
-                    if (in_array($id, $infos['taxonselect'])) {
-                        if ($name.':'.$id == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
-                            echo '/ '.$finalclassif[$id]['label'].' ';
-                        }
-                        echo metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $id, $selectedlabel);
+    $str = '';
+
+    foreach ($classifarray as $name => $infos) {
+        if ($infos['select'] == 1) {
+            if ($infos['restriction'] == '') {
+                $classtable = $DB->get_records($name);
+            } else {
+                $classtable = $DB->get_records_sql("SELECT * FROM {{$name}} WHERE ".$classifarray[$name]['restriction']);
+            }
+            $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
+            foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
+                if (in_array($id, $infos['taxonselect'])) {
+                    if ($name.':'.$id == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
+                        $str .= '/ '.$finalclassif[$id]['label'].' ';
                     }
+                    $str .= metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $id, $selectedlabel);
                 }
             }
         }
     }
+
+    return $str;
 }
 
-function metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $id, $selectedlabel = '') {
+function metadata_print_classification_value_rec($name, $finalclassif, $id, $selectedlabel = '') {
+
+    $str = '';
+
     foreach ($finalclassif[$id]['childs'] as $ordering => $taxonid) {
         if (in_array($taxonid, $classifarray[$name]['taxonselect'])) {
             if ($name.':'.$taxonid == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
-                echo '/ '.$finalclassif[$taxonid]['label']. ' ';
+                $str .= '/ '.$finalclassif[$taxonid]['label']. ' ';
             }
             if (!empty($finalclassif[$taxonid]['childs'])) {
-                metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $taxonid, $selectedlabel);
+                $str .= metadata_print_classification_value_rec($name, $classifarray, $finalclassif, $taxonid, $selectedlabel);
             }
         }
     }
+
+    return $str;
 }
 
 /**
  * print_classif2 and print_classification_childs print all classifications, displaying successively SELECT (used in the search form)
  */
 function print_classif2($classifarray) {
+
+    $str = '';
+
     if (!empty($classifarray)) {
         foreach ($classifarray as $name => $infos) {
             if ($infos['select'] == 1) {
-                echo '<option class="sharedresource-listsection" value="'.$name.'">'.$infos['classname'].'</option>';
+                $str .= '<option class="sharedresource-listsection" value="'.$name.'">'.$infos['classname'].'</option>';
             }
         }
     }
+
+    return $str;
 }
 
 function print_classification_childs($name, $num, $key, $classif, $value) {
     global $CFG, $DB;
 
+    $str = '';
+
     if ($name == 'defaultvalue') {
-        return ;
+        return;
     }
 
     $config = get_config('sharedresource');
 
     $classifarray = unserialize($config->classifarray);
+
     // If we are searching for taxons just after choosing a classification (taxons without parents).
     if (array_key_exists($name,$classifarray)) {
         if ($classifarray[$name]['restriction'] == '') {
@@ -237,13 +300,13 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
         $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
         $restriction = $classifarray[$name]['taxonselect'];
         if (!empty($finalclassif[$name]['childs'])) {
-            echo '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num+1).',';
+            $str .= '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num+1).',';
             if ($key != '') {
-                 echo '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
+                 $str .= '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
             } else {
-                echo 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
+                $str .= 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
             }
-            echo '<option selected value="basicvalue"> </option>';
+            $str .= '<option selected value="basicvalue"> </option>';
                 foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
                     if (in_array($id, $restriction)) {
                         if ($key != '') {
@@ -251,10 +314,10 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
                         } else {
                             $tempkey = $finalclassif[$id]['label'];
                         }
-                        echo '<option value="'.$id.'\\'.$tempkey.'">'.$finalclassif[$id]['label'].'</option>';
+                        $str .= '<option value="'.$id.'\\'.$tempkey.'">'.$finalclassif[$id]['label'].'</option>';
                     }
                 }
-            echo '</select>';
+            $str .= '</select>';
         }
     // If we are searching the childs of a taxon.
     } else {
@@ -267,13 +330,13 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
             $finalclassif = metadata_create_classification($classtable, $classifarray, $classif);
             $restriction = $classifarray[$classif]['taxonselect'];
             if (!empty($finalclassif[substr($value, 0, strpos($value, '\\'))]['childs'])) {
-                echo '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num + 1).',';
+                $str .= '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num + 1).',';
                 if ($key != '') {
-                    echo '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
+                    $str .= '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
                 } else {
-                    echo 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
+                    $str .= 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
                 }
-                echo '<option selected value="basicvalue"> </option>';
+                $str .= '<option selected value="basicvalue"> </option>';
                     foreach ($finalclassif[substr($value, 0, strpos($value, '\\'))]['childs'] as $ordering => $label) {
                         if (in_array($label, $restriction)) {
                             if ($key != '') {
@@ -281,11 +344,13 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
                             } else {
                                 $tempkey = $finalclassif[$label]['label'];
                             }
-                            echo '<option value="'.$label.'\\'.$tempkey.'">'.$finalclassif[$label]['label'].'</option>';
+                            $str .= '<option value="'.$label.'\\'.$tempkey.'">'.$finalclassif[$label]['label'].'</option>';
                         }
                     }
-                echo '</select>';
+                $str .= '</select>';
             }
         }
     }
+
+    return $str;
 }

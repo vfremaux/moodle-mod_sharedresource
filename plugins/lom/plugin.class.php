@@ -75,9 +75,12 @@ class plugin_lom extends plugin_base {
                 '1_8' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '1_1' => array(
@@ -89,9 +92,12 @@ class plugin_lom extends plugin_base {
                 '1_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '1_1_1' => array(
@@ -99,9 +105,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -110,9 +119,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -121,9 +133,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -132,9 +147,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -143,9 +161,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -154,9 +175,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -165,9 +189,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -177,9 +204,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('atomic', 'collection', 'networked', 'hierarchical', 'linear'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -189,9 +219,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('1', '2', '3', '4'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -205,9 +238,12 @@ class plugin_lom extends plugin_base {
                 '2_3' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '2_1' => array(
@@ -215,9 +251,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -227,9 +266,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('draft', 'final', 'revised', 'unavailable'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -243,9 +285,12 @@ class plugin_lom extends plugin_base {
                 '2_3_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '2_3_1' => array(
@@ -254,9 +299,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -265,9 +313,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -276,9 +327,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'date',
         ),
@@ -293,9 +347,12 @@ class plugin_lom extends plugin_base {
                 '3_4' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_1' => array(
@@ -307,9 +364,12 @@ class plugin_lom extends plugin_base {
                 '3_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_1_1' => array(
@@ -317,9 +377,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -328,9 +391,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -344,9 +410,12 @@ class plugin_lom extends plugin_base {
                 '3_2_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_2_1' => array(
@@ -355,9 +424,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('creator', 'validator'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -366,9 +438,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -377,9 +452,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'date',
         ),
@@ -388,9 +466,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_4' => array(
@@ -398,9 +479,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4' => array(
@@ -417,9 +501,12 @@ class plugin_lom extends plugin_base {
                 '4_7' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4_1' => array(
@@ -427,9 +514,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -438,9 +528,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'numeric',
         ),
@@ -449,9 +542,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -463,9 +559,12 @@ class plugin_lom extends plugin_base {
                 '4_4_1' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4_4_1' => array(
@@ -479,9 +578,12 @@ class plugin_lom extends plugin_base {
                 '4_4_1_4' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4_4_1_1' => array(
@@ -490,9 +592,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('operating system', 'browser'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -502,9 +607,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -513,9 +621,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -524,9 +635,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -535,9 +649,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -546,9 +663,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -557,9 +677,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'duration', /// or text TO CHECK
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'duration',
         ),
@@ -581,9 +704,12 @@ class plugin_lom extends plugin_base {
                 '5_11' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '5_1' => array(
@@ -592,9 +718,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('active', 'expositive', 'mixed'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -604,9 +733,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide', 'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -616,9 +748,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -628,9 +763,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -640,9 +778,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('teacher', 'author', 'learner', 'manager'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -652,9 +793,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('school', 'higher education', 'training', 'other'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -663,9 +807,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -675,9 +822,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('very easy', 'easy', 'medium', 'difficult', 'very difficult'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -686,9 +836,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'duration', /// or text TO CHECK
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'duration',
         ),
@@ -697,9 +850,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -708,9 +864,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -724,9 +883,12 @@ class plugin_lom extends plugin_base {
                 '6_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '6_1' => array(
@@ -735,9 +897,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -747,9 +912,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -758,9 +926,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -773,9 +944,12 @@ class plugin_lom extends plugin_base {
                 '7_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_1' => array(
@@ -784,9 +958,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -799,9 +976,12 @@ class plugin_lom extends plugin_base {
                 '7_2_2' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_2_1' => array(
@@ -813,9 +993,12 @@ class plugin_lom extends plugin_base {
                 '7_2_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_2_1_1' => array(
@@ -823,9 +1006,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -834,9 +1020,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -845,9 +1034,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -861,9 +1053,12 @@ class plugin_lom extends plugin_base {
                 '8_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '8_1' => array(
@@ -871,9 +1066,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -882,9 +1080,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'date',
         ),
@@ -893,9 +1094,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -910,9 +1114,12 @@ class plugin_lom extends plugin_base {
                 '9_4' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_1' => array(
@@ -921,9 +1128,12 @@ class plugin_lom extends plugin_base {
             'type' => 'select',
             'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2' => array(
@@ -935,9 +1145,12 @@ class plugin_lom extends plugin_base {
                 '9_2_2' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
         ),
         '9_2_1' => array(
@@ -945,9 +1158,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2_2' => array(
@@ -959,9 +1175,12 @@ class plugin_lom extends plugin_base {
                 '9_2_2_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2_2_1' => array(
@@ -969,30 +1188,39 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
-            )
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
+            ),
+            'widget' => 'treeselect',
         ),
         '9_2_2_2' => array(
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
-            'widget' => 'treeselect',
         ),
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_4' => array(
@@ -1000,9 +1228,12 @@ class plugin_lom extends plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         )
     );
@@ -1323,6 +1554,15 @@ class plugin_lom extends plugin_base {
     }
 
     /**
+     * purpose must expose the values, so a function to find the purpose field is usefull
+     */
+    function getTaxonomyValueElement() {
+        $element = (object)$this->METADATATREE['9_2_2_1'];
+        $element->node = '9_2_2_1';
+        return $element;
+    }
+
+    /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
     function getKeywordValues($metadata) {
@@ -1330,7 +1570,7 @@ class plugin_lom extends plugin_base {
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
         foreach ($keykeys as $k) {
-            $kwlist[] = $metadata[$k]->value;
+            $kwlist[] = $metadata[$k]->get_value();
         }
         return implode(', ', $kwlist);
     }
@@ -1340,8 +1580,9 @@ class plugin_lom extends plugin_base {
      */
     function getTaxumpath() {
         $element = array();
-        $element['main'] = "Taxon Path";
+        $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
+        $element['main'] = "9_2_2";
         $element['id'] = "9_2_2_1";
         $element['entry'] = "9_2_2_2";
         return $element;

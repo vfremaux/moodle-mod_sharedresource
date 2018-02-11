@@ -1,75 +1,40 @@
 @charset "utf-8";
 
-#ecform_container {
+#mtd-form-container {
     text-align: center;
     width: 95%;
 }
 
-#ecform_title {
+#mtd-form-title {
     font-size: 1.7em;
     font-weight: bold;
     text-align: center;
+    margin: 20px 0 50px 0;
 }
 
-#ecform_content {
-    -moz-border-radius-bottomleft: 6px;
-    -moz-border-radius-bottomright: 6px;
-    -moz-border-radius-topleft: 6px;
-    -moz-border-radius-topright: 6px;
-    border-bottom: thin #dcdcdc solid;  
-    border-left: thin #dcdcdc solid; 
-    border-right: thin #dcdcdc solid;
-    border-top: thin #dcdcdc solid;
-    clear: both;
-    padding-bottom: 1em;
-    padding-left: 1em;
-    padding-right: 1em;
-    overflow-x : hidden;  
-}
-
-#ecform_content .titcontent {
-    margin-top: 1em;
-}
-
-#ecform_container .on {
-    display: block;
-}
-
-#ecform_container .off {
-    display: none;
-}
-
-.son {
-    display: block;
-}
-
-.soff {
-    display: none;
-}    
-
-#monForm p {
+.mtd-form p {
     margin: 2px 0;
     margin-bottom: 10px;
 }
 
-#monForm fieldset {
+.mtd-form fieldset {
     border: #ccc 1px solid;
     margin-bottom: 10px;
     padding: 7px 7px 7px 7px;  
 }
 
-#monForm fieldset:hover {
+.mtd-form fieldset:hover {
     background-color: #fff;
 }
 
-#monForm fieldset legend {
+.mtd-form fieldset legend {
     padding: 0 10px;
     font-size: 1.3em;
     color: #999;
 }
 
 /* Label */
-#monForm label {
+.mtd-form label {
     background: #dcdcdc;
     display: block;
     float: left;
@@ -80,73 +45,135 @@
     width: 35%;
 }
 
-#monForm label:hover {
+.mtd-form label:hover {
     font-weight: bold;
 }
 
-#monForm label .error{
+.mtd-form label .error{
     background-color: #ff0000;
 }
 
-#monForm .form_label_nostyle {
+.mtd-form .form_label_nostyle {
     background: none;
 }
 
 /* Input */
-#monForm input, #monForm select {
+.mtd-form input,
+.mtd-form select {
     border: #ccc 1px solid;
     margin-left: 1%;
     width: 62%;
 }
 
-#monForm input:hover, #monForm select:hover, #monForm input:focus, #monForm select:focus {
+input.mtd-form-duration {
+    width: 2em;
+}
+
+.mtd-form input:hover,
+.mtd-form select:hover,
+.mtd-form input:focus,
+.mtd-form select:focus {
     border: #ccc 1px solid;
 }
 
-#monForm .form_input_day {
+.mtd-form .form_input_day {
     text-align: center;
     width: 20%;
 }
 
-#monForm .form_input_month {
+.mtd-form .form_input_month {
     text-align: center;
     width: 20%;
 }
 
-#monForm .form_input_year {
+.mtd-form .form_input_year {
     text-align: center;
     width: 20%;
 }
 
-#monForm .form_input_duration {
+.mtd-form .form_input_duration {
     width: 6%;
 }
 
-#monForm .addbutton{
+.mtd-form .addbutton{
     text-align:center;
     margin-bottom:10px;
     width: 40%;
 }
 
 /* button submit */
-#monForm input[type="submit"] {
+.mtd-form input[type="submit"] {
     border: #DDEEFF 1px solid;
     width: 27%;
 }
 
-#monForm input[type="submit"]:hover {
+.mtd-form input[type="submit"]:hover {
     background-color: #66CC33;
     cursor: pointer;
 }
 
-#monForm input[type="reset"] {
+.mtd-form input[type="reset"] {
     border: #DDEEFF 1px solid;
     width: 27%;
 }
 
-#monForm input[type="reset"]:hover {
+.mtd-form input[type="reset"]:hover {
     background-color: #E6484D;
     cursor: pointer;
+}
+
+#mtd-form-content {
+    -moz-border-radius-bottomleft: 6px;
+    -moz-border-radius-bottomright: 6px;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    border-bottom: thin #dcdcdc solid;
+    border-left: thin #dcdcdc solid; 
+    border-right: thin #dcdcdc solid;
+    border-top: thin #dcdcdc solid;
+    clear: both;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    overflow-x : hidden;
+}
+
+.mtd-tab {
+    line-height: 38px;
+}
+
+.mtd-tab-hidden {
+    display:none !important;
+}
+
+.mtd-tab-visible {
+    display:inline-block;
+}
+
+.mtd-title-content {
+    margin-top: 1em;
+}
+
+#mtd-form-container .on {
+    display: block;
+}
+
+#mtd-form-container .off {
+    display: none;
+}
+
+.son {
+    display: block;
+}
+
+.soff {
+    display: none;
+}
+
+#mtd-form-container .addbutton{
+    text-align:center;
+    margin-bottom:10px;
+    width: 40%;
 }
 
 .ds_box {
@@ -201,44 +228,48 @@
     font-size:0.9em;
 }
 
-td.mtdfield{
-   background-color:#565B9E;
-   border:2px solid white;
-   color:white;
-   font-weight:bolder;
-   min-height:24px;
-   padding:4px;
-   padding-right:10px;
-   text-align:right;
-   width:25%;
+td.mtd-field {
+    background-color:#565B9E;
+    border:2px solid white;
+    color:white;
+    font-weight:bolder;
+    min-height:24px;
+    padding:4px;
+    padding-right:10px;
+    text-align:right;
+    width:25%;
 }
 
-td.mtdnum{
-   background-color:#565B9E;
-   border:2px solid white;
-   color:#B9B9D9;
-   min-height:24px;
-   padding:4px;
-   text-align:right;
-   width:5%;
+td.mtd-num {
+    background-color:#565B9E;
+    border:2px solid white;
+    color:#B9B9D9;
+    min-height:24px;
+    padding:4px;
+    text-align:right;
+    width:5%;
 }
 
-td.mtdvalue{
-   width:70%;
-   text-align:left;
-   padding:2px;
-   background-color:#F0F0F7;
-   padding-left:10px;
+td.mtd-value {
+    width:70%;
+    text-align:left;
+    padding:2px;
+    background-color:#F0F0F7;
+    padding-left:10px;
+}
+
+.mtd-resource-name {
+    color: initial;
 }
 
 fieldset.subbranch{
-   margin-left:5px;
+    margin-left:5px;
 }
 
 fieldset > legend{
-   padding:5px;
-   font-weight:bolder;
-   color:#54549E;
+    padding:5px;
+    font-weight:bolder;
+    color:#54549E;
 }
 
 .sharedresource-listsection{
@@ -246,7 +277,7 @@ fieldset > legend{
     text-align:center;
 }
 
-#notice-menu LI {
+#notice-menu li {
     background-color: #A7A3BA;
     font-weight:bolder;
     padding:4px;
@@ -281,17 +312,24 @@ fieldset > legend{
     font-weight:bold;
 }
 
-.mtd-tab-visible {
-    float:left;
-    display:inline;
-}
-
-.mtd-tab-hidden {
-    float:left;
-    display:none;
-}
-
 .sharedresources-commands {
     margin-top: 10px;
     text-align: right;
+}
+
+.rootnode {
+    border-top: 3px solid;
+}
+
+.rootnode > td {
+    background-color: #f0f0ff;
+}
+
+.sharedresources-actionlink {
+    cursor: pointer;
+}
+
+.shadowed {
+    opacity:0.5;
+    -moz-opacity:0.5;
 }

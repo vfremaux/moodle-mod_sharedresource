@@ -75,7 +75,7 @@ class entry {
      * @return results, return an array of shrentryrec objects that
      *         will be formated and displayed in the search results screen.
      */
-    static public function search (&$criteria) {
+    static public function search(&$criteria) {
         // Get the plugins.
         $plugins = sharedresource_get_plugins();
         $results = array();
@@ -103,7 +103,9 @@ class entry {
             return false;
         }
 
-        $shrentryrec = new entry($shrentryrec);
+        // entry class may upgrade itself to entry_entended in "pro" version.
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_factory();
+        $shrentryrec = new $entryclass($shrentryrec);
         return $shrentryrec;
     }
 
@@ -119,7 +121,8 @@ class entry {
             return false;
         }
 
-        $shrentryrec = new entry($shrentryrec);
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+        $shrentryrec = new $entryclass($shrentryrec);
         return $shrentryrec;
     }
 
@@ -198,9 +201,13 @@ class entry {
             return 0 + @$this->shrentryrec->$attr;
         }
 
+        if ($attr == 'metadataelements') {
+            return $this->metadataelements;
+        }
+
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
                                   'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike',
-                                  'thumbnail'))) {
+                                  'thumbnail', 'accessctl'))) {
             return $this->shrentryrec->$attr;
         } else {
             mtrace ("Bad attr ".$attr);
@@ -215,7 +222,7 @@ class entry {
     public function __set($attr, $value) {
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url',
                                   'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid',
-                                  'displayed', 'context', 'scoreview', 'scorelike', 'thumbnail'))) {
+                                  'displayed', 'context', 'scoreview', 'scorelike', 'thumbnail', 'accessctl'))) {
             if ($attr == 'description') {
                 if (is_array($value)) {
                     if (preg_match('/^<p>?(.*)<\/p>$/', $value['text'])) {
@@ -271,7 +278,7 @@ class entry {
      * 
      * @return bool, returns true.
      */
-    function after_save() {
+    public function after_save() {
 
         // Get the plugins.
         $plugins = sharedresource_get_plugins($this->id);
@@ -293,7 +300,7 @@ class entry {
      * 
      * @return bool, returns true.
      */
-    function before_update() {
+    public function before_update() {
 
         // Get the plugins.
         $plugins = sharedresource_get_plugins($this->id);
@@ -338,7 +345,7 @@ class entry {
      * @param value     string, value of shrentryrec attribute or metadata element
      * @param namespace string, namespace of metadata element only
      */
-    function add_element($element, $value, $namespace = '') {
+    public function add_element($element, $value, $namespace = '') {
         global $SHAREDRESOURCE_CORE_ELEMENTS;
 
         $this->update_element($element, $value, $namespace);
@@ -351,7 +358,7 @@ class entry {
      * @param namespace string, namespace of metadata element only
      * @return string, value of attribute or metadata element
      */
-    function element($element, $namespace = '') {
+    public function element($element, $namespace = '') {
         global $SHAREDRESOURCE_CORE_ELEMENTS;
 
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && isset($this->$element)) {
@@ -376,7 +383,7 @@ class entry {
      * @param value     string, value of shrentryrec attribute or metadata element
      * @param namespace string, namespace of metadata element only
      */
-    function update_element($element, $value, $namespace = '') {
+    public function update_element($element, $value, $namespace = '') {
         global $SHAREDRESOURCE_CORE_ELEMENTS;
 
         // add the core ones to the main table entry - everything else goes in the metadata table.
@@ -405,7 +412,7 @@ class entry {
      * 
      * @return bool, true = local
      */
-    function is_local_resource() {
+    public function is_local_resource() {
         global $CFG;
 
         if (isset($this->file) && $this->file) {
@@ -416,29 +423,29 @@ class entry {
         }
         return false;
     }
-    
+
     /**
      * check if resource is remote or not
-     * 
+     *
      * @return bool, true = remote
      */
-    function is_remote_resource() {
+    public function is_remote_resource() {
         return ! $this->is_local_resource();
     }
-    
+
     /**
      * check if resource has been provided from internal operation or
      * has been retrieved from an externaly bound resources source.
-     * 
+     *
      * @return bool, true = remote
      */
-    function has_local_provider() {
+    public function has_local_provider() {
         return empty($this->provider) || $this->provider == 'local';
     }
 
     /**
      * Commit the new Shared resource to the database
-     * 
+     *
      * @return bool, true = success
      */
     public function add_instance() {
@@ -578,7 +585,7 @@ class entry {
      *
      * @return bool, true = success
      */
-    function update_instance() {
+    public function update_instance() {
         global $CFG, $DB;
 
         $this->timemodified = time();
@@ -645,7 +652,7 @@ class entry {
      * 
      * @return bool, true = success
      */
-    function delete_instance() {
+    public function delete_instance() {
         global $DB;
 
         /* Given an object containing the sharedresource data
@@ -670,9 +677,101 @@ class entry {
         return true;
     }
 
-    function exists() {
+    public function unset_metadata($key) {
+        if (isset($this->metadataelements[$key])) {
+            unset($this->metadataelements[$key]);
+        }
+    }
+
+    public function exists() {
         global $DB;
 
         return $DB->record_exists('sharedresource_entry', array('identifier' => $this->identifier));
+    }
+
+    /**
+     * Checks some simple access policy on ressource.
+     * A user may have a user_info_field holding an acceptable value to match
+     * in resource allowed value.
+     * Access filter only affect search and browse capabilities. but not access to the sharedresource
+     * if the user has access to a sharedresource publication in a course.
+     * The resource may be multivaluated, depending on wether the access check is allowed to register
+     * multiple values or not. this is set up in global settings.
+     * 
+     * @param object $resourceentry
+     * @return boolean value (has access or not).
+     * @see local/sharedresources/lib.php get_local_resources()§137
+     */
+    public function has_access() {
+        global $DB, $USER;
+        static $userdatacache;
+
+        if (!isset($userdatacache)) {
+            $userdatacache = array();
+        }
+
+        $config = get_config('sharedresource');
+
+        if (empty($config->accesscontrol)) {
+            // Global switch in config. Disables all access conrol overhead.
+            return true;
+        }
+
+        // Per resource strategy.
+        /*
+         * This is a fine grain resource per resource accesss control management using
+         * user userfields values.
+         * Each resource has one single userfield control attribute (holding a custom userfield reference per id)
+         * and a set of control values (allowed values) as a coma separated list.
+         */
+        if (!empty($this->accessctl)) {
+            $accessctl = \mod_sharedresource\access_ctl::instance($this->accessctl);
+            if ($accessctl->can_use()) {
+                return true;
+            }
+        }
+
+        // By taxonomy access control
+        /*
+         * Taxonomies have some access control rules based on profile field or capabilities.
+         * At least one match is required to pass, when the resource has explicit taxonomy binding.
+         * The check examines all sources registered for the resource, confirmed by an actual registered
+         * binding taxonid. (note there could be remanent registered sources without any taxonid, following
+         * a taxon deletion in the taxonomy.)
+         */
+         $mtdstandard = sharedresource_get_plugin($config->schema);
+         $taxumarr = $mtdstandard->getTaxumpath();
+
+         if (empty($taxumarr)) {
+            // No need to care about taxonomy access control as there is no taxonomy in the standard.
+            return true;
+         }
+
+        $sources = \mod_sharedresource\metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
+        if (!empty($sources)) {
+            $return = false;
+            foreach ($sources as $source) {
+                // Find some tokenids that are attached to this source instance.
+                $idkey = \mod_sharedresource\metadata::to_instance($taxumarr['id'], $source->get_element_key()); // Normalise element key.
+                $elmids = \mod_sharedresource\metadata::instances_by_element($this->id, $config->schema, $idkey, null, true);
+                if (empty($elmids)) {
+                    continue;
+                }
+                /*
+                 * Pass if 
+                 * - one source at least has no access control.
+                 * - one source at least has access allowed for user.
+                 */
+                 $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $source->get_value()));
+                 $classif = new \local_sharedresource\browser\navigator($taxonomy);
+                 if ($classif->can_use()) {
+                    return true;
+                 }
+            }
+            // No taxonomy match.
+            return false;
+        }
+
+        return true;
     }
 }

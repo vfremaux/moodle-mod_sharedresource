@@ -1,4 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package sharedresource
+ * @subpackage sharedresource_lom
+ */
 
 $string['pluginname'] = 'Learning Object Model (LOM)';
 $string['accessibilityrestrictions'] = 'Restrictions d\'accessibilité';
@@ -78,7 +99,7 @@ Ce standard a été conçu, en 2002, par le comité « IEEE-LTSC-LOM, Institute 
 Ses objectifs sont les suivants :<br/>
 - permettre une meilleure visibilité de l\'offre d\'objets pédagogiques, numériques ou non.<br/>
 - disposer de normes à respecter pour garantir la pérennité, l\'interopérabilité, et une certaine ouverture des ressources numériques produites, en lien avec les plates-formes de distribution et de consultation de ces ressources. (extrait de la norme expérimentale).<br/><br/>
-<center>Pour plus d\'informations : <a href=\"http://fr.wikipedia.org/wiki/Learning_Object_Metadata\">Page wikipedia de LOM</a></center>';
+<center>Pour plus d\'informations : <a href="http://fr.wikipedia.org/wiki/Learning_Object_Metadata">Page wikipedia de LOM</a></center>';
 
 //Aggregation level
 $string['1'] = '1';
