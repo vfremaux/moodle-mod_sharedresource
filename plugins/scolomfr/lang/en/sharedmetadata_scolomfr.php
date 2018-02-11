@@ -49,6 +49,7 @@ $string['creer'] = 'Create';
 $string['cyberquete'] = 'Cyberquest';
 $string['date'] = 'Date';
 $string['demonstration'] = 'Demonstration';
+$string['description'] = 'Description';
 $string['diaporama'] = 'Diaporama';
 $string['difficulty'] = 'Difficulty';
 $string['doctorat'] = 'Doctorate';
@@ -96,8 +97,11 @@ $string['interactivitytype'] = 'Interactivity type';
 $string['issuedate'] = 'Issue date';
 $string['jeudedonnees'] = 'Data set';
 $string['jeueducatif'] = 'Learning game';
+$string['keyword'] = 'Keyword';
 $string['kind'] = 'Kind';
 $string['label'] = 'Label';
+$string['language'] = 'Language';
+$string['location'] = 'Location';
 $string['learningresourcetype'] = 'Learning resource type';
 $string['licence'] = 'Licence';
 $string['lieux'] = 'Location';
@@ -118,6 +122,7 @@ $string['methodedelangues'] = 'Language learning method';
 $string['methodologie'] = 'Methodology';
 $string['minimumversion'] = 'Min version';
 $string['modalitepedagogique'] = 'Pedagogic method';
+$string['name'] = 'Name';
 $string['narrativetext'] = 'Storytelling';
 $string['norme'] = 'Standard';
 $string['objet3D'] = '3D Object';
@@ -177,6 +182,7 @@ $string['taxum'] = 'Taxum';
 $string['technical'] = 'Technical';
 $string['temoignagepedagogique'] = 'Pedagogical testimony';
 $string['texte'] = 'Text';
+$string['title'] = 'Title';
 $string['tutoriel'] = 'Tutorial';
 $string['type'] = 'Type';
 $string['typedediffusion'] = 'Diffusion type';
@@ -198,7 +204,7 @@ It concern the whole educative community :<br/>
 - the formation community (professional formation, continueing formation)<br/>
 - archivists and librarians<br/>
 - publishers, companies <br/><br/>
-<center>More informations here : <a href=\"http://www.lom-fr.fr\">Page of the lomfr profile</a></center>';
+<center>More informations here : <a href="https://www.reseau-canope.fr/scolomfr/se-documenter.html">Page of the lomfr profile</a></center>';
 
 //Aggregation level
 $string['1'] = '1';

@@ -1,4 +1,19 @@
 <?php
+// This file is part of the learningtimecheck plugin for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  *
  * @author  Valery Fremaux  valery@valeisti.fr
@@ -14,14 +29,12 @@ $string['sharedresource:addinstance'] = 'Peut ajouter une instance';
 $string['sharedresource:manageblocks'] = 'Gérer les blocs dans la librairie';
 
 $string['accesscontrol'] = 'Contrôle d\'accès';
-$string['allowmultipleaccessvalues'] = 'Autoriser une sélection multiple';
-$string['dmdescription'] = 'Description du modèle de métadonnées';
-$string['dmuse'] = 'Utilisation du modèle de métadonnées';
-$string['dmused'] = 'Modèle utilisé';
-$string['sqlrestriction'] = 'Entrez une clause SQL WHERE pour restreindre une classification : ';
 $string['add'] = 'Ajouter';
-$string['addclassification'] = 'Ajouter la classification';
+$string['addclassification'] = 'Ajouter une classification';
 $string['addclassificationtitle'] = 'Ajout de classification';
+$string['addclassificationvalue'] = 'Ajouter une valeur de classification';
+$string['updateclassificationvalue'] = 'Modifier une valeur de classification';
+$string['adddeploy'] = 'Déploiement d\'une archive d\'activité';
 $string['addfile'] = 'Ajouter aux fichiers du cours';
 $string['addfiletocourse'] = 'Ajouter aux fichiers du cours';
 $string['addheader'] = 'Ajouter une nouvelle ressource';
@@ -30,19 +43,33 @@ $string['addltiinstall'] = 'Installer un outil externe à partir de la librairie
 $string['addmetadataform'] = 'Ajouter un formulaire de métadonnées';
 $string['addremote'] = 'Ajouter une ressource distante';
 $string['addshared'] = 'Ajouter une ressource partagée';
-$string['adddeploy'] = 'Déploiement d\'une archive d\'activité';
 $string['addsharedresource'] = 'Ajouter une ressource mutualisée';
 $string['addsharedresourcetypefile'] = 'Ajouter une ressource mutualisée';
-$string['addtocourse'] = 'Ajouter la ressource au cours';
+$string['addtocourse'] = 'Ajouter au cours';
+$string['addtoken'] = 'Ajouter une valeur de classification';
 $string['all'] = 'Toutes les sources';
+$string['allowmultipleaccessvalues'] = 'Autoriser une sélection multiple';
 $string['appliedsqlrestrict'] = 'Clause appliquée : ';
 $string['articlequantity'] = 'Nombre d\'articles';
 $string['attributes'] = 'Liste des attributs renseignés dans le formulaire et enregistrés : ';
-$string['backadminpage'] = 'Retour à la page d\'administration';
+$string['backtoconfig'] = 'Retour à la page de configuration des classifications';
+$string['backadminpage'] = 'Retour à la page des réglages';
 $string['backclassifpage'] = 'Retour à la page de configuration des classifications';
 $string['backup_index'] = 'Sauvegarder le référentiel des ressources';
 $string['badcourseid'] = 'Identifiant de cours invalide';
-$string['schema_desc'] = 'Ce choix détermine le plugin utilisé pour le formulaire de métadonnées';
+$string['badsqlrestrict'] = 'La clause devrait être le contenu d\'une clause WHERE';
+$string['bycapability'] = 'Par capacité';
+$string['byprofilefield'] = 'Par champ de profil';
+$string['profilefieldname'] = 'Champ de profil';
+$string['matchedvalues'] = 'Valeur';
+$string['somewhere'] = 'quelque part (site, catégorie ou cours)';
+$string['profilefieldname_help'] = '
+   Le nom du champ doit être donné comme un couple préfixe:nom. Le préfix peut être "user" ou "profile_field", et adresse respectivement 
+   un champ standard du profil utilisateur, ou un champ personnaisé de profil.
+';
+$string['matchedvalues_help'] = '
+   You can enter an exact text value here, or a regexp value starting with ~ (ex : ~^someprefix).
+';
 $string['cancelform'] = 'Annuler';
 $string['cannotrestore'] = 'l\'entrée du catalogue de ressources est manquante - problème de restauration : {$a}';
 $string['choose'] = 'Choisir';
@@ -50,21 +77,26 @@ $string['chooseparameter'] = 'Choisir le paramètre';
 $string['chooseprovidertopushto'] = 'En mutualisant la ressource vers un fournisseur externe, vous:<ul><li>Déplacez la ressource</li><li>Supprimez la ressource stockée dans cette plate-forme</li><li>Permettez à d\'autres plates-formes connectées à ce fournisseur d\'utiliser cette ressource</li><li>Déplacerez la position de cette ressource dans toutes ses utilisations à l\'intérieur du réseau.</li></ul></p>';
 $string['classificationconfiguration'] = 'Configuration des classifications';
 $string['classificationconfiguration_desc'] = 'Cette <a href="{$a}">page supplémentaire</a> permet la configuration des classifications pour la norme choisie.';
+$string['classification'] = 'Classification&nbsp;:&ensp;';
+$string['classifications'] = 'Classification';
 $string['classificationname'] = 'Intitulé de la classification';
 $string['classificationsearch'] = 'Recherche sur les classifications';
 $string['classificationupdate'] = 'Modification de la classification';
+$string['classificationacls'] = 'Contrôle d\'accès';
+$string['clearthumbnail'] = 'Supprimer la vignette';
 $string['completeform'] = 'Entrez les données dans le formulaire ci-dessous';
-$string['configaccesscontrol'] = 'Activer le contrôle d\'accès par les champs de profil.';
 $string['config_backup_index'] = 'Lors de la sauvegarde d\'un cours, sauvegarder TOUTES les entrées de catalogue correspondantes (y compris les fichiers locaux) ?';
 $string['config_freeze_index'] = 'Lors de la sauvegarde d\'un cours, ne sauvegarder aucun fichier physique du référentiel commun ?';
 $string['config_restore_index'] = 'Lors d\'une restauration, restaurer TOUTES les entrées de catalogue (y compris les fichiers locaux) ?  Ceci ne remplacera pas les entrées et métadonnées existantes.';
+$string['configaccesscontrol'] = 'Activer le contrôle d\'accès par les champs de profil.';
 $string['configallowlocalfiles'] = 'Lors de la création d\'une nouvelle ressource de type fichier, permettre des liens vers les fichiers disponibles sur un système de fichiers local, par exemple sur un CD ou sur un disque dur. Cela peut être utile dans une classe où tous les étudiants ont accès a un volume réseau commun ou si des fichiers sur un CD sont nécessaires. Il est possible que l\'utilisation de cette fonctionnalité requière une modification des réglages de sécurité de votre navigateur.';
+$string['configallowmultipleaccessvalues'] = 'Plusieurs valeurs du champ de contrôle peuvent être choisies pour valider l\'accès';
 $string['configarticlequantity'] = 'Configure le nombre de nouvelles ressources publiées dans le flux';
 $string['configautofilerenamesettings'] = 'Mettre à jour automatiquement les références vers d\'autres fichiers et dossiers lors d\'un changement de nom dans la gestion des fichiers.';
 $string['configblockdeletingfilesettings'] = 'Empêcher la suppression de fichiers et dossiers référencés par des ressources. Veuillez remarquer que les images et autres fichiers référencés dans le code HTML ne sont pas protégés par ce réglage.';
 $string['configclassification'] = 'Configurer';
-$string['configallowmultipleaccessvalues'] = 'Plusieurs valeurs du champ de contrôle peuvent être choisies pour valider l\'accès';
 $string['configdefaulturl'] = 'Cette valeur est utilisée pour préremplir l\'URL lors de la création d\'une nouvelle ressource pointée par URL.';
+$string['configdefaultuserfield'] = 'Champ de profil utilisateur par défaut pour le contrôle d\'accès.';
 $string['configenablerssfeeds'] = 'Activer les flux RSS d\'exposition des ressources';
 $string['configfilterexternalpages'] = 'L\'activation de ce réglage permettra le filtrage des ressources externes (pages web, fichiers HTML déposés) par les filtres définis dans le site (comme les liens des glossaires). Lorsque ce réglage est actif, l\'affichage de vos pages sera ralenti de façon sensible. À utiliser avec précaution.';
 $string['configforeignurlsheme'] = 'Forme générale de l\'Url. Utiliser \'&lt;%%%%ID%%%%&gt;\' comme emplacement de l\'Identifiant Unique de Ressource';
@@ -83,8 +115,6 @@ $string['configpopupwidth'] = 'Largeur par défaut des fenêtres pop-up';
 $string['configsecretphrase'] = 'Cette phrase secrète est utilisée pour générer le code crypté pouvant être envoyé comme paramètre à certaines ressources. Ce code crypté est fabriqué en concaténant une valeur md5 de l\'adresse IP du current_user et de cette phrase secrète, par exemple : code = md5(IP.secretphrase). Ceci permet à la ressource recevant le paramètre de vérifier la connexion pour plus de sécurité.';
 $string['configwebsearch'] = 'URL affichée lors de l\'ajout d\'une page web ou d\'un lien, pour permettre à l\'utilisateur de rechercher l\'URL désirée.';
 $string['configwindowsettings'] = 'Détermine si, par défaut, la zone de configuration des fenêtres est affichée ou non, lors de l\'ajout de nouvelles ressources. Après la première utilisation, ce réglage devient individuel.';
-$string['configdefaultuserfield'] = 'Champ de profil utilisateur par défaut pour le contrôle d\'accès.';
-$string['contains'] = 'contient';
 $string['conversioncancelled'] = 'conversion annulée';
 $string['conversioncancelledtocourse'] = 'Conversion annulée. Vous allez être redirigés vers la gestion des activités';
 $string['conversioncancelledtolibrary'] = 'Conversion annulée. Vous allez être redirigés vers la librairie';
@@ -96,6 +126,7 @@ $string['correctsave'] = '<h2> Ressource enregistrée correctement </h2>';
 $string['d'] = 'j(s)';
 $string['datachanged'] = 'Modifications effectuées';
 $string['datesearch'] = 'Recherche en champ de type date';
+$string['datefmt'] = '%x';
 $string['day'] = '- Jour -';
 $string['days'] = 'Jour(s)';
 $string['defaultselect'] = 'Reinitialiser à la sélection par défaut';
@@ -104,21 +135,28 @@ $string['deleteconfirm'] = 'Etes-vous certain de vouloir supprimer cette classif
 $string['description'] = 'Description';
 $string['directlink'] = 'Lien direct vers ce fichier';
 $string['disabled'] = 'Désactivé';
-$string['display'] = 'Fenêtre';
 $string['disablednode'] = 'Le noeud {$a} est désactivé dans ce schéma d\'application';
 $string['discouragednode'] = 'Champ déconseillé (compatibilité)';
+$string['display'] = 'Fenêtre';
+$string['dmdescription'] = 'Description du modèle de métadonnées';
+$string['dmuse'] = 'Utilisation du modèle de métadonnées';
+$string['dmused'] = 'Modèle utilisé';
 $string['durationdescr'] = 'Description d\'une durée';
 $string['durationsearch'] = 'Recherche d\'une durée';
 $string['edit'] = 'Modifier';
+$string['editclassificationtable'] = 'Modifier les entrées de classification';
 $string['educational'] = 'Aspects éducatifs';
-$string['endswith'] = 'finit par';
+$string['emulatecommunity'] = 'Emuler la version communautaire';
+$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
+$string['enabled'] = 'Actif';
 $string['entry'] = 'Entrée';
-$string['equalto'] = 'est égal';
+$string['erroraclmisconf'] = 'Erreur : ID de taxonomie ou ID de ressource manquant.';
 $string['erroraddinstance'] = 'Erreur de création de l\'instance de resssource';
 $string['errorcmaddition'] = 'Le module de cours n\'a pas pu être ajouté';
 $string['errorcmsectionbinding'] = 'La section n\'a pu être enregistrée dans le module de cours';
 $string['errordeletesharedresource'] = 'Erreur d\'effacement de fichier d\'une ressource mutualisée ({$a})';
 $string['erroremptyurl'] = 'Tentative de créer une resosurce mutualisée sans URL d\'accès';
+$string['erroremptytokenvalue'] = 'Une valeur non vide de taxonomie est attendue';
 $string['errorinvalididentifier'] = 'L\'identifiant {$a} ne correspond à aucune ressource connue';
 $string['errormetadata'] = 'Erreurs trouvées pour les champs suivants (ces erreurs seront affichées en rouge dans le formulaire) : ';
 $string['errornometadataenabled'] = 'Aucun plugin de métadonnées n\'est activé. Les métadonnées ne peuvent être configurée.';
@@ -128,19 +166,19 @@ $string['errornotinstalled'] = 'Le module "ressource mutualisée" n\'est pas ins
 $string['errorsectionaddition'] = 'Impossible de créer une nouvelle section';
 $string['errorupdatecm'] = 'Erreur de mise à jour de la resosurce mutualisée (instance)';
 $string['existothermetadata'] = 'Une fiche de métadonnées pour cette ressource existe déjà dans une autre norme. <br/>La validation de ce formulaire pour une nouvelle fiche entraînera la suppression des anciennes métadonnées.';
-$string['export'] = 'Exporter vers un référentiel externe';
 $string['existsignorechanges'] = 'la donnée existe mais n\'est pas modifiée';
+$string['export'] = 'Exporter vers un référentiel externe';
 $string['failadd'] = 'Echec de la sauvegarde (ajout) de la ressource à la base de données';
 $string['failupdate'] = 'Echec de la sauvegarde (mise à jour) de la ressource à la base de données';
 $string['fieldname'] = 'Nom du champ';
 $string['file'] = 'Fichier ou lien';
 $string['fileadvice'] = '<p>La représentation physique de la ressource a été ajoutée dans les fichiers locaux du cours. Vous allez être redirigé vers cet espace des fichiers. Aucun module n\'a cependant été ajouté au cours.</p>';
 $string['filenotfound'] = 'Désolé, le fichier demandé ne peut être trouvé. Raison : {$a}';
+$string['filesharedresource'] = 'Ressource mutualisée (fichier ou url)';
 $string['fileuploadfailed'] = 'Echec du téléchargement';
 $string['fillcategory'] = 'Tous les champs de la catégorie sont vides. Remplissez-en au moins un.';
 $string['fillprevious'] = 'Le champ précédent est vide. Veuillez le remplir avant de rajouter un autre champ';
 $string['filtername'] = 'Nom du filtre';
-$string['filesharedresource'] = 'Ressource mutualisée (fichier ou url)';
 $string['forcedownload'] = 'Forcer le téléchargement';
 $string['frameifpossible'] = 'Cadre, si posible';
 $string['frameifpossible_help'] = 'Si activé, la ressource est présentée dans un cadre autonome';
@@ -149,6 +187,7 @@ $string['freeze_index'] = 'Geler le référentiel de ressources';
 $string['gometadataform'] = 'Enregistrer et documenter la ressource';
 $string['gometadataform2'] = 'Documenter la ressource';
 $string['h'] = 'h(s)';
+$string['hideclassification'] = 'Désactiver la classification';
 $string['hours'] = 'Heure(s)';
 $string['idname'] = 'Nom du champ id';
 $string['incorrectdate'] = 'Date rentrée non correcte <br/>';
@@ -161,16 +200,16 @@ $string['integerday'] = 'Le nombre de jours doit être un entier <br/>';
 $string['integerhour'] = 'Le nombre d\'heures doit être un entier <br/>';
 $string['integerminute'] = 'Le nombre de minutes doit être un entier <br/>';
 $string['keepnavigationvisible'] = 'Garder la navigation visible';
+$string['keyword'] = 'Mot-clef';
 $string['keywordpunct'] = 'Pas de ponctuation dans un mot-clé <br/>';
 $string['keywords'] = 'Mots-clefs';
-$string['keyword'] = 'Mot-clef';
 $string['labelname'] = 'Nom du champ label';
 $string['language'] = 'Langue';
-$string['license'] = 'License';
 $string['layout'] = 'Mise en forme';
+$string['license'] = 'License';
 $string['local'] = 'Ressources '.$SITE->shortname;
 $string['localizeadvice'] = '<p>La ressource a été relocalisée, cela veut dire qu\'une copie de la ressource originale est désormais disponible dans le cours, dissociée de la ressource mutualisée d\'origine. Si cette ressource a une représentation physique, le fichier qui la représente est stocké dans les fichiers locaux du cours.</p>';
-$string['localizetocourse'] = 'Localiser comme ressource du cours';
+$string['localizetocourse'] = 'Localiser dans le cours';
 $string['location'] = 'Emplacement de la ressource';
 $string['m'] = 'm(s)';
 $string['medatadaconfiguration_desc'] = 'Cette <a href="{$a}">page supplémentaire</a> permet la configuration des formulaires de metadonnées pour chaque rôle, et de choisir les widgets de recherche.';
@@ -188,13 +227,12 @@ $string['missingordering'] = 'Le nom entré pour l\'ordering n\'existe pas dans 
 $string['missingparent'] = 'Le nom entré pour le parent n\'existe pas dans la table de la base de données <br/>';
 $string['missingresource'] = 'choisir une URL ou un fichier';
 $string['missingtable'] = 'La table n\'existe pas dans la base de données <br/>';
-$string['updatebutton'] = 'Effectuer la modification';
 $string['modulename'] = 'Ressource mutualisée';
 $string['modulename_help'] = 'Une ressource partagée est naturellement partagée dans tout le site ou dans une catégorie de cours. Les ressources partagées sont renseignées par des métadonnées complètes qui permettent une recherche et une exploration des ressources. Les librairies peuvent être exposées au réseau de Moodle pour améliorer la mutualisation des ressources pédagogiques.';
 $string['modulenameplural'] = 'Ressources mutualisées';
 $string['month'] = '- Mois -';
-$string['mtdfieldname'] = 'Nom du champ';
 $string['mtdfieldid'] = 'Id du champ';
+$string['mtdfieldname'] = 'Nom du champ';
 $string['mtdvalue'] = 'Valeur';
 $string['name'] = 'Nom';
 $string['newdirectories'] = 'Montrer les liens directs';
@@ -207,18 +245,19 @@ $string['newstatus'] = 'Montrer la barre d\'état';
 $string['newtoolbar'] = 'Montrer la barre d\'outils';
 $string['newwidth'] = 'Largeur par défaut (en pixels)';
 $string['newwindow'] = 'Nouvelle fenêtre';
-$string['badsqlrestrict'] = 'La clause devrait être le contenu d\'une clause WHERE';
 $string['noaccessform'] = 'Votre catégorie d\'utilisateur n\'a pas accès à ce formulaire';
 $string['noclassification'] = 'Aucune classification repertoriée';
 $string['node'] = 'Branche';
 $string['nodescription'] = 'Il n\'y a pas de description disponible pour cette norme.';
 $string['nometadataplugin'] = 'L\'administrateur n\'a pas configuré le schéma de métadonnées applicable aux ressources.';
+$string['none'] = '(pas de restriction)';
 $string['noplugin'] = 'Pas de métadonnées';
 $string['noprovidertopushto'] = 'Votre plate-forme n\'est raccordée à aucun fournisseur de mutualisation.';
-$string['nosharedresources'] = 'Aucune ressource mutualisée publiée dans ce cours';
 $string['noresourcesfound'] = 'Aucune ressource dans le catalogue';
 $string['noresourcestoconvert'] = 'Aucune ressource à convertir';
+$string['nosharedresources'] = 'Aucune ressource mutualisée publiée dans ce cours';
 $string['notselectable'] = 'Non sélectionnables';
+$string['notaxonomies'] = 'Aucune taxonomie active disponible';
 $string['nowidget'] = 'Aucun widget de recherche défini par l\'admin';
 $string['numericsearch'] = 'Recherche en champ de type numeric';
 $string['onekeyword'] = 'Un seul mot-clé par champ (pas d\'espaces)<br/>';
@@ -231,7 +270,7 @@ $string['parameter'] = 'Paramètre';
 $string['parameters'] = 'Paramètres';
 $string['parentname'] = 'Nom du champ parent';
 $string['pluginadministration'] = 'Administration du plugins';
-$string['schema'] = 'Standard des métadonnées';
+$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Ressource mutualisée';
 $string['pluginscontrol'] = 'Contrôle des plugins de métadonnées';
 $string['pluginscontrolinfo'] = 'Ce paramètre permet de choisir le plugin utilisé pour les métadonnées lors de l\'indexation de la ressource.';
@@ -243,13 +282,13 @@ $string['remotesearchresults'] = 'Résultats de recherche ';
 $string['remotesubmission'] = 'Soumission de ressource';
 $string['repository'] = 'Entrepôt';
 $string['repositorytoresource'] = 'Lirairie vers cours';
+$string['resourceacls'] = 'Contrôle d\'accès sur la ressource: {$a}';
 $string['resource_consumer_description'] = 'En publiant ce service, vous permettez aux plates-formes "fournisseurs" de vérifier la consommation de leurs ressources sur cet hôte.<br/><br/>En vous abonnant à ce service, vous pouvez vérifier la consommation de vos ressources sur les sites "consommateur" distant.<br/><br/>';
 $string['resource_consumer_name'] = 'Service de consommation de ressources';
 $string['resource_provider_description'] = 'En publiant ce service, vous permettez aux "consommateurs" distants de venir utiliser les ressources partagées de votre catalogue.<br/><br/>En vous abonnant à ce service, vous fournissez votre catalogue local aux plates-formes "consommateur" distants.<br/><br/>';
 $string['resource_provider_name'] = 'Service de fourniture de ressources';
 $string['resourceaccessurlasforeign'] = 'URL d\'accès aux ressources';
 $string['resourcebuilt'] = 'Nouvelle ressource : {$a}';
-$string['urlbuilt'] = 'Nouvelle ressource : {$a}';
 $string['resourceconversion'] = 'Conversion de ressources';
 $string['resourcedefaulturl'] = 'URL par défaut';
 $string['resourceexists'] = 'Il existe déjà une ressource de même signature';
@@ -258,47 +297,58 @@ $string['resourcetorepository'] = 'Cours vers Librairie';
 $string['resourcetypefile'] = 'Identification de la ressource';
 $string['restore_index'] = 'Restaurer la librairie';
 $string['restrictclassification'] = 'Restreindre une classification';
+$string['restrictsql'] = 'Entrez une clause SQL WHERE pour restreindre une classification : ';
 $string['s'] = 's(s)';
-$string['savesqlrestrict'] = 'Enregistrer';
 $string['saveselection'] = 'Enregistrer la sélection';
+$string['savesqlrestrict'] = 'Enregistrer';
+$string['schema'] = 'Standard des métadonnées';
+$string['schema_desc'] = 'Ce choix détermine le plugin utilisé pour le formulaire de métadonnées';
 $string['searchfor'] = 'Chercher';
 $string['searchheader'] = 'Critères de recherche';
 $string['searchin'] = 'Rechercher dans';
 $string['searchinlibrary'] = 'Rechercher dans la librairie';
-$string['searchsharedresource'] = 'Chercher une ressource mutualisée';
 $string['searchorcreate'] = 'Chercher une ressource mutualisée ou enregistrer une nouvelle ressource';
+$string['searchsharedresource'] = 'Chercher une ressource mutualisée';
+$string['searchinsubs'] = 'Rechercher dans les sous catégories';
 $string['seconds'] = 'Seconde(s)';
 $string['selectable'] = 'Sélectionnables';
 $string['selectall'] = 'tout';
 $string['selectclassification'] = 'Sélection et configuration des classifications apparentes';
-$string['selecttaxon'] = 'Sélection des taxons';
 $string['selectnone'] = 'aucun';
 $string['selectsearch'] = 'Recherche en champ de type select';
+$string['selecttaxons'] = 'Choisir les taxons';
 $string['semantic_density'] = 'Densité sémantique';
 $string['serverurl'] = 'URL Serveur';
 $string['sharedresourcedetails'] = 'Détails sur les ressources mutualisées';
 $string['sharedresourceintro'] = 'Introduction';
 $string['sharedresourcenotice'] = 'Notice de la ressource : {$a}';
-$string['sharedresourceservice_name'] = 'Services réseau de mutualisation';
 $string['sharedresourceservice_description'] = 'Permet les échanges de servie entre fournisseurs et consommateurs. Les sites consommateurs doivent souscrire à ce service. Les sites fournisseurs doivent publier ce service.';
+$string['sharedresourceservice_name'] = 'Services réseau de mutualisation';
 $string['sharedresourcetypefile'] = 'Ressource mutualisée';
 $string['sharingcontext'] = 'Niveau de partage';
-$string['startswith'] = 'commence par';
+$string['showclassification'] = 'Activer la classification';
+$string['sqlmapping'] = 'Correspondances SQL';
+$string['sqloptions'] = 'Options SQL';
+$string['sqlrestriction'] = 'Restriction SQL';
 $string['step2'] = 'Passer à l\'étape 2';
 $string['successfulmodification'] = 'Modification effectuée';
 $string['system'] = 'Administrateur';
 $string['systemcontext'] = 'Partage global site';
 $string['tablename'] = 'Nom de la table';
-$string['taxonpath'] = 'TAXON';
-$string['technical'] = 'Technique';
 $string['taxonchoicetitle'] = 'Sélection des taxons apparents';
+$string['taxons'] = 'Taxons';
+$string['taxonpath'] = 'TAXON';
+$string['taxonselection'] = 'Sélection de taxons';
+$string['technical'] = 'Technique';
 $string['textsearch'] = 'Recherche en champ de type texte';
-$string['title'] = 'Titre';
 $string['thumbnail'] = 'Vignette (35k max)';
-$string['clearthumbnail'] = 'Supprimer la vignette';
+$string['title'] = 'Titre';
+$string['tokenvalue'] = 'Valeur de taxon';
 $string['typical_age_range'] = 'Tranche d\'âge typique';
 $string['typical_learning_time'] = 'Temps d\'apprentissage nominal';
 $string['unselectall'] = 'aucun';
+$string['updatebutton'] = 'Effectuer la modification';
+$string['updateclassification'] = 'Modifier la classification';
 $string['updatemetadata'] = 'Mettre à jour la configuration';
 $string['updatemetadataform'] = 'Mettre à jour la description';
 $string['updateresourcepageoff'] = 'Quitter mode édition';
@@ -306,16 +356,36 @@ $string['updateresourcepageon'] = 'Passer en mode édition';
 $string['updatesharedresource'] = 'Mettre à jour la ressource mutualisée';
 $string['updatesharedresourcetypefile'] = 'Mettre à jour la ressource mutualisée';
 $string['url'] = 'URL de la ressource mutualisée';
+$string['urlbuilt'] = 'Nouvelle ressource : {$a}';
 $string['used'] = 'Utilisée {$a} fois';
 $string['validateform'] = 'Valider';
 $string['variablename'] = 'Nom de la variable';
 $string['vcard'] = 'Description de la structure Vcard';
+$string['view_pageitem_page_embedded_content'] = 'Voir la ressource dans la page';
 $string['view_resource_info'] = 'Voir les infos sur la ressource';
 $string['vol'] = 'Vol';
 $string['widget'] = 'Widgets de recherche';
 $string['wrongform'] = '<h2> Le formulaire n\'a pas été renseigné correctement. Retour au formulaire dans 15sec</h2>';
 $string['year'] = '- Année -';
-$string['view_pageitem_page_embedded_content'] = 'Voir la ressource dans la page';
+$string['up'] = 'Remonter';
+$string['down'] = 'Descendre';
+$string['rss'] = 'RSS (en dévelopement)';
+$string['libraryengine'] = 'Moteur de librarie';
+$string['hidemetadatadesc'] = 'Cacher la description de la norme';
+
+$string['taxonpotentialselector'] = 'Taxons possibles';
+$string['selectedtaxonselector'] = 'Taxons actifs';
+$string['selectedtaxons'] = 'Taxons actifs';
+$string['pottaxonsmatching'] = 'Taxons potentiels correspondants';
+$string['pottaxons'] = 'Taxons potentiels';
+$string['selectedtaxons'] = 'Taxons sélectionnés';
+
+$string['backtoclassifications'] = 'Retour à la liste des taxonomies';
+$string['classificationvalues'] = 'Taxons';
+$string['token'] = 'Taxon';
+$string['addtoken'] = 'Ajouter un nouveau taxon';
+$string['goup'] = 'Remonter d\'un niveau';
+$string['notsupportedyet'] = 'Modifier des taxons dans une autre table que sharedresource_taxonomy n\'est pas encore supporté.';
 
 //************* Help Strings ******************/
 $string['description_help'] = "
@@ -376,8 +446,10 @@ $string['numericsearch_help'] = '
 Un champ de recherche de type numeric comporte deux champs distincts : un champ sous forme de liste déroulante contenant des opérateur de comparaison mathématiques et un champ texte. Choisissez un symbole de comparaison puis entrez un nombre dans le champ texte pour effectuer une recherche sur ce type de champ.
 ';
 
-$string['restrictclassification_help'] = '
-La restriction d\'une classification permet à l\'administrateur de sélectionner un sous-ensemble de valeurs comme source des taxons. Une connaisance du SQL et de la construction de la table source sont nécessaires.
+$string['sqlrestriction_help'] = '
+La restriction d\'une classification permet à l\'administrateur de sélectionner un sous-ensemble de valeurs comme source
+des taxons en ajoutant une clause SQL arbitraire à la requete SELECT dans la table source. Une connaisance du SQL et de la
+construction de la table source sont nécessaires.
 ';
 
 $string['searchsharedresource_help'] = "
@@ -432,9 +504,18 @@ Le contexte de partage de la ressource peut être le site entier ou seulement un
 Les ressources limitéées à des catégories ne peuvent être mutualisée via le réseau.
 ";
 
-/*
-global $CFG;
-require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
-sharedresource_load_plugin_lang($string, 'fr');
-sharedresource_load_pluginsmin_lang($string, 'fr');
-*/
+$string['userfieldvaluessingle'] = 'Single value access field';
+$string['userfieldvaluessingle_help'] = 'Si vous choisissez une valeur, alors seuls les utilisateurs ayant cette valeur dans leur profil pourront
+accéder à la ressource.';
+
+$string['userfieldvaluesmultiple'] = 'Multiple values access field';
+$string['userfieldvaluesmultiple_help'] = 'Choisissez une ou plusieurs valeurs ouvrant l\'accès à la ressource (OU). Si aucune valeur n\'est sélectionnée,
+alors la ressource est librement accessible.';
+
+$string['plugindist_desc'] = '
+<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
+correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
+sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
+<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
+<p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
+<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';

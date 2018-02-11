@@ -42,23 +42,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata_
  * and searching for Resources that will be attached to a course as a course module.
  *
  * Plugins are subclassed from this class, in a file called plugin.class.php, which must live in
- * a directory named after the plugin, and follow a strict naming convention.  For example, the
- * two standard plugins provided are, local, and solr.
- * local: provides a search interface using the local resource table sharedresource_entry.
- * solr: provides a simple search interface to an Apache-Solr directory populated with data
- * from the sharedresource_entry table.
+ * a directory named after the plugin, and follow a strict naming convention.
  *
  * local lives in the mod/sharedresource/plugins/local/plugin.class.php file with a class name of
  * sharedresource_plugin_local.
- *
- * All plugins are stacked, so you can create several specialised handlers, and have them run one 
- * after the other.  If you want the processing of stacked handlers to finish at any stage then 
- * return false from your handling method.
- *
- * Plugins can be deactivated by system config eg. to deactivate the solr plugin, use:
- * $CFG->sharedresource_plugin_hide_solr  = 1;
- * So it is sharedresource_plugin_hide_<plugin name>.
- *
  */
 abstract class plugin_base {
 
@@ -156,6 +143,10 @@ abstract class plugin_base {
         return $this->namespace;
     }
 
+    function getElementNamespace($nodeid) {
+        return $this->getElement($nodeid)->source;
+    }
+
     /**
     * Form handler for scalar value (regular case)
     */
@@ -165,7 +156,7 @@ abstract class plugin_base {
             throw new coding_exception('sharedresource_entry_definition_scalar() : Trying to use on core mtd plugin class. No namespace assigned. Please inform developers.');
         }
 
-        if ($element['type'] == 'select') {
+        if ($element['type'] == 'select' || $element['type'] == 'sortedselect') {
             $values = $element['values'];
             $options = array();
             foreach ($values as $value) {
@@ -251,10 +242,13 @@ abstract class plugin_base {
                 }
             }
         } else if ($this->METADATATREE[$nodeid]['type'] == 'list') {
-            // get exiting records in db
+
+            // Get existing records in db.
             list($mtdsql, $mtdparams) = $DB->get_in_or_equal($this->ALLSOURCES);
-            $elementinstances = $DB->get_records_select('sharedresource_metadata', " entryid = ? AND namespace {$mtdsql} and name LIKE '{$generic}:%' ", array_merge($this->entryid, $mtdparams));
-            // iterate on instances
+            $select = " entryid = ? AND namespace {$mtdsql} and name LIKE '{$generic}:%' ";
+            $elementinstances = $DB->get_records_select('sharedresource_metadata', $select, array_merge($this->entryid, $mtdparams));
+
+            // Iterate on instances.
             $metadataswitch = $mform->metadataswitch.$nodeid;
             if ($instances && $config->$metadataswitch) {
                 $iterators[] = 0;
@@ -278,122 +272,157 @@ abstract class plugin_base {
      * regarding to metadata
      */
     public function configure($config) {
+        global $OUTPUT;
         // Initiate.
-        $selallstr = get_string('selectall', 'sharedresource');
-        $selnonestr = get_string('selectnone', 'sharedresource');
 
-        echo '<legend><b>&nbsp;'.get_string('pluginname', 'sharedmetadata_'.$this->namespace).'</b></legend>';
-        echo '<br/><center>';
-        echo '<table border="1px" width="90%"><tr><td colspan="4">';
-        echo '</td></tr>';
-        echo '<tr><td width="30%"><b>&nbsp;'.get_string('fieldname', 'sharedresource').'</b></td>';
-        echo '<td class="mtdsetting"><b>'.get_string('system', 'sharedresource').'</b><br/><a href="javascript:selectall(\'system\', \''.$this->namespace.'\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'system\', \''.$this->namespace.'\')">'.$selnonestr.'</a></td>';
-        echo '<td class="mtdsetting"><b>'.get_string('indexer', 'sharedresource').'</b><br/><a href="javascript:selectall(\'indexer\', \''.$this->namespace.'\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'indexer\', \''.$this->namespace.'\')">'.$selnonestr.'</a></td>';
-        echo '<td class="mtdsetting"><b>'.get_string('author', 'sharedresource').'</b><br/><a href="javascript:selectall(\'author\', \''.$this->namespace.'\')">'.$selallstr.'</a>/<a href="javascript:selectnone(\'author\', \''.$this->namespace.'\')">'.$selnonestr.'</a></td>';
-        echo '<td class="mtdsetting"><b>'.get_string('widget', 'sharedresource').'</b></td></tr>';
-        echo '</table>';
-        foreach (array_keys($this->METADATATREE['0']['childs']) as $fieldid) {
-            echo '<table border="1px" width="90%"><tr><td colspan="4">';
-            $this->print_configure_rec($fieldid);
-            echo '</table>';
+        $template = new StdClass;
+
+        $template->selallstr = get_string('selectall', 'sharedresource');
+        $template->selnonestr = get_string('selectnone', 'sharedresource');
+
+        $template->pluginnamestr = get_string('pluginname', 'sharedmetadata_'.$this->namespace);
+        $template->fieldnamestr = get_string('fieldname', 'sharedresource');
+        $template->systemstr = get_string('system', 'sharedresource');
+        $template->indexerstr = get_string('indexer', 'sharedresource');
+        $template->authorstr = get_string('author', 'sharedresource');
+        $template->widgetstr = get_string('widget', 'sharedresource');
+        $template->namespace = $this->namespace;
+
+        $template->haschilds = false;
+        if (!empty($this->METADATATREE['0']['childs'])) {
+            foreach (array_keys($this->METADATATREE['0']['childs']) as $fieldid) {
+                $template->childs[] = $this->print_configure_rec($fieldid);
+            }
+            $template->haschilds = true;
         }
-        echo "</center>";
+
+        return $OUTPUT->render_from_template('mod_sharedresource/metadataform', $template);
     }
 
     /**
-     * widget classes are automagically loaded when gound in activewidgets
+     * widget classes are automagically loaded when bound in activewidgets
      * @see .§configure()
+     * @return an object representing a child.
      */
     public function print_configure_rec($fieldid, $parentnode = '0') {
+        global $OUTPUT;
         static $indent = 0;
+        static $activewidgets = null;
 
+        if (is_null($activewidgets)) {
+            $activewidgets = unserialize(get_config('sharedresource', 'activewidgets'));
+        }
+
+        $template = new StdClass;
         $config = get_config('sharedresource_'.$this->namespace);
-
-        if (!array_key_exists($fieldid, $this->METADATATREE)) {
-            print_error('metadatastructureerror', 'sharedresource');
-        }
         $field = $this->METADATATREE[$fieldid];
-        $csk = 'config_'.$this->namespace.'_system_'.$fieldid;
-        $sk = $this->namespace.'_system_'.$fieldid;
-        $systemchecked = (!empty($config->$csk)) ? 'checked="checked"' : '';
-        $cik = 'config_'.$this->namespace.'_indexer_'.$fieldid;
-        $ik = $this->namespace.'_indexer_'.$fieldid;
-        $indexerchecked = (!empty($config->$cik)) ? 'checked="checked"' : '';
-        $cak = 'config_'.$this->namespace.'_author_'.$fieldid;
-        $ak = $this->namespace.'_author_'.$fieldid;
-        $authorchecked = (!empty($config->$cak)) ? 'checked="checked"' : '';
-        $wk = $this->namespace.'_widget_'.$fieldid;
-        $wn = 'widget_'.$this->namespace.'_'.$fieldid;
 
-        $activewidgets = unserialize(get_config('sharedresource', 'activewidgets'));
-        $widgetchecked = '';
-        if (!empty($activewidgets)) {
-            foreach ($activewidgets as $key => $widget) {
-                if ($widget->id == $fieldid) {
-                    $widgetchecked = 'checked="checked"';
-                }
-            }
-        }
-
-        $indentsize = 15 * $indent;
-        $fieldname = strtolower(clean_string_key($field['name']));
-        $fieldname = get_string($fieldname, 'sharedmetadata_'.$this->namespace);
-
-        if ($field['type'] == 'category') {
-            echo '<tr';
-            if ($parentnode == '0') {
-                echo ' class="rootnode"';
-            }
-            echo '><td width="30%" align="left" style="padding-left:'.$indentsize.'px"><b>&nbsp;'.$fieldname.'</b></td>';
+        // Extract parent id.
+        if (preg_match('/(.*)_\d+$/', $fieldid, $matches)) {
+            $parentid = $matches[1];
         } else {
-            echo '<tr><td width="30%" align="left" style="padding-left:'.$indentsize.'px">&nbsp;'.$fieldname.'</td>';
+            $parentid = 0;
         }
-        if ($parentnode == '0') {
-            echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$systemchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" /></td>';
-            echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$indexerchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" /></td>';
-            echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$authorchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" /></td>';
-            if (isset($field['widget'])) {
-                echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wk.'" '.$widgetchecked.' value="1"/></td></tr>';
-            } else {
-                echo '<td class="mtdsetting"></td></tr>';
-            }
-        } else {
-            if ($systemchecked == 'checked="checked"') {
-                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$systemchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')"/></td>';
-            } else {
-                echo '<td class="mtdsetting"><input id="'.$sk.'" type="checkbox" name="'.$csk.'" '.$systemchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'system\', \''.$fieldid.'\')" DISABLED /></td>';
-            }
-            if ($indexerchecked == 'checked="checked"') {
-                echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$indexerchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" /></td>';
-            } else {
-                echo '<td class="mtdsetting"><input id="'.$ik.'" type="checkbox" name="'.$cik.'" '.$indexerchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'indexer\', \''.$fieldid.'\')" DISABLED/></td>';
-            }
-            if ($authorchecked == 'checked="checked"') {
-                echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$authorchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')"/></td>';
-            } else {
-                echo '<td class="mtdsetting"><input id="'.$ak.'" type="checkbox" name="'.$cak.'" '.$authorchecked.' value="1" onclick="toggle_childs(\''.$this->namespace.'\', \'author\', \''.$fieldid.'\')" DISABLED/></td>';
-            }
-            if (isset($field['widget'])) {
-                if ($widgetchecked == 'checked="checked"') {
-                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$widgetchecked.' value="1"/></td></tr>';
-                } else {
-                    echo '<td class="mtdsetting"><input id="'.$wk.'" type="checkbox" name="'.$wn.'" '.$widgetchecked.' value="1"/></td></tr>';
-                }
-            } else {
-                echo '<td class="mtdsetting"></td></tr>';
-            }
-        }
+
+        // First get for children.
         $i = 1;
+        $template->haschilds = false;
         if ($field['type'] == 'category') {
             if (!empty($field['childs'])) {
+                $template->haschilds = true;
                 foreach (array_keys($field['childs']) as $childfieldid) {
                     $indent++;
-                    $this->print_configure_rec($childfieldid, $parentnode.'_'.$i);
+                    $template->childs[] = $this->print_configure_rec($childfieldid, $parentnode.'_'.$i);
                     $indent--;
                     $i++;
                 }
             }
         }
+
+        $template->fieldid = $fieldid;
+
+        $template->isparentclass = '';
+        if ($template->haschilds) {
+            $template->isparentclass = 'mtd-parent';
+        }
+
+        if (!array_key_exists($fieldid, $this->METADATATREE)) {
+            print_error('metadatastructureerror', 'sharedresource');
+        }
+        $template->cskw = 'config_'.$this->namespace.'_system_write_'.$fieldid;
+        $template->skw = $this->namespace.'-system-write-'.$fieldid;
+        $template->cskr = 'config_'.$this->namespace.'_system_read_'.$fieldid;
+        $template->skr = $this->namespace.'-system-read-'.$fieldid;
+        $template->sparentclassw = $this->namespace.'-system-write-'.$parentid;
+        $template->sparentclassr = $this->namespace.'-system-read-'.$parentid;
+        $template->scheckedw = (!empty($config->{$template->cskw})) ? 'checked="checked"' : '';
+        $template->scheckedr = (!empty($config->{$template->cskr})) ? 'checked="checked"' : '';
+
+        $template->cikw = 'config_'.$this->namespace.'_indexer_write_'.$fieldid;
+        $template->ikw = $this->namespace.'-indexer-write-'.$fieldid;
+        $template->cikr = 'config_'.$this->namespace.'_indexer_read_'.$fieldid;
+        $template->ikr = $this->namespace.'-indexer-read-'.$fieldid;
+        $template->iparentclassw = $this->namespace.'-indexer-write-'.$parentid;
+        $template->iparentclassr = $this->namespace.'-indexer-read-'.$parentid;
+        $template->icheckedw = (!empty($config->{$template->cikw})) ? 'checked="checked"' : '';
+        $template->icheckedr = (!empty($config->{$template->cikr})) ? 'checked="checked"' : '';
+
+        $template->cakw = 'config_'.$this->namespace.'_author_write_'.$fieldid;
+        $template->akw = $this->namespace.'-author-write-'.$fieldid;
+        $template->cakr = 'config_'.$this->namespace.'_author_read_'.$fieldid;
+        $template->akr = $this->namespace.'-author-read-'.$fieldid;
+        $template->aparentclassw = $this->namespace.'-author-write-'.$parentid;
+        $template->aparentclassr = $this->namespace.'-author-read-'.$parentid;
+        $template->acheckedw = (!empty($config->{$template->cakw})) ? 'checked="checked"' : '';
+        $template->acheckedr = (!empty($config->{$template->cakr})) ? 'checked="checked"' : '';
+
+        $template->wk = $this->namespace.'-widget-'.$fieldid;
+        $template->wn = 'widget_'.$this->namespace.'_'.$fieldid;
+
+        $widgetchecked = '';
+        $template->wchecked = '';
+        if (!empty($activewidgets)) {
+            foreach ($activewidgets as $key => $widget) {
+                // We search in active widgets if this widget is selected.
+                if ($widget->id == $fieldid) {
+                    $template->wparentclass = $this->namespace.'-widget-'.$fieldid;
+                    $template->wchecked = 'checked="checked"';
+                    break;
+                }
+            }
+        }
+
+        $template->haswidget = isset($field['widget']);
+        $template->indentsize = 15 * $indent;
+        $fieldname = strtolower(clean_string_key($field['name']));
+        $template->fieldname = get_string($fieldname, 'sharedmetadata_'.$this->namespace);
+
+        $template->iscategory = ($field['type'] == 'category');
+
+        if ($field['type'] == 'category') {
+            if ($parentnode == '0') {
+                $template->nodeclass = ' class="rootnode"';
+            }
+        }
+
+        $template->isrootnode = ($parentnode == '0');
+
+        if ($parentnode != '0') {
+            if (empty($template->scheckedr)) {
+                $template->sdisabled = "disabled";
+            }
+            if (empty($template->icheckedr)) {
+                $template->idisabled = "disabled";
+            }
+            if (empty($template->acheckedr)) {
+                $template->adisabled = "disabled";
+            }
+            if (empty($template->acheckedr) && empty($template->icheckedr) && empty($template->scheckedr)) {
+                $template->wdisabled = "disabled";
+            }
+        }
+
+        return $template;
     }
 
     public function get_cardinality($element, &$fields, &$cardinality) {
@@ -530,9 +559,10 @@ abstract class plugin_base {
             }
         }
         // Append the results.
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
         if (!empty($resources)) {
             foreach ($resources as $resource) {
-                $result[] = new \mod_sharedresource\entry($resource);
+                $result[] = new $entryclass($resource);
             }
         }
     }
@@ -543,8 +573,10 @@ abstract class plugin_base {
     public function get_metadata(&$shrentry, $namespace = null) {
         global $SITE, $DB;
 
+        $schema = get_config('sharedresource', 'schema');
+
         if (empty($namespace)) {
-            ($namespace = $this->config->schema) || ($namespace = 'lom');
+            ($namespace = $schema) || ($namespace = 'lom');
         }
 
         // Cleanup some values.
@@ -644,15 +676,15 @@ abstract class plugin_base {
     /**
      * get the metadata node identity for taxonomy purpose
      */
-    abstract function getTaxonomyPurposeElement();
+    function getTaxonomyPurposeElement() {
+        return null;
+    }
 
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
     function getTaxonomyValueElement() {
-        $element = (object)$this->METADATATREE['9_2_2_1'];
-        $element->node = '9_2_2_1';
-        return $element;
+        return null;
     }
 
     /**
@@ -663,16 +695,35 @@ abstract class plugin_base {
 
     /**
      * get any element definition given its node number.
-     * @param string $id an element node index in the x[_y[_z...]] format
+     * @param string $id an element node index in the m[_n[_o...]] format
      * @return object an element description
      */
     public function getElement($id) {
         $element = new StdClass;
         $element->id = $id;
         $element->name = $this->METADATATREE[$id]['name'];
-        $element->type = $this->METADATATREE[$id]['widget'];
+        $element->type = $this->METADATATREE[$id]['type'];
+        $element->widget = @$this->METADATATREE[$id]['widget'];
         $element->source = $this->METADATATREE[$id]['source'];
+
+        // Get the islist option for this element.
+        if (strpos($id, '_') !== false) {
+            $parentid = preg_replace('/_[^_]+$/', '', $id);
+        } else {
+            $parentid = 0;
+        }
+
+        $element->islist = $this->METADATATREE[$parentid]['childs'][$id] == 'list';
         return $element;
+    }
+
+    /**
+     * get any element definition given its node number.
+     * @param string $id an element node index in the m[_n[_o...]] format
+     * @return object an element description
+     */
+    public function getElementChilds($id) {
+        return @$this->METADATATREE[$id]['childs'];
     }
 
     /**
@@ -719,8 +770,10 @@ abstract class plugin_base {
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = "$element:$item";
-        // Any element value will be stored witht the element original source.
-        $mtdrec->namespace = $this->METADATATREE[$element]['source'];
+        // Any element value will be stored with the element original source.
+        // $mtdrec->namespace = $this->METADATATREE[$element]['source'];
+        // Temporary solution : record with current metadata namespace.
+        $mtdrec->namespace = $this->namespace;
         $mtdrec->value = $value;
 
         if ($oldrec = $DB->get_record('sharedresource_metadata', array('entryid' => $this->entryid, 'element' => $mtdrec->element, 'namespace' => $mtdrec->namespace))){
@@ -744,13 +797,14 @@ abstract class plugin_base {
 
         $titleElement = $this->getTitleElement();
         $titlekey = '$titleElement:0_0';
-        $titleSource = $this->METADATATREE[$titleElement]['source'];
+        $titlesource = $this->METADATATREE[$titleElement]['source'];
+        $titlesource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titleSource, 'element' => $titlekey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titlesource, 'element' => $titlekey));
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $titlekey;
-        $mtdrec->namespace = $titleSource;
+        $mtdrec->namespace = $titlesource;
         $mtdrec->value = $title;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
@@ -767,16 +821,18 @@ abstract class plugin_base {
             throw new coding_exception('setDescription() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
-        $descriptionElement = $this->getDescriptionElement();
-        $desckey = '$descriptionElement:0_0';
-        $descriptionSource = $this->METADATATREE[$descriptionElement]['source'];
+        $descriptionelement = $this->getDescriptionElement();
+        $desckey = '$descriptionelement:0_0';
+        // At the moment we do not record elements under their own source.
+        // $descriptionsource = $this->METADATATREE[$descriptionelement]['source'];
+        $descriptionsource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $descriptionSource, 'element' => $desckey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $descriptionsource, 'element' => $desckey));
 
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $desckey;
-        $mtdrec->namespace = $descriptionSource;
+        $mtdrec->namespace = $descriptionsource;
         $mtdrec->value = $description;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
@@ -795,59 +851,179 @@ abstract class plugin_base {
 
         $locationElement = $this->getLocationElement();
         $locationkey = '$locationElement:0_0';
-        $locationSource = $this->METADATATREE[$locationElement]['source'];
+        // $locationsource = $this->METADATATREE[$locationElement]['source'];
+        $locationsource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $locationSource, 'element' => $locationkey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $locationsource, 'element' => $locationkey));
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $locationkey;
-        $mtdrec->namespace = $locationSource;
+        $mtdrec->namespace = $locationsource;
         $mtdrec->value = $location;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }
 
     /**
-     * gets a default value for a node if exists
+     * Gets a default value for a node or node instance if exists.
+     * Default value is returned if any of the default mask match the input.
+     *
+     * @param string $elementkey A full elementkey (m_n_o:x_y_z) or a node id (m_n_o)
      *
      */
-    public function defaultValue($field) {
-        return @$this->METADATATREE[$field]['default'];
+    public function defaultValue($elementkey) {
+
+        if (strpos($elementkey, ':') !== false) {
+            list($elementid, $instanceid) = explode(':', $elementkey);
+            if (!array_key_exists('default', $this->METADATATREE[$elementid])) {
+                return null;
+            }
+            if (!empty($this->METADATATREE[$elementid]['default'])) {
+
+                foreach ($this->METADATATREE[$elementid]['default'] as $mask => $defaultvalue) {
+                    if ($mask == '*') {
+                        // Global wildcard will serve in fine... after all thiner masks.
+                        continue;
+                    }
+
+                    $pregmask = str_replace('*', '[0-9]+', $mask); // A wildcard means any node number.
+                    if (preg_match('/^'.$pregmask.'$/', $instanceid)) {
+                        return $defaultvalue;
+                    }
+                }
+                return @$this->METADATATREE[$elementid]['default']['*'];
+            }
+        }
+
+        return @$this->METADATATREE[$elementkey]['default']['*'];
     }
-    
+
+    /**
+     *
+     */
+    public function delete_classifications($classifid, $namespace) {
+        $classifinfo = $this->getTaxumpath();
+
+        $sources = metadata::instances_by_node(null, $namespace, $classifinfo['source'], $classifid);
+
+        if ($sources) {
+            foreach ($matchingsources as $source) {
+
+                /*
+                 * Say a source instance id is f.e. 9_2_1:0_3_0,
+                 * the taxon id and entry would be : 9_2_2_1:0_3_0_0 and 9_2_2_2:0_3_0_0
+                 */
+                 // Find master node ID of the taxon from the source id, same with instance indexes : 
+            }
+        }
+    }
+
+    /**
+     * Finds all resources that are using this taxon in metadata and removes all
+     * the metadata record srelated to this binding.
+     */
+    public function unbind_taxon($classifid, $taxonid) {
+
+        $namespace = get_config('sharedresource', 'schema');
+
+        $classifinfo = $this->getTaxumpath();
+
+        // Search all sources that are using this classification as a source.
+        $matchingsources = metadata::instances_by_node(null, $namespace, $classifinfo['source'], $classifid);
+
+        if (!empty($matchingsources)) {
+            foreach ($matchingsources as $source) {
+
+                /*
+                 * Say a source instance id is f.e. 9_2_1:0_3_0,
+                 * the taxon id and entry would be : 9_2_2_1:0_3_0_0 and 9_2_2_2:0_3_0_0
+                 *
+                 * a single source entry may have several taxonids registered (multiple binding).
+                 * those are all childs of the taxon root element 9_2_2:0_3_0
+                 */
+                // Find master node ID of the taxon from the source id, same with instance indexes :
+                $instanceid = $source->get_instance_id(); // a x_y_z instance index path
+
+                // Get all subinstances of the taxon root. they are taxonids or taxonentries.
+                $elementid = $classifinfo['main'].':'.$instanceid;
+                $taxonsubparts = metadata::instances_by_element($source->entryid, $namespace, $elementid, null, true);
+
+                if (!empty($taxonsubparts)) {
+                    foreach ($taxonsubparts as $elm) {
+                        if ($elm->get_node_id() == $classifinfo['main'] && $elm->value == $taxonid) {
+                            // Destroy both elements id and entry of same instanceid :
+                            $params = array('entryid' => $source->entryid,
+                                            'namespace' => $namespace,
+                                            'element' => $elm->get_element_key());
+                            $DB->delete_records('sharedresource_metadata', $params);
+
+                            // Related taxon element has his node id and same instanceid.
+                            $taxonentryelm = metadata::to_instance($classifinfo['entry'], $elm->get_instance_id());
+                            $params = array('entryid' => $source->entryid,
+                                            'namespace' => $namespace,
+                                            'element' => $taxonentryelm->get_element_key());
+                            $DB->delete_records('sharedresource_metadata', $params);
+                        }
+                    }
+                }
+
+                /*
+                 * We do NOT delete the source element itself as there might be some taxon entries that still match.
+                 */
+            }
+        }
+    }
+
     /**
      * loads an externally defined default values for the schema
      * the provided default tree must provide additional default keys 
      * for relevant nodes : 
      * 
      * $METADATATREE_DEFAULT = array (
-     *    '1_1_1' => arrau('default' => 'MyCatalog');
+     *       'lomfr' => array(
+     *          '1_1_1' => array('default' => 'MyCatalog'
+     *       )
+     *    )
      * );
      *
      * would define a default value for the "Catalog field" of LOM based schemas
      */
-    public function load_defaults($METADATATREE_DEFAULTS) {
-        if (!empty($METADATATREE_DEFAULTS)) {
-            foreach ($METADATATREE_DEFAULTS as $key => $default) {
-                $this->METADATATREE[$key]['default'] = $default['default'];
+    public function load_defaults($mtddefaults) {
+
+        $config = get_config('sharedresource');
+
+        if (!empty($mtddefaults)) {
+            if (array_key_exists($config->schema, $mtddefaults)) {
+                foreach ($mtddefaults[$config->schema] as $key => $default) {
+                    if (strpos($key, ':') !== false) {
+                        list($elementid, $instanceid) = explode(':', $key);
+                        $this->METADATATREE[$elementid]['default'][$instanceid] = $default['default'];
+                    } else {
+                        $this->METADATATREE[$key]['default']['*'] = $default['default'];
+                    }
+                }
             }
         }
     }
 
     /**
-     * a static factory. Gives back a metadata object loded with default values
+     * a static factory. Gives back a metadata object loaded with default values
      *
      */
     public static function load_mtdstandard($schema) {
         global $CFG;
 
         if (file_exists($CFG->dirroot.'/mod/sharedresource/plugins/'.$schema.'/plugin.class.php')) {
+
             include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$schema.'/plugin.class.php');
+
             $mtdclass = '\\mod_sharedresource\\plugin_'.$schema;
             $mtdstandard = new $mtdclass();
+
             if (!empty($CFG->METADATATREE_DEFAULTS)) {
                 $mtdstandard->load_defaults($CFG->METADATATREE_DEFAULTS);
             }
+
             return $mtdstandard;
         }
 

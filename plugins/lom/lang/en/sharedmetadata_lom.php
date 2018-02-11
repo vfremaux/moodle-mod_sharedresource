@@ -1,4 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package sharedresource
+ * @subpackage sharedresource_lom
+ */
 
 $string['pluginname'] = 'Learning Object Model (LOM)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
@@ -19,6 +40,7 @@ $string['cost'] = 'Cost';
 $string['coverage'] = 'Coverage';
 $string['date'] = 'Date';
 $string['difficulty'] = 'Difficulty';
+$string['discipline'] = 'Discipline';
 $string['duration'] = 'Duration';
 $string['educational'] = 'Educational';
 $string['enduserrole'] = 'End User Role';
@@ -72,12 +94,18 @@ $string['typicalagerange'] = 'Typical age range';
 $string['typicallearningtime'] = 'Typical learning time';
 $string['version'] = 'Version';
 
-$string['standarddescription'] = 'Learning Object Metadata is a data model, usually encoded in XML, used to describe a learning object and similar digital resources used to support learning. The purpose of learning object metadata is to support the reusability of learning objects, to aid discoverability, and to facilitate their interoperability, usually in the context of online learning management systems (LMS). <br/><br/>
+$string['standarddescription'] = 'Learning Object Metadata is a data model, usually encoded in XML, used to describe a learning
+object and similar digital resources used to support learning. The purpose of learning object metadata is to support the reusability
+of learning objects, to aid discoverability, and to facilitate their interoperability, usually in the context of online learning
+management systems (LMS). <br/><br/>
 
-The IEEE 1484.12.1 - 2002 Standard for Learning Object Metadata is an internationally-recognised open standard (published by the Institute of Electrical and Electronics Engineers Standards Association, New York) for the description of "learning objects". Relevant attributes of learning objects to be described include: type of object; author; owner; terms of distribution; format; and pedagogical attributes, such as teaching or interaction style. <br/><br>
-<center>More informations here : <a href=\"http://en.wikipedia.org/wiki/Learning_Object_Metadata\">Wikipedia page of LOM</a></center>';
+The IEEE 1484.12.1 - 2002 Standard for Learning Object Metadata is an internationally-recognised open standard (published by the
+Institute of Electrical and Electronics Engineers Standards Association, New York) for the description of "learning objects".
+Relevant attributes of learning objects to be described include: type of object; author; owner; terms of distribution; format;
+and pedagogical attributes, such as teaching or interaction style. <br/><br>
+<center>More informations here : <a href="http://en.wikipedia.org/wiki/Learning_Object_Metadata">Wikipedia page of LOM</a></center>';
 
-//Aggregation level
+// Aggregation level.
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';

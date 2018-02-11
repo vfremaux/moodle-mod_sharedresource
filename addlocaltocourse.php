@@ -28,6 +28,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+use \mod_sharedresource\entry_factory;
+use \mod_sharedresource\entry;
+use \mod_sharedresource\entry_extended;
+
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -64,7 +68,12 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
 
-$shrentry = \mod_sharedresource\entry::read($identifier);
+$class = \mod_sharedresource\entry_factory::get_entry_class();
+if ($class == '\mod_sharedresource\entry_extended') {
+    $shrentry = entry_extended::read($identifier);
+} else {
+    $shrentry = entry::read($identifier);
+}
 
 if ($mode == 'file') {
     echo $OUTPUT->header();
@@ -243,7 +252,7 @@ if ($course->format == 'page') {
 // Finally if localization was asked, transform the sharedresource in real resource.
 if ($mode == 'local') {
     // We make a standard resource from the sharedresource.
-    $instance->id = sharedresource_convertfrom($instance);
+    $instance->id = sharedresource_convertfrom($instance, $report);
     $modulename = 'resource';
 } else {
     $modulename = 'sharedresource';
@@ -264,6 +273,17 @@ $event->trigger();
 
 // Finish.
 
-// TODO : Terminate procedure and return to course silently.
-redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
-die;
+if ($CFG->debug == DEBUG_DEVELOPER) {
+    echo $OUTPUT->header();
+    echo '<pre>';
+    echo $report;
+    echo '</pre>';
+
+    echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $course->id)));
+    echo $OUTPUT->footer();
+    die;
+} else {
+    // TODO : Terminate procedure and return to course silently.
+    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    die;
+}

@@ -70,7 +70,7 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
-        // Sharing context :
+        // Sharing context:
         // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories).
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
@@ -79,35 +79,8 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
 
         // Resource access :
-        if (!empty($config->accesscontrol) && !empty($config->defaultuserfield)) {
-            $userfieldoptions = $DB->get_records_menu('user_info_field', array(), 'id, name', 'id, name');
-            $userfieldoptions = array_merge(array('' => get_string('disabled', 'sharedresource')), $userfieldoptions);
-
-            $label = get_string('accessuserfield', 'sharedresource');
-            $mform->addElement('select', 'userfield', $label, $userfieldoptions);
-            $mform->setDefault('userfield', $config->defaultuserfield);
-            $mform->setType('userfield', PARAM_INT);
-
-            if (!empty($this->_customdata['rc'])) {
-                // Take the actual resoruce one.
-                $params = array('id' => $this->_customdata['rc']->userfield);
-            } else {
-                // Get options of the default field
-                $params = array('id' => $config->defaultuserfield);
-            }
-            $userfield = $DB->get_record('user_info_field', $params);
-            $options = array();
-            if ($userfield->datatype == 'menu') {
-                $optionsarr = explode("\n", $userfield->param1);
-                $options = array_combine($optionsarr, $optionsarr);
-            }
-            $label = get_string('accessuserfieldvalues', 'sharedresource');
-            $select = & $mform->addElement('select', 'userfieldvalues', $label, $options);
-            $mform->setType('userfieldvalues', PARAM_TEXT);
-
-            if ($config->allowmultipleaccessvalues) {
-                $select->setMultiple(true);
-            }
+        // TODO : try incorporate the accesscontrol form.
+        if (mod_sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
         }
 
         // Url or file.

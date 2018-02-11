@@ -73,6 +73,7 @@ $SHAREDRESOURCE_METADATA_ELEMENTS = array(array('name' => 'Contributor',
                                           array('name' => 'ClassificationTaxonPath',
                                                 'datatype' => 'vocab'));
 
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry_factory.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
@@ -122,24 +123,103 @@ function sharedresource_supports($feature) {
 }
 
 /**
+ * Implements the generic community/pro packaging switch.
+ * Tells wether a feature is supported or not. Gives back the
+ * implementation path where to fetch resources.
+ * @param string $feature a feature key to be tested.
+ */
+function mod_sharedresource_supports_feature($feature) {
+    global $CFG;
+    static $supports;
+
+    $config = get_config('sharedresource');
+
+    if (!isset($supports)) {
+        $supports = array(
+            'pro' => array(
+                'taxonomy' => array('accessctl','fineselect'),
+                'entry' => array('extended', 'accessctl', 'remote'),
+                'emulate' => 'community',
+            ),
+            'community' => array(
+            ),
+        );
+        $prefer = array();
+    }
+
+    // Check existance of the 'pro' dir in plugin.
+    if (is_dir(__DIR__.'/pro')) {
+        if ($feature == 'emulate/community') {
+            return 'pro';
+        }
+        if (empty($config->emulatecommunity)) {
+            $versionkey = 'pro';
+        } else {
+            $versionkey = 'community';
+        }
+    } else {
+        $versionkey = 'community';
+    }
+
+    list($feat, $subfeat) = explode('/', $feature);
+
+    if (!array_key_exists($feat, $supports[$versionkey])) {
+        return false;
+    }
+
+    if (!in_array($subfeat, $supports[$versionkey][$feat])) {
+        return false;
+    }
+
+    // Special condition for pdf dependencies.
+    if (($feature == 'format/pdf') && !is_dir($CFG->dirroot.'/local/vflibs')) {
+        return false;
+    }
+
+    if (array_key_exists($feat, $supports['community'])) {
+        if (in_array($subfeat, $supports['community'][$feat])) {
+            // If community exists, default path points community code.
+            if (isset($prefer[$feat][$subfeat])) {
+                // Configuration tells which location to prefer if explicit.
+                $versionkey = $prefer[$feat][$subfeat];
+            } else {
+                $versionkey = 'community';
+            }
+        }
+    }
+
+    return $versionkey;
+}
+
+/**
  * Returns an object representing this metadata schema
  * @param string $pluginname the schema name.
  * @return a plugin_base descendant concrete class instance.
  */
-function sharedresource_get_plugin($pluginname, $entryid = 0) {
+function sharedresource_get_plugin($namespace, $entryid = 0) {
     global $CFG;
+    static $mtdstandards = array();
 
-    $config = get_config('sharedreosurce');
+    $config = get_config('sharedresource');
 
-    if (!empty($config->{'plugin_hide_'.$pluginname})) {
+    if (!empty($config->{'plugin_hide_'.$namespace})) {
         // Discard hidden plugins in configuration.
         return null;
     }
 
-    if (file_exists($CFG->dirroot."/mod/sharedresource/plugins/{$pluginname}/plugin.class.php")) {
-        require_once($CFG->dirroot."/mod/sharedresource/plugins/{$pluginname}/plugin.class.php");
-        $mtdclass = '\\mod_sharedresource\\plugin_'.$pluginname;
-        return new $mtdclass($entryid);
+    if (array_key_exists($namespace, $mtdstandards)) {
+        return $mtdstandards[$namespace];
+    }
+
+    if (file_exists($CFG->dirroot."/mod/sharedresource/plugins/{$namespace}/plugin.class.php")) {
+        require_once($CFG->dirroot."/mod/sharedresource/plugins/{$namespace}/plugin.class.php");
+        $mtdclass = '\\mod_sharedresource\\plugin_'.$namespace;
+
+        $mtdstandards[$namespace] = new $mtdclass($entryid);
+        if (!empty($CFG->METADATATREE_DEFAULTS)) {
+            $mtdstandards[$namespace]->load_defaults($CFG->METADATATREE_DEFAULTS);
+        }
+        return $mtdstandards[$namespace];
     }
 
     return null;
@@ -652,44 +732,4 @@ function sharedresource_dbcleaner_add_keys() {
     );
 
     return $keys;
-}
-
-/**
- * Checks some simple access policy on ressource.
- * A user may have a user_info_field holding an acceptable value to match
- * in resource allowed value.
- * Access filter only affect search and browse capabilities. but not access to the sharedresource
- * if the user has access to a sharedresource publication in a course.
- * The resource may be multivaluated, depending on wether the access check is allowed to register
- * multiple values or not. this is set up in global settings.
- * 
- * @param object $resourceentry
- * @return boolean value (has access or not).
- */
-function sharedresource_has_access(&$resourceentry) {
-    global $DB, $USER;
-    static $userdatacache;
-
-    if (!isset($userdatacache)) {
-        $userdatacache = array();
-    }
-
-    $config = get_config('sharedresource');
-
-    if (empty($config->accesscontrol)) {
-        return true;
-    }
-
-    if (!empty($resourceentry->userfield)) {
-        if (empty($userdatacache[$USER->id])) {
-            $params = array('userid' => $USER->id, 'fiedlid' => $resourceentry->userfield);
-            $userdatacache[$USER->id] = $DB->get_field('user_info_data', 'data', $params);
-        }
-
-        $acceptvalues = explode(',', $resourceentry->userfieldvalues);
-        if (in_array($userdatacache[$USER->id], $acceptvalues)) {
-            return true;
-        }
-        return false;
-    }
 }

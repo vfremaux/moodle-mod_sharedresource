@@ -21,18 +21,18 @@
  * @category mod
  * @author  Piers Harding  piers@catalyst.net.nz
  * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @author  Wafa Adham  admin@adham.ps
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017100800;       // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2018012900;       // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2016052300;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_RC;
-$plugin->release = '3.1.0 (Build 2017100800)';
-$plugin->dependencies = array('local_sharedresources' => 2014032700);
+$plugin->release = '3.1.0 (Build 2018011801)';
+$plugin->dependencies = array('local_sharedresources' => 201801180);
 
 // Non Moodle attributes.
-$plugin->codeincrement = '3.1.0002';
+$plugin->codeincrement = '3.1.0008';
+$plugin->privacy = 'dualrelease';

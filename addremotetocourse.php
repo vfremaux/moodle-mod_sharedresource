@@ -82,7 +82,8 @@ if ($mode != 'file') {
     $keywords = required_param('keywords', PARAM_TEXT);
 
     // Make a sharedresource_entry.
-    $shrentry = new \mod_sharedresource\entry(false);
+    $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+    $shrentry = new $entryclass(false);
     $shrentry->title = $title;
     $shrentry->description = $desc;
     $shrentry->keywords = $keywords;

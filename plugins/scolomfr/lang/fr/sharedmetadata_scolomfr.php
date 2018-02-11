@@ -46,6 +46,7 @@ $string['cost'] = 'Coûts d\'usage';
 $string['creer'] = 'Créer';
 $string['cyberquete'] = 'Cyberquête';
 $string['demonstration'] = 'Démonstration';
+$string['description'] = 'Description';
 $string['diaporama'] = 'Diaporama';
 $string['difficulty'] = 'Difficulté';
 $string['doctorat'] = 'Doctorat';
@@ -90,8 +91,10 @@ $string['interactivitytype'] = 'Type d\'interactivité';
 $string['issuedate'] = 'Date';
 $string['jeudedonnees'] = 'Jeu de données';
 $string['jeueducatif'] = 'Jeu éducatif';
+$string['keyword'] = 'Mot clef';
 $string['kind'] = 'Relations';
 $string['label'] = 'Label';
+$string['language'] = 'Langue';
 $string['learningresourcetype'] = 'Type d\'objet pédagogique';
 $string['licence'] = 'Licence';
 $string['lieux'] = 'Lieux';
@@ -99,6 +102,7 @@ $string['lifecycle'] = 'Cycle de vie';
 $string['linux'] = 'Linux';
 $string['lire'] = 'Lire';
 $string['livrenumerique'] = 'Livre numérique';
+$string['location'] = 'Emplacement';
 $string['logiciel'] = 'Logiciel';
 $string['manueldenseignement'] = 'Manuel d\'enseignement';
 $string['maquetteprototype'] = 'Maquette/Prototype';
@@ -113,6 +117,7 @@ $string['methodologie'] = 'Méthodologie';
 $string['minimumversion'] = 'Version min.';
 $string['modalitepedagogique'] = 'Modalité pédagogique';
 $string['narrativetext'] = 'Narration';
+$string['name'] = 'Nom';
 $string['norme'] = 'Norme';
 $string['objet3D'] = 'Objet 3D';
 $string['objetphysique'] = 'Objet physique';
@@ -165,6 +170,7 @@ $string['taxonpath'] = 'Rubrique de classification';
 $string['taxum'] = 'Taxon';
 $string['temoignagepedagogique'] = 'Témoignage pédagogique';
 $string['texte'] = 'Texte';
+$string['title'] = 'Titre';
 $string['tutoriel'] = 'Tutoriel';
 $string['typedediffusion'] = 'Type de diffusion';
 $string['typegeneraldedocuments'] = 'Type général de documents';
@@ -184,7 +190,7 @@ Il concerne  l\'ensemble de la communauté éducative :<br/>
 - communauté de la formation (formation professionnelle, formation continue)<br/>
 - documentalistes et bibliothécaires<br/>
 - éditeurs, entreprises <br/><br/>
-<center>Pour plus d\'informations : <a href=\"http://www.lom-fr.fr\">Page du profil ScoLOM FR</a></center>';
+<center>Pour plus d\'informations : <a href="https://www.reseau-canope.fr/scolomfr/se-documenter.html">Page du profil ScoLOM FR</a></center>';
 
 //Aggregation level
 $string['1'] = '1';

@@ -28,14 +28,14 @@ Shared resources in the actual development state provides :
 
 - An activitty module (this module) allowing making new resources and share them with indexing information
 into the reosurce catalog. 
-- Full handling of LOM, LOMFR, ScoLOMFR, SupLOMFR (french variants and enrichements to LOM)
+- Full handling of Dublin Core, LOM, LOMFR, ScoLOMFR, SupLOMFR (french variants and enrichements to LOM)
 - Extensible metadata plugin architecture allows easily adding more support to other Dublin Core based formats
 - Metadata user profile definition, allowing to reduce the metadata impact on user experience to the "just necessary"
 - Configurable search engine, allowing choosing which attributes to use for searching
 - Localisation of the sharing level to a course category, making category scoped private repositories.
 - OAI-PMH exposition on sharedresource entries (site level)
-- External resource submission gate for remote feeding the library from external authoring tools
-- MNET architecture of services to publish and search remotely in a "provider/consumer" definition
+- External resource submission gate for remote feeding the library from external authoring tools (Pro version)
+- MNET architecture of services to publish and search remotely in a "provider/consumer" definition (Pro version)
 
 Installation
 ==============
@@ -72,4 +72,7 @@ URL rewriting. Provision is given for the resources internally generated be mapp
 The library front now behaves like a pseudo blocked layout and will reuse styles from blocks easily (@see Readme for
 local/sharedresources).
 
-  
+Changes for 2017012900
+========================
+
+Remove complex networking features from the community version and diverts to "pro" distribution.
