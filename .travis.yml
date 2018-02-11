@@ -25,6 +25,7 @@ before_install:
 
 install:
   - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-local_sharedresources
+  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-repository_sharedresources
   - moodle-plugin-ci install
 
 script:
