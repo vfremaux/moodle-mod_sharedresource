@@ -78,23 +78,14 @@ if (empty($tokentree)) {
     $table->size = array('50%', '40%', '10%');
     $table->align = array('left', 'left', 'right');
 
-    $attrs = array('src' => $OUTPUT->pix_url('t/up'), 'class' => 'mod-sharedresource-classif-ctl');
-    $upicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/up'), 'class' => 'mod-sharedresource-classif-ctl shadowed');
-    $upicondisabled = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/down'), 'class' => 'mod-sharedresource-classif-ctl');
-    $downicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/down'), 'class' => 'mod-sharedresource-classif-ctl shadowed');
-    $downicondisabled = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/edit'), 'class' => 'mod-sharedresource-classif-ctl');
-    $editicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/delete'), 'class' => 'mod-sharedresource-classif-ctl');
-    $deleteicon = html_writer::tag('img', '', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrsshdw = array('class' => 'mod-sharedresource-classif-ctl shadowed');
+    $upicon = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrs);
+    $upicondisabled = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrsshdw);
+    $downicon = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrs);
+    $downicondisabled = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrsshdw);
+    $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
+    $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
 
     foreach ($tokens as $token) {
         $data = array();

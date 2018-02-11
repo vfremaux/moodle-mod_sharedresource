@@ -88,14 +88,11 @@ if ($classification->tablename != 'sharedresource_taxonomy') {
     $table->size = array('70%', '30%');
     $table->align = array('left', 'right');
 
-    $attrs = array('src' => $OUTPUT->pix_url('t/edit'), 'class' => 'mod-sharedresource-tokens-ctl');
-    $editicon = html_writer::tag('img', '', $attrs);
-    $attrs = array('src' => $OUTPUT->pix_url('t/delete'), 'class' => 'mod-sharedresource-tokens-ctl');
-    $deleteicon = html_writer::tag('img', '', $attrs);
-    $attrs = array('src' => $OUTPUT->pix_url('t/up'), 'class' => 'mod-sharedresource-tokens-ctl');
-    $upicon = html_writer::tag('img', '', $attrs);
-    $attrs = array('src' => $OUTPUT->pix_url('t/down'), 'class' => 'mod-sharedresource-tokens-ctl');
-    $downicon = html_writer::tag('img', '', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
+    $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
+    $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
+    $upicon = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrs);
+    $downicon = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrs);
 
     foreach ($tokens as $tk) {
         $data = array();

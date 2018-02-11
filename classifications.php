@@ -89,23 +89,13 @@ if (empty($classifications)) {
     $table->size = array('30%', '10%', '20%', '20%', '10%', '10%');
     $table->align = array('left', 'center', 'left', 'center', 'center', 'right');
 
-    $attrs = array('src' => $OUTPUT->pix_url('t/show'), 'class' => 'mod-sharedresource-classif-ctl');
-    $hiddenicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/hide'), 'class' => 'mod-sharedresource-classif-ctl');
-    $visibleicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/edit'), 'class' => 'mod-sharedresource-classif-ctl');
-    $editicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('t/delete'), 'class' => 'mod-sharedresource-classif-ctl');
-    $deleteicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('i/filter'));
-    $filteredicon = html_writer::tag('img', '', $attrs);
-
-    $attrs = array('src' => $OUTPUT->pix_url('i/withsubcat'), 'class' => 'mod-sharedresource-classif-ctl');
-    $editvaluesicon = html_writer::tag('img', '', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $hiddenicon = $OUTPUT->pix_icon('t/show', '', 'core', $attrs);
+    $visibleicon = $OUTPUT->pix_icon('t/hide', '', 'core', $attrs);
+    $editicon = $OUTPUT->pix_icon('t/edit', get_string('update'), 'core', $attrs);
+    $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
+    $filteredicon = $OUTPUT->pix_icon('i/filter', '', 'core', $attrs);
+    $editvaluesicon = $OUTPUT->pix_icon('i/withsubcat', '', 'core', $attrs);
 
     foreach ($classifications as $classif) {
         $navigation = new \local_sharedresources\browser\navigation($classif);
@@ -156,13 +146,11 @@ if (empty($classifications)) {
             $params = array('classificationid' => $classif->id);
             $label = get_string('classificationacls', 'sharedresource');
             $aclurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
-            $attrs = array('alt' => $label, 'title' => $label);
+            $attrs = array('class' => 'mod-sharedresource-classif-ctl', 'alt' => $label);
             if (empty($classif->accessctl)) {
-                $attrs = array('src' => $OUTPUT->pix_url('i/permissions'), 'class' => 'mod-sharedresource-classif-ctl');
-                $aclicon = html_writer::tag('img', '', $attrs);
+                $aclicon = $OUTPUT->pix_icon('i/permissions', '', 'core', $attrs);
             } else {
-                $attrs = array('src' => $OUTPUT->pix_url('i/permissionlock'), 'class' => 'mod-sharedresource-classif-ctl');
-                $aclicon = html_writer::tag('img', '', $attrs);
+                $aclicon = $OUTPUT->pix_icon('i/permissionlock', '', 'core', $attrs);
             }
             $cmds .= '&nbsp;'.html_writer::link($aclurl, $aclicon, $attrs);
         }
