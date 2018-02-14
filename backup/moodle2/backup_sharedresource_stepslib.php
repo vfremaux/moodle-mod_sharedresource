@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -46,7 +45,7 @@ class backup_sharedresource_activity_structure_step extends backup_activity_stru
 
             $metadata = new backup_nested_element('metadata');
 
-            $datum = new backup_nested_element('datum', array('entry_id', 'element', 'namespace', 'value'));
+            $datum = new backup_nested_element('datum', array('entryid', 'element', 'namespace', 'value'));
 
             $metadata->add_child($datum);
             $entry->add_child($metadata);
@@ -58,7 +57,7 @@ class backup_sharedresource_activity_structure_step extends backup_activity_stru
         $sharedresource->set_source_table('sharedresource', array('id' => backup::VAR_ACTIVITYID));
         if (!empty($CFG->sharedresource_backup_index)) {
             $entry->set_source_table('sharedresource_entry', array('id' => backup::VAR_ACTIVITYID));
-            $datum->set_source_table('sharedresource_metadata', array('entry_id' => backup::VAR_PARENTID));
+            $datum->set_source_table('sharedresource_metadata', array('entryid' => backup::VAR_PARENTID));
         }
 
         // Define id annotations

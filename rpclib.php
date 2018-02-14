@@ -15,25 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-<<<<<<< HEAD
-* Implements MNET cross moodle strategy
-*
-*/
-require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
-require_once $CFG->dirroot.'/local/sharedresources/lib.php';
-require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
-require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
-require_once $CFG->libdir.'/filelib.php';
-=======
- * Implements MNET cross moodle strategy
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package mod_sharedresource
+ * @category mod
  *
+ * Implements MNET cross moodle strategy
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
->>>>>>> MOODLE_32_STABLE
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -55,11 +50,7 @@ if (!defined('RPC_SUCCESS')) {
  */
 function sharedresource_rpc_get_metadata($remoteuser, $remoteuserhost, $element, $namespace = 'lom') {
     global $CFG, $DB;
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> MOODLE_32_STABLE
     $response->status = RPC_SUCCESS;
     // Get local identity.
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
@@ -84,11 +75,7 @@ function sharedresource_rpc_get_metadata($remoteuser, $remoteuserhost, $element,
  */
 function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootcategory, $namespace = 'lom') {
     global $CFG, $DB;
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> MOODLE_32_STABLE
     $response->status = RPC_SUCCESS;
     // Get local identity.
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
@@ -108,24 +95,13 @@ function sharedresource_rpc_get_categories($remoteuser, $remoteuserhost, $rootca
  * retrieve the remote list of resources
  * @param string $remoteuser the username of the remote user
  * @param string $remoteuserhost the MNET hostname of the remote user
- * @param string $metadatafilters 
- * @param string $offset
- * @param int $page
+ * @param array $metadatafilters an array of key/value defines for filtering the metadata
+ * @param int $offset record offset of the result page
+ * @param int $page the page size
  */
 function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $DB;
 
-<<<<<<< HEAD
-	$systemcontext = context_system::instance();
-	
-	$response = new StdClass();
-    $response->status = RPC_SUCCESS;
-    // Get local identity
-
-    $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
-
-    if (!$localuser = $DB->get_record('user', array('username' => $remoteuser, 'mnethostid' => $userhost->id))){
-=======
     $systemcontext = context_system::instance();
 
     $response = new StdClass();
@@ -135,35 +111,25 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
 
     if (!$localuser = $DB->get_record('user', array('username' => $remoteuser, 'mnethostid' => $userhost->id))) {
->>>>>>> MOODLE_32_STABLE
         $response->status = RPC_FAILURE_USER;
         $response->error = "Calling user has no local account. Register remote user first";
         return json_encode($response);
     }
 
-<<<<<<< HEAD
-    if (empty($metadatafilters)){
-		debug_trace(" Getting without filters ");
-=======
     if (empty($metadatafilters)) {
         debug_trace(" Getting without filters ");
->>>>>>> MOODLE_32_STABLE
         $sql = "
-            SELECT 
+            SELECT
                 *
             FROM
                 {sharedresource_entry}
             WHERE
                 provider = 'local' AND
                 isvalid = 1 AND
-<<<<<<< HEAD
-                context = $systemcontext->id
-=======
                 context = ?
->>>>>>> MOODLE_32_STABLE
         ";
         $sqlcount = "
-            SELECT 
+            SELECT
                 COUNT(*)
             FROM
                 {sharedresource_entry}
@@ -177,42 +143,6 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
         $consumers = get_consumers();
         $entrycount = $DB->count_records_sql($sqlcount);
         $response->resources['maxobjects'] = $entrycount;
-<<<<<<< HEAD
-        debug_trace('without filters. >> '.$sql);
-        $entries = $DB->get_records_sql($sql, array(), $offset, $page);
-    } else {
-    	// we have filters
-		// debug_trace(" Getting by filters ");
-	    $mtdfiltersarr = (array)$metadatafilters;
-	    $sqlclauses = array();
-	    $mtdrecs = array();
-	    $hasfilter = false;
-	    foreach($mtdfiltersarr as $filterkey => $filtervalue){
-	    	if (!empty($filtervalue)){
-	    		// debug_trace(" Getting local entries with $filterkey as $filtervalue in lomfr ");
-		    	$entrysets = sharedresource_get_by_metadata($filterkey, 'lomfr', 'entries', $filtervalue);
-				if (!empty($mtdrecs)){
-			    	$mtdrecs = array_intersect($mtdrecs, $entrysets->items);
-			    } else {
-			    	$mtdrecs = $entrysets;
-			    }
-	    		$hasfilter = true;
-		    }
-	    }
-		// get sharedresources from that preselection	
-    	$entrylist = implode("','", array_values($mtdrecs));
-    	$clause = " se.id IN('{$entrylist}') ";
-	    $sql = "
-	        SELECT
-	            se.*
-	        FROM
-	            {sharedresource_entry} se
-	        WHERE
-		        $clause
-	    ";
-	    $response->resources['maxobjects'] = count($mtdrecs);
-	    $entries = $DB->get_records_sql($sql, array(), $offset, $page);
-=======
         $entries = $DB->get_records_sql($sql, array($systemcontext->id), $offset, $page);
     } else {
         // We have filters.
@@ -245,8 +175,8 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
         ";
         $response->resources['maxobjects'] = count($mtdrecs);
         $entries = $DB->get_records_sql($sql, array(), $offset, $page);
->>>>>>> MOODLE_32_STABLE
     }
+
     if ($entries) {
         foreach ($entries as $entry) {
             // Get usage indicators in the network.
@@ -270,34 +200,18 @@ function sharedresource_rpc_get_list($remoteuser, $remoteuserhost, $metadatafilt
                                                            'id' => empty($entry->id),
                                                            'uses' => $uses);
             // Get all metadata.
-            if ($metadata = $DB->get_records('sharedresource_metadata', array('entry_id' => $entry->id), 'element', 'element,namespace,value')) {
+            if ($metadata = $DB->get_records('sharedresource_metadata', array('entryid' => $entry->id), 'element', 'element,namespace,value')) {
                 $response->resources['entries'][$entry->identifier]['metadata'] = $metadata;
             }
         }
     } else {
         $response->resources['entries'] = array();
     }
+
     return json_encode($response);
 }
 
 /**
-<<<<<<< HEAD
-* Interface : provider
-* allows a consumer to push a sharedresource in the repository assuming
-* he is transferring authority on the resource
-* Note that only "physical file counterpart" resources are accepted to be defered.
-* @param string $remoteuser the username of the remote user
-* @param string $remoteuserhost the MNET hostname of the remote user
-* @param mixed $entry if is numeric, only renew metadata, if object or array, create or update a resource
-* @param mixed $metadata if not empty, add or update metadata for this record.
-*/
-function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metadata){
-    global $CFG, $DB;
-    
-    $response->status = RPC_SUCCESS;
-
-    // Get local identity
-=======
  * Interface : provider
  * allows a consumer to push a sharedresource in the repository assuming
  * he is transferring authority on the resource
@@ -313,7 +227,6 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
     $response->status = RPC_SUCCESS;
 
     // Get local identity.
->>>>>>> MOODLE_32_STABLE
 
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));
     if (!$localuser = $DB->get_record('user', array('username' => $remoteuser, 'mnethostid' => $userhost->id))) {
@@ -380,37 +293,6 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
             }
             $entry->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$entry->identifier;            
             $response->resourceurl = $entry->url;
-<<<<<<< HEAD
-	        $response->status = RPC_SUCCESS;
-	    } else {
-	        $response->status = RPC_FAILURE;
-	        $response->error = curl_errno($ch) .':'. curl_error($ch);
-	        if (!$testmode)
-				return json_encode($response);
-	    }
-		// Check for existance and save db record
-	    if(!$localentry = $DB->get_record('sharedresource_entry', array('identifier' => $entry->identifier))){
-	        $newid = $DB->insert_record('sharedresource_entry', $entry);
-	    } else {
-	        $entry->id = $localentry->id;
-	        $newid = $DB->update_record('sharedresource_entry', $entry);
-	    }
-	    $response->resourceid = $newid;
-	    // finally, fetch all consumers and ask them to change resource location
-	    if($consumers = get_consumers()){    
-	        foreach($consumers as $consumer){
-	            $client = new mnet_xmlrpc_client();
-	            $client->set_method('mod/sharedresource_rpc_move');
-	            $client->add_param($remoteuser);
-	            $client->add_param($remoteuserhost);
-	            $client->add_param($entry->identifier);
-	            $client->add_param(resources_repo());
-	            $client->add_param($entry->url, 'string');
-	        }
-	    }
-	}
-	
-=======
             $response->status = RPC_SUCCESS;
         } else {
             $response->status = RPC_FAILURE;
@@ -441,13 +323,12 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
         }
     }
     
->>>>>>> MOODLE_32_STABLE
     // finally store eventually provided metadata
     if (!empty($metadata)) {
-        $DB->delete_records('sharedresource_metadata', array('entry_id' => $newid)); 
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $newid)); 
         // For replacing old metadata by submitted one. May not have any records in case of a new resource.
         foreach ($metadata as $datum) {
-            $datum->entry_id = $newid;
+            $datum->entryid = $newid;
             $DB->insert_record('sharedresource_metadata', $datum);
         }
     }
@@ -455,35 +336,6 @@ function sharedresource_rpc_submit($remoteuser, $remoteuserhost, &$entry, $metad
 }
 
 /**
-<<<<<<< HEAD
-* Interface : consumer
-* @param string $remoteuser the username of the remote user
-* @param string $remoteuserhost the MNET hostname of the remote user
-* @param string $resourceID the resource Unique Identifier
-*/
-function sharedresource_rpc_check($remoteuser, $remoteuserhost, $resourceID){
-	global $DB;
-	
-    $response = '';    
-    $uses = $DB->count_records('sharedresource', array('identifier' => $resourceID));
-    return $uses;        
-}
-
-/**
-* Interface : consumer
-* allows a producer to claim for moving the physical location point of a 
-* resource he has obtained. When a producer gets a resource through a submission,
-* he will call all his consumers to aske them for moving the resource from old location 
-* @param string $remoteuser the username of the remote user
-* @param string $remoteuserhost the MNET hostname of the remote user
-* @param string $resourceID the resource Unique Identifier
-* @param string $provider the new provider
-* @param string $url the local url of the provider for the resource
-*/
-function sharedresource_rpc_move($remoteuser, $remoteuserhost, $resourceID, $provider, $url){
-	global $DB;
-	
-=======
  * Interface : consumer
  * @param string $remoteuser the username of the remote user
  * @param string $remoteuserhost the MNET hostname of the remote user
@@ -511,7 +363,6 @@ function sharedresource_rpc_check($remoteuser, $remoteuserhost, $resourceid) {
 function sharedresource_rpc_move($remoteuser, $remoteuserhost, $resourceid, $provider, $url) {
     global $DB;
 
->>>>>>> MOODLE_32_STABLE
     $response = '';
     // Get local identity.
     $userhost = $DB->get_record('mnet_host', array('wwwroot' => $remoteuserhost));

@@ -21,25 +21,22 @@
  * @package sharedresource
  * @subpackage sharedresource_scolomfr
  */
+namespace mod_sharedresource;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Extend the base resource class for file resources.
  */
-require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
 
-class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
+class plugin_scolomfr extends plugin_base {
 
-<<<<<<< HEAD
-	var $namespace;
-	
-	var $context;
-=======
     // we may setup a context in which we can decide where users 
     // can be assigned role regarding metadata
 
     protected $namespace;
->>>>>>> MOODLE_32_STABLE
 
     protected $context;
 
@@ -120,9 +117,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '1_10' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '1_1' => array(
@@ -134,9 +134,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '1_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '1_1_1' => array(
@@ -144,9 +147,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -155,9 +161,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -166,9 +175,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -177,9 +189,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -188,9 +203,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -199,9 +217,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -210,9 +231,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -222,9 +246,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('atomic', 'collection', 'networked', 'hierarchical', 'linear'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -234,9 +261,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('1', '2', '3', '4'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -246,9 +276,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe', 'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -266,9 +299,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
 'présentation multimédia', 'programme scolaire', 'rapport', 'référentiel de compétences',
 'schéma/graphique', 'site web', 'tableau (art)', 'web média'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -282,9 +318,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '2_3' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '2_1' => array(
@@ -292,9 +331,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -304,9 +346,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('draft', 'final', 'revised', 'unavailable'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -320,9 +365,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '2_3_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '2_3_1' => array(
@@ -331,9 +379,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert', 'contributor'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -342,9 +393,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'vcard',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -353,9 +407,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'date',
         ),
@@ -370,9 +427,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '3_4' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_1' => array(
@@ -384,9 +444,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '3_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_1_1' => array(
@@ -394,9 +457,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -405,9 +471,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -421,9 +490,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '3_2_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_2_1' => array(
@@ -432,9 +504,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('creator', 'validator'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -443,9 +518,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'vcard',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -454,9 +532,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'date',
         ),
@@ -465,9 +546,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '3_4' => array(
@@ -475,9 +559,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4' => array(
@@ -494,9 +581,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '4_7' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '4_1' => array(
@@ -504,9 +594,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -515,9 +608,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'numeric',
         ),
@@ -526,9 +622,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 1,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -540,9 +639,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '4_4_1' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4_4_1' => array(
@@ -556,9 +658,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '4_4_1_4' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '4_4_1_1' => array(
@@ -567,9 +672,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('operating system', 'browser'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -579,9 +687,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -590,9 +701,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -601,9 +715,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -612,9 +729,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -623,9 +743,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -634,9 +757,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'duration',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'duration',
         ),
@@ -663,9 +789,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '5_16' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         /*
@@ -675,9 +804,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('active', 'expositive', 'mixed'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ), */
@@ -687,9 +819,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('exercise', 'annales', 'simulation', 'questionnaire', 'diagram', 'cyberquete', 'étude de cas', 'jeu éducatif', 'figure', 'graph', 'index', 'slide', 'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture', 'manuel d\'enseignement', 'production d\'élève', 'démonstration', 'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique', 'méthode de langues', 'témoignage pédagogique'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -700,9 +835,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -712,9 +850,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ), */
@@ -724,9 +865,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('teacher', 'author', 'learner', 'manager'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -736,9 +880,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('school', 'higher education', 'training', 'other', 'enseignement primaire', 'enseignement secondaire', 'license', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -747,9 +894,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -759,9 +909,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('very easy', 'easy', 'medium', 'difficult', 'very difficult'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -770,9 +923,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'duration',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'duration',
         ),
@@ -781,9 +937,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -792,9 +951,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -804,9 +966,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'expérimenter', 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer', 's\'informer', 'se former', 'simuler', 's\'évaluer'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -815,9 +980,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lomfr',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -827,475 +995,13 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('en amphithéâtre', 'en atelier', 'en atelier de pédagogie personnalisée', 'en CDI', 'en salle de classe', 'en établissement', 'espace dédié à une pratique spécifique', 'en établissement socioculturel', 'en bibliothèque médiathèque', 'en mobilité', 'en musée',
 'hors établissement', 'en installation de loisirs', 'en installation sportive', 'en laboratoire', 'en laboratoire de langues', 'en milieu familial', 'en milieu professionnel', 'en entreprise', 'non précisé', 'en salle informatique', 'en salle multimédia'),
-<<<<<<< HEAD
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				),
-		'widget' => 'selectmultiple',
-	    ),
-	    '5_15' => array(
-		'name' => 'Modalité pédagogique', //rajouter fichier langue
-		'source' => 'scolomfr',
-		'type' => 'select',
-		'values' => array('à distance','en alternance', 'en autonomie', 'en classe entière', 'en collaboration','en milieu professionnel', 'en groupe', 'en groupe de compétences', 'en ligne', 'en tutorat', 'modalité mixte', 'séjour pédagogique', 'sortie pédagogique', 'travail de recherche', 'travail en interdisciplinarité', 'travaux dirigés', 'travaux pratiques'),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				),
-		'widget' => 'selectmultiple',
-	    ),
-	    '5_16' => array(
-		'name' => 'Outils', 
-		'source' => 'scolomfr',
-		'type' => 'select',
-		'values' => array(),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				),
-		'widget' => 'selectmultiple',
-	    ),
-	    '6' => array(
-		'name' => 'Rights',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '6_1' => 'single',
-				    '6_2' => 'single',
-				    '6_3' => 'single'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				)
-	    ),
-	    '6_1' => array(
-		'name' => 'Cost',
-		'source' => 'lom',
-		'type' => 'select',
-		'values' => array('yes', 'no'),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'select',
-	    ),
-	    '6_2' => array(
-		'name' => 'Copyright And Other Restrictions',
-		'source' => 'lom',
-		'type' => 'select',
-		'values' => array('yes', 'no'),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				),
-		'widget' => 'select',
-	    ),
-	    '6_3' => array(
-		'name' => 'Description',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '7' => array(
-		'name' => 'Relation',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '7_1' => 'single',
-				    '7_2' => 'single'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '7_1' => array(
-		'name' => 'Kind',
-		'source' => 'lom',
-		'type' => 'select',
-		'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon', 'isbasisfor', 'requires', 'isrequiredby', 'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis', 'a pour vignette', 'a pour logo', 'est aperçue de', 'a pour aperçu'),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'selectmultiple',
-	    ),
-	    '7_2' => array(
-		'name' => 'Resource',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '7_2_1' => 'list',
-				    '7_2_2' => 'list'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '7_2_1' => array(
-		'name' => 'Identifier',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '7_2_1_1' => 'single',
-				    '7_2_1_2' => 'single'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '7_2_1_1' => array(
-		'name' => 'Catalog',
-		'source' => 'lom',
-		'type' => 'codetext',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '7_2_1_2' => array(
-		'name' => 'Entry',
-		'source' => 'lom',
-		'type' => 'codetext',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '7_2_2' => array(
-		'name' => 'Description',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '8' => array(
-		'name' => 'Annotation',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '8_1' => 'single',
-				    '8_2' => 'single',
-				    '8_3' => 'single'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '8_1' => array(
-		'name' => 'Entity',
-		'source' => 'lom',
-		'type' => 'vcard',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '8_2' => array(
-		'name' => 'Date',
-		'source' => 'lom',
-		'type' => 'date',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'date',
-	    ),
-	    '8_3' => array(
-		'name' => 'Description',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'freetext',
-	    ),
-	    '9' => array(
-		'name' => 'Classification',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '9_1' => 'single',
-				    '9_2' => 'list',
-				    '9_3' => 'single',
-				    '9_4' => 'list'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				)
-	    ),
-	    '9_1' => array(
-		'name' => 'Purpose',
-		'source' => 'lom',
-		'type' => 'select',
-		'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency', 'enseignement', 'public cible détaillé', 'label', 'type de diffusion'),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '9_2' => array(
-		'name' => 'Taxon Path',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '9_2_1' => 'single',
-				    '9_2_2' => 'list'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-	    ),
-	    '9_2_1' => array(
-		'name' => 'Source',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '9_2_2' => array(
-		'name' => 'Taxum',
-		'source' => 'lom',
-		'type' => 'category',
-		'childs' => array(
-				    '9_2_2_1' => 'single',
-				    '9_2_2_2' => 'single'
-				),
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '9_2_2_1' => array(
-		'name' => 'Id',
-		'source' => 'lom',
-		'type' => 'codetext',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '9_2_2_2' => array(
-		'name' => 'Entry',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				),
-		'widget' => 'treeselect',
-	    ),
-	    '9_3' => array(
-		'name' => 'Description',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 0,
-					'author'  => 0,
-				)
-	    ),
-	    '9_4' => array(
-		'name' => 'Keyword',
-		'source' => 'lom',
-		'type' => 'text',
-		'checked' => array(
-					'system'  => 1,
-					'indexer' => 1,
-					'author'  => 0,
-				)
-	    )
-	);
-
-	function __construct($entryid = 0){
-		$this->entryid = $entryid;
-		$this->context = context_system::instance();
-		$this->pluginname = 'scolomfr';
-		$this->namespace = 'scolomfr';
-	}	
-
-    function sharedresource_entry_definition(&$mform){
-        global $CFG, $DB;
-        $iterators = array();
-    	foreach(array_keys($this->METADATATREE['0']['childs']) as $fieldid){
-			if (has_capability('mod/sharedresource:systemmetadata', $this->context)){
-	    		$metadataswitch = "config_lom_system_";
-			} elseif (has_capability('mod/sharedresource:indexermetadata', $this->context)){
-	    		$metadataswitch = "config_lom_indexer_";
-	    	} else {
-	    		$metadataswitch = "config_lom_author_";
-	    	}
-	    	$mform->metadataswitch = $metadataswitch;
-	    	$metadataswitch .= $fieldid;
-    		if (get_config('sharedresource_scolomfr', $metadataswitch)){
-    			$fieldtype = $this->METADATATREE['0']['childs'][$fieldid];
-    			$generic = $this->METADATATREE[$fieldid]['name'];
-    			if ($fieldtype == 'list'){
-    				if ($instances = $DB->get_records_select('sharedresource_metadata', " entry_id = ? AND namespace = 'lomfr' AND name LIKE '$generic:%' ", array($this->entryid))){
-    					$iterators[] = 0;
-    					foreach($instances as $instance){
-	    					$this->sharedresource_entry_definition_rec($mform, $fieldid, $iterators);
-	    					$iterator = array_pop($iterators);
-	    					$iterator++;
-	    					array_push($iterators, $iterator);
-    					}
-    				}
-		    	}
-	    		$this->sharedresource_entry_definition_rec($mform, $fieldid, $iterators);
-	    	}
-    	}
-    	return true;
-    }
-
-    function sharedresource_entry_definition_rec(&$mform, $nodeid, &$iterators){
-        global $CFG, $DB;
-
-		if (!array_key_exists($nodeid, $this->METADATATREE)){
-			print_error('metadatastructureerror', 'sharedresource');
-		} 
-
-		// special trap : Classification taxon,is made of two fields
-		if ($this->METADATATREE[$nodeid]['name'] == 'TaxonPath'){
-			$source = $this->METADATATREE['9_2_1'];
-			if (!empty($source['internalref']) && preg_match("/table=(.*?)&idfield=(.*?)&entryfield=(.*?)&treefield=(.*?)&treestart=(.*?)(?:&context\{(.*?)\})?/", $source['internalref'], $matches)){
-				$table = $matches[1];
-				$idfield = $matches[2];
-				$entryfield = $matches[3];
-				$treefield = $matches[4];
-				$treestart = $matches[5];
-				$context = @$matches[6];
-				// we can get Classification list from internal ref
-				sharedresource_entry_definition_taxum($mform, $table, $idfield, $entryfield, $treefield, $treestart, $context);
-			}
-			return;
-		}
-
-		// special traps : Classification 
-
-		// common case
-		$generic = $this->METADATATREE[$nodeid]['name'];
-		if ($this->METADATATREE[$nodeid]['type'] == 'category'){
-			$mform->addElement('header', $generic, get_string(str_replace(' ', '_', strtolower($generic)), 'sharedresource'));
-			$mform->addElement('hidden', $generic, 1);
-	    	foreach(array_keys($this->METADATATREE[$nodeid]['childs']) as $fieldid){
-	    		$metadataswitch = $mform->metadataswitch.$fieldid;
-    			if (get_config('sharedresource_scolomfr', $metadataswitch)){    			
-	    			$this->sharedresource_entry_definition_rec($mform, $fieldid);
-	    		}
-	    	}
-		} elseif ($this->METADATATREE[$nodeid]['type'] == 'list'){
-			// get exiting records in db
-			$elementinstances = $DB->get_records_select('sharedresource_metadata', " entry_id = ? AND namespace = 'lomfr' and name LIKE '{$generic}:%' ", array($this->entryid) );
-			// iterate on instances
-    		$metadataswitch = $mform->metadataswitch.$nodeid;
-			if ($instances && get_config('sharedresource_scolomfr', $metadataswitch)){
-				$iterators[] = 0;
-				foreach($instances as $instance){
-	    			$this->sharedresource_entry_definition_rec($mform, $fieldid, $iterators);
-	    			$iterztor = array_pop($iterators);
-	    			$iterator++;
-	    			array_push($iterators, $iterator);
-				}
-			}
-	    } else {
-    		$metadataswitch = $mform->metadataswitch.$nodeid;
-			if (get_config('sharedresource_scolomfr', $metadataswitch)){    			
-				$this->sharedresource_entry_definition_scalar($mform, $this->METADATATREE[$nodeid]);
-			}
-	    }
-    }
-
-	/**
-	* Form handler for scalar value (regular case)
-	*/
-    function sharedresource_entry_definition_scalar(&$mform, &$element){
-
-        if ($element['type'] == 'select'){
-            $values = $element['values'];
-            $options = array();
-            foreach($values as $value){
-            	$options[$value] = preg_replace('/\[\[|\]\]/', '', get_string(str_replace(' ', '_', strtolower($value)), 'sharedresource'));
-            }
-        	$mform->addElement($element['type'], $element['name'], get_string(clean_string_key($element['name']), 'sharedresource'), $options);
-        } else {
-            $mform->addElement($element['type'], $element['name'], get_string(clean_string_key($element['name']), 'sharedresource'));
-        }
-    }
-
-    /**
-    * Special form handler for Taxum
-    *
-    */
-    function sharedresource_entry_definition_taxum(&$mform, $table, $idfield, $entryfield, $context){
-		global $DB;
-    	if (empty($idfield) || empty($entryfield)){    	
-	    	$optionsrec = $DB->get_records_select($table, "$context", array(), "$idfield, $entryfield", "$idfield");
-	    	foreach($optionssrec as $id => $option){
-	    		$options[$id] = " $id $option";
-	    	}
-	    	$mform->addElement('select', 'lom_TaxonPath', get_string('TaxonPath', 'sharedresource'), $options); 
-	    }
-
-    }
-
-    /**
-    * prints a full configuration form allowing element by element selection against the user profile
-    * regarding to metadata
-    */
-    function configure($config){
-    	// initiate
-    	$selallstr = get_string('selectall', 'sharedresource');
-    	$selnonestr = get_string('selectnone', 'sharedresource');
-=======
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -1305,9 +1011,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('à distance','en alternance', 'en autonomie', 'en classe entière', 'en collaboration','en milieu professionnel', 'en groupe', 'en groupe de compétences', 'en ligne', 'en tutorat', 'modalité mixte', 'séjour pédagogique', 'sortie pédagogique', 'travail de recherche', 'travail en interdisciplinarité', 'travaux dirigés', 'travaux pratiques'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -1317,9 +1026,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array(),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -1333,9 +1045,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '6_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '6_1' => array(
@@ -1344,9 +1059,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -1356,9 +1074,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('yes', 'no'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'select',
         ),
@@ -1367,9 +1088,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1382,9 +1106,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '7_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_1' => array(
@@ -1393,9 +1120,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon', 'isbasisfor', 'requires', 'isrequiredby', 'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis', 'a pour vignette', 'a pour logo', 'est aperçue de', 'a pour aperçu'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'selectmultiple',
         ),
@@ -1408,9 +1138,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '7_2_2' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_2_1' => array(
@@ -1422,9 +1155,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '7_2_1_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '7_2_1_1' => array(
@@ -1432,9 +1168,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1443,9 +1182,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1454,9 +1196,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1470,9 +1215,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '8_3' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '8_1' => array(
@@ -1480,9 +1228,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'vcard',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1491,9 +1242,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'date',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'date',
         ),
@@ -1502,9 +1256,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
             'widget' => 'freetext',
         ),
@@ -1519,9 +1276,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '9_4' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_1' => array(
@@ -1530,9 +1290,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'type' => 'select',
             'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency', 'enseignement', 'public cible détaillé', 'label', 'type de diffusion'),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2' => array(
@@ -1544,9 +1307,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '9_2_2' => 'list'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
         ),
         '9_2_1' => array(
@@ -1554,9 +1320,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2_2' => array(
@@ -1568,9 +1337,12 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
                 '9_2_2_2' => 'single'
             ),
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_2_2_1' => array(
@@ -1578,30 +1350,39 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'codetext',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
-            )
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
+            ),
+            'widget' => 'treeselect',
         ),
         '9_2_2_2' => array(
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             ),
-            'widget' => 'treeselect',
         ),
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 0,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         ),
         '9_4' => array(
@@ -1609,17 +1390,19 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
             'source' => 'lom',
             'type' => 'text',
             'checked' => array(
-                'system'  => 1,
-                'indexer' => 1,
-                'author'  => 0,
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
             )
         )
     );
->>>>>>> MOODLE_32_STABLE
 
     public function __construct($entryid = 0) {
         $this->entryid = $entryid;
-        $this->context = context_system::instance();
+        $this->context = \context_system::instance();
         $this->pluginname = 'scolomfr';
         $this->namespace = 'scolomfr';
     }
@@ -1748,49 +1531,38 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    function after_save(&$sharedresource_entry) {
-        if (!empty($sharedresource_entry->keywords)) {
-            $this->setKeywords($sharedresource_entry->keywords);
+    function after_save(&$shrentry) {
+        if (!empty($shrentry->keywords)) {
+            $this->setKeywords($shrentry->keywords);
         }
 
-        if (!empty($sharedresource_entry->title)) {
-            $this->setTitle($sharedresource_entry->title);
+        if (!empty($shrentry->title)) {
+            $this->setTitle($shrentry->title);
         }
 
-        if (!empty($sharedresource_entry->description)) {
-            $this->setDescription($sharedresource_entry->description);
-        }
-
-        return true;
-    }
-
-    function after_update(&$sharedresource_entry) {
-        if (!empty($sharedresource_entry->keywords)) {
-            $this->setKeywords($sharedresource_entry->keywords);
-        }
-
-        if (!empty($sharedresource_entry->title)) {
-            $this->setTitle($sharedresource_entry->title);
-        }
-
-        if (!empty($sharedresource_entry->description)) {
-            $this->setDescription($sharedresource_entry->description);
+        if (!empty($shrentry->description)) {
+            $this->setDescription($shrentry->description);
         }
 
         return true;
     }
 
-<<<<<<< HEAD
-	/**
-	* purpose must expose the values, so a function to find the purpose field is usefull
-	*/
-    function getTaxonomyPurposeElement(){
-		$element = new StdClass;
-    	$element->name = '9_1';
-    	$element->type = 'list';
-    	$element->values = $this->METADATATREE['9_1']['values'];
-    	return $element;
-=======
+    function after_update(&$shrentry) {
+        if (!empty($shrentry->keywords)) {
+            $this->setKeywords($shrentry->keywords);
+        }
+
+        if (!empty($shrentry->title)) {
+            $this->setTitle($shrentry->title);
+        }
+
+        if (!empty($shrentry->description)) {
+            $this->setDescription($shrentry->description);
+        }
+
+        return true;
+    }
+
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
@@ -1807,7 +1579,6 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         $element = (object)$this->METADATATREE['1_4'];
         $element->node = '1_4';
         return $element;
->>>>>>> MOODLE_32_STABLE
     }
 
     /**
@@ -1855,30 +1626,26 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         return $element;
     }
 
-<<<<<<< HEAD
-	/**
-	* Allow to get the taxumpath category and other information about its children node.
-	*/
-	function getTaxumpath(){
-		$element = array();
-		$element['main'] = "Taxon Path";
-    	$element['source'] = "9_2_1";
-		$element['id'] = "9_2_2_1";
-		$element['entry'] = "9_2_2_2";
-    	return $element;
-=======
+    /**
+     * purpose must expose the values, so a function to find the purpose field is usefull
+     */
+    function getTaxonomyValueElement() {
+        $element = (object)$this->METADATATREE['9_2_2_1'];
+        $element->node = '9_2_2_1';
+        return $element;
+    }
+
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
     function getKeywordValues($metadata) {
         $keyelm = $this->getKeywordElement();
-        $keykeys = preg_grep("/{$keyelm->name}:.*/", array_keys($metadata));
+        $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
         foreach ($keykeys as $k) {
-            $kwlist[] = $metadata[$k]->value;
+            $kwlist[] = $metadata[$k]->get_value();
         }
         return implode(', ', $kwlist);
->>>>>>> MOODLE_32_STABLE
     }
 
     /**
@@ -1886,38 +1653,14 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
      */
     function getTaxumpath() {
         $element = array();
-        $element['main'] = "Taxon Path";
+        $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
+        $element['main'] = "9_2_2";
         $element['id'] = "9_2_2_1";
         $element['entry'] = "9_2_2_2";
         return $element;
     }
 
-<<<<<<< HEAD
-	/**
-	* records keywords in metadata flat table
-	*/
-    function setKeywords($keywords){
-    	global $DB;
-
-    	if (empty($this->entryid)) return; // do not affect metadata to unkown entries
-
-    	$DB->delete_records_select('sharedresource_metadata', " namespace = '{$this->namespace}' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
-    	if ($keywordsarr = explode(',', $keywords)){
-    		$i = 0;
-	    	foreach($keywordsarr as $aword){
-	    		$aword = trim($aword);
-	    		$mtdrec = new StdClass;
-	    		$mtdrec->entry_id = $this->entryid;
-	    		$mtdrec->element = '1_5:0_'.$i;
-	    		$mtdrec->namespace = $this->namespace;
-	    		$mtdrec->value = $aword;
-	    		$DB->insert_record('sharedresource_metadata', $mtdrec);
-	    		$i++;
-	    	}
-	    }
-    }
-=======
     /**
      * Allow to get the taxumpath category and other information about its children node.
      */
@@ -1933,17 +1676,17 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
         $keywordSource = $this->METADATATREE['1_5']['source'];
-        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entry_id = ? ", array($this->entryid));
+        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ", array($this->entryid));
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
                 $aword = trim($aword);
-                $mtdrec = new StdClass;
-                $mtdrec->entry_id = $this->entryid;
+                $mtdrec = new \StdClass;
+                $mtdrec->entryid = $this->entryid;
                 $mtdrec->element = '1_5:0_'.$i;
                 $mtdrec->namespace = $keywordSource;
                 $mtdrec->value = $aword;
@@ -1960,18 +1703,17 @@ class sharedresource_plugin_scolomfr extends sharedresource_plugin_base {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
         $titleSource = $this->METADATATREE['1_2']['source'];
-        $DB->delete_records('sharedresource_metadata', array('entry_id' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_2:0_0'));
-        $mtdrec = new StdClass;
-        $mtdrec->entry_id = $this->entryid;
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_2:0_0'));
+        $mtdrec = new \StdClass;
+        $mtdrec->entryid = $this->entryid;
         $mtdrec->element = '1_2:0_0';
         $mtdrec->namespace = $titleSource;
         $mtdrec->value = $title;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }
->>>>>>> MOODLE_32_STABLE
 }

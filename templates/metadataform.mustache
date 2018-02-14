@@ -1,0 +1,78 @@
+{{!
+    This file is part of The Sharedresource Module
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_sharedresource/metadataform
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- metadataform -->
+<legend>
+    <b>&nbsp;{{pluginname}}</b>
+</legend>
+
+<br/>
+
+<center>
+<table border="1px" width="90%">
+    <tr>
+        <td colspan="4">
+        </td>
+    </tr>
+
+    <tr>
+        <td width="30%">
+            <b>&nbsp;{{fieldnamestr}}</b>
+        </td>
+
+        <td class="mtdsetting">
+            <b>{{systemstr}}</b><br/>
+            <a href="#" id="id-system-mtd-selectall-write">{{selallstr}}</a> -
+            <a href="#" id="id-system-mtd-selectnone-write">{{selnonestr}}</a> / 
+            <a href="#" id="id-system-mtd-selectall-read">{{selallstr}}</a> -
+            <a href="#" id="id-system-mtd-selectnone-read">{{selnonestr}}</a>
+        </td>
+
+        <td class="mtdsetting">
+            <b>{{indexerstr}}</b><br/>
+            <a href="#" id="id-indexer-mtd-selectall-write">{{selallstr}}</a> -
+            <a href="#" id="id-indexer-mtd-selectnone-write">{{selnonestr}}</a> / 
+            <a href="#" id="id-indexer-mtd-selectall-read">{{selallstr}}</a> -
+            <a href="#" id="id-indexer-mtd-selectnone-read">{{selnonestr}}</a>
+        </td>
+
+        <td class="mtdsetting">
+            <b>{{authorstr}}</b><br/>
+            <a href="#" id="id-author-mtd-selectall-write">{{selallstr}}</a> -
+            <a href="#" id="id-author-mtd-selectnone-write">{{selnonestr}}</a> /
+            <a href="#" id="id-author-mtd-selectall-read">{{selallstr}}</a> -
+            <a href="#" id="id-author-mtd-selectnone-read">{{selnonestr}}</a>
+        </td>
+
+        <td class="mtdsetting">
+            <b>{{widgetstr}}</b>
+        </td>
+    </tr>
+
+{{#haschilds}}
+    {{> mod_sharedresource/metadataformchilds}}
+</table>
+{{/haschilds}}
+
+</center>
+<!-- /metadataform -->

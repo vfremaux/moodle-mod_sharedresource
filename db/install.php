@@ -17,10 +17,10 @@
 /**
  * Post-install code for the customlabel module.
  *
- * @package    mod
- * @subpackage sharedresource
- * @copyright  2013 Valery Fremaux
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_sharedresource
+ * @category    mod
+ * @copyright   2013 Valery Fremaux
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -36,11 +36,7 @@ function xmldb_sharedresource_install() {
     $result = true;
 
     $dbman = $DB->get_manager();
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> MOODLE_32_STABLE
     if (preg_match('/^postgres/', $CFG->dbtype)) {
         $idx_field = 'description';
     } else {
@@ -55,13 +51,8 @@ function xmldb_sharedresource_install() {
     if (!$dbman->index_exists($table, $index)) {
         $dbman->add_index($table, $index, false, false);
     }
-<<<<<<< HEAD
-    
-    // installs default config for discipline classification     
-=======
 
-    // installs default config for discipline classification
->>>>>>> MOODLE_32_STABLE
+    // Installs default config for discipline classification.
     $classifarray = array('sharedresource_taxonomy' => array(
             'id' => 'id',
             'classname' => get_string('discipline', 'sharedresource'),
@@ -73,11 +64,7 @@ function xmldb_sharedresource_install() {
             'restriction' => "purpose = 'discipline'",
             'taxonselect' => array()
        ) );
-    set_config('classifarray', serialize($classifarray));
-<<<<<<< HEAD
-    
-=======
+    set_config('classifarray', serialize($classifarray), 'sharedresource');
 
->>>>>>> MOODLE_32_STABLE
     return $result;
 }

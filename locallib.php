@@ -14,39 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once($CFG->dirroot.'/mod/sharedresource/sharedresource_entry.class.php');
+/**
+ *
+ * @author  Piers Harding  piers@catalyst.net.nz
+ * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
+ * @package    mod_sharedresource
+ * @category   mod
+ */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 /**
-<<<<<<< HEAD
-* loads the usable version of plugins local strings
-* @param array $string
-* @param string $lang
-* @todo can be optimized for not loading unused strings elsewhere than in admin
-* setting forms. 
-*/
-function sharedresource_load_plugin_lang(&$string, $lang = ''){
-    global $CFG;
-    
-    if ($lang == ''){
-        $lang = current_language();
-    }
-    
-	if ($plugin = @$CFG->pluginchoice){
-		$pluginlangfile = $CFG->dirroot.'/mod/sharedresource/plugins/'.$plugin.'/lang/'.$lang.'/'.$plugin.'.php';
-	    include($pluginlangfile);
-	}
-}
-
-/**
-* loads the minimal strings for plugin management
-* @param array $string
-* @param string $lang
-* @todo can be optimized for not loading unused strings elsewhere than in admin
-* setting forms. 
-*/
-function sharedresource_load_pluginsmin_lang(&$string, $lang = ''){
-=======
  * loads the usable version of plugins local strings
  * @param array $string
  * @param string $lang
@@ -54,14 +34,15 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = ''){
  * setting forms. 
  */
 function sharedresource_load_plugin_lang(&$string, $lang = '') {
->>>>>>> MOODLE_32_STABLE
     global $CFG;
-    
+
+    $config = get_config('sharedresource');
+
     if ($lang == '') {
         $lang = current_language();
     }
 
-    if ($plugin = @$CFG->pluginchoice) {
+    if ($plugin = @$config->schema) {
         $pluginlangfile = $CFG->dirroot.'/mod/sharedresource/plugins/'.$plugin.'/lang/'.$lang.'/'.$plugin.'.php';
         include($pluginlangfile);
     }
@@ -82,11 +63,7 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
     }
     
     $plugins = get_list_of_plugins('mod/sharedresource/plugins');
-<<<<<<< HEAD
-    foreach($plugins as $plugin){
-=======
     foreach ($plugins as $plugin) {
->>>>>>> MOODLE_32_STABLE
         $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}-min.php";
         include($pluginlang);
     }
@@ -98,7 +75,9 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
  * @param string $type a resource module type, can be 'resource' or 'url'
  */
 function sharedresource_convertto(&$resource, $type = 'resource') {
-    global $CFG, $DB;
+    global $DB;
+
+    $report = '';
 
     if (!$module = $DB->get_record('modules', array('name' => 'sharedresource'))) {
         print_error('errornotinstalled', 'sharedresource');
@@ -106,52 +85,52 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
 
     // First get the course module the resource is attached to.
     $cm = get_coursemodule_from_instance($type, $resource->id, $resource->course);
+
     $context = context_module::instance($cm->id);
 
     // Make a sharedresource_entry record.
-    $sharedresource_entry = new sharedresource_entry(false); 
-    $sharedresource_entry->title = $resource->name;
-    $sharedresource_entry->description = $resource->intro;
-    $sharedresource_entry->keywords = '';
-    $sharedresource_entry->type = 'file';
-    if ($type == 'url'){
+    $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+    $shrentry = new $entryclass(null, null);
+    $shrentry->title = $resource->name;
+    $shrentry->description = $resource->intro;
+    $shrentry->keywords = '';
+    $shrentry->type = 'file';
+    $shrentry->file = 0; // Not knwown yet.
+    if ($type == 'url') {
         // External url case do not process file records.
-        $sharedresource_entry->url = $resource->externalurl;
-        $sharedresource_entry->file = '';
-        $sharedresource_entry->identifier = sha1($sharedresource_entry->url);
+        $shrentry->url = $resource->externalurl;
+        $shrentry->file = '';
+        $shrentry->identifier = sha1($shrentry->url);
     } else {
         // We convert filestorage reference just moving the records.
         $fs = get_file_storage();
         $resourcefiles = $fs->get_area_files($context->id, 'mod_resource', 'content', 0);
-        $stored_file = array_pop($resourcefiles);
-        $newfile = new StdClass;
-        $newfile->component = 'mod_sharedresource';
-        $newfile->filearea = 'sharedresource';
-        $newfile->itemid = 0;
-        $newfile->context = context_system::instance();
-        $finalrec = $fs->create_file_from_storedfile($newfile, $stored_file);
-        $sharedresource_entry->identifier = $stored_file->get_contenthash();
-        $sharedresource_entry->url = $CFG->wwwroot.'/mod/sharedresource/view.php?identifier='.$stored_file->get_contenthash();
-        $sharedresource_entry->file = $finalrec->get_id();
+        $storedfile = array_pop($resourcefiles);
+
+        $shrentry->identifier = $storedfile->get_contenthash();
+        $shrentry->url = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $storedfile->get_contenthash()));
     }
 
-    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $sharedresource_entry->identifier))) {
-        $sharedresource_entry->add_instance();
+    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $shrentry->identifier))) {
+        $shrentry->add_instance();
     }
 
     // Move the physical resource (made by add_instance() above).
 
     // Give some trace.
-    if (debugging()){
-        echo "Constructed resource entry : {$sharedresource_entry->identifier}<br/>";
+    if (debugging()) {
+        $report .= "Constructed resource entry : {$shrentry->identifier}\n";
     }
-    
-    // Attach the new resource to a course module.
-    $sharedresource = new sharedresource_base(0, $sharedresource_entry->identifier);
+
+    // Attach the new resource to a sharedresource instance.
+    if (debugging()) {
+        $report .= "Making new instance of sharedresource...\n";
+    }
+    $sharedresource = new \mod_sharedresource\base(0, $shrentry->identifier);
     $sharedresource->options = $resource->displayoptions;
     $sharedresource->popup = ''; // No more used.
     $sharedresource->type = 'file'; // Useless but backcompatibility tracking.
-    $sharedresource->identifier = $sharedresource_entry->identifier;
+    $sharedresource->identifier = $shrentry->identifier;
     $sharedresource->cm = $cm->id;
     $sharedresource->name = $resource->name;
     $sharedresource->course = $resource->course;
@@ -162,65 +141,73 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
         print_error('erroraddinstance', 'sharedresource');
     }
 
-    // Rebind the existing module to the new sharedresource.
-    $cm->instance = $sharedresourceid;
-    $cm->module = $module->id;
+    // If type is 'file', move the physical storage, now we have an instance id.
+    if ($type != 'url') {
+        $newfile = new StdClass;
+        $newfile->contextid = context_system::instance()->id;
+        $newfile->component = 'mod_sharedresource';
+        $newfile->filearea = 'sharedresource';
+        $newfile->itemid = $shrentry->id;
+        // Cleanup eventual older file in the way.
+        $fs->delete_area_files($newfile->contextid, $newfile->component, $newfile->filearea, $newfile->itemid);
 
-    // Remoteid was obtained by $sharedresource_entry->add_instance() plugin hooking !!
-    $cm->idnumber = @$sharedresource_entry->remoteid;
-    if (!$DB->update_record('course_modules', $cm)) {
-        print_error('errorupdatecm', 'sharedresource');
+        $finalrec = $fs->create_file_from_storedfile($newfile, $storedfile);
+        $DB->set_field('sharedresource_entry', 'file', $finalrec->get_id(), array('id' => $shrentry->id));
     }
 
+    // Rebind the existing module to the new sharedresource.
+    if (debugging()) {
+        $report .= "Bind course module $cm->id to new instance\n";
+    }
+    $cm->instance = $sharedresourceid;
+    $cm->module = $module->id;
+    // Remoteid was obtained by $shrentry->add_instance() plugin hooking !!
+    $cm->idnumber = @$shrentry->remoteid;
+    $DB->update_record('course_modules', $cm);
+
     // Discard the old resource or url.
+    if (debugging()) {
+        $report .= "Delete old instance $resource->id of $type ";
+    }
     $DB->delete_records($type, array('id' => $resource->id));
 
     // Cleanup logs and anything that points to this resource...
+
+    return $report;
 }
 
 /**
-<<<<<<< HEAD
-* back converts a given sharedresource into independant local resource.
-* This WILL NOT remove the shared resource from repository
-* @param reference $sharedresource
-*/
-function sharedresource_convertfrom(&$sharedresource){
-    global $CFG, $DB;
-
-    if (!$sharedmodule = $DB->get_record('modules', array('name' => 'sharedresource'))){
-=======
  * back converts a given sharedresource into independant local resource.
  * This WILL NOT remove the shared resource from repository
  * @param reference $sharedresource
  */
-function sharedresource_convertfrom(&$sharedresource) {
-    global $CFG, $DB;
+function sharedresource_convertfrom(&$sharedresource, &$report) {
+    global $DB;
+
+    $report = '';
 
     if (!$sharedmodule = $DB->get_record('modules', array('name' => 'sharedresource'))) {
->>>>>>> MOODLE_32_STABLE
         print_error('errornotinstalled', 'sharedresource');
     }
     $module = $DB->get_record('modules', array('name' => 'resource'));
 
-<<<<<<< HEAD
-    /// get the sharedresource_entry that is represented by the sharedresource
-    if (!$sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))){
-=======
     // Get the sharedresource_entry that is represented by the sharedresource.
-    if (!$sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
->>>>>>> MOODLE_32_STABLE
+    if (!$shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
         print_error('errorinvalididentifier', 'sharedresource');
     }
 
     // Calculate physical locations and reference.
-    if (!empty($sharedresource_entry->file)) {
+    if (!empty($shrentry->file)) {
         $module = $DB->get_record('modules', array('name' => 'resource'));
 
         // Complete and add a resource record.
+        if (debugging()) {
+            $report .= "Building a resource instance... \n";
+        }
         $instance = new StdClass;
         $instance->course = $sharedresource->course;
         $instance->name = $sharedresource->name;
-        $instance->intro = $sharedresource->description;
+        $instance->intro = $sharedresource->intro;
         $instance->introformat = FORMAT_MOODLE;
         $instance->tobemigrated = 0;
         $instance->legacyfiles = 0;
@@ -230,104 +217,45 @@ function sharedresource_convertfrom(&$sharedresource) {
         $instance->filterfiles = 0;
         $instance->revision = 1;
         $instance->timemodified = time();
-    
-<<<<<<< HEAD
-    /// calculate physical locations and reference
-    if (!empty($sharedresource_entry->file)){
-    	$module = $DB->get_record('modules', array('name' => 'resource'));
 
-	    /// complete and add a resource record
-	    $instance = new StdClass;
-		$instance->course = $sharedresource->course;
-		$instance->name = $sharedresource->name;
-		$instance->intro = $sharedresource->description;
-		$instance->introformat = FORMAT_MOODLE;
-		$instance->tobemigrated = 0;
-		$instance->legacyfiles = 0;
-		$instance->legacyfileslast = null;
-		$instance->display = 0;
-		$instance->displayoptions = $sharedresource->options;
-		$instance->filterfiles = 0;
-		$instance->revision = 1;
-		$instance->timemodified = time();
-	
-	    $instance->id = $DB->insert_record('resource', $instance);
-	    // mtrace(get_string('resourcebuilt', 'sharedresource', $sharedresource_entry->identifier.' > '.$sharedresource->name));
-    } else {
-    	$module = $DB->get_record('modules', array('name' => 'url'));
-		$instance = new StdClass;
-		$instance->name = $sharedresource->name;
-		$instance->intro = $sharedresource->description;
-		$instance->introformat = FORMAT_MOODLE;
-		$instance->externalurl = $sharedresource_entry->url;
-		$instance->display = 0;
-		$instance->displayoptions = $sharedresource->options;
-		$instance->parameters = '';
-		$instance->timemodified = time();
-	
-	    $instance->id = $DB->insert_record('resource', $instance);
-	    // mtrace(get_string('urlbuilt', 'sharedresource', $sharedresource_entry->identifier.' > '.$sharedresource_entry->url));
-    }
-    
-    /// rebind the existing course_module if exists to the new resource
-    if ($cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id, $sharedresource->course)){
-	    $cm->instance = $instance->id;
-	    $cm->module = $module->id;
-	    if (!$DB->update_record('course_modules', $cm)){
-	        print_error('errorupdatecm', 'sharedresource');
-	    }
-	}
-    
-    print_string('localizeadvice', 'sharedresource');
-
-    /// duplicate files record and relocate filearea to resource
-  	if (!empty($sharedresource_entry->file)){
-  		$fs = get_file_storage();
-  		$filerecord = $fs->get_file_by_id($sharedresource_entry->file);
-		$newfile = new StdClass;
-  		$newfile->component = 'mod_resource';
-  		$newfile->filearea = 'content';
-  		$newfile->itemid = 0;
-  		$newfile->contextid = context_module::instance($cm->id)->id;
-		$newfile = $fs->create_file_from_storedfile($newfile, $filerecord);
-    }
-    
-    /// discard the old sharedresource module
-    $DB->delete_records('sharedresource', array('id' => $sharedresource->id));
-    
-    /// Original resource stays in repository.
-=======
         $instance->id = $DB->insert_record('resource', $instance);
     } else {
+        if (debugging()) {
+            $report .= "Building an url instance... \n";
+        }
         $module = $DB->get_record('modules', array('name' => 'url'));
         $instance = new StdClass();
         $instance->name = $sharedresource->name;
-        $instance->intro = $sharedresource->description;
+        $instance->intro = $sharedresource->intro;
         $instance->introformat = FORMAT_MOODLE;
-        $instance->externalurl = $sharedresource_entry->url;
+        $instance->externalurl = $shrentry->url;
         $instance->display = 0;
         $instance->displayoptions = $sharedresource->options;
         $instance->parameters = '';
         $instance->timemodified = time();
-    
-        $instance->id = $DB->insert_record('resource', $instance);
+
+        $instance->id = $DB->insert_record('url', $instance);
     }
-    
+
     // Rebind the existing course_module if exists to the new resource.
+    if (debugging()) {
+        $report .= "Binding cm to new instance... \n";
+    }
     if ($cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id, $sharedresource->course)) {
         $cm->instance = $instance->id;
         $cm->module = $module->id;
-        if (!$DB->update_record('course_modules', $cm)) {
-            print_error('errorupdatecm', 'sharedresource');
-        }
+        $DB->update_record('course_modules', $cm);
     }
 
-    print_string('localizeadvice', 'sharedresource');
+    $report .= get_string('localizeadvice', 'sharedresource');
 
     // Duplicate files record and relocate filearea to resource.
-    if (!empty($sharedresource_entry->file)) {
+    if (debugging()) {
+        $report .= "Duplicates file storage... \n";
+    }
+    if (!empty($shrentry->file)) {
         $fs = get_file_storage();
-        $filerecord = $fs->get_file_by_id($sharedresource_entry->file);
+        $filerecord = $fs->get_file_by_id($shrentry->file);
         $newfile = new StdClass;
         $newfile->component = 'mod_resource';
         $newfile->filearea = 'content';
@@ -337,18 +265,15 @@ function sharedresource_convertfrom(&$sharedresource) {
     }
 
     // Discard the old sharedresource module.
+    if (debugging()) {
+        $report .= "Remove old sharedresource module... \n";
+    }
     $DB->delete_records('sharedresource', array('id' => $sharedresource->id));
 
     // Original resource stays in repository.
->>>>>>> MOODLE_32_STABLE
     // TODO : examinate librarian case that may want to fully discard the resource.
     // TODO : cleanup logs and anything that points to this sharedresource...
 
-<<<<<<< HEAD
-    // TODO : cleanup logs and anything that points to this sharedresource...
-
-=======
->>>>>>> MOODLE_32_STABLE
     return $instance->id;
 }
 
@@ -358,41 +283,64 @@ function sharedresource_convertfrom(&$sharedresource) {
  * @param string $element the metadata element
  * @param string $namespace which plugin is searched for metadata
  * @param string $what if values, get a list of metadata values, else gives a list of sharedresources entries
- * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens
+ * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens or operator:value
  */
 function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'values', $using = '') {
     global $CFG, $DB;
 
     // Get metadata plugin and restype element name.
-    include_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$namespace.'/plugin.class.php';
-    $classname = "sharedresource_plugin_{$namespace}";
-    $mtdplugin = new $classname();
-    $mtdelement = $mtdplugin->getElement($element);
+    $mtdstandard = sharedresource_get_plugin($namespace);
+    $mtdelement = $mtdstandard->getElement($element);
+
     if ($what == 'values') {
         $clause = ($mtdelement->type == 'list') ? " element LIKE '{$mtdelement->id}:' " : " element = '{$mtdelement->id}' ";
         $fields = 'value';
     } else {
-        if ($mtdelement->type == 'freetext') {
+        if ($mtdelement->widget == 'treeselect') {
+            $clause = '';
+            if (preg_match('/^subs:/', $using)) {
+                // Search all subpaths of the required category.
+                $using = str_replace('subs:', '', $using);
+                $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+            } else {
+                // Search an exact taxon idpath match.
+                $clause = "  value = '{$using}' AND element LIKE '{$mtdelement->id}:%' ";
+            }
+
+        } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
+
             $textoption = substr($using, 0, strpos($using, ':'));
             $using = substr($using, strpos($using,':') + 1);
+            $listsearchoptions = array();
+
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
+
                 foreach ($listtokens as $token) {
+
                     switch ($textoption) {
-                        case 'includes':
-                        $listsearchoptions[] = ' value LIKE \'%'.trim($token).'%\' ';
-                        break;
-                        case 'equals':
-                        $listsearchoptions[] = ' value = \''.trim($token).'\' ';
-                        break;
-                        case 'beginswith':
-                        $listsearchoptions[] = ' value LIKE \''.trim($token).'%\' ';
-                        break;
-                        case 'endswith':
-                        $listsearchoptions[] = ' value LIKE \'%'.trim($token).'\' ';
-                        break;
-                        default : 
-                        break;
+
+                        case 'includes': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'%\' ';
+                            break;
+                        }
+
+                        case 'equals': {
+                            $listsearchoptions[] = ' UPPER(value) = \''.strtoupper(trim($token)).'\' ';
+                            break;
+                        }
+
+                        case 'beginswith': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \''.strtoupper(trim($token)).'%\' ';
+                            break;
+                        }
+
+                        case 'endswith': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'\' ';
+                            break;
+                        }
+
+                        default:
                     }
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
@@ -400,31 +348,37 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
             } else {
                 $clause = '';
             }
-        } elseif($mtdelement->type == 'date') {
+
+        } else if ($mtdelement->type == 'date') {
+
             $datestart = substr($using, 0, strpos($using,':'));
             $dateend = substr($using, strpos($using,':') + 1);
             if ($datestart != 'Begin' && $dateend != 'End') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
                 $clause = "  value >= $start AND value <= $end AND element LIKE '{$mtdelement->id}:%' ";
-            } elseif($datestart != 'Begin') {
+            } else if ($datestart != 'Begin') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $clause = "  value >= $start AND element LIKE '{$mtdelement->id}:%' ";
-            } elseif($dateend != 'End') {
+            } else if ($dateend != 'End') {
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
                 $clause = "  value <= $end AND element LIKE '{$mtdelement->id}:%' ";
             }
-        } elseif($mtdelement->type == 'numeric') {
+
+        } else if ($mtdelement->type == 'numeric') {
+
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
             $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
-        } elseif($mtdelement->type == 'duration') {
+
+        } else if ($mtdelement->type == 'duration') {
+
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
             $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
-        } elseif($mtdelement->type == 'treeselect') {
-            $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+
         } else {
+
             // Case selectmultiple and select.
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
@@ -437,11 +391,12 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
                 $clause = '';
             }
         }
-        $fields = 'entry_id';
+        $fields = 'entryid';
     }
 
     // Search in all possible sources for this metadata namespace.
-    list($insql, $params) = $DB->get_in_or_equal($mtdplugin->ALLSOURCES);
+    // list($insql, $params) = $DB->get_in_or_equal($mtdstandard->ALLSOURCES); // For future polystandard hypothesis.
+    list($insql, $params) = $DB->get_in_or_equal(array($namespace));
     $sql = "
         SELECT DISTINCT
             $fields
@@ -464,21 +419,8 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
     return $items;
 }
 
-/**
- * a call back function for autoloading classes when unserializing the widgets
- *
- */
-function resources_load_searchwidgets($classname) {
-    global $CFG;
-
-    require_once($CFG->dirroot."/mod/sharedresource/searchwidgets/{$classname}.class.php");
-}
-
-// Prepare autoloader of missing search widgets
-ini_set('unserialize_callback_func', 'resources_load_searchwidgets');
-
 function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
-    global $COURSE, $USER, $CFG, $DB;
+    global $COURSE, $DB;
 
     if (is_null($course)) {
         $course = $COURSE;
@@ -500,7 +442,7 @@ function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
     } else {
         if ($cats = $DB->get_records('course_categories', array('visible' => 1), 'parent,sortorder')) {
             // Slow way.
-            foreach($cats as $cat) {
+            foreach ($cats as $cat) {
                 $ctx = context_coursecat::instance($cat->id);
                 if ($cat->visible || has_capability('moodle/category:viewhiddencategories', $ctx)) {
                     $contextopts[$ctx->id] = $cat->name;
@@ -511,26 +453,6 @@ function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
 }
 
 /**
-<<<<<<< HEAD
-* get the last visible non empty section in the course.
-*
-*/
-function sharedresource_get_course_section_to_add($courseorid){
-	global $DB;
-
-	if (!is_int($courseorid)){
-		$courseid = $courseorid->id;
-	} else {
-		$courseid = $courseorid;
-	}
-
-	if ($sections = $DB->get_records('course_sections', array('course' => $courseid, 'visible' => 1), 'section DESC')){
-		foreach($sections as $s){
-			if (!empty($s->sequence)) break;
-		}
-	}
-	return $s->section;
-=======
  * get the last visible non empty section in the course.
  *
  */
@@ -544,12 +466,34 @@ function sharedresource_get_course_section_to_add($courseorid) {
     }
 
     if ($sections = $DB->get_records('course_sections', array('course' => $courseid, 'visible' => 1), 'section DESC')) {
-        foreach($sections as $s) {
+        foreach ($sections as $s) {
             if (!empty($s->sequence)) {
                 break;
             }
         }
     }
     return $s->section;
->>>>>>> MOODLE_32_STABLE
+}
+
+function sharedresource_clean_field($field) {
+    switch ($field) {
+        case 'identifier': {
+            $value = optional_param($field, '', PARAM_BASE64);
+            break;
+        }
+
+        case 'file': {
+            $value = optional_param($field, '', PARAM_PATH);
+            break;
+        }
+
+        case 'mimetype': {
+            $value = optional_param($field, '', PARAM_URL);
+            break;
+        }
+
+        default:
+            $value = optional_param($field, '', PARAM_RAW);
+    }
+    return $value;
 }
