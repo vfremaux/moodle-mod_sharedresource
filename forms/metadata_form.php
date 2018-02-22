@@ -30,10 +30,6 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
-$PAGE->requires->jquery();
-$PAGE->requires->js('/mod/sharedresource/js/metadata.php');
-$PAGE->requires->js('/mod/sharedresource/js/metadata_yui.php');
-
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
 $return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
@@ -91,16 +87,15 @@ $PAGE->set_heading($SITE->fullname);
 $resurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $resurl);
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
+$PAGE->requires->js_call_amd('mod_sharedresource/metadata', 'init', array($config->schema));
+$PAGE->requires->js_call_amd('mod_sharedresource/metadataedit', 'init', array($config->schema));
 
-$PAGE->set_focuscontrol('');
-$PAGE->set_cacheable(false);
-$PAGE->set_button('');
-$PAGE->set_headingmenu('');
-
-$url = new moodle_url('/mod/sharedresource/metadataform.php');
+$url = new moodle_url('/mod/sharedresource/forms/metadata_form.php');
 $PAGE->set_url($url);
 
 echo $OUTPUT->header();
+
+$renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
 if (has_capability('repository/sharedresources:systemmetadata', $context)) {
     $capability = 'system';
@@ -118,49 +113,6 @@ if (!empty($CFG->METADATATREE_DEFAULTS)) {
 
 metadata_initialise_core_elements($mtdstandard, $shrentry);
 
-$nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
-
-echo '<center>';
-echo '<div id="ecform_container" align="center">';
-
-echo '<div align="center" id="ecform_title">'.get_string('metadatadescr', 'sharedresource').' ('.$mtdstandard->pluginname.')';
-echo '</div>';
-echo '<br/>';
-
-echo '<div id="ecform_onglet" class="ecformtab tabtree">';
-echo '<ul id="menu" class="tabrow0">';
-echo '<li id="menu_0" class="first onerow here selected" style="float: left;display: inline;">';
-echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('dmused', 'sharedresource').'</span></a>';
-echo '</li>';
-echo metadara_create_tab($capability, $mtdstandard);
-echo '</ul>';
-echo '</div><br/>';
-
-echo '<div id="ecform_content" style="margin-right: auto; margin-left: auto">';
-echo '<div id="tab_0" class="on content">';
-echo '<div class="titcontent">';
-
-echo '<h2 >'.get_string('dmuse', 'sharedresource').' '.$mtdstandard->pluginname.'</h2>';
-echo '<h3>'.get_string('dmdescription', 'sharedresource').' '.$mtdstandard->pluginname.'</h3><br/>';
-
-echo '<fieldset style="width:90%;margin-right: auto; margin-left: auto">';
-echo '<div style="text-align:justify;align=left;">';
-echo get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->pluginname);
-echo '</div>';
-echo '</fieldset>';
-
-echo '</div>';
-echo '</div>';
-
-echo metadata_create_panels($capability, $mtdstandard);
-echo '</div><br/>';
-
-echo '<div align="center">';
-echo '<input type="button" value="'.get_string('validateform', 'sharedresource').'" id="btsubmit" onClick=\'document.forms["monForm"].submit()\' alt="Submit"/>';
-echo ' <input type="button" value="'.get_string('cancelform', 'sharedresource').'" OnClick="window.location.href=\''.$CFG->wwwroot."/course/modedit.php?course={$course->id}&section={$section}&add=sharedresource&return={$return}".'/\'">';
-echo '</div>';
-
-echo '</div>';
-echo '</center>';
+echo $renderer->metadata_edit_form($capability, $mtdstandard);
 
 echo $OUTPUT->footer($course);

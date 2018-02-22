@@ -25,12 +25,12 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
+require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
 
 $config = get_config('sharedresource');
 
 // DO not rely on moodle classloader.
-if ($searchplugins = glob($CFG->dirroot.'/mod/sharedresource/searchwidgets/*')) {
+if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
     foreach ($searchplugins as $sp) {
         include_once($sp);
     }
@@ -44,8 +44,7 @@ $PAGE->set_url($url);
 
 require_login();
 
-$PAGE->requires->js('/mod/sharedresource/js/mtdform.js');
-$action = optional_param('action',null ,PARAM_ALPHA);
+$action = optional_param('action', null ,PARAM_ALPHA);
 $system_context = context_system::instance();
 $strtitle = get_string('metadata_configure', 'sharedresource');
 $PAGE->set_pagelayout('standard');
@@ -53,76 +52,86 @@ $PAGE->set_context($system_context);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
+$PAGE->requires->js_call_amd('mod_sharedresource/metadataform', 'init', array($config->schema));
 
-$plugins = sharedresource_get_plugins();
-if (empty($plugins)){
-    print_error('errornometadataplugins', 'sharedresource');
-}
+$renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
 if (empty($config->schema)){
-    set_config('schema', 'lom', 'mod_sharedreosurce');
+    set_config('schema', 'lom', 'sharedresource');
+    $config->schema = 'lom';
     purge_all_caches();
 }
 
-$plugin = $plugins[$config->schema];
-$name = $plugin->pluginname;
+$plugin = sharedresource_get_plugin($config->schema);
+$namespace = $plugin->pluginname;
 $config = array();
-if ($currentconfig = $DB->get_records_sql(' SELECT * from {config_plugins} WHERE  plugin LIKE "%sharedresource_'.$name.'%"')){
+if ($currentconfig = $DB->get_records_sql(' SELECT * from {config_plugins} WHERE  plugin = "sharedmetadata_'.$namespace.'"')) {
     foreach ($currentconfig as $conf) {
         $config[$conf->name] = $conf->value;
     }
 }
+
+// Load configuration from hard coded defaults.
 if ($config == array() || $action == 'reinitialize') {
     foreach ($plugin->METADATATREE as $key => $value) {
         if ($key != 0) {
-            if ($value['checked']['system'] == 1) {
-                $config['config_'.$name.'_system_'.$key.''] = 1;
-                set_config('config_'.$name.'_system_'.$key.'', 1, 'sharedresource_'.$name);
+            if ((@$value['checked']['system'] == 1) || ($value['checked']['system_write'] == 1)) {
+                $config['config_'.$namespace.'_system_write_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_system_write_'.$key.'', 1, 'sharedmetadata_'.$namespace);
             }
-            if ($value['checked']['indexer'] == 1) {
-                $config['config_'.$name.'_indexer_'.$key.''] = 1;
-                set_config('config_'.$name.'_indexer_'.$key.'', 1, 'sharedresource_'.$name);
+            if ((@$value['checked']['system'] == 1) || ($value['checked']['system_read'] == 1)) {
+                $config['config_'.$namespace.'_system_read_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_system_read_'.$key.'', 1, 'sharedmetadata_'.$namespace);
             }
-            if ($value['checked']['author'] == 1) {
-                $config['config_'.$name.'_author_'.$key.''] = 1;
-                set_config('config_'.$name.'_author_'.$key.'', 1, 'sharedresource_'.$name);
+            if ((@$value['checked']['indexer'] == 1) || ($value['checked']['indexer_write'] == 1)) {
+                $config['config_'.$namespace.'_indexer_write_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_indexer_write_'.$key.'', 1, 'sharedmetadata_'.$namespace);
+            }
+            if ((@$value['checked']['indexer'] == 1) || ($value['checked']['indexer_read'] == 1)) {
+                $config['config_'.$namespace.'_indexer_read_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_indexer_read_'.$key.'', 1, 'sharedmetadata_'.$namespace);
+            }
+            if ((@$value['checked']['author'] == 1) || ($value['checked']['author_write'] == 1)) {
+                $config['config_'.$namespace.'_author_write_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_author_write_'.$key.'', 1, 'sharedmetadata_'.$namespace);
+            }
+            if ((@$value['checked']['author'] == 1) || ($value['checked']['author_read'] == 1)) {
+                $config['config_'.$namespace.'_author_read_'.$key.''] = 1;
+                set_config('config_'.$namespace.'_author_read_'.$key.'', 1, 'sharedmetadata_'.$namespace);
             }
             set_config('activewidgets', serialize(array()), 'sharedresource');
         }
     }
 }
+
+// Get actual configuration data from form.
 if ($data = data_submitted()) {
-    $DB->execute('delete from {config_plugins} where plugin LIKE "%sharedresource_'.$name.'%"');
+
+    $DB->execute('delete from {config_plugins} where plugin = "sharedmetadata_'.$namespace.'"');
+
     $activewidgets = array();
+
     foreach ($data as $key => $value) {
         if (preg_match('/config_(\w+?)_/', $key, $matches)) {
             $pluginname = $matches[1];
-            set_config($key, $value, 'sharedresource_'.$pluginname);
+            set_config($key, $value, 'sharedmetadata_'.$pluginname);
         } else if (preg_match('/widget_(\w+?)_()/', $key, $matches)) {
-            $idwidget = substr($key, strlen($matches[0]));
+            $idwidget = substr($key, strlen($matches[0])); 
             $wtype = $plugin->METADATATREE[$idwidget]['widget'];
-            $classname = '\\mod_sharedresource\\'.$wtype.'_search_widget';
-            include_once($CFG->dirroot."/mod/sharedresource/searchwidgets/{$wtype}_search_widget.class.php");
+            $classname = '\\local_sharedresources\\search\\'.$wtype.'_widget';
             $widget = new $classname($idwidget, $plugin->METADATATREE[$idwidget]['name'], $wtype);
             array_push($activewidgets, $widget);
         }
     }
+
     set_config('activewidgets', serialize($activewidgets), 'sharedresource');
     redirect(new moodle_url('/mod/sharedresource/metadataconfigure.php'), get_string('datachanged', 'sharedresource'), 2);
 }
 
 echo $OUTPUT->header();
 
-$OUTPUT->heading(get_string('metadataconfiguration', 'sharedresource'));
-echo '<form name="mtdconfigurationform" method="post">';
-echo '<fieldset>';
-if (!empty($plugin)) {
-    $plugin->configure($config);
-} else {
-    print_string('nometadataplugin', 'sharedresource');
-}
-echo '</fieldset><br/>';
-echo '<center><br/><a href="metadataconfigure.php?action=reinitialize"><input type="button" value="'.get_string('defaultselect', 'sharedresource').'" /></a>&nbsp;&nbsp;<input type="submit" value="'.get_string('updatemetadata', 'sharedresource').'" /></center><br/>';
-echo '<center><hr><br/><input type="button" value="'.get_string('backadminpage','sharedresource').'" onclick="window.location.href=\''.$CFG->wwwroot.'/admin/settings.php?section=modsettingsharedresource\'"/></center><br/>';
-echo '</form>';
+echo $OUTPUT->heading(get_string('metadataconfiguration', 'sharedresource'));
+
+echo $renderer->metadata_configuration();
+
 echo $OUTPUT->footer();

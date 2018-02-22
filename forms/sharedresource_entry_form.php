@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
- *
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once $CFG->libdir.'/formslib.php';
+require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 
 class mod_sharedresource_entry_form extends moodleform {
 
@@ -45,7 +45,8 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
-        $return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+        // Return to course/view.php if false or mod/modname/view.php if true.
+        $return        = optional_param('return', 0, PARAM_BOOL);
         $type          = optional_param('type', '', PARAM_ALPHANUM);
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
@@ -70,8 +71,11 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
-        // Sharing context :
-        // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories).
+        // Sharing context:
+        /*
+         * Users can share a sharedresource at public system context level, or share privately to a specific
+         * course category (and subcatgories).
+         */
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
@@ -79,35 +83,8 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
 
         // Resource access :
-        if (!empty($config->accesscontrol) && !empty($config->defaultuserfield)) {
-            $userfieldoptions = $DB->get_records_menu('user_info_field', array(), 'id, name', 'id, name');
-            $userfieldoptions = array_merge(array('' => get_string('disabled', 'sharedresource')), $userfieldoptions);
-
-            $label = get_string('accessuserfield', 'sharedresource');
-            $mform->addElement('select', 'userfield', $label, $userfieldoptions);
-            $mform->setDefault('userfield', $config->defaultuserfield);
-            $mform->setType('userfield', PARAM_INT);
-
-            if (!empty($this->_customdata['rc'])) {
-                // Take the actual resoruce one.
-                $params = array('id' => $this->_customdata['rc']->userfield);
-            } else {
-                // Get options of the default field
-                $params = array('id' => $config->defaultuserfield);
-            }
-            $userfield = $DB->get_record('user_info_field', $params);
-            $options = array();
-            if ($userfield->datatype == 'menu') {
-                $optionsarr = explode("\n", $userfield->param1);
-                $options = array_combine($optionsarr, $optionsarr);
-            }
-            $label = get_string('accessuserfieldvalues', 'sharedresource');
-            $select = & $mform->addElement('select', 'userfieldvalues', $label, $options);
-            $mform->setType('userfieldvalues', PARAM_TEXT);
-
-            if ($config->allowmultipleaccessvalues) {
-                $select->setMultiple(true);
-            }
+        // TODO : try incorporate the accesscontrol form.
+        if (mod_sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
         }
 
         // Url or file.
@@ -121,11 +98,13 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
 
-        $group = array();
-        $options = array('accepted_types' => array('.jpg','.gif','.png'));
-        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
-        $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
-        $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
+        if (mod_sharedresource_supports_feature('entry/customicon')) {
+            $group = array();
+            $options = array('accepted_types' => array('.jpg','.gif','.png'));
+            $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
+            $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
+            $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
+        }
 
         $btext = get_string('gometadataform', 'sharedresource');
 
@@ -188,11 +167,12 @@ class mod_sharedresource_entry_form extends moodleform {
         $maxbytes = 35 * 1024;
         $maxfiles = 1;
         $fileoptions = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
-        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource', 'thumbnail', $this->entryid, $fileoptions);
+        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource',
+                                'thumbnail', $this->entryid, $fileoptions);
         $groupname = 'thumbnailgroup';
         $defaultvalues->$groupname = array('thumbnail' => $draftitemid);
 
-        // Resource description .
+        // Resource description.
         $description = @$defaultvalues->description;
         $defaultvalues->description = array();
         $defaultvalues->description['text'] = $description;

@@ -28,6 +28,8 @@ use \moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry_factory.class.php');
+
 /**
  * shrentryrec defines a sharedresource including the metadata
  *
@@ -51,15 +53,15 @@ defined('MOODLE_INTERNAL') || die();
  */
 class entry {
 
-    // a sharedresource entry is a combination of:
+    // A sharedresource entry is a combination of:
 
-    // a DB record
+    // A DB record.
     protected $shrentryrec;
 
-    // A set of metadata
+    // A set of metadata.
     public $metadataelements;
 
-    // An eventual physical file stored somewhere in the Moodle filesystem
+    // An eventual physical file stored somewhere in the Moodle filesystem.
     public $storedfile;
 
     protected $config;
@@ -69,20 +71,21 @@ class entry {
     /**
      * Internal method that processes the plugins for the search
      * interface.
-     * 
+     *
      * @param criteria   object, reference to Moodle Forms populated
      *        values.
      * @return results, return an array of shrentryrec objects that
      *         will be formated and displayed in the search results screen.
      */
-    static public function search (&$criteria) {
+    static public function search(&$criteria) {
         // Get the plugins.
         $plugins = sharedresource_get_plugins();
         $results = array();
 
         // Process each plugins search function - there is a default called local.
         foreach ($plugins as $plugin) {
-            /* If we get a positive return then we don't use any more plugins 
+            /*
+             * If we get a positive return then we don't use any more plugins 
              * $results is passed by reference so plugins can doctor the incremental results
              */
             $plugin->search($criteria, $results);
@@ -92,7 +95,7 @@ class entry {
 
     /**
      * Hydrate a shrentryrec object reading by identifier
-     * 
+     *
      * @param identifier   hash, sha1 hash identifier
      * @return shrentryrec object
      */
@@ -103,13 +106,15 @@ class entry {
             return false;
         }
 
-        $shrentryrec = new entry($shrentryrec);
+        // Entry class may upgrade itself to entry_entended in "pro" version.
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+        $shrentryrec = new $entryclass($shrentryrec);
         return $shrentryrec;
     }
 
     /**
      * Hydrate a shrentryrec object reading by id
-     * 
+     *
      * @param id   int, internal id of shrentryrec object
      * @return shrentryrec object
      */
@@ -119,13 +124,14 @@ class entry {
             return false;
         }
 
-        $shrentryrec = new entry($shrentryrec);
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+        $shrentryrec = new $entryclass($shrentryrec);
         return $shrentryrec;
     }
 
     /**
      * Same as read_by_id(). Hydrate a shrentryrec object reading by id
-     * 
+     *
      * @param id   int, internal id of shrentryrec object
      * @return shrentryrec object
      */
@@ -204,7 +210,7 @@ class entry {
 
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
                                   'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike',
-                                  'thumbnail'))) {
+                                  'thumbnail', 'accessctl'))) {
             return $this->shrentryrec->$attr;
         } else {
             mtrace ("Bad attr ".$attr);
@@ -219,7 +225,7 @@ class entry {
     public function __set($attr, $value) {
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url',
                                   'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid',
-                                  'displayed', 'context', 'scoreview', 'scorelike', 'thumbnail'))) {
+                                  'displayed', 'context', 'scoreview', 'scorelike', 'thumbnail', 'accessctl'))) {
             if ($attr == 'description') {
                 if (is_array($value)) {
                     if (preg_match('/^<p>?(.*)<\/p>$/', $value['text'])) {
@@ -272,7 +278,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the after save
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function after_save() {
@@ -294,7 +300,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the before update
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function before_update() {
@@ -316,7 +322,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the after update
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function after_update() {
@@ -406,7 +412,7 @@ class entry {
 
     /**
      * check if resource is local or not
-     * 
+     *
      * @return bool, true = local
      */
     public function is_local_resource() {
@@ -422,7 +428,7 @@ class entry {
     }
 
     /**
-     * check if resource is remote or not
+     * Check if resource is remote or not.
      *
      * @return bool, true = remote
      */
@@ -684,5 +690,91 @@ class entry {
         global $DB;
 
         return $DB->record_exists('sharedresource_entry', array('identifier' => $this->identifier));
+    }
+
+    /**
+     * Checks some simple access policy on ressource.
+     * A user may have a user_info_field holding an acceptable value to match
+     * in resource allowed value.
+     * Access filter only affect search and browse capabilities. but not access to the sharedresource
+     * if the user has access to a sharedresource publication in a course.
+     * The resource may be multivaluated, depending on wether the access check is allowed to register
+     * multiple values or not. this is set up in global settings.
+     * 
+     * @param object $resourceentry
+     * @return boolean value (has access or not).
+     * @see local/sharedresources/lib.php get_local_resources()§137
+     */
+    public function has_access() {
+        global $DB, $USER;
+        static $userdatacache;
+
+        if (!isset($userdatacache)) {
+            $userdatacache = array();
+        }
+
+        $config = get_config('sharedresource');
+
+        if (empty($config->accesscontrol)) {
+            // Global switch in config. Disables all access conrol overhead.
+            return true;
+        }
+
+        // Per resource strategy.
+        /*
+         * This is a fine grain resource per resource accesss control management using
+         * user userfields values.
+         * Each resource has one single userfield control attribute (holding a custom userfield reference per id)
+         * and a set of control values (allowed values) as a coma separated list.
+         */
+        if (!empty($this->accessctl)) {
+            $accessctl = \mod_sharedresource\access_ctl::instance($this->accessctl);
+            if ($accessctl->can_use()) {
+                return true;
+            }
+        }
+
+        // By taxonomy access control
+        /*
+         * Taxonomies have some access control rules based on profile field or capabilities.
+         * At least one match is required to pass, when the resource has explicit taxonomy binding.
+         * The check examines all sources registered for the resource, confirmed by an actual registered
+         * binding taxonid. (note there could be remanent registered sources without any taxonid, following
+         * a taxon deletion in the taxonomy.)
+         */
+         $mtdstandard = sharedresource_get_plugin($config->schema);
+         $taxumarr = $mtdstandard->getTaxumpath();
+
+         if (empty($taxumarr)) {
+            // No need to care about taxonomy access control as there is no taxonomy in the standard.
+            return true;
+         }
+
+        $sources = \mod_sharedresource\metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
+        if (!empty($sources)) {
+            $return = false;
+            foreach ($sources as $source) {
+                // Find some tokenids that are attached to this source instance.
+                $idkey = \mod_sharedresource\metadata::to_instance($taxumarr['id'], $source->get_element_key()); // Normalise element key.
+                $elmids = \mod_sharedresource\metadata::instances_by_element($this->id, $config->schema, $idkey, null, true);
+                if (empty($elmids)) {
+                    continue;
+                }
+                /*
+                 * Pass if 
+                 * - one source at least has no access control.
+                 * - one source at least has access allowed for user.
+                 */
+                 $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $source->get_value()));
+                 $classif = new \local_sharedresource\browser\navigator($taxonomy);
+                 if ($classif->can_use()) {
+                    return true;
+                 }
+            }
+            // No taxonomy match.
+            return false;
+        }
+
+        return true;
     }
 }

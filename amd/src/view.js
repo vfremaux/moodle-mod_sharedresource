@@ -32,7 +32,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 that = $(this).on('click', null, args, this.openpopup);
             });
 
-            log.debug('Mod sharedresource AMD initialized');
+            log.debug('AMD Mod sharedresource initialized');
 
         },
 

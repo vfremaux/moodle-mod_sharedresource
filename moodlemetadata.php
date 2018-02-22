@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * This file maps several Moodle typical definitions (modules) to Metadata concepts (LOM based)
  *
  * @author  Piers Harding  piers@catalyst.net.nz
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
@@ -23,11 +24,6 @@
  * @category   mod
  */
 defined('MOODLE_INTERNAL') || die();
-
-/**
-* This file maps several Moodle typical definitions (modules) to Metadata concepts (LOM based)
-*
-*/
 
 // This is used for a build_vcard utility function.
 require_once $CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php';
@@ -66,12 +62,12 @@ $MODRESOURCETYPES = array(
     'wiki' => 'narrative text,exercice',
     'workshop' => 'exercice,experimentation' );
 
-// allow completing from configuration file
+// Allow completing from configuration file.
 if (isset($CFG->additionalmodresourcetypes) && is_array($CFG->additionalmodresourcetypes)){
     $MODRESOURCETYPES = $MODRESOURCETYPES + $CFG->additionalmodresourcetypes;
 }
 
-// MODRESOURCETYPE addesses LOM 5_3 node (Learning Resource Type)
+// MODRESOURCETYPE addesses LOM 5_3 node (Learning Resource Type).
 global $MODINTERACTIVITYLEVELS;
 
 $MODINTERACTIVITYLEVELS = array(
@@ -105,12 +101,12 @@ $MODINTERACTIVITYLEVELS = array(
     'wiki' => 'very high',
     'workshop' => 'very high' );
 
-// allow completing from configuration file
+// Allow completing from configuration file.
 if (isset($CFG->additionalmodinteractivitylevel) && is_array($CFG->additionalmodinteractivitylevel)){
     $MODINTERACTIVITYLEVELS = $MODINTERACTIVITYLEVELS + $CFG->additionalmodinteractivitylevel;
 }
 
-// MODRESORUCETYPE addesses LOM 5_4 node (Learning Resource Type)
+// MODRESORUCETYPE addesses LOM 5_4 node (Learning Resource Type).
 global $MODSEMANTICDENSITIES;
 
 $MODSEMANTICDENSITIES = array(
@@ -281,26 +277,26 @@ if (isset($CFG->additionalmodgeneraldocumenttype) && is_array($CFG->additionalmo
 function sharedresource_append_metadata_elements(&$elements, $name, $value, $plugin) {
 
     $values = explode(',', $value);
-    
-    // extracts parts from indexed node name to generate several instances
+
+    // Extracts parts from indexed node name to generate several instances.
     if (!preg_match('/^(.*_)(\d+)$/', $name, $matches)) {
         return;
     }
-    
+
     $radical = $matches[1];
     $index = $matches[2];
-    
-    foreach($values as $v){
+
+    foreach ($values as $v) {
         $elements[$radical.$index] = (object) array('name' => $radical.$index, 'value' => $v, 'plugin' => $plugin);
         $index++;
     }
 }
 
 /**
-* This fuction searches for editing teachers and add them all as co-authors. This may not be true in reality, 
-* but there is no real mean to know who really did create the activity. We can just guess that in most cases,
-* the course has one author/teacher 
-*/
+ * This fuction searches for editing teachers and add them all as co-authors. This may not be true in reality, 
+ * but there is no real mean to know who really did create the activity. We can just guess that in most cases,
+ * the course has one author/teacher 
+ */
 function sharedresource_append_author_data(&$backupmetadataelements, $courseid = 0, $authoringdate = -1) {
     global $COURSE;
 
@@ -314,7 +310,8 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
     }
 
     $coursecontext = context_course::instance($courseid);
-    $editingteachers = get_users_by_capability($coursecontext, 'moodle/course:anageactivities', 'u.id, u.lastname, u.firstname, u.email, u.institution');
+    $fields = 'u.id, u.lastname, u.firstname, u.email, u.institution';
+    $editingteachers = get_users_by_capability($coursecontext, 'moodle/course:anageactivities', $fields);
 
     if (!empty($editingteachers)) {
         $i = 0;
