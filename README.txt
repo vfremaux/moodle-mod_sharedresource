@@ -76,3 +76,13 @@ Changes for 2017012900
 ========================
 
 Remove complex networking features from the community version and diverts to "pro" distribution.
+
+Changes for 2018021600
+=======================
+
+Revise scolomfr plugin
+
+Changes for 2018021700
+=======================
+
+Fix subplugin names in settings

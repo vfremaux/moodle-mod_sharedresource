@@ -556,7 +556,7 @@ class metadata {
                 {sharedresource_metadata} sm,
                 {config_plugins} cf
             WHERE
-                cf.plugin = 'sharedresource_{$namespace}' AND
+                cf.plugin = 'sharedmetadata_{$namespace}' AND
                 cf.name = ? AND
                 sm.entryid = ? AND
                 sm.namespace = ? AND
@@ -889,13 +889,13 @@ class metadata {
             plugin = ?
         ";
 
-        $params = array("config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedresource_{$namespace}");
+        $params = array("config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedmetadata_{$namespace}");
         $hasuse = $DB->record_exists_select('config_plugins', $select, $params);
         if ($hasuse) {
             return true;
         }
 
-        $params = array("config_{$namespace}_{$capability}_{$nodeid}_%", "sharedresource_{$namespace}");
+        $params = array("config_{$namespace}_{$capability}_{$nodeid}_%", "sharedmetadata_{$namespace}");
         $legacy = $DB->record_exists_select('config_plugins', $select, $params);
 
         return $legacy;

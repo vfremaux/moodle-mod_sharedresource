@@ -501,3 +501,23 @@ function sharedresource_clean_field($field) {
     }
     return $value;
 }
+
+/**
+ * Several themes have different way to render and layout tabs in moodle.
+ * We sometime need to build our own tab tree, but coping with the overal 
+ * theme way of doing.
+ */
+function sharedresource_detect_tab_model() {
+    global $OUTPUT;
+
+    $tabs[] = new tabobject('fake', 'fakeurl', 'fakename');
+    $tabtree = new tabtree($tabs);
+
+    $faketabs = $OUTPUT->render_tabtree($tabtree);
+
+    if (preg_match('/nav-tabs/', $faketabs)) {
+        return 'nav nav-tabs';
+    } else {
+        return 'tabrow0';
+    }
+}

@@ -138,7 +138,7 @@ function mod_sharedresource_supports_feature($feature) {
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl','fineselect'),
-                'entry' => array('extended', 'accessctl', 'remote'),
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon'),
                 'emulate' => 'community',
             ),
             'community' => array(

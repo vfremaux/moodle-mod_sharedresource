@@ -314,7 +314,7 @@ abstract class plugin_base {
         }
 
         $template = new StdClass;
-        $config = get_config('sharedresource_'.$this->namespace);
+        $config = get_config('sharedmetadata_'.$this->namespace);
         $field = $this->METADATATREE[$fieldid];
 
         // Extract parent id.

@@ -322,8 +322,7 @@ $string['serverurl'] = 'URL Serveur';
 $string['sharedresourcedetails'] = 'Détails sur les ressources mutualisées';
 $string['sharedresourceintro'] = 'Introduction';
 $string['sharedresourcenotice'] = 'Notice de la ressource : {$a}';
-$string['sharedresourceservice_description'] = 'Permet les échanges de servie entre fournisseurs et consommateurs. Les sites consommateurs doivent souscrire à ce service. Les sites fournisseurs doivent publier ce service.';
-$string['sharedresourceservice_name'] = 'Services réseau de mutualisation';
+$string['sharedresourceservice_name'] = 'Services réseau de mutualisation de ressources';
 $string['sharedresourcetypefile'] = 'Ressource mutualisée';
 $string['sharingcontext'] = 'Niveau de partage';
 $string['showclassification'] = 'Activer la classification';
@@ -386,6 +385,11 @@ $string['token'] = 'Taxon';
 $string['addtoken'] = 'Ajouter un nouveau taxon';
 $string['goup'] = 'Remonter d\'un niveau';
 $string['notsupportedyet'] = 'Modifier des taxons dans une autre table que sharedresource_taxonomy n\'est pas encore supporté.';
+
+$string['sharedresourceservice_description'] = 'Permet les échanges de service entre fournisseurs et consommateurs de ressources.
+Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs 
+de ressources doivent publier ce service vers les sites consommateurs. La librairie des sites fournisseurs devient accessible
+aux consommateurs';
 
 //************* Help Strings ******************/
 $string['description_help'] = "

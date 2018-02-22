@@ -76,6 +76,9 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->dmusestr = get_string('dmuse','sharedresource');
         $template->dmdescription = get_string('dmdescription','sharedresource');
 
+        $tabmodel = sharedresource_detect_tab_model();
+        $template->tabmodel = $tabmodel;
+
         $template->standarddescriptionstr = get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->getNamespace());
 
         $i = 1;
@@ -451,6 +454,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $this->edit_panels($capability, $mtdstandard, $template);
 
+        $tabmodel = sharedresource_detect_tab_model();
+        $template->tabmodel = $tabmodel;
+
         $template->validateformstr = get_string('validateform', 'sharedresource');
         $template->cancelformstr = get_string('cancelform', 'sharedresource');
 
@@ -749,6 +755,7 @@ class metadata_renderer extends \plugin_renderer_base {
     }
 
     protected function print_widget(&$mtdstandard, &$elminstance, &$standardelm, &$template, &$shrentry) {
+        global $OUTPUT;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -815,8 +822,11 @@ class metadata_renderer extends \plugin_renderer_base {
             }
             $default = array('' => get_string('none', 'sharedresource'));
             $current = $elminstance->get_value();
-            $template->select = html_writer::select($options, $template->elmname, $current, $default, $attrs);
-
+            if (empty($options)) {
+                $template->select = $OUTPUT->notification("Missing options for $template->elmname in standard plugin");
+            } else {
+                $template->select = html_writer::select($options, $template->elmname, $current, $default, $attrs);
+            }
         } else if ($standardelm->type == 'date') {
             $template->isdate = true;
 
