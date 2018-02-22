@@ -1,0 +1,121 @@
+{{!
+    This file is part of The Sharedresource Module
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_sharedresource/metadataeditformchilds
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- metadataeditformchilds -->
+
+{{#childs}}
+
+{{#ispanel}}
+<div id="id-tab-{{i}}" class="mtd-editform-panel off mtd-content">
+{{/ispanel}}
+
+{{#isclassification}}
+    <fieldset>
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+        {{{classificationselect}}}
+    </fieldset>
+{{/isclassification}}
+
+{{#iscontainer}}
+{{#hascontent}}
+
+    <fieldset>
+        <legend>{{fieldnum}} {{fieldvisiblename}} {{occur}}</legend>
+
+         {{> mod_sharedresource/metadataeditformchilds }}
+
+    </fieldset>
+
+{{/hascontent}}
+{{/iscontainer}}
+
+{{#istext}}
+    <div class="mtd-form-element">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+        <input type="text" id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" value="{{value}}" {{{readonly}}} />
+
+        {{{error}}}
+    </div>
+{{/istext}}
+
+{{#isselect}}
+    <div class="mtd-form-element">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+        {{{select}}}
+    </div>
+{{/isselect}}
+
+{{#isdate}}
+    <div class="mtd-form-element">
+        <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+            {{{yearselect}}}
+            {{{monthselect}}}
+            {{{dayselect}}}
+
+            {{{error}}}
+    </div>
+{{/isdate}}
+
+{{#isduration}}
+    <div class="mtd-form-element">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Day" name="{{elmname}}_Day" value="{{valueday}}" /> {{daysstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Hou" name="{{elmname}}_Hou" value="{{valuehour}}" /> {{hoursstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Min" name="{{elmname}}_Min" value="{{valuemin}}" /> {{minutesstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Sec" name="{{elmname}}_Sec" value="{{valuesec}}" /> {{secondsstr}}
+
+        {{{durationdescrhelpicon}}}
+
+        {{{error}}}
+    </div>
+{{/isduration}}
+
+{{#isvcard}}
+    <div class="mtd-form-element">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+        <textarea cols="40" rows="5" id="{{elmname}}" class=" mtd-form-input" name="{{elmname}}">{{{value}}}</textarea>
+
+        {{{vcardhelpicon}}}
+    </div>
+{{/isvcard}}
+
+{{#hasaddbutton}}
+    <div id="add-zone-{{elmname}}">
+    <!-- empty zone pending for new subform occurrence -->
+    </div>
+
+    <div id="add_{{nodeid}}">
+    <input type="button" id="id-add-{{elmname}}" name="btn-{{elmname}}-{{fieldtype}}" class="mtd-form-addbutton {{addclass}}" data="{{{listchildren}}}" value="{{addstr}} {{fieldvisiblename}}" {{{adddisabled}}} />
+    </div>
+{{/hasaddbutton}}
+
+{{#ispanel}}
+</div>
+{{/ispanel}}
+
+{{/childs}}
+<!-- /metadataeditformchilds -->

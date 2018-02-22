@@ -68,8 +68,7 @@ class sharedresource_selectresources_form extends moodleform {
                 $label = get_string('resource').':';
                 $mform->addElement('advcheckbox', 'rcnv_'.$r->id, $label, $name, array('group' => 1), array(0,1));
                 $mform->setDefault('rcnv_'.$r->id, 1);
-                $label = get_string('description').':';
-                $mform->addElement('static', 'lbl_'.$r->id, $label, format_string($r->intro, $r->introformat));
+                $mform->addElement('static', 'lbl_'.$r->id, '', format_string($r->intro, $r->introformat));
             }
 
             $convertstr = get_string('convert', 'sharedresource');
@@ -90,6 +89,7 @@ class sharedresource_selectresources_form extends moodleform {
         if ($hasitems) {
             $this->add_checkbox_controller(1, '', '');
         }
+
         $convertstr = get_string('convert', 'sharedresource');
         $this->add_action_buttons(true, $convertstr);
     }

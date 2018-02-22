@@ -24,7 +24,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 /**
@@ -76,7 +75,7 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
  * @param string $type a resource module type, can be 'resource' or 'url'
  */
 function sharedresource_convertto(&$resource, $type = 'resource') {
-    global $CFG, $DB;
+    global $DB;
 
     $report = '';
 
@@ -90,7 +89,8 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
     $context = context_module::instance($cm->id);
 
     // Make a sharedresource_entry record.
-    $shrentry = new \mod_sharedresource\entry(null, null);
+    $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+    $shrentry = new $entryclass(null, null);
     $shrentry->title = $resource->name;
     $shrentry->description = $resource->intro;
     $shrentry->keywords = '';
@@ -142,17 +142,17 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
     }
 
     // If type is 'file', move the physical storage, now we have an instance id.
-    if ($type == 'file') {
+    if ($type != 'url') {
         $newfile = new StdClass;
         $newfile->contextid = context_system::instance()->id;
         $newfile->component = 'mod_sharedresource';
         $newfile->filearea = 'sharedresource';
-        $newfile->itemid = $shentry->id;
+        $newfile->itemid = $shrentry->id;
         // Cleanup eventual older file in the way.
         $fs->delete_area_files($newfile->contextid, $newfile->component, $newfile->filearea, $newfile->itemid);
 
         $finalrec = $fs->create_file_from_storedfile($newfile, $storedfile);
-        $DB->set_field('sharedresource_entry', 'file', $finalrec->get_id(), array('id' => $shentry->id));
+        $DB->set_field('sharedresource_entry', 'file', $finalrec->get_id(), array('id' => $shrentry->id));
     }
 
     // Rebind the existing module to the new sharedresource.
@@ -182,7 +182,7 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
  * @param reference $sharedresource
  */
 function sharedresource_convertfrom(&$sharedresource, &$report) {
-    global $CFG, $DB;
+    global $DB;
 
     $report = '';
 
@@ -207,7 +207,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
         $instance = new StdClass;
         $instance->course = $sharedresource->course;
         $instance->name = $sharedresource->name;
-        $instance->intro = $sharedresource->description;
+        $instance->intro = $sharedresource->intro;
         $instance->introformat = FORMAT_MOODLE;
         $instance->tobemigrated = 0;
         $instance->legacyfiles = 0;
@@ -226,7 +226,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
         $module = $DB->get_record('modules', array('name' => 'url'));
         $instance = new StdClass();
         $instance->name = $sharedresource->name;
-        $instance->intro = $sharedresource->description;
+        $instance->intro = $sharedresource->intro;
         $instance->introformat = FORMAT_MOODLE;
         $instance->externalurl = $shrentry->url;
         $instance->display = 0;
@@ -283,42 +283,64 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
  * @param string $element the metadata element
  * @param string $namespace which plugin is searched for metadata
  * @param string $what if values, get a list of metadata values, else gives a list of sharedresources entries
- * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens
+ * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens or operator:value
  */
-function sharedresource_get_by_metadata($element, $schema = "lom", $what = 'values', $using = '') {
+function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'values', $using = '') {
     global $CFG, $DB;
 
     // Get metadata plugin and restype element name.
-    include_once $CFG->dirroot.'/mod/sharedresource/plugins/'.$schema.'/plugin.class.php';
-    $mtdclass = '\\mod_sharedresource\\plugin_'.$schema;
-    $mtdstandard = new $mtdclass();
+    $mtdstandard = sharedresource_get_plugin($namespace);
     $mtdelement = $mtdstandard->getElement($element);
 
     if ($what == 'values') {
         $clause = ($mtdelement->type == 'list') ? " element LIKE '{$mtdelement->id}:' " : " element = '{$mtdelement->id}' ";
         $fields = 'value';
     } else {
-        if ($mtdelement->type == 'freetext') {
+        if ($mtdelement->widget == 'treeselect') {
+            $clause = '';
+            if (preg_match('/^subs:/', $using)) {
+                // Search all subpaths of the required category.
+                $using = str_replace('subs:', '', $using);
+                $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+            } else {
+                // Search an exact taxon idpath match.
+                $clause = "  value = '{$using}' AND element LIKE '{$mtdelement->id}:%' ";
+            }
+
+        } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
+
             $textoption = substr($using, 0, strpos($using, ':'));
             $using = substr($using, strpos($using,':') + 1);
+            $listsearchoptions = array();
+
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
+
                 foreach ($listtokens as $token) {
+
                     switch ($textoption) {
-                        case 'includes':
-                        $listsearchoptions[] = ' value LIKE \'%'.trim($token).'%\' ';
-                        break;
-                        case 'equals':
-                        $listsearchoptions[] = ' value = \''.trim($token).'\' ';
-                        break;
-                        case 'beginswith':
-                        $listsearchoptions[] = ' value LIKE \''.trim($token).'%\' ';
-                        break;
-                        case 'endswith':
-                        $listsearchoptions[] = ' value LIKE \'%'.trim($token).'\' ';
-                        break;
-                        default : 
-                        break;
+
+                        case 'includes': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'%\' ';
+                            break;
+                        }
+
+                        case 'equals': {
+                            $listsearchoptions[] = ' UPPER(value) = \''.strtoupper(trim($token)).'\' ';
+                            break;
+                        }
+
+                        case 'beginswith': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \''.strtoupper(trim($token)).'%\' ';
+                            break;
+                        }
+
+                        case 'endswith': {
+                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'\' ';
+                            break;
+                        }
+
+                        default:
                     }
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
@@ -326,31 +348,37 @@ function sharedresource_get_by_metadata($element, $schema = "lom", $what = 'valu
             } else {
                 $clause = '';
             }
-        } elseif($mtdelement->type == 'date') {
+
+        } else if ($mtdelement->type == 'date') {
+
             $datestart = substr($using, 0, strpos($using,':'));
             $dateend = substr($using, strpos($using,':') + 1);
             if ($datestart != 'Begin' && $dateend != 'End') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
                 $clause = "  value >= $start AND value <= $end AND element LIKE '{$mtdelement->id}:%' ";
-            } elseif($datestart != 'Begin') {
+            } else if ($datestart != 'Begin') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $clause = "  value >= $start AND element LIKE '{$mtdelement->id}:%' ";
-            } elseif($dateend != 'End') {
+            } else if ($dateend != 'End') {
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
                 $clause = "  value <= $end AND element LIKE '{$mtdelement->id}:%' ";
             }
+
         } else if ($mtdelement->type == 'numeric') {
+
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
             $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
+
         } else if ($mtdelement->type == 'duration') {
+
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
             $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
-        } else if ($mtdelement->type == 'treeselect') {
-            $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+
         } else {
+
             // Case selectmultiple and select.
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
@@ -367,7 +395,8 @@ function sharedresource_get_by_metadata($element, $schema = "lom", $what = 'valu
     }
 
     // Search in all possible sources for this metadata namespace.
-    list($insql, $params) = $DB->get_in_or_equal($mtdstandard->ALLSOURCES);
+    // list($insql, $params) = $DB->get_in_or_equal($mtdstandard->ALLSOURCES); // For future polystandard hypothesis.
+    list($insql, $params) = $DB->get_in_or_equal(array($namespace));
     $sql = "
         SELECT DISTINCT
             $fields
@@ -390,23 +419,8 @@ function sharedresource_get_by_metadata($element, $schema = "lom", $what = 'valu
     return $items;
 }
 
-/**
- * a call back function for autoloading classes when unserializing the widgets
- *
- */
-function resources_load_searchwidgets($classname) {
-    global $CFG;
-
-    $classname = str_replace('mod_sharedresource\\', '', $classname);
-
-    require_once($CFG->dirroot."/mod/sharedresource/searchwidgets/{$classname}.class.php");
-}
-
-// Prepare autoloader of missing search widgets.
-ini_set('unserialize_callback_func', 'resources_load_searchwidgets');
-
 function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
-    global $COURSE, $USER, $CFG, $DB;
+    global $COURSE, $DB;
 
     if (is_null($course)) {
         $course = $COURSE;
@@ -428,7 +442,7 @@ function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
     } else {
         if ($cats = $DB->get_records('course_categories', array('visible' => 1), 'parent,sortorder')) {
             // Slow way.
-            foreach($cats as $cat) {
+            foreach ($cats as $cat) {
                 $ctx = context_coursecat::instance($cat->id);
                 if ($cat->visible || has_capability('moodle/category:viewhiddencategories', $ctx)) {
                     $contextopts[$ctx->id] = $cat->name;
@@ -452,11 +466,34 @@ function sharedresource_get_course_section_to_add($courseorid) {
     }
 
     if ($sections = $DB->get_records('course_sections', array('course' => $courseid, 'visible' => 1), 'section DESC')) {
-        foreach($sections as $s) {
+        foreach ($sections as $s) {
             if (!empty($s->sequence)) {
                 break;
             }
         }
     }
     return $s->section;
+}
+
+function sharedresource_clean_field($field) {
+    switch ($field) {
+        case 'identifier': {
+            $value = optional_param($field, '', PARAM_BASE64);
+            break;
+        }
+
+        case 'file': {
+            $value = optional_param($field, '', PARAM_PATH);
+            break;
+        }
+
+        case 'mimetype': {
+            $value = optional_param($field, '', PARAM_URL);
+            break;
+        }
+
+        default:
+            $value = optional_param($field, '', PARAM_RAW);
+    }
+    return $value;
 }

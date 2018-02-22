@@ -73,6 +73,7 @@ $SHAREDRESOURCE_METADATA_ELEMENTS = array(array('name' => 'Contributor',
                                           array('name' => 'ClassificationTaxonPath',
                                                 'datatype' => 'vocab'));
 
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry_factory.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
@@ -119,6 +120,106 @@ function sharedresource_supports($feature) {
         default:
             return null;
     }
+}
+
+/**
+ * Implements the generic community/pro packaging switch.
+ * Tells wether a feature is supported or not. Gives back the
+ * implementation path where to fetch resources.
+ * @param string $feature a feature key to be tested.
+ */
+function mod_sharedresource_supports_feature($feature) {
+    global $CFG;
+    static $supports;
+
+    $config = get_config('sharedresource');
+
+    if (!isset($supports)) {
+        $supports = array(
+            'pro' => array(
+                'taxonomy' => array('accessctl','fineselect'),
+                'entry' => array('extended', 'accessctl', 'remote'),
+                'emulate' => 'community',
+            ),
+            'community' => array(
+            ),
+        );
+        $prefer = array();
+    }
+
+    // Check existance of the 'pro' dir in plugin.
+    if (is_dir(__DIR__.'/pro')) {
+        if ($feature == 'emulate/community') {
+            return 'pro';
+        }
+        if (empty($config->emulatecommunity)) {
+            $versionkey = 'pro';
+        } else {
+            $versionkey = 'community';
+        }
+    } else {
+        $versionkey = 'community';
+    }
+
+    list($feat, $subfeat) = explode('/', $feature);
+
+    if (!array_key_exists($feat, $supports[$versionkey])) {
+        return false;
+    }
+
+    if (!in_array($subfeat, $supports[$versionkey][$feat])) {
+        return false;
+    }
+
+    // Special condition for pdf dependencies.
+    if (($feature == 'format/pdf') && !is_dir($CFG->dirroot.'/local/vflibs')) {
+        return false;
+    }
+
+    if (array_key_exists($feat, $supports['community'])) {
+        if (in_array($subfeat, $supports['community'][$feat])) {
+            // If community exists, default path points community code.
+            if (isset($prefer[$feat][$subfeat])) {
+                // Configuration tells which location to prefer if explicit.
+                $versionkey = $prefer[$feat][$subfeat];
+            } else {
+                $versionkey = 'community';
+            }
+        }
+    }
+
+    return $versionkey;
+}
+
+/**
+ * Returns an object representing this metadata schema
+ * @param string $pluginname the schema name.
+ * @return a plugin_base descendant concrete class instance.
+ */
+function sharedresource_get_plugin($namespace, $entryid = 0) {
+    global $CFG;
+    static $mtdstandards = array();
+
+    $config = get_config('sharedresource');
+
+    if (!empty($config->{'plugin_hide_'.$namespace})) {
+        // Discard hidden plugins in configuration.
+        return null;
+    }
+
+    if (array_key_exists($namespace, $mtdstandards)) {
+        return $mtdstandards[$namespace];
+    }
+
+    if (file_exists($CFG->dirroot."/mod/sharedresource/plugins/{$namespace}/plugin.class.php")) {
+        require_once($CFG->dirroot."/mod/sharedresource/plugins/{$namespace}/plugin.class.php");
+        $mtdclass = '\\mod_sharedresource\\plugin_'.$namespace;
+
+        $mtdstandards[$namespace] = new $mtdclass($entryid);
+        return $mtdstandards[$namespace];
+    }
+
+    return null;
 }
 
 /**

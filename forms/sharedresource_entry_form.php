@@ -39,6 +39,8 @@ class mod_sharedresource_entry_form extends moodleform {
     public function definition() {
         global $CFG, $USER, $DB;
 
+        $config = get_config('sharedresource');
+
         $mform =& $this->_form;
 
         $add           = optional_param('add', 0, PARAM_ALPHA);
@@ -68,13 +70,18 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
-        // Sharing context :
+        // Sharing context:
         // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories).
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
         $mform->setType('context', PARAM_INT);
         $mform->addHelpButton('context', 'sharingcontext', 'sharedresource');
+
+        // Resource access :
+        // TODO : try incorporate the accesscontrol form.
+        if (mod_sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
+        }
 
         // Url or file.
         // On update as soon as a sharedresource exists, it cannot be muted any more.

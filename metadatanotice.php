@@ -27,8 +27,7 @@ require_once("../../config.php");
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
-
-$PAGE->requires->js('/mod/sharedresource/js/metadata_yui.php', true);
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 $system_context = context_system::instance();
 $strtitle = get_string('metadatanotice', 'sharedresource');
@@ -43,11 +42,15 @@ $PAGE->set_button('');
 $PAGE->set_headingmenu('');
 $url = new moodle_url('/mod/sharedresource/metadatanotice.php');
 $PAGE->set_url($url);
+$PAGE->requires->js_call_amd('mod_sharedresource/metadatanotice', 'init');
+
+$renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
 $config = get_config('sharedresource');
 
 $id = optional_param('id', 0, PARAM_INT);
 $identifier = optional_param('identifier', 0, PARAM_TEXT);
+
 if ($identifier) {
     if (!$shrentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
         sharedresource_not_found();
@@ -72,57 +75,20 @@ if ($identifier) {
 }
 
 $shrentry = \mod_sharedresource\entry::read($shrentry->identifier);
+
+\mod_sharedresource\metadata::normalize_storage($shrentry->id);
+
 $pagetitle = strip_tags($SITE->fullname);
 // build up navigation links
 
+$capability = metadata_get_user_capability();
+
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', format_text($shrentry->title)));
-
-if (has_capability('repository/sharedresources:systemmetadata', context_system::instance())) {
-    $capability = 'system';
-} else {
-    $capability = 'indexer';
-}
+echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', '<span class="mtd-resource-name">'.format_string($shrentry->title).'</span>'));
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
-$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
-$mtdstandard = new $mtdclass();
-$nbrmenu = count($mtdstandard->METADATATREE[0]['childs']);
-
-echo '<center>';
-echo '<div id="ecform_container" align="center">';
-echo '<div align="center" id="ecform_title">'.get_string('metadatadescr','sharedresource').' ('.$mtdstandard->getNamespace().')</div><br/>';
-echo '<div id="ecform_onglet" class="ecformtab">';
-echo '<ul id="notice-menu" class="nav nav-tabs">';
-echo '<li class="first onerow here selected" style="float: none;float: left;display: inline;">';
-echo '<a id="_0" class="current" onclick="multiMenu(this.id,'.$nbrmenu.')" alt="menu0"><span>'.get_string('dmused','sharedresource').'</span></a>';
-echo '</li>';
-echo metadara_create_tab($capability, $mtdstandard);
-echo '</ul>';
-echo '</div><br/>';
-echo '<div id="ecform_content" style="margin-right: auto; margin-left: auto">';
-echo '<div id="tab_0" class="on content">';
-echo '<div class="mtd-description-panel">';
-echo '<h2>'.get_string('dmuse','sharedresource').' '.$mtdstandard->getNamespace().'</h2>';
-echo '<h3>'.get_string('dmdescription','sharedresource').' '.$mtdstandard->getNamespace().'</h3>';
-echo '<fieldset style="margin-right: auto; margin-left: auto">';
-echo get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->getNamespace());
-echo '</fieldset>';
-echo '</div>';
-echo '</div>';
-echo '</div>';
-echo metadata_create_notice_panels($shrentry, $capability, $mtdstandard);
-echo '</div><br/>';
-echo '<div align="center">';
-echo '</div>';
-echo '</div>';
-echo '</center>';
-
-echo '<script type="text/javascript">'."\n";
-echo "// select the general tab by default\n";
-echo 'multiMenu(\'_1\','.count($mtdstandard->METADATATREE[0]['childs']).")\n";
-echo '</script>';
+echo $renderer->notice($shrentry, $capability);
 
 echo $OUTPUT->footer();

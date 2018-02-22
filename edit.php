@@ -36,16 +36,16 @@ $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
 $mtdstandard = new $mtdclass();
 
 $ignorelist = array(
-    'mform_showadvanced_last', 
-    /* 'pagestep', */ 
-    'MAX_FILE_SIZE', 
-    'add', 
-    'update', 
-    'return', 
-    'type', 
-    'section', 
-    'mode', 
-    'course', 
+    'mform_showadvanced_last',
+    /* 'pagestep', */
+    'MAX_FILE_SIZE',
+    'add',
+    'update',
+    'return',
+    'type',
+    'section',
+    'mode',
+    'course',
     'submitbutton'
 );
 
@@ -53,14 +53,14 @@ $ignorelist = array_merge($ignorelist, $mtdstandard->sharedresource_get_ignored(
 
 // Get params.
 
-$add           = optional_param('add', 0, PARAM_ALPHA);
-$update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL);
-$type          = optional_param('type', '', PARAM_ALPHANUM);
-$section       = optional_param('section', 0, PARAM_INT);
-$mode          = required_param('mode', PARAM_ALPHA);
-$course        = required_param('course', PARAM_INT);
-$sharingcontext  = optional_param('context', SITEID, PARAM_INT);
+$add = optional_param('add', 0, PARAM_ALPHA);
+$update = optional_param('update', 0, PARAM_INT);
+$return = optional_param('return', 0, PARAM_BOOL);
+$type = optional_param('type', '', PARAM_ALPHANUM);
+$section = optional_param('section', 0, PARAM_INT);
+$mode = required_param('mode', PARAM_ALPHA);
+$course = required_param('course', PARAM_INT);
+$sharingcontext = optional_param('context', SITEID, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $course))) {
     print_error('coursemisconf');
@@ -68,17 +68,22 @@ if (!$course = $DB->get_record('course', array('id' => $course))) {
 
 // Security.
 
-$system_context = context_system::instance();
+$systemcontext = context_system::instance();
 $context = context_course::instance($course->id);
-require_login($course);
-require_capability('moodle/course:manageactivities', $context);
+if ($course->id > 1) {
+    require_login($course);
+    require_capability('moodle/course:manageactivities', $context);
+} else {
+    require_capability('repository/sharedresources:manage', context_system::instance());
+}
 
 // Page construction.
 
 $strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
 $PAGE->set_pagelayout('standard');
-$PAGE->set_context($system_context);
-$url = new moodle_url('/mod/sharedresource/edit.php');
+$PAGE->set_context($systemcontext);
+$params = array('mode' => $mode, 'course' => $course->id, 'sharingcontext' => $sharingcontext, 'add' => $add, 'update' => $update);
+$url = new moodle_url('/mod/sharedresource/edit.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
@@ -123,7 +128,8 @@ if ($mode == 'update') {
 
 } else {
     $mode = 'add';
-    $shrentry = new \mod_sharedresource\entry(null, null);
+    $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+    $shrentry = new $entryclass(null, null);
 }
 
 $mform = false;
@@ -214,8 +220,8 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
         unset($formdata->thumbnailgroup);
     }
 
-    $sr_entry = serialize($shrentry);
-    $SESSION->sr_entry = $sr_entry;
+    $srentry = serialize($shrentry);
+    $SESSION->sr_entry = $srentry;
     $error = 'no error';
     $SESSION->error = $error;
 
@@ -248,20 +254,3 @@ echo $OUTPUT->footer($course);
 // Page local functions.
 // Grab and clean form value.
 
-function sharedresource_clean_field($field) {
-    switch ($field) {
-        case 'identifier':
-            $value = optional_param($field, '', PARAM_BASE64);
-            break;
-        case 'file':
-            $value = optional_param($field, '', PARAM_PATH);
-            break;
-        case 'mimetype':
-            $value = optional_param($field, '', PARAM_URL);
-            break;
-        default:
-            $value = optional_param($field, '', PARAM_RAW);
-            break;
-    }
-    return $value;
-}
