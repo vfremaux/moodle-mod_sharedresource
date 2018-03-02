@@ -20,7 +20,8 @@
 .mtd-form fieldset {
     border: #ccc 1px solid;
     margin-bottom: 10px;
-    padding: 7px 7px 7px 7px;  
+    margin-top: 10px;
+    padding: 7px 7px 7px 7px;
 }
 
 .mtd-form fieldset:hover {
@@ -136,6 +137,11 @@ input.mtd-form-duration {
     padding-left: 1em;
     padding-right: 1em;
     overflow-x : hidden;
+}
+
+.mtd-form-element textarea.mtd-form-input {
+    min-width: 50%;
+    min-height: 6em;
 }
 
 .mtd-tab {
@@ -260,6 +266,18 @@ td.mtd-value {
 
 .mtd-resource-name {
     color: initial;
+}
+
+.mtd-date-element select {
+    width: 6em !important;
+}
+
+.mtd-form-element {
+    margin-top: 10px;
+}
+
+.mtd-form-element textarea {
+    margin-left: 1%;
 }
 
 fieldset.subbranch{

@@ -79,7 +79,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
         }
 
         // We check if the field have been filled for the vcard, select and date.
-        if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' 
+        if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD'
                 && $value != 'basicvalue'
                     && $value != '-year-'
                         && $value != '-month-'

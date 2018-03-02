@@ -9,11 +9,22 @@ Credits : Highly inspired from a co-work with Catalyst Ltd (Piers Harding) for I
 Versions
 ========
 
-Moodle 2 : Not yet ported, as needs conceptual rework around the Moodle 2 new resource and repository paradigm
+Moodle 2.7 to Moodle 3.4
 
-Moodle 1.9 : Branch MOODLE_19_STABLE 
+Dual distribution of a community version and a "pro" version wich adds industry level features such as 
+library networking, webservices or mass resource import.
+
+Handling full standards oriented to French variants. Other variants easy to implement:
+
+- Dublin core
+- LOM
+- LOMFR
+- ScoLOMFR
+- SupLOMFR
 
 Related Components
 ==================
 
-Shared resource works together with a central addditional component of Moodle that will provide "central" management entry point for the shared resource catalog. Please check http://github.com/vfremaux/moodle-resources repository for information.
+Shared resource works together with a central addditional component of Moodle that will provide "central"
+management entry point for the shared resource catalog. Please check
+http://github.com/vfremaux/moodle-resources repository for information.

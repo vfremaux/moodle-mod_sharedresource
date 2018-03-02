@@ -90,11 +90,20 @@ if (empty($classifications)) {
     $table->align = array('left', 'center', 'left', 'center', 'center', 'right');
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
-    $hiddenicon = $OUTPUT->pix_icon('t/show', '', 'core', $attrs);
-    $visibleicon = $OUTPUT->pix_icon('t/hide', '', 'core', $attrs);
-    $editicon = $OUTPUT->pix_icon('t/edit', get_string('update'), 'core', $attrs);
+    $hiddenicon = html_writer::tag('t/show', get_string('hide'), 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $visibleicon = $OUTPUT->pix_icon('t/hide', get_string('show'), 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $editicon = html_writer::tag('t/edit', get_string('edit'), 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
-    $filteredicon = $OUTPUT->pix_icon('i/filter', '', 'core', $attrs);
+
+    $filteredicon = $OUTPUT->pix_icon('i/filter', '', 'core');
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $editvaluesicon = $OUTPUT->pix_icon('i/withsubcat', '', 'core', $attrs);
 
     foreach ($classifications as $classif) {
@@ -146,10 +155,12 @@ if (empty($classifications)) {
             $params = array('classificationid' => $classif->id);
             $label = get_string('classificationacls', 'sharedresource');
             $aclurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
-            $attrs = array('class' => 'mod-sharedresource-classif-ctl', 'alt' => $label);
+            $attrs = array('alt' => $label, 'title' => $label);
             if (empty($classif->accessctl)) {
+                $attrs = array('class' => 'mod-sharedresource-classif-ctl');
                 $aclicon = $OUTPUT->pix_icon('i/permissions', '', 'core', $attrs);
             } else {
+                $attrs = array('class' => 'mod-sharedresource-classif-ctl');
                 $aclicon = $OUTPUT->pix_icon('i/permissionlock', '', 'core', $attrs);
             }
             $cmds .= '&nbsp;'.html_writer::link($aclurl, $aclicon, $attrs);
@@ -160,12 +171,12 @@ if (empty($classifications)) {
     }
 
     echo html_writer::table($table);
-
-    echo '<div style="text-align:right">';
-    $addurl = new moodle_url('/mod/sharedresource/classification.php');
-    echo $OUTPUT->single_button($addurl, get_string('addclassification', 'sharedresource'));
-    echo '</div>';
 }
+
+echo '<div style="text-align:right">';
+$addurl = new moodle_url('/mod/sharedresource/classification.php');
+echo $OUTPUT->single_button($addurl, get_string('addclassification', 'sharedresource'));
+echo '</div>';
 
 $label = get_string('backadminpage','sharedresource');
 $buttonurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
