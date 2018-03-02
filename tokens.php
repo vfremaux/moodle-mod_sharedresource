@@ -79,13 +79,22 @@ if (empty($tokentree)) {
     $table->align = array('left', 'left', 'right');
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
-    $attrsshdw = array('class' => 'mod-sharedresource-classif-ctl shadowed');
-    $upicon = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrs);
-    $upicondisabled = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrsshdw);
-    $downicon = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrs);
-    $downicondisabled = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrsshdw);
+    $upicon = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl shadowed');
+    $upicondisabled = $OUTPUT->pix_icon(('t/up', '', 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $downicon = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl shadowed');
+    $downicondisabled = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
-    $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
+
+    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $deleteicon = $OUTPUT->pix_icon('t/delete', get_sting('delete'), 'core', $attrs);
 
     foreach ($tokens as $token) {
         $data = array();

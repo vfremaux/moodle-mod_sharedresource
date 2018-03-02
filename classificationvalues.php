@@ -90,9 +90,12 @@ if ($classification->tablename != 'sharedresource_taxonomy') {
 
     $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
     $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
-    $upicon = $OUTPUT->pix_icon('t/up', get_string('up'), 'core', $attrs);
-    $downicon = $OUTPUT->pix_icon('t/down', get_string('down'), 'core', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
+    $upicon = $OUTPUT->('t/up', '', 'core', $attrs);
+    $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
+    $downicon = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
 
     foreach ($tokens as $tk) {
         $data = array();

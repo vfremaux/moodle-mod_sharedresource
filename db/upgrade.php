@@ -174,6 +174,51 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2018011801, 'sharedresource');
     }
 
+    if ($oldversion < 2018021600) {
+
+        $table = new xmldb_table('sharedresource_taxonomy');
+
+        $field = new xmldb_field('purpose', XMLDB_TYPE_CHAR, 32, null, null, null, null, 'sortorder');
+        $changedfield = new xmldb_field('classificationid', XMLDB_TYPE_INTEGER, 11, null, null, null, 0, 'sortorder');
+        $index = new xmldb_index('mdl_shartaxo_pur_ix', XMLDB_INDEX_NOTUNIQUE, array('classificationid'), null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'classificationid');
+            // Fix the failed upgrade sequence.
+            if ($dbman->index_exists($table, $index)) {
+                $dbman->drop_index($table, $index);
+            }
+            $dbman->change_field_type($table, $changedfield);
+            $dbman->change_field_precision($table, $changedfield);
+            $dbman->change_field_default($table, $changedfield);
+            if (!$dbman->index_exists($table, $index)) {
+                $dbman->add_index($table, $index);
+            }
+        } else {
+            if ($dbman->field_exists($table, $changedfield)) {
+                // Fix the failed upgrade sequence.
+                if ($dbman->index_exists($table, $index)) {
+                    $dbman->drop_index($table, $index);
+                }
+                $dbman->change_field_type($table, $changedfield);
+                $dbman->change_field_precision($table, $changedfield);
+                $dbman->change_field_default($table, $changedfield);
+            }
+            if (!$dbman->index_exists($table, $index)) {
+                $dbman->add_index($table, $index);
+            }
+        }
+
+        // Sharedresource savepoint reached.
+        upgrade_mod_savepoint(true, 2018021600, 'sharedresource');
+    }
+
+    if ($oldversion < 2018021703) {
+        sharedresource_fix_metadata_settings_plugin_name();
+
+        // Sharedresource savepoint reached.
+        upgrade_mod_savepoint(true, 2018021703, 'sharedresource');
+    }
+
     return $return;
 }
 
@@ -206,4 +251,17 @@ function sharedresource_transfer_classification_settings() {
         // Not yet.
         // set_config('classifarray', null, 'sharedresource');
     }
+}
+
+function sharedresource_fix_metadata_settings_plugin_name() {
+    global $DB;
+
+    $sql = '
+        UPDATE
+            {config_plugins}
+        SET
+            plugin = REPLACE(plugin, \'sharedresource_\', \'sharedmetadata_\')
+        WHERE plugin LIKE \'sharedresource\_%\'
+    ';
+    $DB->execute($sql);
 }

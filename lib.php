@@ -138,7 +138,7 @@ function mod_sharedresource_supports_feature($feature) {
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl','fineselect'),
-                'entry' => array('extended', 'accessctl', 'remote'),
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon'),
                 'emulate' => 'community',
             ),
             'community' => array(
@@ -216,6 +216,9 @@ function sharedresource_get_plugin($namespace, $entryid = 0) {
         $mtdclass = '\\mod_sharedresource\\plugin_'.$namespace;
 
         $mtdstandards[$namespace] = new $mtdclass($entryid);
+        if (!empty($CFG->METADATATREE_DEFAULTS)) {
+            $mtdstandards[$namespace]->load_defaults($CFG->METADATATREE_DEFAULTS);
+        }
         return $mtdstandards[$namespace];
     }
 
