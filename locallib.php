@@ -280,12 +280,16 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
 /**
  * Used by : provider interface (worker function)
  * retrieve the remote categorisation of resources using LOM taxonomy or any local strategy
+ *
+ * Get either entries that match a single metadata element value, or retrieves all values present for 
+ * a single metadata element.
+ *
  * @param string $element the metadata element
  * @param string $namespace which plugin is searched for metadata
  * @param string $what if values, get a list of metadata values, else gives a list of sharedresources entries
  * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens or operator:value
  */
-function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'values', $using = '') {
+function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'values', $using = '') {
     global $CFG, $DB;
 
     // Get metadata plugin and restype element name.
@@ -314,7 +318,7 @@ function sharedresource_get_by_metadata($element, $namespace = "lom", $what = 'v
             $listsearchoptions = array();
 
             if (!empty($using)) {
-                $listtokens = explode(',', $using);
+                $listtokens = explode(',', str_replace("'", "''", $using));
 
                 foreach ($listtokens as $token) {
 

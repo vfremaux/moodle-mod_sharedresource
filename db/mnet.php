@@ -25,30 +25,14 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+
 $publishes = array(
-    'sharedresourceservice' => array(
-        'servicename' => 'sharedresourceservice',
-        'description' => get_string('sharedresourceservice_name', 'sharedresource'),
-        'apiversion' => 1,
-        'classname'  => '',
-        'filename'   => 'rpclib.php',
-        'methods'    => array(
-            'sharedresource_rpc_check',
-            'sharedresource_rpc_get_categories',
-            'sharedresource_rpc_get_list',
-            'sharedresource_rpc_get_metadata',
-            'sharedresource_rpc_move',
-            'sharedresource_rpc_submit'
-        ),
-    ),
 );
+
 $subscribes = array(
-    'sharedresourceservice' => array(
-        'sharedresource_rpc_check' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_check',
-        'sharedresource_rpc_get_categories' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_get_categories',
-        'sharedresource_rpc_get_list' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_get_list',
-        'sharedresource_rpc_get_metadata' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_get_metadata',
-        'sharedresource_rpc_move' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_move',
-        'sharedresource_rpc_get_metadata' => 'mod/sharedresource/rpclib.php/sharedresource_rpc_submit'
-    ),
 );
+
+if (mod_sharedresource_supports_feature('entry/remote')) {
+    include($CFG->dirroot.'/mod/sharedresource/pro/db/mnet.php');
+}

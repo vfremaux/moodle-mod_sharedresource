@@ -26,6 +26,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
     var mtdstrings;
 
     var metadataedit = {
+
         init: function(args) {
             namespace = args;
 
@@ -57,6 +58,20 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             $('.taxonomy-source').bind('change', this.reload_taxonomy);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
+
+            $('.mtd-tab').removeClass('here');
+            $('.mtd-tab').removeClass('current');
+            $('#id-menu-1').addClass('here');
+            $('#id-menu-1').addClass('current');
+
+            $('.mtd-content').removeClass('active');
+            $('.mtd-content').removeClass('on');
+            $('.mtd-content').addClass('off');
+            $('#id-tab-1').addClass('active');
+            $('#id-tab-1').removeClass('off');
+            $('#id-tab-1').addClass('on');
+
+            log.debug('AMD Mod sharedresource metadata default switch to tab General');
         },
 
         switch_tab: function(e) {
@@ -273,7 +288,10 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             url = M.cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
             $.get(url, function(data){
 
-                $('[data-source="' + that.attr('id') + '"]').each(function(index) {
+                parentid = metadata.parent_name(that.attr('id'));
+
+                // Clear out all values and change option list.
+                $('[data-source="' + parentid + '"]').each(function(index) {
                     $(this).html(data);
                     $(this).val('');
                 });
