@@ -130,17 +130,26 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     public function validation($data, $files) {
-        global $DB;
+        global $DB, $USER;
 
         $errors = parent::validation($data, $files);
 
+        $fs = get_file_storage();
+
         if ($this->sharedresourceentrymode == 'add') {
             // Make sure that either the file or the URL are supplied.
-            if (empty($data['url']) && $data['sharedresourcefile'] == null) {
-                $errors['url'] = get_string('missingresource','sharedresource');
+            $usercontext = context_user::instance($USER->id);
+            $nofile = $fs->is_area_empty($usercontext->id, 'user', 'draft', $data['sharedresourcefile'], true);
+
+            if (empty($data['url']) && $nofile) {
+                $errors['url'] = get_string('missingresource', 'sharedresource');
+                $errors['sharedresourcefile'] = get_string('missingresource', 'sharedresource');
             }
         }
 
+        if (count($errors) == 0) {
+            return true;
+        }
         return $errors;
     }
 
