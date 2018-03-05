@@ -351,3 +351,22 @@ fieldset > legend{
     opacity:0.5;
     -moz-opacity:0.5;
 }
+
+#sharedresource-add-instance {
+    display: table;
+}
+
+#sharedresource-add-instance > div {
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    display: table-cell;
+    padding: 20px;
+}
+
+.sharedresource-instructions {
+    margin-bottom:30px;
+}
+
+.sharedresource-link {
+    text-align: center;
+}

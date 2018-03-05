@@ -308,7 +308,7 @@ $string['searchfor'] = 'Chercher';
 $string['searchheader'] = 'Critères de recherche';
 $string['searchin'] = 'Rechercher dans';
 $string['searchinlibrary'] = 'Rechercher dans la librairie';
-$string['searchorcreate'] = 'Chercher une ressource mutualisée ou enregistrer une nouvelle ressource';
+$string['addinstance'] = 'Ajouter une ressource mutualisée';
 $string['searchsharedresource'] = 'Chercher une ressource mutualisée';
 $string['searchinsubs'] = 'Rechercher dans les sous catégories';
 $string['seconds'] = 'Seconde(s)';
@@ -524,3 +524,11 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
 <p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
+
+$string['addinstance_search_desc'] = '
+    Recherchez une ressource mutualisée dans la librarie et publiez-là dans le cours.
+';
+
+$string['addinstance_create_desc'] = '
+    Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
+';
