@@ -28,6 +28,8 @@ use \moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry_factory.class.php');
+
 /**
  * shrentryrec defines a sharedresource including the metadata
  *
@@ -51,15 +53,15 @@ defined('MOODLE_INTERNAL') || die();
  */
 class entry {
 
-    // a sharedresource entry is a combination of:
+    // A sharedresource entry is a combination of:
 
-    // a DB record
+    // A DB record.
     protected $shrentryrec;
 
-    // A set of metadata
+    // A set of metadata.
     public $metadataelements;
 
-    // An eventual physical file stored somewhere in the Moodle filesystem
+    // An eventual physical file stored somewhere in the Moodle filesystem.
     public $storedfile;
 
     protected $config;
@@ -69,7 +71,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the search
      * interface.
-     * 
+     *
      * @param criteria   object, reference to Moodle Forms populated
      *        values.
      * @return results, return an array of shrentryrec objects that
@@ -82,7 +84,8 @@ class entry {
 
         // Process each plugins search function - there is a default called local.
         foreach ($plugins as $plugin) {
-            /* If we get a positive return then we don't use any more plugins 
+            /*
+             * If we get a positive return then we don't use any more plugins 
              * $results is passed by reference so plugins can doctor the incremental results
              */
             $plugin->search($criteria, $results);
@@ -92,7 +95,7 @@ class entry {
 
     /**
      * Hydrate a shrentryrec object reading by identifier
-     * 
+     *
      * @param identifier   hash, sha1 hash identifier
      * @return shrentryrec object
      */
@@ -103,15 +106,15 @@ class entry {
             return false;
         }
 
-        // entry class may upgrade itself to entry_entended in "pro" version.
-        $entryclass = \mod_sharedresource\entry_factory::get_entry_factory();
+        // Entry class may upgrade itself to entry_entended in "pro" version.
+        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
         $shrentryrec = new $entryclass($shrentryrec);
         return $shrentryrec;
     }
 
     /**
      * Hydrate a shrentryrec object reading by id
-     * 
+     *
      * @param id   int, internal id of shrentryrec object
      * @return shrentryrec object
      */
@@ -128,7 +131,7 @@ class entry {
 
     /**
      * Same as read_by_id(). Hydrate a shrentryrec object reading by id
-     * 
+     *
      * @param id   int, internal id of shrentryrec object
      * @return shrentryrec object
      */
@@ -275,7 +278,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the after save
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function after_save() {
@@ -297,7 +300,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the before update
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function before_update() {
@@ -319,7 +322,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the after update
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function after_update() {
@@ -409,7 +412,7 @@ class entry {
 
     /**
      * check if resource is local or not
-     * 
+     *
      * @return bool, true = local
      */
     public function is_local_resource() {
@@ -425,7 +428,7 @@ class entry {
     }
 
     /**
-     * check if resource is remote or not
+     * Check if resource is remote or not.
      *
      * @return bool, true = remote
      */

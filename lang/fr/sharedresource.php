@@ -55,6 +55,7 @@ $string['attributes'] = 'Liste des attributs renseignés dans le formulaire et e
 $string['backtoconfig'] = 'Retour à la page de configuration des classifications';
 $string['backadminpage'] = 'Retour à la page des réglages';
 $string['backclassifpage'] = 'Retour à la page de configuration des classifications';
+$string['backtocourse'] = 'Revenir au cours';
 $string['backup_index'] = 'Sauvegarder le référentiel des ressources';
 $string['badcourseid'] = 'Identifiant de cours invalide';
 $string['badsqlrestrict'] = 'La clause devrait être le contenu d\'une clause WHERE';
@@ -115,7 +116,6 @@ $string['configpopupwidth'] = 'Largeur par défaut des fenêtres pop-up';
 $string['configsecretphrase'] = 'Cette phrase secrète est utilisée pour générer le code crypté pouvant être envoyé comme paramètre à certaines ressources. Ce code crypté est fabriqué en concaténant une valeur md5 de l\'adresse IP du current_user et de cette phrase secrète, par exemple : code = md5(IP.secretphrase). Ceci permet à la ressource recevant le paramètre de vérifier la connexion pour plus de sécurité.';
 $string['configwebsearch'] = 'URL affichée lors de l\'ajout d\'une page web ou d\'un lien, pour permettre à l\'utilisateur de rechercher l\'URL désirée.';
 $string['configwindowsettings'] = 'Détermine si, par défaut, la zone de configuration des fenêtres est affichée ou non, lors de l\'ajout de nouvelles ressources. Après la première utilisation, ce réglage devient individuel.';
-$string['contains'] = 'contient';
 $string['conversioncancelled'] = 'conversion annulée';
 $string['conversioncancelledtocourse'] = 'Conversion annulée. Vous allez être redirigés vers la gestion des activités';
 $string['conversioncancelledtolibrary'] = 'Conversion annulée. Vous allez être redirigés vers la librairie';
@@ -150,9 +150,7 @@ $string['educational'] = 'Aspects éducatifs';
 $string['emulatecommunity'] = 'Emuler la version communautaire';
 $string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['enabled'] = 'Actif';
-$string['endswith'] = 'finit par';
 $string['entry'] = 'Entrée';
-$string['equalto'] = 'est égal';
 $string['erroraclmisconf'] = 'Erreur : ID de taxonomie ou ID de ressource manquant.';
 $string['erroraddinstance'] = 'Erreur de création de l\'instance de resssource';
 $string['errorcmaddition'] = 'Le module de cours n\'a pas pu être ajouté';
@@ -212,7 +210,7 @@ $string['layout'] = 'Mise en forme';
 $string['license'] = 'License';
 $string['local'] = 'Ressources '.$SITE->shortname;
 $string['localizeadvice'] = '<p>La ressource a été relocalisée, cela veut dire qu\'une copie de la ressource originale est désormais disponible dans le cours, dissociée de la ressource mutualisée d\'origine. Si cette ressource a une représentation physique, le fichier qui la représente est stocké dans les fichiers locaux du cours.</p>';
-$string['localizetocourse'] = 'Localiser comme ressource du cours';
+$string['localizetocourse'] = 'Localiser dans le cours';
 $string['location'] = 'Emplacement de la ressource';
 $string['m'] = 'm(s)';
 $string['medatadaconfiguration_desc'] = 'Cette <a href="{$a}">page supplémentaire</a> permet la configuration des formulaires de metadonnées pour chaque rôle, et de choisir les widgets de recherche.';
@@ -310,7 +308,7 @@ $string['searchfor'] = 'Chercher';
 $string['searchheader'] = 'Critères de recherche';
 $string['searchin'] = 'Rechercher dans';
 $string['searchinlibrary'] = 'Rechercher dans la librairie';
-$string['searchorcreate'] = 'Chercher une ressource mutualisée ou enregistrer une nouvelle ressource';
+$string['addinstance'] = 'Ajouter une ressource mutualisée';
 $string['searchsharedresource'] = 'Chercher une ressource mutualisée';
 $string['searchinsubs'] = 'Rechercher dans les sous catégories';
 $string['seconds'] = 'Seconde(s)';
@@ -325,15 +323,13 @@ $string['serverurl'] = 'URL Serveur';
 $string['sharedresourcedetails'] = 'Détails sur les ressources mutualisées';
 $string['sharedresourceintro'] = 'Introduction';
 $string['sharedresourcenotice'] = 'Notice de la ressource : {$a}';
-$string['sharedresourceservice_description'] = 'Permet les échanges de servie entre fournisseurs et consommateurs. Les sites consommateurs doivent souscrire à ce service. Les sites fournisseurs doivent publier ce service.';
-$string['sharedresourceservice_name'] = 'Services réseau de mutualisation';
+$string['sharedresourceservice_name'] = 'Services réseau de mutualisation de ressources';
 $string['sharedresourcetypefile'] = 'Ressource mutualisée';
 $string['sharingcontext'] = 'Niveau de partage';
 $string['showclassification'] = 'Activer la classification';
 $string['sqlmapping'] = 'Correspondances SQL';
 $string['sqloptions'] = 'Options SQL';
 $string['sqlrestriction'] = 'Restriction SQL';
-$string['startswith'] = 'commence par';
 $string['step2'] = 'Passer à l\'étape 2';
 $string['successfulmodification'] = 'Modification effectuée';
 $string['system'] = 'Administrateur';
@@ -390,6 +386,11 @@ $string['token'] = 'Taxon';
 $string['addtoken'] = 'Ajouter un nouveau taxon';
 $string['goup'] = 'Remonter d\'un niveau';
 $string['notsupportedyet'] = 'Modifier des taxons dans une autre table que sharedresource_taxonomy n\'est pas encore supporté.';
+
+$string['sharedresourceservice_description'] = 'Permet les échanges de service entre fournisseurs et consommateurs de ressources.
+Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs 
+de ressources doivent publier ce service vers les sites consommateurs. La librairie des sites fournisseurs devient accessible
+aux consommateurs';
 
 //************* Help Strings ******************/
 $string['description_help'] = "
@@ -523,3 +524,11 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
 <p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
+
+$string['addinstance_search_desc'] = '
+    Recherchez une ressource mutualisée dans la librarie et publiez-là dans le cours.
+';
+
+$string['addinstance_create_desc'] = '
+    Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
+';

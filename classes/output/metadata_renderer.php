@@ -32,8 +32,16 @@ use \mod_sharedresource\metadata;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/output/opened_core_renderer.php');
 
 class metadata_renderer extends \plugin_renderer_base {
+
+    protected $coreoutput;
+
+    public function __construct($page, $target) {
+        parent::__construct($page, $target);
+        $this->coreoutput = new opened_core_renderer($page, $target);
+    }
 
     public function metadata_configuration() {
         $config = get_config('sharedresource');
@@ -75,6 +83,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $template->dmusestr = get_string('dmuse','sharedresource');
         $template->dmdescription = get_string('dmdescription','sharedresource');
+
+        $tabmodel = $this->detect_tab_model();
+        $template->tabmodel = $tabmodel;
 
         $template->standarddescriptionstr = get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->getNamespace());
 
@@ -305,6 +316,7 @@ class metadata_renderer extends \plugin_renderer_base {
         switch ($standardelm->type) {
 
             case 'text':
+            case 'longtext':
             case 'codetext': {
                 $template->isscalar = true;
 
@@ -322,6 +334,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 break;
             }
 
+            case 'sortedselect':
             case 'select': {
                 $template->isscalar = true;
 
@@ -448,6 +461,9 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->standarddescriptionstr = get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->pluginname);
 
         $this->edit_panels($capability, $mtdstandard, $template);
+
+        $tabmodel = $this->detect_tab_model();
+        $template->tabmodel = $tabmodel;
 
         $template->validateformstr = get_string('validateform', 'sharedresource');
         $template->cancelformstr = get_string('cancelform', 'sharedresource');
@@ -589,7 +605,6 @@ class metadata_renderer extends \plugin_renderer_base {
                 /*
                  * we need group the id and item fields into one unique input widget.
                  * there may be several taxons selected as a list so fetch max occurrence
-                 *
                  */
 
                 $template->isclassification = true;
@@ -602,6 +617,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 $sourceelmnodeid = $taxumarray['source'];
                 $sourceelminstancekey = \mod_sharedresource\metadata::to_instance($sourceelmnodeid, $elminstance->get_instance_id());
                 $sourceelm = \mod_sharedresource\metadata::instance($shrentry->id, $sourceelminstancekey, $namespace, false);
+                $taxonelm = $sourceelm->get_parent(false); // May not really exist in DB.
 
                 $value = $sourceelm->get_value();
                 if (empty($value)) {
@@ -619,9 +635,14 @@ class metadata_renderer extends \plugin_renderer_base {
                 if (empty($sourceelmid)) {
                     $template->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
                 } else {
-                    // We check if there is metadata saved for this field.
+                    /*
+                     * We check if there is metadata saved for this field.
+                     * the datasource allows us to track what is the taxonomy selection source select for all
+                     * subjacent taxon value selectors. It is fixed to the taxonelement htmlID so we can be sure
+                     * that dynamic subsequent form parts in the same binding will all catch the binding source.
+                     */
                     $classificationoptions = metadata_get_classification_options($sourceelmid);
-                    $htmlsourcekey = \mod_sharedresource\metadata::storage_to_html($sourceelminstancekey);
+                    $htmlsourcekey = \mod_sharedresource\metadata::storage_to_html($taxonelm->get_element_key());
                     $attrs = array('class' => 'mtd-form-input', 'id' => $template->elmname, 'data-source' => $htmlsourcekey);
                     $nochoice = array('' => get_string('none', 'sharedresource'));
 
@@ -742,6 +763,7 @@ class metadata_renderer extends \plugin_renderer_base {
     }
 
     protected function print_widget(&$mtdstandard, &$elminstance, &$standardelm, &$template, &$shrentry) {
+        global $OUTPUT;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -756,8 +778,17 @@ class metadata_renderer extends \plugin_renderer_base {
         $nodeid = $elminstance->get_node_id();
 
         // Previous fieldtype may resolve on one more generic type beneath.
-        if ($standardelm->type == 'text' || $standardelm->type == 'codetext') {
-            $template->istext = true;
+        if ($standardelm->type == 'text' ||
+                $standardelm->type == 'codetext' ||
+                        $standardelm->type == 'longtext') {
+            if ($standardelm->type == 'longtext') {
+                $template->islongtext = true;
+                if (!empty($standardelm->attributes)) {
+                    $template->attributes = $standardelm->attributes;
+                }
+            } else {
+                $template->istext = true;
+            }
 
             if ($nodeid == $mtdstandard->getTitleElement()->name) {
                 $template->value = $shrentry->title;
@@ -768,7 +799,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->value = $elminstance->get_value();
             }
 
-        } else if ($standardelm->type == 'select') {
+        } else if ($standardelm->type == 'select' || $standardelm->type == 'sortedselect') {
             $template->isselect = true;
 
             if (array_key_exists('func', $mtdstandard->METADATATREE[$nodeid])) {
@@ -788,12 +819,22 @@ class metadata_renderer extends \plugin_renderer_base {
                     }
                 }
             }
+
+            if ($standardelm->type == 'sortedselect') {
+                asort($options);
+            }
+
             $attrs = array('id' => $template->elmname, 'class' => ' mtd-form-input');
             if (!empty($mtdstandard->METADATATREE[$nodeid]['extraclass'])) {
                 $attrs['class'] .= ' '.$mtdstandard->METADATATREE[$nodeid]['extraclass'];
             }
-            $template->select = html_writer::select($options, $template->elmname, $elminstance->get_value(), array('' => get_string('none', 'sharedresource')), $attrs);
-
+            $default = array('' => get_string('none', 'sharedresource'));
+            $current = $elminstance->get_value();
+            if (empty($options)) {
+                $template->select = $OUTPUT->notification("Missing options for $template->elmname in standard plugin");
+            } else {
+                $template->select = html_writer::select($options, $template->elmname, $current, $default, $attrs);
+            }
         } else if ($standardelm->type == 'date') {
             $template->isdate = true;
 
@@ -854,10 +895,29 @@ class metadata_renderer extends \plugin_renderer_base {
             if ($elminstance->get_value() != '') {
                 $template->value = $elminstance->get_value();
             } else {
-                $template->value = "BEGIN:VCARD\nVERSION:\nFN:\nN:\nEND:VCARD";
+                $template->value = "BEGIN:VCARD\nVERSION:3.0\nFN:\nN:\nEND:VCARD";
             }
 
         }
         $template->iscontainer = false;
+    }
+
+    /**
+     * Several themes have different way to render and layout tabs in moodle.
+     * We sometime need to build our own tab tree, but coping with the overal 
+     * theme way of doing.
+     */
+    protected function detect_tab_model() {
+
+        $tabs[] = new \tabobject('fake', 'fakeurl', 'fakename');
+        $tabtree = new \tabtree($tabs);
+
+        $faketabs = $this->coreoutput->render_tabtree($tabtree);
+
+        if (preg_match('/nav-tabs/', $faketabs)) {
+            return 'nav nav-tabs';
+        } else {
+            return 'tabrow0';
+        }
     }
 }

@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
- *
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once $CFG->libdir.'/formslib.php';
+require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 
 class mod_sharedresource_entry_form extends moodleform {
 
@@ -45,7 +45,8 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
-        $return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+        // Return to course/view.php if false or mod/modname/view.php if true.
+        $return        = optional_param('return', 0, PARAM_BOOL);
         $type          = optional_param('type', '', PARAM_ALPHANUM);
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
@@ -71,7 +72,10 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
         // Sharing context:
-        // Users can share a sharedresource at public system context level, or share privately to a specific course category (and subcatgories).
+        /*
+         * Users can share a sharedresource at public system context level, or share privately to a specific
+         * course category (and subcatgories).
+         */
         $contextopts[1] = get_string('systemcontext', 'sharedresource');
         sharedresource_add_accessible_contexts($contextopts);
         $mform->addElement('select', 'context', get_string('sharingcontext', 'sharedresource'), $contextopts);
@@ -94,11 +98,13 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
 
-        $group = array();
-        $options = array('accepted_types' => array('.jpg','.gif','.png'));
-        $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
-        $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
-        $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
+        if (mod_sharedresource_supports_feature('entry/customicon')) {
+            $group = array();
+            $options = array('accepted_types' => array('.jpg','.gif','.png'));
+            $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
+            $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
+            $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
+        }
 
         $btext = get_string('gometadataform', 'sharedresource');
 
@@ -124,17 +130,26 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     public function validation($data, $files) {
-        global $DB;
+        global $DB, $USER;
 
         $errors = parent::validation($data, $files);
 
+        $fs = get_file_storage();
+
         if ($this->sharedresourceentrymode == 'add') {
             // Make sure that either the file or the URL are supplied.
-            if (empty($data['url']) && $data['sharedresourcefile'] == null) {
-                $errors['url'] = get_string('missingresource','sharedresource');
+            $usercontext = context_user::instance($USER->id);
+            $nofile = $fs->is_area_empty($usercontext->id, 'user', 'draft', $data['sharedresourcefile'], true);
+
+            if (empty($data['url']) && $nofile) {
+                $errors['url'] = get_string('missingresource', 'sharedresource');
+                $errors['sharedresourcefile'] = get_string('missingresource', 'sharedresource');
             }
         }
 
+        if (count($errors) == 0) {
+            return true;
+        }
         return $errors;
     }
 
@@ -161,11 +176,12 @@ class mod_sharedresource_entry_form extends moodleform {
         $maxbytes = 35 * 1024;
         $maxfiles = 1;
         $fileoptions = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
-        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource', 'thumbnail', $this->entryid, $fileoptions);
+        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource',
+                                'thumbnail', $this->entryid, $fileoptions);
         $groupname = 'thumbnailgroup';
         $defaultvalues->$groupname = array('thumbnail' => $draftitemid);
 
-        // Resource description .
+        // Resource description.
         $description = @$defaultvalues->description;
         $defaultvalues->description = array();
         $defaultvalues->description['text'] = $description;
