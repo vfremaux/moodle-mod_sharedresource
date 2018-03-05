@@ -113,7 +113,7 @@ class metadata {
     }
 
     /**
-     * Kowing the id of a metadata record in database, return the metadata object
+     * Knowing the id of a metadata record in database, return the metadata object
      * @param int $mtdid the metadata id.
      */
     public static function instance_by_id($mtdid) {
@@ -138,6 +138,8 @@ class metadata {
     public static function instance($entryid, $element, $namespace, $mustexist = true) {
         global $DB;
 
+        $plugin = sharedresource_get_plugin($namespace);
+
         $params = array('entryid' => $entryid, 'namespace' => $namespace, 'element' => $element);
         $record = $DB->get_record('sharedresource_metadata', $params);
         if ($mustexist && !$record) {
@@ -150,7 +152,7 @@ class metadata {
             $record->entryid = $entryid;
             $record->namespace = $namespace;
             $record->element = $element;
-            $record->value = null;
+            $record->value = $plugin->defaultValue($element);
             $isstored = false;
         }
 
@@ -277,7 +279,7 @@ class metadata {
         $data = new StdClass;
         $data->element = $this->element;
         $data->namespace = $this->namespace;
-        $data->value = $this->value;
+        $data->value = ''.$this->value; // Unnulify if empty.
         $data->entryid = $this->entryid;
         return $DB->insert_record('sharedresource_metadata', $data);
     }
@@ -337,7 +339,7 @@ class metadata {
     /**
      * get the immediate parent instance.
      */
-    public function get_parent($mustexist) {
+    public function get_parent($mustexist = true) {
 
         if ($this->level == 1) {
             // We are at root.
@@ -554,7 +556,7 @@ class metadata {
                 {sharedresource_metadata} sm,
                 {config_plugins} cf
             WHERE
-                cf.plugin = 'sharedresource_{$namespace}' AND
+                cf.plugin = 'sharedmetadata_{$namespace}' AND
                 cf.name = ? AND
                 sm.entryid = ? AND
                 sm.namespace = ? AND
@@ -887,13 +889,13 @@ class metadata {
             plugin = ?
         ";
 
-        $params = array("config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedresource_{$namespace}");
+        $params = array("config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedmetadata_{$namespace}");
         $hasuse = $DB->record_exists_select('config_plugins', $select, $params);
         if ($hasuse) {
             return true;
         }
 
-        $params = array("config_{$namespace}_{$capability}_{$nodeid}_%", "sharedresource_{$namespace}");
+        $params = array("config_{$namespace}_{$capability}_{$nodeid}_%", "sharedmetadata_{$namespace}");
         $legacy = $DB->record_exists_select('config_plugins', $select, $params);
 
         return $legacy;

@@ -185,7 +185,8 @@ class lti_mod_form extends moodleform {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
-        $editurl = new moodle_url("/mod/lti/instructor_edit_tool_type.php?sesskey={$USER->sesskey}&course={$COURSE->id}");
+        $params = array('sesskey' => $USER->sesskey, 'course' => $COURSE->id);
+        $editurl = new moodle_url("/mod/lti/instructor_edit_tool_type.php", $params);
         $ajaxurl = new moodle_url('/mod/lti/ajax.php');
 
         $jsinfo = (object)array(

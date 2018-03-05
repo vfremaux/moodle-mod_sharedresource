@@ -46,13 +46,14 @@ $event->add_record_snapshot('course', $course);
 $event->trigger();
 
 $strresource = get_string('modulename', 'sharedresource');
+$strresources = get_string('modulenameplural', 'sharedresource');
+$strtitle = get_string('modulenameplural', 'sharedresource');
 $strweek = get_string('week');
 $strtopic = get_string('topic');
 $strname = get_string('name');
 $strsummary = get_string('summary');
 $strlastmodified = get_string('lastmodified');
 
-$strtitle = get_string($mode.'sharedresourcetypefile', 'sharedresource');
 $url = new moodle_url('/mod/sharedresource/index.php');
 $PAGE->set_url($url);
 $PAGE->set_context($context);
@@ -60,18 +61,18 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'));
-$PAGE->set_focuscontrol('');
-$PAGE->set_cacheable(false);
-$PAGE->set_button('');
 
 echo $OUTPUT->header();
 
-if (! $resources = get_all_instances_in_course("sharedresource", $course)) {
-    $courseurl = new moodle_url('../../course/view.php', array('id' => $course->id));
-    echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), $courseurl);
+$courseurl = new moodle_url('../../course/view.php', array('id' => $course->id));
+if (!$resources = get_all_instances_in_course('sharedresource', $course)) {
+    echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), 'notifyproblem', $courseurl);
     echo $OUTPUT->footer();
     exit;
 }
+
+$table = new html_table();
+$table->size = array('20%', '40%', '40%');
 
 if ($course->format == 'weeks') {
     $table->head  = array ($strweek, $strname, $strsummary);
@@ -85,7 +86,10 @@ if ($course->format == 'weeks') {
 }
 
 $currentsection = '';
+$options = new Stdclass;
 $options->para = false;
+$strsummary = get_string('summary');
+
 foreach ($resources as $resource) {
     if ($course->format == 'weeks' or $course->format == 'topics') {
         $printsection = '';
@@ -112,14 +116,19 @@ foreach ($resources as $resource) {
         // Show dimmed if the mod is hidden.
         $table->data[] = array($printsection,
                 '<a class="dimmed" '.$extra.' href="$resurl">'.format_string($resource->name, true).'</a>',
-                format_text($resource->summary, FORMAT_MOODLE, $options));
+                format_text($resource->intro, $resource->introformat, $options));
     } else {
         // Show normal if the mod is visible.
         $table->data[] = array($printsection, 
                 '<a '.$extra.' href="'.$resurl.'">'.format_string($resource->name, true).'</a>',
-                format_text($resource->description, FORMAT_MOODLE, $options));
+                format_text($resource->intro, $resource->introformat, $options));
     }
 }
 echo '<br/>';
 echo html_writer::table($table);
+
+echo '<center>';
+echo $OUTPUT->single_button($courseurl, get_string('backtocourse', 'mod_sharedresource'));
+echo '</center>';
+
 echo $OUTPUT->footer($course);

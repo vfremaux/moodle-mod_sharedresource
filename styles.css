@@ -20,7 +20,8 @@
 .mtd-form fieldset {
     border: #ccc 1px solid;
     margin-bottom: 10px;
-    padding: 7px 7px 7px 7px;  
+    margin-top: 10px;
+    padding: 7px 7px 7px 7px;
 }
 
 .mtd-form fieldset:hover {
@@ -136,6 +137,11 @@ input.mtd-form-duration {
     padding-left: 1em;
     padding-right: 1em;
     overflow-x : hidden;
+}
+
+.mtd-form-element textarea.mtd-form-input {
+    min-width: 50%;
+    min-height: 6em;
 }
 
 .mtd-tab {
@@ -262,6 +268,18 @@ td.mtd-value {
     color: initial;
 }
 
+.mtd-date-element select {
+    width: 6em !important;
+}
+
+.mtd-form-element {
+    margin-top: 10px;
+}
+
+.mtd-form-element textarea {
+    margin-left: 1%;
+}
+
 fieldset.subbranch{
     margin-left:5px;
 }
@@ -332,4 +350,23 @@ fieldset > legend{
 .shadowed {
     opacity:0.5;
     -moz-opacity:0.5;
+}
+
+#sharedresource-add-instance {
+    display: table;
+}
+
+#sharedresource-add-instance > div {
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    display: table-cell;
+    padding: 20px;
+}
+
+.sharedresource-instructions {
+    margin-bottom:30px;
+}
+
+.sharedresource-link {
+    text-align: center;
 }

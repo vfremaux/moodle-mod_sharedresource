@@ -79,7 +79,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
         }
 
         // We check if the field have been filled for the vcard, select and date.
-        if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD' 
+        if (preg_replace('/[[:space:]]/', '', $value) != 'BEGIN:VCARDVERSION:FN:N:END:VCARD'
                 && $value != 'basicvalue'
                     && $value != '-year-'
                         && $value != '-month-'
@@ -193,15 +193,17 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $sourcename = $standardsourceelm->name;
                 // We are in a classification.
 
-                // Value for SOURCE comes directly from the metadata taxonomy source select, or 
+                // Value for SOURCE comes directly from the metadata taxonomy source select, or
                 $elementtpl->elmname = $sourcename;
                 $sourcenodeid = $taxumarray['source'];
                 // Get full source element key from the taxon path branch.
                 $sourceelementkey = \mod_sharedresource\metadata::to_instance($sourcenodeid, $instanceid);
                 $sourcehtmlname = \mod_sharedresource\metadata::storage_to_html($sourceelementkey);
                 $elementtpl->elmkey = $sourceelementkey;
-                $elementtpl->elmvalue = $metadataentries->$sourcehtmlname;
-                $shrentry->add_element($sourceelementkey, $metadataentries->$sourcehtmlname, $namespace);
+                if (!empty($metadataentries->$sourcehtmlname)) {
+                    $elementtpl->elmvalue = $metadataentries->$sourcehtmlname;
+                    $shrentry->add_element($sourceelementkey, $metadataentries->$sourcehtmlname, $namespace);
+                }
                 $template->elements[] = $elementtpl;
 
                 // Value for ID comes directly from the metadata taxonomy select.
