@@ -57,6 +57,7 @@ $string['articlequantity'] = 'Number of items';
 $string['attributes'] = 'Attributes provided in the form and stored : ';
 $string['author'] = 'Author';
 $string['backadminpage'] = 'Back to the settings page';
+$string['backtocourse'] = 'Back to the course';
 $string['backclassifpage'] = 'Back to the classifications configuration page';
 $string['backup_index'] = 'Backup shared Resource Index';
 $string['badcourseid'] = 'Incorrect course id';
@@ -249,7 +250,7 @@ $string['missingresource'] = 'must choose either URL or file';
 $string['missingtable'] = 'The table does not exist in the database <br/>';
 $string['modulename'] = 'Shared Resource';
 $string['modulename_help'] = 'A sharedresource is naturally shared within the whole site or a course category. Sharedresources are stored in a common library with complete indexation information for searching and browsing. Libraries can be exposed to the Moodle network to help sharing learning material in a moodle community.';
-$string['modulenameplural'] = 'shared Resources';
+$string['modulenameplural'] = 'Shared Resources';
 $string['month'] = '- Month -';
 $string['mtdfieldid'] = 'Field ID';
 $string['mtdfieldname'] = 'Field name';
@@ -330,7 +331,7 @@ $string['searchfor'] = 'Search for';
 $string['searchheader'] = 'Search criteria';
 $string['searchin'] = 'Search in';
 $string['searchinlibrary'] = 'Search in Library';
-$string['searchorcreate'] = 'Search in library or create a new sharedresource';
+$string['addinstance'] = 'Add a shared resource';
 $string['searchsharedresource'] = 'Search for A shared resource';
 $string['searchinsubs'] = 'Search in sub categories';
 $string['seconds'] = 'Second(s)';
@@ -544,3 +545,11 @@ and improvement effort.</p>
 <p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
 <p>Please contact one of our distributors to get "Pro" version support.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
+
+$string['addinstance_search_desc'] = '
+    Search in the library a shared resource and publish it in the course.
+';
+
+$string['addinstance_create_desc'] = '
+    Upload a new resource within the shared library and finally publish it in the course.
+';

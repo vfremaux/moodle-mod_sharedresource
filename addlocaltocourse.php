@@ -249,6 +249,7 @@ if ($course->format == 'page') {
     $coursepage->add_cm_to_page($cm->id);
 }
 
+$report = '';
 // Finally if localization was asked, transform the sharedresource in real resource.
 if ($mode == 'local') {
     // We make a standard resource from the sharedresource.

@@ -183,57 +183,61 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
         // Locally defined resource ie. we are the master.
         $shrentry->type = 'file'; // Obsolete ?
 
+        $hasentry = false;
         // Is this a local resource or a remote one?
         if (!empty($formdata->url)) {
             $shrentry->url = $formdata->url;
             $shrentry->file = '';
             $shrentry->identifier = sha1($shrentry->url);
             $shrentry->mimetype = mimeinfo('type', $shrentry->url);
+            $hasentry = true;
         } else {
             // If resource is a real file we necessarily have one in the user's filepicker temp file area.
             $filepickeritemid = $formdata->sharedresourcefile;
             $context = context_user::instance($USER->id);
-            if (!$draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $filepickeritemid, 'id DESC', false)) {
-                print_error('errorprogramming', 'sharedresource');
+            if ($draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $filepickeritemid, 'id DESC', false)) {
+                $file = reset($draftfiles);
+
+                $shrentry->identifier = $file->get_contenthash();
+                $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
+                $shrentry->url = '';
+                $hasentry = true;
             }
-            $file = reset($draftfiles);
-
-            $shrentry->identifier = $file->get_contenthash();
-            $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
-            $shrentry->url = '';
         }
     }
 
-    // Prepare thumbnail if any.
-    if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
-        $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
-        $thumbnailfile = false;
-        $usercontext = context_user::instance($USER->id);
-        if ($draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $thumbnailpickeritemid, 'id DESC', false)) {
-            $thumbnailfile = reset($draftfiles);
+    if ($hasentry) {
+        // Prepare thumbnail if any.
+        if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
+            $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
+            $thumbnailfile = false;
+            $usercontext = context_user::instance($USER->id);
+            if ($draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $thumbnailpickeritemid, 'id DESC', false)) {
+                $thumbnailfile = reset($draftfiles);
+            }
+            if ($thumbnailfile) {
+                // This temp file will be post processed at the end of the storage process.
+                $shrentry->thumbnail = $thumbnailfile->get_id();
+            }
+        } else {
+            unset($formdata->thumbnailgroup);
         }
-        if ($thumbnailfile) {
-            // This temp file will be post processed at the end of the storage process.
-            $shrentry->thumbnail = $thumbnailfile->get_id();
-        }
-    } else {
-        unset($formdata->thumbnailgroup);
+
+        $srentry = serialize($shrentry);
+        $SESSION->sr_entry = $srentry;
+        $error = 'no error';
+        $SESSION->error = $error;
+
+        $params = array('course' => $course->id,
+                        'section' => $section,
+                        'type' => $type,
+                        'add' => 'sharedresource',
+                        'return' => $return,
+                        'mode' => $mode,
+                        'context' => $sharingcontext);
+        $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
+        redirect($fullurl);
     }
-
-    $srentry = serialize($shrentry);
-    $SESSION->sr_entry = $srentry;
-    $error = 'no error';
-    $SESSION->error = $error;
-
-    $params = array('course' => $course->id,
-                    'section' => $section,
-                    'type' => $type,
-                    'add' => 'sharedresource',
-                    'return' => $return,
-                    'mode' => $mode,
-                    'context' => $sharingcontext);
-    $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
-    redirect($fullurl);
 }
 
 // Do we have hidden elements that we need to save.
