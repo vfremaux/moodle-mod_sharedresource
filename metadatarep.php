@@ -58,6 +58,7 @@ if (!$course = $DB->get_record('course', array('id' => $course))) {
 
 require_login($course);
 $context = context_course::instance($course->id);
+require_capability('repository/sharedresources:create', $context);
 
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;

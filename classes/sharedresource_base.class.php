@@ -761,7 +761,7 @@ class base {
         $update  = optional_param('update', 0, PARAM_INT);
         $return  = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
         $type    = optional_param('type', 'file', PARAM_ALPHANUM);
-        $section = optional_param('section',null, PARAM_INT);
+        $section = optional_param('section', null, PARAM_INT);
         $courseid  = optional_param('course', null,PARAM_INT);
 
         if (!empty($add)) {

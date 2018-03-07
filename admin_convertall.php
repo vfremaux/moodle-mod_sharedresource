@@ -43,12 +43,12 @@ if ($courseid > SITEID) {
 
     $context = context_course::instance($courseid);
     require_login($course);
-    require_capability('moodle/course:manageactivities', $context);
+    require_any_capability(array('repository/sharedresources:create', 'repository/sharedresources:manage'), $context);
     $PAGE->set_context($context);
 } else {
     $systemcontext = context_system::instance();
     require_login();
-    require_capability('mod/sharedresource:editcatalog', $systemcontext);
+    require_capability('repository/sharedresources:manage', $systemcontext);
     $PAGE->set_context($systemcontext);
 }
 

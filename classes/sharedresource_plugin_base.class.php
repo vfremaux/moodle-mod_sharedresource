@@ -156,7 +156,7 @@ abstract class plugin_base {
             throw new coding_exception('sharedresource_entry_definition_scalar() : Trying to use on core mtd plugin class. No namespace assigned. Please inform developers.');
         }
 
-        if ($element['type'] == 'select') {
+        if ($element['type'] == 'select' || $element['type'] == 'sortedselect') {
             $values = $element['values'];
             $options = array();
             foreach ($values as $value) {
@@ -314,7 +314,7 @@ abstract class plugin_base {
         }
 
         $template = new StdClass;
-        $config = get_config('sharedresource_'.$this->namespace);
+        $config = get_config('sharedmetadata_'.$this->namespace);
         $field = $this->METADATATREE[$fieldid];
 
         // Extract parent id.
@@ -770,8 +770,10 @@ abstract class plugin_base {
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = "$element:$item";
-        // Any element value will be stored witht the element original source.
-        $mtdrec->namespace = $this->METADATATREE[$element]['source'];
+        // Any element value will be stored with the element original source.
+        // $mtdrec->namespace = $this->METADATATREE[$element]['source'];
+        // Temporary solution : record with current metadata namespace.
+        $mtdrec->namespace = $this->namespace;
         $mtdrec->value = $value;
 
         if ($oldrec = $DB->get_record('sharedresource_metadata', array('entryid' => $this->entryid, 'element' => $mtdrec->element, 'namespace' => $mtdrec->namespace))){
@@ -795,13 +797,14 @@ abstract class plugin_base {
 
         $titleElement = $this->getTitleElement();
         $titlekey = '$titleElement:0_0';
-        $titleSource = $this->METADATATREE[$titleElement]['source'];
+        $titlesource = $this->METADATATREE[$titleElement]['source'];
+        $titlesource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titleSource, 'element' => $titlekey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titlesource, 'element' => $titlekey));
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $titlekey;
-        $mtdrec->namespace = $titleSource;
+        $mtdrec->namespace = $titlesource;
         $mtdrec->value = $title;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
@@ -818,16 +821,18 @@ abstract class plugin_base {
             throw new coding_exception('setDescription() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
-        $descriptionElement = $this->getDescriptionElement();
-        $desckey = '$descriptionElement:0_0';
-        $descriptionSource = $this->METADATATREE[$descriptionElement]['source'];
+        $descriptionelement = $this->getDescriptionElement();
+        $desckey = '$descriptionelement:0_0';
+        // At the moment we do not record elements under their own source.
+        // $descriptionsource = $this->METADATATREE[$descriptionelement]['source'];
+        $descriptionsource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $descriptionSource, 'element' => $desckey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $descriptionsource, 'element' => $desckey));
 
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $desckey;
-        $mtdrec->namespace = $descriptionSource;
+        $mtdrec->namespace = $descriptionsource;
         $mtdrec->value = $description;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
@@ -846,24 +851,51 @@ abstract class plugin_base {
 
         $locationElement = $this->getLocationElement();
         $locationkey = '$locationElement:0_0';
-        $locationSource = $this->METADATATREE[$locationElement]['source'];
+        // $locationsource = $this->METADATATREE[$locationElement]['source'];
+        $locationsource = $this->namespace;
 
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $locationSource, 'element' => $locationkey));
+        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $locationsource, 'element' => $locationkey));
         $mtdrec = new StdClass;
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = $locationkey;
-        $mtdrec->namespace = $locationSource;
+        $mtdrec->namespace = $locationsource;
         $mtdrec->value = $location;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
     }
 
     /**
-     * gets a default value for a node if exists
+     * Gets a default value for a node or node instance if exists.
+     * Default value is returned if any of the default mask match the input.
+     *
+     * @param string $elementkey A full elementkey (m_n_o:x_y_z) or a node id (m_n_o)
      *
      */
-    public function defaultValue($field) {
-        return @$this->METADATATREE[$field]['default'];
+    public function defaultValue($elementkey) {
+
+        if (strpos($elementkey, ':') !== false) {
+            list($elementid, $instanceid) = explode(':', $elementkey);
+            if (!array_key_exists('default', $this->METADATATREE[$elementid])) {
+                return null;
+            }
+            if (!empty($this->METADATATREE[$elementid]['default'])) {
+
+                foreach ($this->METADATATREE[$elementid]['default'] as $mask => $defaultvalue) {
+                    if ($mask == '*') {
+                        // Global wildcard will serve in fine... after all thiner masks.
+                        continue;
+                    }
+
+                    $pregmask = str_replace('*', '[0-9]+', $mask); // A wildcard means any node number.
+                    if (preg_match('/^'.$pregmask.'$/', $instanceid)) {
+                        return $defaultvalue;
+                    }
+                }
+                return @$this->METADATATREE[$elementid]['default']['*'];
+            }
+        }
+
+        return @$this->METADATATREE[$elementkey]['default']['*'];
     }
 
     /**
@@ -956,14 +988,19 @@ abstract class plugin_base {
      *
      * would define a default value for the "Catalog field" of LOM based schemas
      */
-    public function load_defaults($mtdefaults) {
+    public function load_defaults($mtddefaults) {
 
         $config = get_config('sharedresource');
 
-        if (!empty($mtdefaults)) {
+        if (!empty($mtddefaults)) {
             if (array_key_exists($config->schema, $mtddefaults)) {
-                foreach ($mtdefaults[$config->schema] as $key => $default) {
-                    $this->METADATATREE[$key]['default'] = $default['default'];
+                foreach ($mtddefaults[$config->schema] as $key => $default) {
+                    if (strpos($key, ':') !== false) {
+                        list($elementid, $instanceid) = explode(':', $key);
+                        $this->METADATATREE[$elementid]['default'][$instanceid] = $default['default'];
+                    } else {
+                        $this->METADATATREE[$key]['default']['*'] = $default['default'];
+                    }
                 }
             }
         }

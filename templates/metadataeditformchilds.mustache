@@ -59,6 +59,16 @@
     </div>
 {{/istext}}
 
+{{#islongtext}}
+    <div class="mtd-form-element">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+        <textarea id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" {{{readonly}}} {{{attributes}}} />{{{value}}}</textarea>
+
+        {{{error}}}
+    </div>
+{{/islongtext}}
+
 {{#isselect}}
     <div class="mtd-form-element">
         <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
@@ -67,7 +77,7 @@
 {{/isselect}}
 
 {{#isdate}}
-    <div class="mtd-form-element">
+    <div class="mtd-form-element mtd-date-element">
         <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
 
             {{{yearselect}}}
