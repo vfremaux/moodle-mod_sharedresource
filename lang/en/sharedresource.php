@@ -299,6 +299,8 @@ $string['pluginname'] = 'Shared resource';
 $string['pluginscontrol'] = 'Metadata Plugins Control';
 $string['pluginscontrolinfo'] = 'The following parameter control the plugin used in metadata sets while collecting data for indexation';
 $string['preview'] = 'Preview';
+$string['profilefieldplaceholder'] = 'profile_field: or user: prefixed field name';
+$string['profilefieldsyntax'] = 'The userfield based rule {$a} does not have the expected syntax';
 $string['pushtosingleprovider'] = '<p>Your site only has one provider connected : {$a}.</p><p>By sharing the resource to an external provider, you:<ul><li>Move physically the resource</li><li>Delete the local representation for this resource</li><li>Allow other sites using this provider to use the resource</li><li>Will rebind the all locations of use of the resource within the Moodle network.</li></ul></p>';
 $string['readnotice'] = 'Read the notice';
 $string['remotesearchquery'] = 'Search in remote resource repositories ';
@@ -331,7 +333,7 @@ $string['searchfor'] = 'Search for';
 $string['searchheader'] = 'Search criteria';
 $string['searchin'] = 'Search in';
 $string['searchinlibrary'] = 'Search in Library';
-$string['searchorcreate'] = 'Search in library or create a new sharedresource';
+$string['addinstance'] = 'Add a shared resource';
 $string['searchsharedresource'] = 'Search for A shared resource';
 $string['searchinsubs'] = 'Search in sub categories';
 $string['seconds'] = 'Second(s)';
@@ -545,3 +547,11 @@ and improvement effort.</p>
 <p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
 <p>Please contact one of our distributors to get "Pro" version support.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
+
+$string['addinstance_search_desc'] = '
+    Search in the library a shared resource and publish it in the course.
+';
+
+$string['addinstance_create_desc'] = '
+    Upload a new resource within the shared library and finally publish it in the course.
+';
