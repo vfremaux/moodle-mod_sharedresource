@@ -55,6 +55,7 @@ $string['attributes'] = 'Liste des attributs renseignés dans le formulaire et e
 $string['backtoconfig'] = 'Retour à la page de configuration des classifications';
 $string['backadminpage'] = 'Retour à la page des réglages';
 $string['backclassifpage'] = 'Retour à la page de configuration des classifications';
+$string['backtocourse'] = 'Revenir au cours';
 $string['backup_index'] = 'Sauvegarder le référentiel des ressources';
 $string['badcourseid'] = 'Identifiant de cours invalide';
 $string['badsqlrestrict'] = 'La clause devrait être le contenu d\'une clause WHERE';
@@ -275,6 +276,8 @@ $string['pluginname'] = 'Ressource mutualisée';
 $string['pluginscontrol'] = 'Contrôle des plugins de métadonnées';
 $string['pluginscontrolinfo'] = 'Ce paramètre permet de choisir le plugin utilisé pour les métadonnées lors de l\'indexation de la ressource.';
 $string['preview'] = 'Prévisualiser';
+$string['profilefieldplaceholder'] = 'Code de champ précédé de profile_field: ou user:';
+$string['profilefieldsyntax'] = 'La règle de champs de profil {$a} n\'a pas la syntaxe attendue';
 $string['pushtosingleprovider'] = '<p>Votre plate-forme ne connait qu\'un fournisseur externe mutualisé : {$a}.</p><p>En mutualisant la ressource vers ce fournisseur externe, vous:<ul><li>Déplacez la ressource</li><li>Supprimez la ressource stockée dans cette plate-forme</li><li>Permettez à d\'autres plates-formes connectées à ce fournisseur d\'utiliser cette ressource</li><li>Déplacerez la position de cette ressource dans toutes ses utilisations à l\'intérieur du réseau.</li></ul></p>';
 $string['readnotice'] = 'Lire la notice';
 $string['remotesearchquery'] = 'Recherche dans les référentiels de ressources';
@@ -307,7 +310,7 @@ $string['searchfor'] = 'Chercher';
 $string['searchheader'] = 'Critères de recherche';
 $string['searchin'] = 'Rechercher dans';
 $string['searchinlibrary'] = 'Rechercher dans la librairie';
-$string['searchorcreate'] = 'Chercher une ressource mutualisée ou enregistrer une nouvelle ressource';
+$string['addinstance'] = 'Ajouter une ressource mutualisée';
 $string['searchsharedresource'] = 'Chercher une ressource mutualisée';
 $string['searchinsubs'] = 'Rechercher dans les sous catégories';
 $string['seconds'] = 'Seconde(s)';
@@ -523,3 +526,11 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
 <p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
+
+$string['addinstance_search_desc'] = '
+    Recherchez une ressource mutualisée dans la librarie et publiez-là dans le cours.
+';
+
+$string['addinstance_create_desc'] = '
+    Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
+';

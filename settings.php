@@ -23,6 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 global $SHAREDRESOURCE_WINDOW_OPTIONS; // Make sure we have the pesky global.
 
@@ -37,6 +38,17 @@ if (empty($CFG->enablerssfeeds)) {
 } else {
     $options = array(0 => get_string('no'), 1 => get_string('yes'));
     $desc = get_string('configenablerssfeeds', 'sharedresource');
+}
+
+$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+
+if ($namespace = get_config('sharedresource', 'schema')) {
+    $hasmetadata = true;
+    $plugin = sharedresource_get_plugin($namespace);
+
+    if (!is_null($plugin->getClassification())) {
+        $hasclassification = true;
+    }
 }
 
 if ($ADMIN->fulltree) {
@@ -156,7 +168,6 @@ if ($ADMIN->fulltree) {
         $label = get_string('metadataconfiguration', 'sharedresource');
         $desc = get_string('medatadaconfiguration_desc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php');
         $settings->add(new admin_setting_heading($key, $label, $desc));
-        $hasmetadata = true;
 
         $plugin = sharedresource_get_plugin($namespace);
 
@@ -165,7 +176,6 @@ if ($ADMIN->fulltree) {
             $label = get_string('classificationconfiguration', 'sharedresource');
             $desc = get_string('classificationconfiguration_desc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classifications.php');
             $settings->add(new admin_setting_heading($key, $label, $desc));
-            $hasclassification = true;
         }
     }
 
@@ -199,15 +209,28 @@ if ($ADMIN->fulltree) {
 }
 
 if ($hasmetadata || $hasclassification) {
-    $ADMIN->add('modsettings', new admin_category('modsharedresourcefolder', new lang_string('pluginname', 'mod_sharedresource'), $module->is_enabled() === false));
 
-    if ($hasmetadata) {
-        $ADMIN->add('modsharedresourcefolder', new admin_externalpage('resourcemetadata',
-            get_string('metadata', 'sharedresource'), new moodle_url('/mod/sharedresource/metadataconfigure.php')));
-    }
+    if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
 
-    if ($hasclassification) {
-        $ADMIN->add('modsharedresourcefolder', new admin_externalpage('resourceclassification',
-            get_string('classifications', 'sharedresource'), new moodle_url('/mod/sharedresource/classifications.php')));
+        $label = new lang_string('pluginname', 'mod_sharedresource');
+        $ADMIN->add('modsettings', new admin_category('modsharedresourcefolder', $label));
+
+        if (!$ADMIN->locate('resources')) {
+            $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+        }
+
+        if ($hasmetadata) {
+            $label = get_string('metadata', 'sharedresource');
+            $pageurl = new moodle_url('/mod/sharedresource/metadataconfigure.php');
+            $settingspage = new admin_externalpage('resourcemetadata', $label, $pageurl, 'repository/sharedresources:manage');
+            $ADMIN->add('modsharedresourcefolder', $settingspage);
+        }
+
+        if ($hasclassification) {
+            $label = get_string('classifications', 'sharedresource');
+            $pageurl = new moodle_url('/mod/sharedresource/classifications.php');
+            $settingspage = new admin_externalpage('resourceclassification', $label , $pageurl, 'repository/sharedresources:manage');
+            $ADMIN->add('modsharedresourcefolder', $settingspage);
+        }
     }
 }

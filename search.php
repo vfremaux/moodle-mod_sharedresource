@@ -56,7 +56,7 @@ if ($return) {
     redirect(new moodle_url('/local/sharedresources/index.php', $params));
 }
 
-$strtitle = get_string('searchorcreate', 'sharedresource');
+$strtitle = get_string('addinstance', 'sharedresource');
 $PAGE->set_pagelayout('standard');
 $params = array('course' => $courseid, 'add' => $add, 'return' => $return, 'section' => $section, 'id' => $id);
 $url = new moodle_url('/mod/sharedresource/search.php', $params);
@@ -68,25 +68,15 @@ $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
 $linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id, 'section' => $section));
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add(get_string('searchsharedresource', 'sharedresource'));
-$PAGE->set_focuscontrol('');
-$PAGE->set_cacheable(false);
-$PAGE->set_button('');
+
+$renderer = $PAGE->get_renderer('mod_sharedresource');
 
 // Process search form.
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('searchorcreate', 'sharedresource'));
+echo $OUTPUT->heading(get_string('addinstance', 'sharedresource'));
 
-echo '<div id="sharedresource-search">';
-$libraryurl = new moodle_url('/local/sharedresources/index.php', array('course' => $courseid, 'section' => $section, 'return' => $return));
-echo $OUTPUT->single_button($libraryurl, get_string('searchinlibrary', 'sharedresource'));
-echo '</div>';
-
-echo '<div id="sharedresource-create">';
-$params = array('course' => $courseid, 'section' => $section, 'return' => $return, 'add' => 'sharedresource', 'mode' => 'add');
-$editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-echo $OUTPUT->single_button($editurl, get_string('addsharedresource', 'sharedresource'));
-echo '</div>';
+echo $renderer->add_instance_form($section, $return);
 
 echo $OUTPUT->footer();

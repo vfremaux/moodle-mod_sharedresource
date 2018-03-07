@@ -15,24 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
- *
- * @package mod_sharedresource
- * @category mod
- * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @author  Valery Fremaux valery.fremaux@club-internet.fr
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
+ * @package    mod_sharedresource
+ * @category   mod
+ *
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
  */
+namespace mod_sharedresource\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018021704;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016052300;       // Requires this Moodle version.
-$plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.1.0 (Build 2018011801)';
-$plugin->dependencies = array('local_sharedresources' => 201801180);
+class opened_core_renderer extends \core_renderer {
 
-// Non Moodle attributes.
-$plugin->codeincrement = '3.1.0008';
-$plugin->privacy = 'dualrelease';
+    public function render_tabtree(\tabtree $tabs) {
+        return parent::render_tabtree($tabs);
+    }
+
+}

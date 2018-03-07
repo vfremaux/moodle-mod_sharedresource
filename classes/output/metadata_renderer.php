@@ -32,8 +32,16 @@ use \mod_sharedresource\metadata;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/output/opened_core_renderer.php');
 
 class metadata_renderer extends \plugin_renderer_base {
+
+    protected $coreoutput;
+
+    public function __construct($page, $target) {
+        parent::__construct($page, $target);
+        $this->coreoutput = new opened_core_renderer($page, $target);
+    }
 
     public function metadata_configuration() {
         $config = get_config('sharedresource');
@@ -76,7 +84,7 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->dmusestr = get_string('dmuse','sharedresource');
         $template->dmdescription = get_string('dmdescription','sharedresource');
 
-        $tabmodel = sharedresource_detect_tab_model();
+        $tabmodel = $this->detect_tab_model();
         $template->tabmodel = $tabmodel;
 
         $template->standarddescriptionstr = get_string('standarddescription', 'sharedmetadata_'.$mtdstandard->getNamespace());
@@ -454,7 +462,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $this->edit_panels($capability, $mtdstandard, $template);
 
-        $tabmodel = sharedresource_detect_tab_model();
+        $tabmodel = $this->detect_tab_model();
         $template->tabmodel = $tabmodel;
 
         $template->validateformstr = get_string('validateform', 'sharedresource');
@@ -892,5 +900,24 @@ class metadata_renderer extends \plugin_renderer_base {
 
         }
         $template->iscontainer = false;
+    }
+
+    /**
+     * Several themes have different way to render and layout tabs in moodle.
+     * We sometime need to build our own tab tree, but coping with the overal 
+     * theme way of doing.
+     */
+    protected function detect_tab_model() {
+
+        $tabs[] = new \tabobject('fake', 'fakeurl', 'fakename');
+        $tabtree = new \tabtree($tabs);
+
+        $faketabs = $this->coreoutput->render_tabtree($tabtree);
+
+        if (preg_match('/nav-tabs/', $faketabs)) {
+            return 'nav nav-tabs';
+        } else {
+            return 'tabrow0';
+        }
     }
 }
