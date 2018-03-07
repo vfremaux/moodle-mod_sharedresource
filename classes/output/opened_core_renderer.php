@@ -15,24 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the mnet services for the user_mnet_host plugin
+ * @author  Valery Fremaux valery.fremaux@club-internet.fr
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
+ * @package    mod_sharedresource
+ * @category   mod
  *
- * @since 2.0
- * @package sharedresource
- * @category mnet
- * @copyright 2012 Valery Fremaux
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
  */
+namespace mod_sharedresource\output;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+class opened_core_renderer extends \core_renderer {
 
-$publishes = array(
-);
+    public function render_tabtree(\tabtree $tabs) {
+        return parent::render_tabtree($tabs);
+    }
 
-$subscribes = array(
-);
-
-if (mod_sharedresource_supports_feature('entry/remote')) {
-    include($CFG->dirroot.'/mod/sharedresource/pro/db/mnet.php');
 }

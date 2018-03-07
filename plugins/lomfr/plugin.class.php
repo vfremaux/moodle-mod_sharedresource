@@ -173,7 +173,7 @@ class plugin_lomfr extends plugin_base {
         '1_4' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -326,7 +326,7 @@ class plugin_lomfr extends plugin_base {
         '2_3_1' => array(
             'name' => 'Role',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer',
             'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer',
             'instructional designer', 'subject matter expert', 'contributor'),
@@ -636,7 +636,7 @@ class plugin_lomfr extends plugin_base {
         '4_4_1_2' => array(
             'name' => 'Name',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator',
             'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
             'checked' => array(
@@ -680,7 +680,7 @@ class plugin_lomfr extends plugin_base {
         '4_5' => array(
             'name' => 'Installation Remarks',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -765,7 +765,7 @@ class plugin_lomfr extends plugin_base {
         '5_2' => array(
             'name' => 'Learning Resource Type',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide',
             'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture', 'démonstration',
             'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique'),
@@ -886,7 +886,7 @@ class plugin_lomfr extends plugin_base {
         '5_10' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -914,7 +914,7 @@ class plugin_lomfr extends plugin_base {
         '5_12' => array(
             'name' => 'Activity',
             'source' => 'lomfr',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire',
             'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer', 's\'informer',
             'se former', 'simuler', 's\'évaluer'),
@@ -993,7 +993,7 @@ class plugin_lomfr extends plugin_base {
         '6_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1103,7 +1103,7 @@ class plugin_lomfr extends plugin_base {
         '7_2_2' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1163,7 +1163,7 @@ class plugin_lomfr extends plugin_base {
         '8_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1287,7 +1287,7 @@ class plugin_lomfr extends plugin_base {
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1295,7 +1295,8 @@ class plugin_lomfr extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
+            ),
+            'widget' => 'freetext'
         ),
         '9_4' => array(
             'name' => 'Keyword',
