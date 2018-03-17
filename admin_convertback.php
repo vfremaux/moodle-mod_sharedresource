@@ -45,7 +45,7 @@ if ($courseid > SITEID) {
 } else {
     $systemcontext = context_system::instance();
     require_login();
-    require_capability('mod/sharedresource:editcatalog', $systemcontext);
+    require_capability('repository/sharedresources:manage', $systemcontext);
     $PAGE->set_context($systemcontext);
 }
 
