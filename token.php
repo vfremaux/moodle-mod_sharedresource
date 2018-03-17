@@ -33,11 +33,11 @@ $classifid = optional_param('classifid', 0, PARAM_TEXT); // Classification id.
 
 $systemcontext = context_system::instance();
 require_login();
-require_capability('moodle/site:config', $systemcontext);
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = $CFG->wwwroot.'/mod/sharedresource/token.php';
+$url = new moodle_url('/mod/sharedresource/token.php', array('id' => $id, 'classifid' => $classifid));
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);

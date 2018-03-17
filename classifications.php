@@ -48,7 +48,7 @@ $orderingmin = optional_param('orderingmin', 0, PARAM_INT);
 
 $systemcontext = context_system::instance();
 require_login();
-require_capability('moodle/site:config', $systemcontext);
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 

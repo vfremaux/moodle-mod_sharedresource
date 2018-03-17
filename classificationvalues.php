@@ -37,7 +37,7 @@ $action = optional_param('what', '', PARAM_TEXT); // The controller action.
 
 $systemcontext = context_system::instance();
 require_login();
-require_capability('moodle/site:config', $systemcontext);
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
