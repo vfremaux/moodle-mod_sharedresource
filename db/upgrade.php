@@ -219,6 +219,19 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2018021703, 'sharedresource');
     }
 
+    if ($oldversion < 2018041000) {
+
+        $table = new xmldb_table('sharedresource_entry');
+
+        $field = new xmldb_field('score', XMLDB_TYPE_INTEGER, 10, null, null, null, null, 'scorelike');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Sharedresource savepoint reached.
+        upgrade_mod_savepoint(true, 2018041000, 'sharedresource');
+    }
+
     return $return;
 }
 

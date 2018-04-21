@@ -50,6 +50,7 @@ $SHAREDRESOURCE_CORE_ELEMENTS = array('id',
                                     'url',
                                     'file',
                                     'type',
+                                    'score',
                                     'remoteid',
                                     'mimetype',
                                     'timemodified');
@@ -138,7 +139,7 @@ function mod_sharedresource_supports_feature($feature) {
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl','fineselect'),
-                'entry' => array('extended', 'accessctl', 'remote', 'customicon'),
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
                 'emulate' => 'community',
             ),
             'community' => array(
