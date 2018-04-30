@@ -113,17 +113,16 @@ define(['jquery', 'core/log'], function ($, log) {
 
         init_parent: function () {
 
-            var that = $(this);
+            that = $(this);
 
-            var regexp = /([^-]*)-([^-]*)-([^-]*)-(.*)$/;
-            var matches = that.attr('id').match(regexp);
-            if (matches) {
-                var fieldtype = matches[2];
-                var readwrite = matches[3];
-                var nodeid = matches[4];
+            regexp = /([^-]*)-([^-]*)-([^-]*)-(.*)$/;
+            if (matches = that.attr('id').match(regexp)) {
+                fieldtype = matches[2];
+                readwrite = matches[3];
+                nodeid = matches[4];
 
                 var ischecked = that.prop('checked');
-                if (ischecked === true) {
+                if (ischecked == true) {
                     // Let initial node of children
                     $('.' + namespace + '-' + fieldtype + '-' + readwrite + ' ' + nodeid).prop('disabled', false);
                 } else {
@@ -137,11 +136,10 @@ define(['jquery', 'core/log'], function ($, log) {
         toggle_childs: function () {
 
             log.debug('AMD Mod sharedresource metadata TOGGLE CHILD');
-            var that = $(this);
+            that = $(this);
 
-            var regexp = /([^-]*)-([^-]*)-([^-]*)-(.*)$/;
-            var matches = that.attr('id').match(regexp);
-            if (matches) {
+            regexp = /([^-]*)-([^-]*)-([^-]*)-(.*)$/;
+            if (matches = that.attr('id').match(regexp)) {
                 var fieldtype = matches[2];
                 var readwrite = matches[3];
                 var nodeid = matches[4];
@@ -162,13 +160,13 @@ define(['jquery', 'core/log'], function ($, log) {
 
                 var ischecked = that.prop('checked');
                 // Check all my subdependancies.
-                if (ischecked === true) {
+                if (ischecked == true) {
                     // All childs.
                     $('.' + namespace + '-' + fieldtype + '-' + readwrite + '-' + nodeid).prop('checked', true);
                     $('.' + namespace + '-' + fieldtype + '-' + readwrite + '-' + nodeid).prop('disabled', false);
 
                     // The read and child's read.
-                    if (readwrite === 'write') {
+                    if (readwrite == 'write') {
                         // My read.
                         $('#' + namespace + '-' + fieldtype + '-read-' + nodeid).prop('checked', true);
                         $('#' + namespace + '-' + fieldtype + '-read-' + nodeid).prop('disabled', true);
@@ -178,12 +176,12 @@ define(['jquery', 'core/log'], function ($, log) {
                     }
 
                     // Check all my parents
-                    var parentid = nodeparents.shift();
+                    parentid = nodeparents.shift();
                     while (parentid) {
                         $('#' + namespace + '-' + fieldtype + '-' + readwrite + '-' + parentid).prop('checked', true);
                         $('#' + namespace + '-' + fieldtype + '-' + readwrite + '-' + parentid).prop('disabled', false);
 
-                        if (readwrite === 'write') {
+                        if (readwrite == 'write') {
                             $('#' + namespace + '-' + fieldtype + '-read-' + parentid).prop('checked', true);
                             $('#' + namespace + '-' + fieldtype + '-read-' + parentid).prop('disabled', true);
                         }
@@ -196,7 +194,7 @@ define(['jquery', 'core/log'], function ($, log) {
                     $('.' + namespace + '-' + fieldtype + '-' + readwrite + '-' + nodeid).prop('checked', false);
                     $('.' + namespace + '-' + fieldtype + '-' + readwrite + '-' + nodeid).prop('disabled', true);
 
-                    if (readwrite === 'write') {
+                    if (readwrite == 'write') {
                         // My read.
                         $('#' + namespace + '-' + fieldtype + '-read-' + nodeid).prop('disabled', false);
 
@@ -213,14 +211,13 @@ define(['jquery', 'core/log'], function ($, log) {
 
             log.debug('AMD Mod sharedresource metadata WIDGET CHECK');
 
-            var that = $(this);
+            that = $(this);
 
-            var regexp = /([^-]*)-([^-]*)-(.*)$/;
+            regexp = /([^-]*)-([^-]*)-(.*)$/;
 
-            var matches = that.attr('id').match(regexp);
-            if (matches) {
-                // var fieldtype = matches[2]; // Should be widget if proxied on a widget.
-                var nodeid = matches[3];
+            if (matches = that.attr('id').match(regexp)) {
+                fieldtype = matches[2]; // Should be widget if proxied on a widget.
+                nodeid = matches[3];
 
                 // Check widget if exists on same line.
                 if ($('#' + namespace + '-widget' + '-' + nodeid).length) {

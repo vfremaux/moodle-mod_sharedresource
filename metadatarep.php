@@ -86,7 +86,6 @@ $srentry = $SESSION->sr_entry;
 $shrentry = unserialize($srentry);
 
 // If it's an update, metadata of the sharedresource should be deleted before adding new ones.
-
 if ($mode != 'add') {
     foreach ($shrentry->metadataelements as $key => $metadata) {
         unset($shrentry->metadataelements[$key]);

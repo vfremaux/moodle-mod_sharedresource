@@ -139,9 +139,13 @@ class metadata {
         global $DB;
 
         $plugin = sharedresource_get_plugin($namespace);
+        $record = null;
 
-        $params = array('entryid' => $entryid, 'namespace' => $namespace, 'element' => $element);
-        $record = $DB->get_record('sharedresource_metadata', $params);
+        if ($entryid != 0) {
+            $params = array('entryid' => $entryid, 'namespace' => $namespace, 'element' => $element);
+            $record = $DB->get_record('sharedresource_metadata', $params);
+        }
+
         if ($mustexist && !$record) {
             throw new moodle_exception("Metadata instance $element do not exist in database");
         }
