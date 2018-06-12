@@ -53,7 +53,7 @@ if (empty($course)) {
 
 require_login($course);
 $context = context_course::instance($course->id);
-require_any_capability(array('repositoryÂ§sharedresources:use', 'repositoryÂ§sharedresources:create'), $context);
+require_any_capability(array('repository§sharedresources:use', 'repository§sharedresources:create'), $context);
 
 $strtitle = get_string('addlocal', 'sharedresource');
 

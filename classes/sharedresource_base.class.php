@@ -388,7 +388,6 @@ class base {
             $PAGE->navbar->add($strtitle,'view.php','misc');
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
-            $PAGE->set_button(update_module_button($cm->id, $course->id, $this->strresource));
             $PAGE->set_headingmenu(navmenu($course, $cm, 'parent'));
             $url = new moodle_url('/mod/sharedresource/view.php');
             $PAGE->set_url($url);

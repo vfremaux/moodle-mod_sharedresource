@@ -386,19 +386,19 @@ function sharedresource_cm_info_dynamic(&$modinfo) {
     require_once($CFG->libdir.'/filelib.php');
 
     if (!$shrentry) {
-        $modinfo->set_icon_url($OUTPUT->pix_url('broken', 'sharedresource'));
+        $modinfo->set_icon_url($OUTPUT->image_url('broken', 'sharedresource'));
     } else {
         if ($shrentry->file) {
             $fs = get_file_storage();
             if ($filerec = $fs->get_file_by_id($shrentry->file)) {
                 $mimetype = $filerec->get_mimetype();
                 $icon = file_mimetype_icon($mimetype);
-                $modinfo->set_icon_url($OUTPUT->pix_url($icon));
+                $modinfo->set_icon_url($OUTPUT->image_url($icon));
             } else {
-                $modinfo->set_icon_url($OUTPUT->pix_url('icon', 'sharedresource'));
+                $modinfo->set_icon_url($OUTPUT->image_url('icon', 'sharedresource'));
             }
         } else {
-            $modinfo->set_icon_url($OUTPUT->pix_url('remoteicon', 'sharedresource'));
+            $modinfo->set_icon_url($OUTPUT->image_url('remoteicon', 'sharedresource'));
         }
     }
 }
