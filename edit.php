@@ -180,6 +180,7 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
     $fs = get_file_storage();
 
     if ($mode == 'add') {
+        $hasentry = false;
         // Locally defined resource ie. we are the master.
         $shrentry->type = 'file'; // Obsolete ?
 
@@ -204,6 +205,8 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
                 $hasentry = true;
             }
         }
+    } else {
+        $hasentry = true;
     }
 
     if ($hasentry) {

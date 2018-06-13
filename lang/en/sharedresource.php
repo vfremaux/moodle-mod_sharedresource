@@ -69,7 +69,7 @@ $string['matchedvalues'] = 'Matching values';
 $string['somewhere'] = 'Somewhere (site, course or category)';
 $string['profilefieldname_help'] = '
    Name is given as a prefix:fieldname value. Prefix can be "user" or "profile_field", and respectively addresses core user 
-   profile attributes, or customized profile fields. 
+   profile attributes, or customized profile fields.
 ';
 $string['matchedvalues_help'] = '
    You can enter an exact text value here, or a regexp value starting with ~ (ex : ~^someprefix).
@@ -327,6 +327,7 @@ $string['restrictsql'] = 'Enter a WHERE SQL clause to restrict the classificatio
 $string['s'] = 'secs';
 $string['saveselection'] = 'Save the selection';
 $string['savesqlrestrict'] = 'Save';
+$string['score'] = 'Score';
 $string['schema'] = 'Metadata standard';
 $string['schema_desc'] = 'This choice determine the plugin used in the metadata form';
 $string['searchfor'] = 'Search for';
