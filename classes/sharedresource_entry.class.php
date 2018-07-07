@@ -55,17 +55,29 @@ class entry {
 
     // A sharedresource entry is a combination of:
 
-    // A DB record.
+    /**
+     * The DB record of the resource entry.
+     */
     protected $shrentryrec;
 
-    // A set of metadata.
+    /**
+     * A set of metadata as an array of mod_sharedresource/metadata instances.
+     */
     public $metadataelements;
 
-    // An eventual physical file stored somewhere in the Moodle filesystem.
+    /**
+     * An eventual physical file stored somewhere in the Moodle filesystem.
+     */
     public $storedfile;
 
+    /**
+     * The current system wide configuration of the sharedresource plugin.
+     */
     protected $config;
 
+    /**
+     * A reference metadata standard description.
+     */
     protected $mtdstandard;
 
     /**
@@ -210,7 +222,7 @@ class entry {
 
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
                                   'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike',
-                                  'thumbnail', 'accessctl'))) {
+                                  'thumbnail', 'score', 'accessctl'))) {
             return $this->shrentryrec->$attr;
         } else {
             mtrace ("Bad attr ".$attr);
@@ -225,7 +237,7 @@ class entry {
     public function __set($attr, $value) {
         if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url',
                                   'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid',
-                                  'displayed', 'context', 'scoreview', 'scorelike', 'thumbnail', 'accessctl'))) {
+                                  'displayed', 'context', 'scoreview', 'scorelike', 'score', 'thumbnail', 'accessctl'))) {
             if ($attr == 'description') {
                 if (is_array($value)) {
                     if (preg_match('/^<p>?(.*)<\/p>$/', $value['text'])) {
@@ -599,6 +611,11 @@ class entry {
         // Remove and recreate metadata records.
         $DB->delete_records('sharedresource_metadata', array('entryid' => $this->id));
 
+        $firstdescelmkey = null;
+        $desc = $this->mtdstandard->getDescriptionElement();
+        if ($desc) {
+            $firstdescelmkey = metadata::to_instance($desc->node);
+        }
         foreach ($this->metadataelements as $element) {
             $element->entryid = $this->id;
 
@@ -607,23 +624,33 @@ class entry {
                 $element->namespace = 'lom';
             }
 
+            // Ensure description is identical to metadata.
+            if ($firstdescelmkey == $element->get_element_key()) {
+                // We are in a first description.
+                $this->shrentryrec->description = $element->get_value();
+            }
+
             $element->add_instance();
         }
 
+        /*
         if (is_array(@$this->description)) {
             $this->shrentryrec->description = @$this->description['text'];
         }
+        */
         $this->title = $this->title;
 
         // Remap metadata elements array to cope with setKeywordValues expected format.
         $metadataelements = array();
-        foreach($this->metadataelements as $elm) {
+        foreach ($this->metadataelements as $elm) {
             $metadataelements[$elm->element] = $elm;
         }
         $this->shrentryrec->keywords = $this->mtdstandard->getKeywordValues($metadataelements);
 
-        if (! $DB->update_record('sharedresource_entry', $this->shrentryrec)) {
-            return false;
+        try {
+            $DB->update_record('sharedresource_entry', $this->shrentryrec);
+        } catch (Exception $e) {
+            return;
         }
 
         $fs = get_file_storage();

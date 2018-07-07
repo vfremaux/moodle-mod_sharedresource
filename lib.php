@@ -50,6 +50,7 @@ $SHAREDRESOURCE_CORE_ELEMENTS = array('id',
                                     'url',
                                     'file',
                                     'type',
+                                    'score',
                                     'remoteid',
                                     'mimetype',
                                     'timemodified');
@@ -138,7 +139,7 @@ function mod_sharedresource_supports_feature($feature) {
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl','fineselect'),
-                'entry' => array('extended', 'accessctl', 'remote', 'customicon'),
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
                 'emulate' => 'community',
             ),
             'community' => array(
@@ -376,13 +377,16 @@ function sharedresource_cm_info_dynamic(&$modinfo) {
         $info->name = $sharedresource->name;
         if (!empty($sharedresource->popup)) {
             $info->extra = urlencode("onclick=\"this.target='sharedresource$sharedresource->id'; return ".
-                    "openpopup('/mod/sharedresource/view.php?inpopup=true&amp;id=".$modinfo->module.
+                    "openpopup('/mod/sharedresource/view.php?inpopup=true&id=".$modinfo->module.
                     "','sharedresource$sharedresource->id', '$sharedresource->popup');\"");
         }
         */
     }
 
     require_once($CFG->libdir.'/filelib.php');
+
+    /*
+    // Not possible to do that as theme is already calculated.
 
     if (!$shrentry) {
         $modinfo->set_icon_url($OUTPUT->image_url('broken', 'sharedresource'));
@@ -400,6 +404,7 @@ function sharedresource_cm_info_dynamic(&$modinfo) {
             $modinfo->set_icon_url($OUTPUT->image_url('remoteicon', 'sharedresource'));
         }
     }
+    */
 }
 
 function sharedresource_fetch_remote_file ($cm, $url, $headers = '' ) {
@@ -432,7 +437,7 @@ function sharedresource_fetch_remote_file ($cm, $url, $headers = '' ) {
                       'FORM'   => 'action=');
 
         foreach ($tags as $tag => $key) {
-            $prefix = "fetch.php?id=$cm->id&amp;url=";
+            $prefix = "fetch.php?id=$cm->id&url=";
             if ( $tag == 'IMG' or $tag == 'LINK' or $tag == 'FORM') {
                 $prefix = "";
             }
