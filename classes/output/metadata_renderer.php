@@ -76,9 +76,11 @@ class metadata_renderer extends \plugin_renderer_base {
         $childs = $mtdstandard->getElementChilds(0);
         $template->nbrchilds = count($childs);
         $template->nodestr = get_string('node', 'sharedresource');
+        $template->metadatadescrstr = get_string('schema', 'sharedresource');
+        $template->namespace = $mtdstandard->getNamespace();
+        $template->schema = get_string('pluginname', 'sharedmetadata_'.$template->namespace);
         $template->hidemetadatadesc = get_config('sharedresource', 'hidemetadatadesc');
 
-        $template->namespace = $mtdstandard->getNamespace();
         $template->dmusedstr = get_string('dmused','sharedresource');
 
         $template->dmusestr = get_string('dmuse','sharedresource');
@@ -176,6 +178,10 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->numoccur = $numoccur;
         $template->childs = array();
         $template->hascontent = false;
+        $template->iscontainer = false;
+        $template->isscalar = false;
+        $template->islist = false;
+        $template->isvcard = false;
 
         // Check how many occurrences of ourself we have in database.
         $maxoccur =  $elminstance->get_max_occurrence();
@@ -790,10 +796,20 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->istext = true;
             }
 
-            if ($nodeid == $mtdstandard->getTitleElement()->name) {
-                $template->value = $shrentry->title;
-                $template->readonly = 'readonly="readonly"';
-            } else if ($nodeid == $mtdstandard->getLocationElement()->name && $elminstance->get_value() == '') {
+            $firstelmkey = metadata::to_instance($nodeid);
+            if ($nodeid == $mtdstandard->getTitleElement()->node) {
+                if ($elminstance->get_element_key() == $firstelmkey) {
+                    // Lock only the first instance.
+                    $template->value = $shrentry->title;
+                    $template->readonly = 'readonly="readonly"';
+                }
+            } else if ($nodeid == $mtdstandard->getDescriptionElement()->node) {
+                if ($elminstance->get_element_key() == $firstelmkey) {
+                    $template->value = $shrentry->description;
+                    // Lock only the first instance.
+                    $template->readonly = 'readonly="readonly"';
+                }
+            } else if ($nodeid == $mtdstandard->getLocationElement()->node && $elminstance->get_value() == '') {
                 $template->value = $shrentry->url;
             } else if ($elminstance->get_value() != '') {
                 $template->value = $elminstance->get_value();

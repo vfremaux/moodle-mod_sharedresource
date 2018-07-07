@@ -36,7 +36,7 @@ $id = optional_param('id', 0, PARAM_INT); // The taxon id.
 
 $systemcontext = context_system::instance();
 require_login();
-require_capability('moodle/site:config', $systemcontext);
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 

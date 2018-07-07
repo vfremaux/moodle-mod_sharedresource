@@ -5,11 +5,32 @@
     width: 95%;
 }
 
+#mtd-form-tabs.tabtree {
+    margin-bottom: 0 !important;
+}
+
+#mtd-form-menu.tabrow0 {
+    line-height: initial;
+    margin-bottom: 0 !important;
+}
+
+#mtd-form-menu.tabrow0 li {
+	border-bottom: solid 1px #ddd;
+	border-collapse: separate;
+	position: relative;
+	top: -1px;
+	z-index:100;
+}
+
+#mtd-form-menu.tabrow0 li.here {
+    border-bottom:	none;
+}
+
 #mtd-form-title {
     font-size: 1.7em;
     font-weight: bold;
     text-align: center;
-    margin: 20px 0 50px 0;
+    margin: 20px 0 20px 0;
 }
 
 .mtd-form p {
@@ -29,9 +50,9 @@
 }
 
 .mtd-form fieldset legend {
-    padding: 0 10px;
-    font-size: 1.3em;
     color: #999;
+    font-size: 1.3em;
+    padding: 0 10px;
 }
 
 /* Label */
@@ -97,8 +118,8 @@ input.mtd-form-duration {
 }
 
 .mtd-form .addbutton{
-    text-align:center;
-    margin-bottom:10px;
+    margin-bottom: 10px;
+    text-align: center;
     width: 40%;
 }
 
@@ -140,8 +161,8 @@ input.mtd-form-duration {
 }
 
 .mtd-form-element textarea.mtd-form-input {
-    min-width: 50%;
     min-height: 6em;
+    min-width: 50%;
 }
 
 .mtd-tab {
@@ -149,11 +170,11 @@ input.mtd-form-duration {
 }
 
 .mtd-tab-hidden {
-    display:none !important;
+    display: none !important;
 }
 
 .mtd-tab-visible {
-    display:inline-block;
+    display: inline-block;
 }
 
 .mtd-title-content {
@@ -177,8 +198,8 @@ input.mtd-form-duration {
 }
 
 #mtd-form-container .addbutton{
-    text-align:center;
-    margin-bottom:10px;
+    margin-bottom: 10px;
+    text-align: center;
     width: 40%;
 }
 
@@ -214,10 +235,10 @@ input.mtd-form-duration {
 .ds_cell {
     background-color: #EEE;
     color: #000;
+    cursor: pointer;
     font-size: 13px;
     text-align: center;
     padding: 5px;
-    cursor: pointer;
 }
 
 .ds_cell:hover {
@@ -231,37 +252,36 @@ input.mtd-form-duration {
 }
 
 #libsearch select{
-    font-size:0.9em;
+    font-size: 0.9em;
 }
 
 td.mtd-field {
-    background-color:#565B9E;
-    border:2px solid white;
-    color:white;
-    font-weight:bolder;
-    min-height:24px;
-    padding:4px;
-    padding-right:10px;
-    text-align:right;
-    width:25%;
+    background-color: #eee;
+    border: 2px solid white;
+    color: black;
+    font-weight: bolder;
+    min-height: 24px;
+    padding: 4px;
+    padding-right: 10px;
+    text-align: left;
+    width: 25%;
 }
 
 td.mtd-num {
-    background-color:#565B9E;
-    border:2px solid white;
-    color:#B9B9D9;
-    min-height:24px;
-    padding:4px;
-    text-align:right;
-    width:5%;
+    background-color: #eee;
+    border: 2px solid white;
+    color: #666;
+    min-height: 24px;
+    padding: 4px;
+    text-align: left;
+    width: 5%;
 }
 
 td.mtd-value {
-    width:70%;
-    text-align:left;
-    padding:2px;
-    background-color:#F0F0F7;
-    padding-left:10px;
+    padding: 2px;
+    padding-left: 10px;
+    text-align: left;
+    width: 70%;
 }
 
 .mtd-resource-name {
@@ -281,53 +301,53 @@ td.mtd-value {
 }
 
 fieldset.subbranch{
-    margin-left:5px;
+    margin-left: 5px;
 }
 
 fieldset > legend{
-    padding:5px;
-    font-weight:bolder;
-    color:#54549E;
+    color: #54549E;
+    font-weight: bolder;
+    padding: 5px;
 }
 
 .sharedresource-listsection{
-    font-weight:bold;
-    text-align:center;
+    font-weight: bold;
+    text-align: center;
 }
 
 #notice-menu li {
     background-color: #A7A3BA;
-    font-weight:bolder;
-    padding:4px;
-    color:#f0f0f0;
+    color: #f0f0f0;
+    font-weight: bolder;
+    padding: 4px;
 }
 
 #notice-menu .active{
     background-color: #4D4860;
-    color:#f0f0f0;
+    color: #f0f0f0;
 }
 
 #page-mod-sharedresource-metadatanotice #ecform_content{
-    padding:0px;
+    padding: 0;
 }
 
 #page-mod-sharedresource-metadatanotice #ecform_content .mtd-description-panel {
-    text-align:left;
-    padding:20px;
+    padding: 20px;
+    text-align: left;
 }
 
 /** Tableless search engine **/
 
 #sharedresource-search{
-    float:left;
-    width:200px;
+    float: left;
+    width: 200px;
 }
 
 .widget .header{
     background-color: #6B6486;
-    color:#f0f0f0;
-    padding:2px;
-    font-weight:bold;
+    color: #f0f0f0;
+    font-weight: bold;
+    padding: 2px;
 }
 
 .sharedresources-commands {
@@ -348,8 +368,8 @@ fieldset > legend{
 }
 
 .shadowed {
-    opacity:0.5;
-    -moz-opacity:0.5;
+    -moz-opacity: 0.5;
+    opacity: 0.5;
 }
 
 #sharedresource-add-instance {
@@ -364,9 +384,19 @@ fieldset > legend{
 }
 
 .sharedresource-instructions {
-    margin-bottom:30px;
+    margin-bottom: 30px;
 }
 
 .sharedresource-link {
     text-align: center;
+}
+
+.path-mod-sharedresource-form input[disabled],
+.path-mod-sharedresource-form input[readonly],
+.path-mod-sharedresource-form select[disabled],
+.path-mod-sharedresource-form select[readonly],
+.path-mod-sharedresource-form textarea[disabled],
+.path-mod-sharedresource-form textarea[readonly] {
+    cursor: not-allowed;
+    background-color: #eee;
 }

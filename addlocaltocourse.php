@@ -52,8 +52,11 @@ if (empty($course)) {
 // Security.
 
 require_login($course);
-
 $context = context_course::instance($course->id);
+if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
+    print_error('noaccessform', 'sharedresource');
+}
+
 $strtitle = get_string('addlocal', 'sharedresource');
 
 $params = array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode);

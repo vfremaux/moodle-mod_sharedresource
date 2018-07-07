@@ -46,6 +46,7 @@
         <FIELD NAME="context" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="scoreview" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="scorelike" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="score" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="accessctl" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -87,7 +88,7 @@
         <FIELD NAME="sqlrestriction" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="taxonselection" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="purpose" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="accessctl" TYPE="text" LENGTH="small" SEQUENCE="false"/>
+        <FIELD NAME="accessctl" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id_classif_pk" TYPE="primary" FIELDS="id"/>

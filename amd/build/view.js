@@ -26,8 +26,10 @@ define(['jquery', 'core/log'], function ($, log) {
 
         init: function(args) {
 
+            that = this;
+
             $('.sharedresource-popup-link').each( function() {
-                $(this).on('click', null, args, this.openpopup);
+                that = $(this).on('click', null, args, this.openpopup);
             });
 
             log.debug('AMD Mod sharedresource initialized');
@@ -36,14 +38,13 @@ define(['jquery', 'core/log'], function ($, log) {
 
 
         openpopup : function(e) {
+            that = $(this);
 
-            var that = $(this);
-
-            var url = M.cfg.wwwroot + '/mod/sharedresource/view.php';
+            url = M.cfg.wwwroot + '/mod/sharedresource/view.php';
             url += '?inpopup=1';
             url += 'id=' + e.data.cmid;
 
-            var resid = that.attr('id').replace('sharedresource-', '');
+            resid = that.attr('id').replace('sharedresource-', '');
             this.target = 'resource' + resid;
             return openpopup(url, 'resource' + resid, e.data.respopup);
         }

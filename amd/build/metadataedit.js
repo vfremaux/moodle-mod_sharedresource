@@ -28,10 +28,9 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
     var metadataedit = {
 
         init: function(args) {
-
             namespace = args;
 
-            var stringsreq = [
+            stringsreq = [
                 {
                     key: 'fillprevious',
                     component: 'sharedresource'
@@ -52,7 +51,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
 
             // Read checkboxes may ask search widget being enabled.
-            var selector = '.' + namespace + '-system-read';
+            selector = '.' + namespace + '-system-read';
             selector += ',.' + namespace + '-indexer-read';
             selector += ',.' + namespace + '-author-read';
             $(selector).bind('change', this.enable_search_widget_checkbox);
@@ -80,15 +79,15 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is a form tab link, or a form tab LI.
-            var that = $(this);
+            that = $(this);
             if (!that.attr('id')) {
                 that = that.parent();
             }
 
             var menuid = that.attr('id');
 
-            var regexp = /id-menu-([^-]+)$/;
-            var matches = that.attr('id').match(regexp);
+            regexp = /id-menu-([^-]+)$/;
+            matches = that.attr('id').match(regexp);
             var tabid = 'id-tab-' + matches[1];
 
             $('.mtd-tab').removeClass('here');
@@ -109,16 +108,15 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is the add button.
-            var that = $(this);
+            that = $(this);
 
             // Comes in order : "btn-$elmname-$fieldtype"
             /*
-             * elmname : the complete occurence id as xny_wnz (ex : 1n1_1n2, which is the JS id
-             * base for the second instance of element 1_1
+             * elmname : the complete occurence id as xny_wnz (ex : 1n1_1n2, which is the JS id base for the second instance of element 1_1
              * fieldtype : typeof field
              */
-            var regexp = /btn-([^-]+)-([^-]+)/;
-            var matches = that.attr('name').match(regexp);
+            regexp = /btn-([^-]+)-([^-]+)/;
+            matches = that.attr('name').match(regexp);
 
             var elmid = matches[1];
             var fieldtype = matches[2];
@@ -165,9 +163,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                     }
 
                     case 'vcard': {
-                        // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g");
-                        if ($('#' + elmid).val().replace(rgx,'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
+                        if ($('#' + elmid).val().replace(new RegExp("(\r\n|\r|\n)", "g" ),'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
                             alert(mtdstrings[0]);
                             return;
                         }
@@ -182,9 +178,8 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                 var listchildren = that.attr('data');
                 var listtab = listchildren.split(';');
                 var nbremptyfield = 0;
-                var childid;
 
-                for (var i = 0; i < listtab.length; i++) {
+                for (i = 0; i < listtab.length; i++) {
 
                     childid = listtab[i];
 
@@ -204,9 +199,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                         nbremptyfield++;
                     }
                     if ($('#' + childid).val() === 'undefined') {
-                        // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g" );
-                        if ($('#' + childid).val().replace(rgx, '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
+                        if ($('#' + childid).val().replace(new RegExp("(\r\n|\r|\n)", "g" ), '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
                             nbremptyfield++;
                         }
                     }
@@ -214,7 +207,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                 if (nbremptyfield == listtab.length) {
                     alert(mtdstrings[1]);
                 } else {
-                    metadataedit.add_list_item(elmid, realoccur);
+                    metadataedit.add_list_item(elmid, realoccur)
                 }
             }
         },
@@ -227,15 +220,15 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
          */
         add_list_item: function(elmname, realoccur) {
 
-            var newname = metadata.next_occurrence_name(elmname);
+            newname = metadata.next_occurrence_name(elmname);
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
             params += "&realoccur=" + realoccur;
             var url = M.cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
-            $.get(url, function(data) {
-                var zonename = "#add-zone-" + elmname;
+            $.get(url, function(data, status) {
+                zonename = "#add-zone-" + elmname;
                 $(data.html).insertBefore(zonename);
 
                 // Recode the add button id for next play, incrementing occurence index
@@ -265,24 +258,22 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is an input field.
-            var that = $(this);
+            that = $(this);
 
-            var elementname = that.attr('id');
+            elementname = that.attr('id');
 
             if (that.val()) {
                 $('#id-add-' + elementname).prop('disabled', false);
             } else {
                 $('#id-add-' + elementname).prop('disabled', true);
             }
-            var parentname = elementname;
+            parentname = elementname;
             log.debug("Processing to elementkey " + elementname);
-            parentname = metadata.parent_name(parentname);
-            while (parentname) {
+            while (parentname = metadata.parent_name(parentname)) {
                 log.debug("Escalading to parentkey " + parentname);
                 log.debug("Detected " + $('#id-add-' + parentname).attr('name'));
                 log.debug("Detected " + $('#id-add-' + parentname).prop('disabled'));
                 $('#id-add-' + CSS.escape(parentname)).prop('disabled', false);
-                parentname = metadata.parent_name(parentname);
             }
         },
 
@@ -290,16 +281,17 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
             e.stopPropagation();
 
-            var that = $(this);
+            that = $(this);
+            var taxonomyoptionshtml = '';
 
             // Fetch new taxonomy.
-            var url = M.cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
+            url = M.cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
             $.get(url, function(data){
 
-                var parentid = metadata.parent_name(that.attr('id'));
+                parentid = metadata.parent_name(that.attr('id'));
 
                 // Clear out all values and change option list.
-                $('[data-source="' + parentid + '"]').each(function() {
+                $('[data-source="' + parentid + '"]').each(function(index) {
                     $(this).html(data);
                     $(this).val('');
                 });
