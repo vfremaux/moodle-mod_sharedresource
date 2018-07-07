@@ -140,12 +140,26 @@ if ($result['error'] != array()) {
     echo $OUTPUT->footer();
 
 } else {
+    // No errors in metadata.
     // These two lines in comment can be used if you want to show the user values of saved fields.
-    if ($mode == 'add' && !$shrentry->exists() && !$shrentry->add_instance()) {
-        print_error('failadd', 'sharedresource');
+    if ($mode == 'add' && $shrentry->exists()) {
+
+        // We are coming from the library. Go back to it.
+        $params = array('course' => $course->id,
+                        'mode' => 'add',
+                        'add' => 1,
+                        'return' => $return,
+                        'section' => $section,
+                        'context' => $sharingcontext);
+        $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
+        redirect($fullurl);
+
     } else if (!$shrentry->update_instance()) {
         print_error('failupdate', 'sharedresource');
     } else {
+        if (!$shrentry->add_instance()) {
+            print_error('failadd', 'sharedresource');
+        }
         // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
             // We are coming from the library. Go back to it.

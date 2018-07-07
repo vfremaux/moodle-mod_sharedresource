@@ -50,4 +50,49 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
         return $this->output->render_from_template('mod_sharedresource/addinstance', $template);
     }
 
+    public function resourcecompare($new, $old) {
+
+        $config = get_config('sharedresource');
+        if (!$config->schema) {
+            return;
+        }
+        $plugin = sharedresource_get_plugin($config->schema);
+
+        $template = new StdClass;
+        $template->olddescriptionstr = get_string('resourceolddescription', 'sharedresource');
+        $template->newdescriptionstr = get_string('resourcenewdescription', 'sharedresource');
+
+        $attributes = array();
+        foreach ($old->metadataelements as $elm) {
+            $elmkey = $elm->get_element_key();
+            $stdelm = $plugin->getElement($elm->get_node_id());
+            $attribute = new StdClass;
+            $attribute->id = $elmkey;
+            $attribute->name = $stdelm->name;
+            $attribute->oldvalue = $elm->get_value();
+            $attribute->newvalue = '';
+            $attributes[$elmkey] = $attribute;
+        }
+
+        foreach ($new->metadataelements as $elm) {
+            $elmkey = $elm->get_element_key();
+            $stdelm = $plugin->getElement($elm->get_node_id());
+            if (!array_key_exists($elmkey, $attributes)) {
+                $attribute = new StdClass;
+                $attribute->id = $elmkey;
+                $attribute->name = $stdelm->name;
+                $attribute->oldvalue = '';
+                $attribute->newvalue = $elm->get_value();
+                $attributes[$elmkey] = $attribute;
+            } else {
+                $attributes[$elm->get_element_key()]->newvalue = $elm->get_value();
+            }
+        }
+
+        asort($attributes);
+
+        $template->attributes = array_values($attributes);
+
+        return $this->output->render_from_template('mod_sharedresource/resourcecompare', $template);
+    }
 }

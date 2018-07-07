@@ -1,0 +1,38 @@
+
+
+
+<!-- resourcecompare -->
+
+<table width="100%" class="generaltable">
+
+    <tr>
+        <th width="10%">
+        </th>
+        <th width="30%">
+        </th>
+        <th width=""30%>
+            {{{olddescriptionstr}}}
+        </th>
+        <th width="30%">
+            {{{newdescriptionstr}}}
+        </th>
+    </tr>
+
+    {{#attributes}}
+        <tr>
+            <td class="sharedresource-rowname">
+                {{id}}
+            </td>
+            <td class="sharedresource-rowname">
+                {{name}}
+            </td>
+            <td>
+                <span class="{{comparestateclass}}">{{oldvalue}}</span>
+            </td>
+            <td>
+                <span class="{{comparestateclass}}">{{newvalue}}</span>
+            </td>
+        </tr>
+    {{/attributes}}
+</table>
+<!-- /resourcecompare -->

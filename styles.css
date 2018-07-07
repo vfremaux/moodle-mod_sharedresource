@@ -15,15 +15,15 @@
 }
 
 #mtd-form-menu.tabrow0 li {
-	border-bottom: solid 1px #ddd;
-	border-collapse: separate;
-	position: relative;
-	top: -1px;
-	z-index:100;
+    border-bottom: solid 1px #ddd;
+    border-collapse: separate;
+    position: relative;
+    top: -1px;
+    z-index:100;
 }
 
 #mtd-form-menu.tabrow0 li.here {
-    border-bottom:	none;
+    border-bottom: none;
 }
 
 #mtd-form-title {
