@@ -25,7 +25,15 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
-require_once $CFG->dirroot.'/mod/sharedresource/search_widget.class.php';
+require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+
+// DO not rely on moodle classloader.
+if ($searchplugins = glob($CFG->dirroot.'/mod/sharedresource/searchwidgets/*')) {
+    foreach ($searchplugins as $sp) {
+        include_once($sp);
+    }
+}
+
 
 $url = new moodle_url('/mod/sharedresource/metadataconfigure.php');
 $PAGE->set_url($url);

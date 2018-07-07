@@ -60,5 +60,3 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
 
     return $return;
 }
-
-?>

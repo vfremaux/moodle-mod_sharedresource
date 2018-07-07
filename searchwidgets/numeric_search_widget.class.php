@@ -40,7 +40,7 @@ class numeric_search_widget extends search_widget {
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
-    function print_search_widget() {
+    function print_search_widget($layout, $value = 0) {
         echo $OUTPUT;
 
         $str = '';

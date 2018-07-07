@@ -17,7 +17,7 @@
 /**
  *
  * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package    mod_sharedresource
  * @category   mod
  *
@@ -51,13 +51,14 @@ function sharedresource_filter($courseid, $text) {
     // Create a list of all the sharedresources to search for.  It may be cached already.
 
     if (empty($resourcelist)) {
-        /* get all non-hidden resources from this course
+        /*
+         * get all non-hidden resources from this course
          * sorted from long to short so longer ones can be 
          * linked first. And order by section so we try to 
          * link to the top resource first.
          */
         $sql  = "
-            SELECT 
+            SELECT
                 r.id,
                 r.name
             FROM
@@ -70,7 +71,7 @@ function sharedresource_filter($courseid, $text) {
                 cm.visible =  1 AND
                 r.id = cm.instance AND
                 cm.course = ?
-            ORDER BY 
+            ORDER BY
                 CHAR_LENGTH(r.name) DESC, cm.section ASC;
         ";
         if (!$resources =  $DB->get_records_sql($resource_sql, array($courseid))) {

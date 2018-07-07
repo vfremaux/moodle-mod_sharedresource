@@ -36,11 +36,11 @@ if (empty($CFG->enablerssfeeds)) {
     $desc = get_string('configenablerssfeeds', 'sharedresource');
 }
 
-$key = 'sharedresource_enablerssfeeds';
+$key = 'sharedresource/enablerssfeeds';
 $label = get_string('enablerssfeeds', 'admin');
 $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $options));
 
-$key = 'sharedresource_article_quantity';
+$key = 'sharedresource/article_quantity';
 $label = get_string('articlequantity', 'sharedresource');
 $desc = get_string('configarticlequantity', 'sharedresource');
 $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
@@ -50,27 +50,27 @@ $settings->add(new admin_setting_heading('h0', $label, ''));
 
 $checkedyesno = array('' => get_string('no'), 'checked' => get_string('yes')); // Not nice at all.
 
-$key = 'sharedresource_freeze_index';
+$key = 'sharedresource/freeze_index';
 $label = get_string('freeze_index', 'sharedresource');
 $desc = get_string('config_freeze_index', 'sharedresource');
 $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
-$key = 'sharedresource_backup_index';
+$key = 'sharedresource/backup_index';
 $label = get_string('backup_index', 'sharedresource');
 $desc = get_string('config_backup_index', 'sharedresource');
 $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
-$key = 'sharedresource_restore_index';
+$key = 'sharedresource/restore_index';
 $label = get_string('restore_index', 'sharedresource');
 $desc = get_string('config_restore_index', 'sharedresource');
 $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
-$key = 'sharedresource_defaulturl';
+$key = 'sharedresource/defaulturl';
 $label = get_string('resourcedefaulturl', 'sharedresource');
 $desc = get_string('configdefaulturl', 'sharedresource');
 $settings->add(new admin_setting_configtext($key, $label, $desc , 'http://'));
 
-$key = 'sharedresource_foreignurl';
+$key = 'sharedresource/foreignurl';
 $label = get_string('resourceaccessurlasforeign', 'sharedresource');
 $desc = get_string('configforeignurlsheme', 'sharedresource');
 $settings->add(new admin_setting_configtext($key, $label, $desc, ''), PARAM_RAW, 80);
@@ -78,26 +78,26 @@ $settings->add(new admin_setting_configtext($key, $label, $desc, ''), PARAM_RAW,
 $label = get_string('layout', 'sharedresource');
 $settings->add(new admin_setting_heading('h1', $label, ''));
 
-$key = 'sharedresource_framesize';
+$key = 'sharedresource/framesize';
 $label = get_string('framesize', 'sharedresource');
 $desc = get_string('configframesize', 'sharedresource');
 $settings->add(new admin_setting_configtext($key, $label, $desc, 130, PARAM_INT));
 
 $woptions = array('' => get_string('newwindow', 'sharedresource'), 'checked' => get_string('pagewindow', 'sharedresource'));
-$key = 'sharedresource_popup';
+$key = 'sharedresource/popup';
 $label = get_string('display', 'sharedresource');
 $desc = get_string('configpopup', 'sharedresource');
 $settings->add(new admin_setting_configselect($key, $label, $desc, '', $woptions));
 
 foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $optionname) {
-    $popupoption = "sharedresource_popup$optionname";
+    $popupoption = "sharedresource/popup$optionname";
     if ($popupoption == 'sharedresource_popupheight') {
-        $key = 'sharedresource_popupheight';
+        $key = 'sharedresource/popupheight';
         $label = get_string('newheight', 'sharedresource');
         $desc = get_string('configpopupheight', 'sharedresource');
         $settings->add(new admin_setting_configtext($key, $label, $desc , 600, PARAM_INT));
-    } else if ($popupoption == 'sharedresource_popupwidth') {
-        $key = 'sharedresource_popupwidth';
+    } else if ($popupoption == 'sharedresource/popupwidth') {
+        $key = 'sharedresource/popupwidth';
         $label = get_string('newwidth', 'sharedresource');
         $desc = get_string('configpopupwidth', 'sharedresource');
         $settings->add(new admin_setting_configtext($key, $label, $desc , 800, PARAM_INT));
@@ -108,7 +108,7 @@ foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $optionname) {
     }
 }
 
-/// get plugins list for enabling/disabling 
+// Get plugins list for enabling/disabling.
 
 $pluginscontrolstr = get_string('pluginscontrol', 'sharedresource');
 $pluginscontrolinfostr = get_string('pluginscontrolinfo', 'sharedresource');
@@ -118,40 +118,21 @@ $checkedoptions = array(0 => get_string('no'), 1 => get_string('yes'));
 
 $pluginsoptions['0'] = get_string('noplugin', 'sharedresource');
 $sharedresourcesplugins = core_component::get_plugin_list('sharedmetadata');
-foreach($sharedresourcesplugins as $p => $ppath){
+foreach ($sharedresourcesplugins as $p => $ppath) {
     $pluginsoptions[$p] = get_string('pluginname', 'sharedmetadata_'.$p);
 }
 $key = 'pluginchoice';
 $label = get_string('pluginchoice', 'sharedresource');
 $desc = get_string('basispluginchoice', 'sharedresource');
 $item = new admin_setting_configselect($key, $label, $desc, @$CFG->pluginchoice, $pluginsoptions);
-if (empty($CFG->running_installer)) {
-    $item->set_updatedcallback('redirectmetadata');
-}
 $settings->add($item);
-
-if (!function_exists('redirectmetadata')) {
-
-    function redirectmetadata(){
-        global $CFG;
-        redirect(new moodle_url('/mod/sharedresource/metadataconfigure.php', array('action' => 'reinitialize')));
-    }
-
-}
-
-/*was used to configure each plugin, not used anymore because admin have to choose only one plugin
-foreach($sharedresourcesplugins as $plugin){
-    $pluginkey = "sharedresource_plugin_hide_{$plugin}";
-    $settings->add(new admin_setting_configselect($pluginkey, get_string('plugin_'.$plugin, 'sharedresource'),
-                       get_string($pluginkey, 'sharedresource'), 0, $checkedoptions));
-}*/
 
 $key = 'metadataconfig';
 $label = get_string('metadataconfiguration', 'sharedresource');
 $desc = get_string('medatadaconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php');
 $settings->add(new admin_setting_heading($key, $label, $desc));
 
-$key = 'classificationconfig';
+$key = 'sharedresource/classificationconfig';
 $label = get_string('classificationconfiguration', 'sharedresource');
 $desc = get_string('classificationconfigurationdesc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classificationconfigure.php');
 $settings->add(new admin_setting_heading($key, $label, $desc));

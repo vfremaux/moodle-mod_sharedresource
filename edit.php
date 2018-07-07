@@ -53,12 +53,11 @@ $ignore_list = array_merge($ignore_list, $mtdstandard->sharedresource_get_ignore
 
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or mod/modname/view.php if true
+$return        = optional_param('return', 0, PARAM_BOOL);
 $type          = optional_param('type', '', PARAM_ALPHANUM);
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
 $course        = required_param('course', PARAM_INT);
-// $pagestep      = optional_param('pagestep', 1, PARAM_INT);
 $sharingcontext  = optional_param('context', SITEID, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $course))) {
@@ -81,9 +80,10 @@ $url = new moodle_url('/mod/sharedresource/edit.php');
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), "{$CFG->wwwroot}/mod/sharedresource/index.php?id=$course->id");
+$returnurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
+$PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $returnurl);
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
-$PAGE->navbar->add($strtitle,'edit.php','misc');
+$PAGE->navbar->add($strtitle, 'edit.php', 'misc');
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
@@ -105,16 +105,18 @@ if ($mode == 'update') {
 
     if (empty($CFG->sharedresource_foreignurl)) {
         // Resource preview is on the same server it is accessible. openpopup can be used.
-        $formdata->url_display =  "<a href=\"{$CFG->wwwroot}/mod/sharedresource/view.php?identifier={$sharedresource_entry->identifier}&amp;inpopup=true\" "
-          . "onclick=\"this.target='resource{$sharedresource_entry->id}'; return openpopup('/mod/sharedresource/view.php?inpopup=true&amp;identifier={$sharedresource_entry->identifier}', "
-          . "'resource{$sharedresource_entry->id}','resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600');\">(".$strpreview.")</a>";
+        $displayurl = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $sharedresource_entry->identifier, 'inpopup' => true));
+        $jshandler = 'this.target=\'resource'.$sharedresource_entry->id.'\';';
+        $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&amp;identifier={$sharedresource_entry->identifier}\', ';
+        $jshandler .= '\'resource'.$sharedresource_entry->id.'\', \'resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
+        $formdata->url_display = '<a href="'.$displayurl.'" onclick="'.$jshandler.'">('.$strpreview.')</a>';
     } else {
         // Resource preview changes apparent domain of the resource. openpopup fails.
         $url = str_replace('<%%ID%%>', $sharedresource_entry->identifier, $CFG->sharedresource_foreignurl);
-        $formdata->url_display = "<a href=\"{$url}\" target=\"_blank\">(".$strpreview.")</a>";
+        $formdata->url_display = '<a href="'.$url.'" target="_blank">('.$strpreview.')</a>';
     }
 
-    // @TODO : this should call the file storage API 
+    // @TODO : this should call the file storage API
     $formdata->filename = $DB->get_field('files', 'filename', array('id' => $sharedresource_entry->file));
 
 } else {
@@ -127,7 +129,7 @@ $mform = new mod_sharedresource_entry_form($mode);
 $mform->set_data(($formdata));
 
 if ($mform->is_cancelled()) {
-    //cancel - go back to course
+    // Cancel - go back to course.
     redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
@@ -135,7 +137,7 @@ if ($mform->is_cancelled()) {
 
 if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('sharedresourcefile', null, PARAM_INT))) {
 
-    // Fake feed formdata with directly query params when call for addition comes from other sources
+    // Fake feed formdata with directly query params when call for addition comes from other sources.
     if (empty($formdata)) {
         $formdata = new StdClass();
         $formdata->sharedresourcefile = $sharedresourcefile;
@@ -171,7 +173,7 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
 
     if ($mode == 'add') {
         // Locally defined resource ie. we are the master.
-        $sharedresource_entry->type = 'file'; // obsolete ?
+        $sharedresource_entry->type = 'file'; // Obsolete ?
 
         // Is this a local resource or a remote one?
         if (!empty($formdata->url)) {
@@ -189,17 +191,12 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
             $file = reset($draftfiles);
 
             $sharedresource_entry->identifier = $file->get_contenthash();
-            $sharedresource_entry->file = $file->get_id(); // this temp file will be post processed at the end of the storage process
-
-            // $formdata->identifier = $sharedresource_entry->identifier;
-            // $formdata->file = $sharedresource_entry->file;
-            // $formdata->uploadname = $file->get_filename();// $sharedresource_entry->uploadname;
-            // $formdata->mimetype = $sharedresource_entry->mimetype;
+            $sharedresource_entry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
             $sharedresource_entry->url = '';
         }
     }
 
-    // Prepare thumbnail if any
+    // Prepare thumbnail if any.
     if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
         $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
         $thumbnailfile = false;
@@ -242,11 +239,11 @@ if ($hidden = optional_param('sharedresource_hidden', '', PARAM_CLEANHTML)) {
 
 echo $OUTPUT->header();
 
-// display form
+// Display form.
 $mform->display();
 echo $OUTPUT->footer($course);
-// page local functions
-// grab and clean form value
+// Page local functions.
+// Grab and clean form value.
 
 function sharedresource_clean_field($field) {
     switch ($field) {
