@@ -70,7 +70,6 @@ if (!isset($SESSION->sr_entry)) {
 
 $tempentry = $SESSION->sr_entry;
 $shrentry = unserialize($tempentry);
-
 // Load working metadata plugin.
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');

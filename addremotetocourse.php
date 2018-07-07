@@ -43,6 +43,10 @@ if (empty($course)) {
 // Security.
 
 require_login($course);
+$context = context_course::instance($course->id);
+if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
+    print_error('noaccessform', 'sharedresource');
+}
 
 // If we have a physical file to get, get it.
 if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {

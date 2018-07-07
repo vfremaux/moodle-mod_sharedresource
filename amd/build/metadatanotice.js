@@ -20,11 +20,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/log'], function ($, log) {
+define(['jquery', 'core/str', 'core/log'], function ($, str, log) {
+
+    var namespace;
 
     var metadatanotice = {
-
-        init: function() {
+        init: function(args) {
+            namespace = args;
 
             $('.mtd-tab').bind('click', this.switch_tab);
             $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
@@ -36,15 +38,15 @@ define(['jquery', 'core/log'], function ($, log) {
 
         switch_tab: function() {
 
-            var that = $(this);
+            that = $(this);
             if (!that.attr('id')) {
                 that = that.parent();
             }
 
             var menuid = that.attr('id');
 
-            var regexp = /id-menu-([^-]+)$/;
-            var matches = that.attr('id').match(regexp);
+            regexp = /id-menu-([^-]+)$/;
+            matches = that.attr('id').match(regexp);
             var tabid = 'id-tab-' + matches[1];
 
             $('.mtd-tab').removeClass('here');

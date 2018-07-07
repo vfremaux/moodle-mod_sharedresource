@@ -36,19 +36,19 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
     }
 }
 
-
 $url = new moodle_url('/mod/sharedresource/metadataconfigure.php');
 $PAGE->set_url($url);
 
 // Security.
 
 require_login();
+$systemcontext = context_system::instance();
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 $action = optional_param('action', null ,PARAM_ALPHA);
-$system_context = context_system::instance();
 $strtitle = get_string('metadata_configure', 'sharedresource');
 $PAGE->set_pagelayout('standard');
-$PAGE->set_context($system_context);
+$PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
