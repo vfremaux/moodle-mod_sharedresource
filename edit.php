@@ -114,7 +114,7 @@ if ($mode == 'update') {
         // Resource preview is on the same server it is accessible. openpopup can be used.
         $displayurl = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $shrentry->identifier, 'inpopup' => true));
         $jshandler = 'this.target=\'resource'.$shrentry->id.'\';';
-        $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&amp;identifier={$shrentry->identifier}\', ';
+        $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&identifier={$shrentry->identifier}\', ';
         $jshandler .= '\'resource'.$shrentry->id.'\', \'resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
         $formdata->url_display = '<a href="'.$displayurl.'" onclick="'.$jshandler.'">('.$strpreview.')</a>';
     } else {

@@ -275,6 +275,11 @@ class metadata {
     public function add_instance() {
         global $DB;
 
+        if ($this->entryid == 0) {
+            // Not yet ready to register the metadata.
+            return;
+        }
+
         $conditions = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
         if ($oldentry = $DB->get_record('sharedresource_metadata', $conditions)) {
             $this->id = $oldentry->id;

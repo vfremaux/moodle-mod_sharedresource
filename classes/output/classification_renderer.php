@@ -42,10 +42,10 @@ class classification_renderer extends \plugin_renderer_base {
         $template->strenable = get_string('enable');
         $template->strdisable = get_string('disable');
 
-        $template->deleteiconurl = $this->output->image_url('t/delete');
-        $template->editiconurl = $this->output->image_url('t/edit');
-        $template->enablediconurl = $this->output->image_url('t/show');
-        $template->disablediconurl = $this->output->image_url('t/hide');
+        $template->deleteiconurl = $this->output->pix_url('t/delete');
+        $template->editiconurl = $this->output->pix_url('t/edit');
+        $template->enablediconurl = $this->output->pix_url('t/show');
+        $template->disablediconurl = $this->output->pix_url('t/hide');
 
         foreach ($classifications as $classification) {
             $classification->isdeletable = sharedresource_uses_taxonomy($classification);

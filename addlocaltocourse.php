@@ -53,7 +53,9 @@ if (empty($course)) {
 
 require_login($course);
 $context = context_course::instance($course->id);
-require_any_capability(array('repository§sharedresources:use', 'repository§sharedresources:create'), $context);
+if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
+    print_error('noaccessform', 'sharedresource');
+}
 
 $strtitle = get_string('addlocal', 'sharedresource');
 
