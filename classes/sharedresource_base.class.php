@@ -282,13 +282,13 @@ class base {
             if ($isteamspeak) {
                 $querystring = implode('?', $querysbits);
             } else {
-                $querystring = implode('&amp;', $querysbits);
+                $querystring = implode('&', $querysbits);
             }
         }
 
         // Set up some variables.
         $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
-        if (sharedresource_is_url($sharedresourceentry->url)) {
+        if (sharedresource_is_url($sharedresourceentry->url) && empty($sharedresourceentry->file)) {
 
             // Shared resource is a pure URL.
             $fullurl = $sharedresourceentry->url;
@@ -297,7 +297,7 @@ class base {
                 if (empty($urlpieces['query']) or $isteamspeak) {
                     $fullurl .= '?'.$querystring;
                 } else {
-                    $fullurl .= '&amp;'.$querystring;
+                    $fullurl .= '&'.$querystring;
                 }
             }
 
@@ -315,7 +315,7 @@ class base {
         }
 
         // Check whether this is supposed to be a popup, but was called directly.
-        if (isset($resource->popup) && $resource->popup and !$inpopup) {
+        if (isset($resource->popup) && $resource->popup && !$inpopup) {
             // Make a page and a pop-up window.
             $coursecontext = \context_course::instance($course->id);
             $url = new moodle_url('/mod/sharedresource/view.php');
@@ -323,7 +323,7 @@ class base {
             $PAGE->set_pagelayout('popup');
             $PAGE->set_title($pagetitle);
             $PAGE->set_heading($SITE->fullname);
-            $PAGE->navbar->add($course->fullname,'view.php','misc');
+            $PAGE->navbar->add($course->fullname,'view.php', 'misc');
 
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
@@ -332,7 +332,7 @@ class base {
             $viewdata = array();
             $viewdata['popupoptions'] = $resource->popup;
             $viewdata['cmid'] = $cm->id;
-            $PAGE->amd_js_call('mod_sharedresource/view', 'init', $data);
+            $PAGE->requires->js_call_amd('mod_sharedresource/view', 'init', $viewdata);
 
             echo $OUTPUT->header();
 
@@ -345,7 +345,7 @@ class base {
             $template->popupoptions = $resource->popup;
 
             $template->title = format_string($resource->title, true);
-            $template->strpopupresource = get_string('popupresource', 'resource');
+            $template->strpopupresource = get_string('popupresource', 'resource', $template->linkurl);
             $template->strpopupresourcelink = get_string('popupresourcelink', 'resource', $template->linkurl);
 
             echo $OUTPUT->render_from_template('mod_sharedresource/directpopup', $template);
@@ -385,9 +385,10 @@ class base {
             $PAGE->set_title($pagetitle);
             $PAGE->set_heading($SITE->fullname);
             /* SCANMSG: may be additional work required for $navigation variable */
-            $PAGE->navbar->add($strtitle,'view.php','misc');
+            $PAGE->navbar->add($strtitle, 'view.php', 'misc');
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
+            $PAGE->set_button(update_module_button($cm->id, $course->id, $this->strresource));
             $PAGE->set_headingmenu(navmenu($course, $cm, 'parent'));
             $url = new moodle_url('/mod/sharedresource/view.php');
             $PAGE->set_url($url);
@@ -419,7 +420,7 @@ class base {
 
             $PAGE->set_title($pagetitle);
             $PAGE->set_heading($SITE->fullname);
-            $PAGE->navbar->add($pagetitle,'view.php','misc');
+            $PAGE->navbar->add($pagetitle, 'view.php', 'misc');
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
             $PAGE->set_button('');
@@ -882,7 +883,7 @@ class base {
             $parametername = "parameter$i";
             $parsename = "parse$i";
             $group = array();
-            $group[] =& $mform->createElement('text', $parsename, '', array('size'=>'12')); // TODO: accessiblity.
+            $group[] =& $mform->createElement('text', $parsename, '', array('size' => '12')); // TODO: accessiblity.
             $group[] =& $mform->createElement('select', $parametername, '', $options); // TODO: accessiblity.
             $label = get_string('variablename', 'sharedresource').'='.get_string('parameter', 'sharedresource');
             $mform->addGroup($group, 'pargroup'.$i, $label, ' ', false);

@@ -43,7 +43,9 @@ if ($courseid > SITEID) {
 
     $context = context_course::instance($courseid);
     require_login($course);
-    require_any_capability(array('repository/sharedresources:create', 'repository/sharedresources:manage'), $context);
+    if (!has_any_capability(array('repository/sharedresources:manage', 'repository/sharedresources:create'), $context)) {
+        print_error('noaccessform', 'sharedresource');
+    }
     $PAGE->set_context($context);
 } else {
     $systemcontext = context_system::instance();
