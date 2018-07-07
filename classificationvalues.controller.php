@@ -52,6 +52,7 @@ class classificationvalues_controller {
             case 'down':
             case 'delete':
                 $this->data->classificationid = required_param('id', PARAM_INT);
+                $this->data->parent = optional_param('parent', 0, PARAM_INT);
                 $this->data->tokenid = required_param('tokenid', PARAM_INT);
                 break;
         }
@@ -84,7 +85,7 @@ class classificationvalues_controller {
             }
 
             case 'up': {
-                sharedresource_tree_up($this->data->tokenid, $classification->sqlsortorderstart);
+                sharedresource_tree_up($this->data->tokenid, $classification);
                 break;
             }
 

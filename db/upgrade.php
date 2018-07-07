@@ -127,9 +127,37 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
 
         $table = new xmldb_table('sharedresource_taxonomy');
 
-        $field = new xmldb_field('idnumber', XMLDB_TYPE_CHAR, 64, null, null, null, null, 'value');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        if (!$dbman->table_exists($table)) {
+
+            // Define table sharedresource_taxonomy to be created.
+            $table = new xmldb_table('sharedresource_taxonomy');
+
+            // Adding fields to table sharedresource_taxonomy.
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+            $table->add_field('classificationid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('parent', XMLDB_TYPE_INTEGER, '9', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('value', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('idnumber', XMLDB_TYPE_CHAR, '64', null, null, null, null);
+
+            // Adding keys to table sharedresource_taxonomy.
+            $table->add_key('id_pk', XMLDB_KEY_PRIMARY, array('id'));
+
+            // Adding indexes to table sharedresource_taxonomy.
+            $table->add_index('ix_parent', XMLDB_INDEX_NOTUNIQUE, array('parent'));
+            $table->add_index('ix_classificationid', XMLDB_INDEX_NOTUNIQUE, array('classificationid'));
+
+            // Conditionally launch create table for sharedresource_taxonomy.
+            if (!$dbman->table_exists($table)) {
+                $dbman->create_table($table);
+            }
+
+        } else {
+
+            $field = new xmldb_field('idnumber', XMLDB_TYPE_CHAR, 64, null, null, null, null, 'value');
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
         }
 
         // Sharedresource savepoint reached.
@@ -217,6 +245,19 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
 
         // Sharedresource savepoint reached.
         upgrade_mod_savepoint(true, 2018021703, 'sharedresource');
+    }
+
+    if ($oldversion < 2018041000) {
+
+        $table = new xmldb_table('sharedresource_entry');
+
+        $field = new xmldb_field('score', XMLDB_TYPE_INTEGER, 10, null, null, null, null, 'scorelike');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Sharedresource savepoint reached.
+        upgrade_mod_savepoint(true, 2018041000, 'sharedresource');
     }
 
     return $return;

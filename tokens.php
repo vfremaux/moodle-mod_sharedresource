@@ -30,18 +30,18 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/ddllib.php');
 
-$id = optional_param('id', 0, PARAM_TEXT); // Classification instance
+$id = optional_param('id', 0, PARAM_TEXT); // Classification instance.
 $action = optional_param('what', 0, PARAM_ALPHA);
 
 // Security.
 
 $systemcontext = context_system::instance();
 require_login();
-require_capability('moodle/site:config', $systemcontext);
+require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = $CFG->wwwroot.'/mod/sharedresource/classifications.php';
+$url = new moodle_url('/mod/sharedresource/tokens.php', array('id' => $id));
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);

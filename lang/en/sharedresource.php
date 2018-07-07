@@ -69,7 +69,7 @@ $string['matchedvalues'] = 'Matching values';
 $string['somewhere'] = 'Somewhere (site, course or category)';
 $string['profilefieldname_help'] = '
    Name is given as a prefix:fieldname value. Prefix can be "user" or "profile_field", and respectively addresses core user 
-   profile attributes, or customized profile fields. 
+   profile attributes, or customized profile fields.
 ';
 $string['matchedvalues_help'] = '
    You can enter an exact text value here, or a regexp value starting with ~ (ex : ~^someprefix).
@@ -299,6 +299,8 @@ $string['pluginname'] = 'Shared resource';
 $string['pluginscontrol'] = 'Metadata Plugins Control';
 $string['pluginscontrolinfo'] = 'The following parameter control the plugin used in metadata sets while collecting data for indexation';
 $string['preview'] = 'Preview';
+$string['profilefieldplaceholder'] = 'profile_field: or user: prefixed field name';
+$string['profilefieldsyntax'] = 'The userfield based rule {$a} does not have the expected syntax';
 $string['pushtosingleprovider'] = '<p>Your site only has one provider connected : {$a}.</p><p>By sharing the resource to an external provider, you:<ul><li>Move physically the resource</li><li>Delete the local representation for this resource</li><li>Allow other sites using this provider to use the resource</li><li>Will rebind the all locations of use of the resource within the Moodle network.</li></ul></p>';
 $string['readnotice'] = 'Read the notice';
 $string['remotesearchquery'] = 'Search in remote resource repositories ';
@@ -312,6 +314,10 @@ $string['resource_consumer_name'] = 'Service of resources consumption';
 $string['resource_provider_description'] = 'By publishing this service, you allow remote "consumers" to use the shared resources of your catalogue.<br/><br/>By subscribing to this service, you provide your local catalogue to remote "consumer" platforms.<br/><br/>';
 $string['resource_provider_name'] = 'Service of resources providing';
 $string['resourceaccessurlasforeign'] = 'URL to access resources';
+$string['resourceolddescription'] = 'Previous description';
+$string['resourcenewdescription'] = 'New description';
+$string['resourceintheway'] = 'A resource with same signature is already registered in the library.';
+$string['resourceupdate'] = 'When confirming you will update the resource description with your new values. Do you confirm ';
 $string['resourcebuilt'] = 'New resource built : {$a}';
 $string['resourceconversion'] = 'Resource conversion';
 $string['resourcedefaulturl'] = 'Default URL';
@@ -325,6 +331,7 @@ $string['restrictsql'] = 'Enter a WHERE SQL clause to restrict the classificatio
 $string['s'] = 'secs';
 $string['saveselection'] = 'Save the selection';
 $string['savesqlrestrict'] = 'Save';
+$string['score'] = 'Score';
 $string['schema'] = 'Metadata standard';
 $string['schema_desc'] = 'This choice determine the plugin used in the metadata form';
 $string['searchfor'] = 'Search for';
