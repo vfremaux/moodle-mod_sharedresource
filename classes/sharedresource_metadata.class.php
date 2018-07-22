@@ -58,7 +58,7 @@ class metadata {
     public $isstored;
 
     /**
-     * the sharedreosurce entry id this instance serves a value for
+     * The sharedresource entry id this instance serves a value for
      */
     public $entryid;
 
@@ -132,7 +132,7 @@ class metadata {
      * Knowing some attributes values of the metadata record, get the metadata object based on this record.
      * @param int $entryid the sharedresource associated to this metadata
      * @param int $namespace the metadata namespace
-     * @param int $element the element signature as position:occurence index.
+     * @param int $element the element signature as m_n_o:x_y_z index.
      * @param bool $mustexist if true, will throw an exception if the metadata element is not in base.
      */
     public static function instance($entryid, $element, $namespace, $mustexist = true) {
@@ -472,15 +472,52 @@ class metadata {
     /**
      * Get all elements that are on same tree level and branch. These are mainly 
      * direct children of our parent having the same subbranch.
+     * @param int $level 
      */
-    public function get_siblings() {
+    public function get_siblings($level = 0) {
+        global $DB;
 
-        if ($this->level == 1) {
-            $siblings = $this->get_roots($this->get_node_index());
-        } else {
-            $siblings = $this->get_parent(false)->get_childs($this->get_node_index());
+        $namespace = get_config('sharedresource', 'schema');
+        $siblings = array();
+
+        if ($level == 0) {
+            if ($this->level == 1) {
+                $siblings = $this->get_roots($this->get_node_index());
+            } else {
+                $siblings = $this->get_parent(false)->get_childs($this->get_node_index());
+            }
+            unset($siblings[$this->element]); // Remove myself from siblings..
         }
-        unset($siblings[$this->element]); // Remove myself from siblings..
+
+        if ($level == 1) {
+            $mask = array();
+            $parts = explode('_', $this->instanceid);
+            array_pop($parts);
+            array_pop($parts);
+            $mask[] = '%';
+            do {
+                $node = array_pop($parts);
+                $mask[] = $node;
+            } while (count($parts));
+            $mask = array_reverse($mask);
+            $sqlmask = $this->nodeid.':'.implode('_', $mask);
+            $select = "
+                entryid = ? AND
+                element LIKE ? AND
+                namespace = ?
+            ";
+
+            $params = array($this->entryid, $sqlmask, $namespace);
+            $extendedsiblings = $DB->get_records_select('sharedresource_metadata', $select, $params);
+            if ($extendedsiblings) {
+                foreach ($extendedsiblings as $extsib) {
+                    if ($extsib->element != $this->element) {
+                        // Do not add myself.
+                        $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                    }
+                }
+            }
+        }
 
         return $siblings;
     }
@@ -680,8 +717,8 @@ class metadata {
     public static function to_instance($nodeid, $instanceid = null) {
 
         $instancerefarr = explode('_', $instanceid);
-
         $parts = explode('_', $nodeid);
+
         for ($i = 0; $i < count($parts); $i++) {
             $instanceidarr[] = 0 + @$instancerefarr[$i];
         }
