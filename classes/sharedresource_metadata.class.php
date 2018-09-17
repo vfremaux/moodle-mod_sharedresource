@@ -280,8 +280,15 @@ class metadata {
             return;
         }
 
-        $conditions = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
-        if ($oldentry = $DB->get_record('sharedresource_metadata', $conditions)) {
+        $params = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
+        $oldentry = $DB->get_record('sharedresource_metadata', $params);
+        if ($oldentry) {
+            $value = $this->value; // Beware of the __get magic trap.
+            if (empty($value)) {
+                $DB->delete_records('sharedresource_metadata', array('id' => $oldentry->id));
+                return true;
+            }
+
             $this->id = $oldentry->id;
             return $DB->update_record('sharedresource_metadata', $this);
         }
@@ -289,8 +296,13 @@ class metadata {
         $data->element = $this->element;
         $data->namespace = $this->namespace;
         $data->value = ''.$this->value; // Unnulify if empty.
-        $data->entryid = $this->entryid;
-        return $DB->insert_record('sharedresource_metadata', $data);
+        if (!empty($data->value)) {
+            $data->entryid = $this->entryid;
+            return $DB->insert_record('sharedresource_metadata', $data);
+        } else {
+            // Skip inserting but do NOT block the update process. So answer true.
+            return true;
+        }
     }
 
     public function get_element_key() {
@@ -534,7 +546,7 @@ class metadata {
             entryid = ? AND namespace = ? AND element LIKE ?
         ";
 
-        if(!$onlysubs) {
+        if (!$onlysubs) {
             $params = array($this->entryid, $namespace, $this->nodeid.':%');
 
             $instancesofme = $DB->get_records_select_menu('sharedresource_metadata', $select, $params, 'element', 'id,element');
@@ -566,8 +578,40 @@ class metadata {
      * representing its own level.
      */
     public function get_max_occurrence() {
+        global $DB;
 
-        $subnodes = $this->get_all_subnodes();
+        $select = "
+            entryid = ? AND
+            element LIKE ? AND
+            namespace = ?
+        ";
+
+        $mynode = $this->nodeid;
+        $parent = $this->get_parent(false);
+        if ($parent) {
+            $instanceid = $parent->instanceid.'_%';
+        } else {
+            $instanceid = '%';
+        }
+
+        $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
+        return $DB->count_records_select('sharedresource_metadata', $select, $params);
+    }
+
+    /**
+     * Get the highest sibling element in the current node level.
+     * The max occurence may be implicit f.e for categories that only are
+     * containers. there will be no direct records for the category in the metadata table, 
+     * but some child that holds effective data.
+     * the function will track all the node childs of the current node, and will scan for the highest index
+     * representing its own level.
+     */
+    public function get_max_instance_index() {
+        static $subnodes;
+
+        if (!isset($subnodes)) {
+            $subnodes = $this->get_all_subnodes();
+        }
         if (empty($subnodes)) {
             return '';
         }
@@ -773,6 +817,9 @@ class metadata {
     public static function normalize_storage($shrentryid, $processroot = true) {
         global $DB;
 
+        // TEMPORARY till we agree with the normalize algorithm.
+        return;
+
         $storagearr = self::storage_to_array($shrentryid);
 
         if (empty($storagearr)) {
@@ -815,7 +862,6 @@ class metadata {
         if (!empty($replacementsarr)) {
             $transaction = $DB->start_delegated_transaction();
             foreach ($replacementsarr as $from => $to) {
-                echo "Replacing in db $from => $to ";
                 $DB->set_field('sharedresource_metadata', 'element', $to, array('element' => $from, 'entryid' => $shrentryid));
             }
             $transaction->allow_commit();

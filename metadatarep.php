@@ -153,8 +153,12 @@ if ($result['error'] != array()) {
         $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
         redirect($fullurl);
 
-    } else if (!$shrentry->update_instance()) {
-        print_error('failupdate', 'sharedresource');
+    } else if ($mode == 'update') {
+        if (!$shrentry->update_instance()) {
+            print_error('failupdate', 'sharedresource');
+        }
+        $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
+        redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
         if (!$shrentry->add_instance()) {
             print_error('failadd', 'sharedresource');

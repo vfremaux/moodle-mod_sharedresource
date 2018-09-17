@@ -920,7 +920,7 @@ abstract class plugin_base {
 
     /**
      * Finds all resources that are using this taxon in metadata and removes all
-     * the metadata record srelated to this binding.
+     * the metadata records related to this binding.
      */
     public function unbind_taxon($classifid, $taxonid) {
 

@@ -536,6 +536,7 @@ class metadata_renderer extends \plugin_renderer_base {
     function part_form(&$parenttemplate, $elementkey, $capability, $realoccur = 0, $ispanel = false) {
         global $SESSION, $CFG, $DB;
         static $taxumarray;
+        static $classifsiblingsdone = false;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -583,6 +584,7 @@ class metadata_renderer extends \plugin_renderer_base {
         // It may not come from database.
         $elminstance = metadata::instance($shrentry->id, $instancekey, $namespace, false);
         $elminstance->numoccur = $elminstance->get_instance_index();
+        $elminstance->realoccur = $realoccur;
         $elminstance->maxoccur = $elminstance->get_max_occurrence();
         if ($elminstance->maxoccur < $elminstance->numoccur) {
             $elminstance->maxoccur = $elminstance->numoccur;
@@ -637,7 +639,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
                 $value = $sourceelm->get_value();
                 if (empty($value)) {
-                    // echo "// initial value : Undefined \n";
+                    // initial value : Undefined \n";
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
                     $instanceindex = $elminstance->get_instance_index();
@@ -662,9 +664,9 @@ class metadata_renderer extends \plugin_renderer_base {
                         $parentinstance = $elminstance->get_parent(false); // Do not explicitely exist.
                         $sourcenodeid = $parentinstance->get_node_id().'_1';
                         $sourceinstanceid = $parentinstance->get_instance_id().'_0';
-                        $sourceinstanceid = \mod_sharedresource\metadata::to_instance($sourcenodeid, $sourceinstanceid);
+                        $sourceinstanceid = metadata::to_instance($sourcenodeid, $sourceinstanceid);
                         // The instance must exist.
-                        $sourceinstance = \mod_sharedresource\metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
+                        $sourceinstance = metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
                         // Id of the source taxonomy is the value of this source instance.
                         $params = array('id' => $sourceinstance->get_value());
                         $sourceelm = $DB->get_record('sharedresource_classif', $params);
@@ -678,7 +680,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
                 // echo "// Source element id : $sourceelmid \n";
                 if (empty($sourceelmid)) {
-                    $template->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+                    $taxontpl = new StdClass;
+                    $taxontpl->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+                    $template->taxons[] = $taxontpl;
                 } else {
                     /*
                      * We check if there is metadata saved for this field.
@@ -687,13 +691,13 @@ class metadata_renderer extends \plugin_renderer_base {
                      * that dynamic subsequent form parts in the same binding will all catch the binding source.
                      */
                     $classificationoptions = metadata_get_classification_options($sourceelmid);
-                    $htmlsourcekey = \mod_sharedresource\metadata::storage_to_html($taxonelm->get_element_key());
+                    $htmlsourcekey = metadata::storage_to_html($taxonelm->get_element_key());
                     $attrs = array('class' => 'mtd-form-input', 'id' => $template->elmname, 'data-source' => $htmlsourcekey);
                     $nochoice = array('' => get_string('none', 'sharedresource'));
 
                     // Get value in associated taxonid element.
-                    $taxonidelmkey = \mod_sharedresource\metadata::to_instance($taxumarray['id'], $elminstance->get_instance_id());
-                    $taxonidelm = \mod_sharedresource\metadata::instance($shrentry->id, $taxonidelmkey, $namespace, false);
+                    $taxonidelmkey = metadata::to_instance($taxumarray['id'], $elminstance->get_instance_id());
+                    $taxonidelm = metadata::instance($shrentry->id, $taxonidelmkey, $namespace, false);
 
                     $value = $taxonidelm->get_value();
                     $taxontpl = new StdClass;
@@ -733,6 +737,34 @@ class metadata_renderer extends \plugin_renderer_base {
                                 $template->occur = $numoccur + 1;
                             }
                         }
+
+                        // Fetch the level-1 siblings only for the first source.
+                        if ($realoccur == 0 && !$classifsiblingsdone) {
+                            $classifsiblingsdone = true;
+                            $siblingcollector = new StdClass;
+                            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
+                            $maxoccur = $elminstance->get_max_occurrence();
+                            // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
+                            /*
+                             * this is a relative guess of higher level siblings. We need explore the "source" childs of the element as parent
+                             * does not explictely exist in metadata, thus breacking the standard case form recursion.
+                             */
+                            // $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $elminstance->get_parent(false)->get_node_id().'_1', null, false);
+                            $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $taxumarray['source'], null, false);
+                            if (!empty($classifsets)) {
+                                $i = 1;
+                                foreach ($classifsets as $clf) {
+                                    $thisinstancekey = metadata::to_instance($taxumarray['source']);
+                                    if ($clf->get_element_key() == $thisinstancekey) {
+                                        // Avoid looping on self.
+                                        continue;
+                                    }
+                                    $i++;
+                                    // echo "Realoccur : $realoccur Requiring form for ".$clf->get_parent(false)->get_element_key();
+                                    $this->part_form($siblingcollector, $clf->get_parent(false)->get_element_key(), $capability, $i);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -770,7 +802,8 @@ class metadata_renderer extends \plugin_renderer_base {
 
                     foreach ($listresults as $childkey => $elementinstance) {
                         // $childstandard = $mtdstandard->getElement($elementinstance->get_node_id());
-                        $this->part_form($template, $childkey, $capability, 0);
+                        // echo "Require form for child $childkey ";
+                        $this->part_form($template, $childkey, $capability, $elementinstance->get_instance_index());
                         if (count($template->childs)) {
                             $template->hascontent = true;
                         }
@@ -789,25 +822,30 @@ class metadata_renderer extends \plugin_renderer_base {
          * than we need first get all other siblings and print those instances.
          * If we were not stored, the form part is for getting a first value and is enough.
          * Do not process if we are adding a new from instance through AJAX calls.
+         * This is the general case. But special sibling collector may exist from previous processing (@see classification).
          */
-        $siblingcollector = new StdClass;
-        if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
-            $maxoccur = $elminstance->get_max_occurrence();
-            // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
-            $siblings = $elminstance->get_siblings(0);
+        if (!isset($siblingcollector)) {
+            $siblingcollector = new StdClass;
+            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
+            if (( ((integer) $numoccur) === 0)) {
+                $maxoccur = $elminstance->get_max_occurrence();
+                // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
+                $siblings = $elminstance->get_siblings(0);
 
-            if (!empty($siblings)) {
-                // All siblings will have a numoccur > 0.
-                foreach ($siblings as $sib) {
-                    $this->part_form($siblingcollector, $sib->get_element_key(), $capability, 0);
+                if (!empty($siblings)) {
+                    // All siblings will have a numoccur > 0.
+                    $i = 1;
+                    foreach ($siblings as $sib) {
+                        $i++;
+                        $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
+                    }
                 }
             }
         }
 
         $template->hasaddbutton = false;
         if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-
-            if ($numoccur <= $elminstance->maxoccur || empty($elminstance->maxoccur)) {
+            if ($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
 
                 /*
                  * If element is a list we need display an add button to allow adding.
