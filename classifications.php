@@ -90,13 +90,13 @@ if (empty($classifications)) {
     $table->align = array('left', 'center', 'left', 'center', 'center', 'right');
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
-    $hiddenicon = html_writer::tag('t/show', get_string('hide'), 'core', $attrs);
+    $hiddenicon = $OUTPUT->pix_icon('t/show', get_string('hide'), 'core', $attrs);
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $visibleicon = $OUTPUT->pix_icon('t/hide', get_string('show'), 'core', $attrs);
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
-    $editicon = html_writer::tag('t/edit', get_string('edit'), 'core', $attrs);
+    $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
@@ -113,7 +113,8 @@ if (empty($classifications)) {
         $data[] = $navigation->count_taxons();
         $data[] = $classif->tablename;
         $data[] = $classif->sqlrestriction;
-        $taxoncount = count(explode(',', $classif->taxonselection));
+        // Storage form adds one
+        $taxoncount = count(explode(',', $classif->taxonselection)) - 1;
         $data[] = (!empty($classif->taxonselection)) ? $filteredicon.' ('.$taxoncount.')' : '';
 
         $enabledicon = $classif->enabled ? $visibleicon : $hiddenicon;

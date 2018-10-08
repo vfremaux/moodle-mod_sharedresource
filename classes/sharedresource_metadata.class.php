@@ -58,7 +58,7 @@ class metadata {
     public $isstored;
 
     /**
-     * the sharedreosurce entry id this instance serves a value for
+     * The sharedresource entry id this instance serves a value for
      */
     public $entryid;
 
@@ -132,7 +132,7 @@ class metadata {
      * Knowing some attributes values of the metadata record, get the metadata object based on this record.
      * @param int $entryid the sharedresource associated to this metadata
      * @param int $namespace the metadata namespace
-     * @param int $element the element signature as position:occurence index.
+     * @param int $element the element signature as m_n_o:x_y_z index.
      * @param bool $mustexist if true, will throw an exception if the metadata element is not in base.
      */
     public static function instance($entryid, $element, $namespace, $mustexist = true) {
@@ -280,8 +280,15 @@ class metadata {
             return;
         }
 
-        $conditions = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
-        if ($oldentry = $DB->get_record('sharedresource_metadata', $conditions)) {
+        $params = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
+        $oldentry = $DB->get_record('sharedresource_metadata', $params);
+        if ($oldentry) {
+            $value = $this->value; // Beware of the __get magic trap.
+            if (empty($value)) {
+                $DB->delete_records('sharedresource_metadata', array('id' => $oldentry->id));
+                return true;
+            }
+
             $this->id = $oldentry->id;
             return $DB->update_record('sharedresource_metadata', $this);
         }
@@ -289,8 +296,13 @@ class metadata {
         $data->element = $this->element;
         $data->namespace = $this->namespace;
         $data->value = ''.$this->value; // Unnulify if empty.
-        $data->entryid = $this->entryid;
-        return $DB->insert_record('sharedresource_metadata', $data);
+        if (!empty($data->value)) {
+            $data->entryid = $this->entryid;
+            return $DB->insert_record('sharedresource_metadata', $data);
+        } else {
+            // Skip inserting but do NOT block the update process. So answer true.
+            return true;
+        }
     }
 
     public function get_element_key() {
@@ -472,15 +484,52 @@ class metadata {
     /**
      * Get all elements that are on same tree level and branch. These are mainly 
      * direct children of our parent having the same subbranch.
+     * @param int $level 
      */
-    public function get_siblings() {
+    public function get_siblings($level = 0) {
+        global $DB;
 
-        if ($this->level == 1) {
-            $siblings = $this->get_roots($this->get_node_index());
-        } else {
-            $siblings = $this->get_parent(false)->get_childs($this->get_node_index());
+        $namespace = get_config('sharedresource', 'schema');
+        $siblings = array();
+
+        if ($level == 0) {
+            if ($this->level == 1) {
+                $siblings = $this->get_roots($this->get_node_index());
+            } else {
+                $siblings = $this->get_parent(false)->get_childs($this->get_node_index());
+            }
+            unset($siblings[$this->element]); // Remove myself from siblings..
         }
-        unset($siblings[$this->element]); // Remove myself from siblings..
+
+        if ($level == 1) {
+            $mask = array();
+            $parts = explode('_', $this->instanceid);
+            array_pop($parts);
+            array_pop($parts);
+            $mask[] = '%';
+            do {
+                $node = array_pop($parts);
+                $mask[] = $node;
+            } while (count($parts));
+            $mask = array_reverse($mask);
+            $sqlmask = $this->nodeid.':'.implode('_', $mask);
+            $select = "
+                entryid = ? AND
+                element LIKE ? AND
+                namespace = ?
+            ";
+
+            $params = array($this->entryid, $sqlmask, $namespace);
+            $extendedsiblings = $DB->get_records_select('sharedresource_metadata', $select, $params);
+            if ($extendedsiblings) {
+                foreach ($extendedsiblings as $extsib) {
+                    if ($extsib->element != $this->element) {
+                        // Do not add myself.
+                        $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                    }
+                }
+            }
+        }
 
         return $siblings;
     }
@@ -497,7 +546,7 @@ class metadata {
             entryid = ? AND namespace = ? AND element LIKE ?
         ";
 
-        if(!$onlysubs) {
+        if (!$onlysubs) {
             $params = array($this->entryid, $namespace, $this->nodeid.':%');
 
             $instancesofme = $DB->get_records_select_menu('sharedresource_metadata', $select, $params, 'element', 'id,element');
@@ -529,8 +578,40 @@ class metadata {
      * representing its own level.
      */
     public function get_max_occurrence() {
+        global $DB;
 
-        $subnodes = $this->get_all_subnodes();
+        $select = "
+            entryid = ? AND
+            element LIKE ? AND
+            namespace = ?
+        ";
+
+        $mynode = $this->nodeid;
+        $parent = $this->get_parent(false);
+        if ($parent) {
+            $instanceid = $parent->instanceid.'_%';
+        } else {
+            $instanceid = '%';
+        }
+
+        $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
+        return $DB->count_records_select('sharedresource_metadata', $select, $params);
+    }
+
+    /**
+     * Get the highest sibling element in the current node level.
+     * The max occurence may be implicit f.e for categories that only are
+     * containers. there will be no direct records for the category in the metadata table, 
+     * but some child that holds effective data.
+     * the function will track all the node childs of the current node, and will scan for the highest index
+     * representing its own level.
+     */
+    public function get_max_instance_index() {
+        static $subnodes;
+
+        if (!isset($subnodes)) {
+            $subnodes = $this->get_all_subnodes();
+        }
         if (empty($subnodes)) {
             return '';
         }
@@ -682,8 +763,13 @@ class metadata {
         $instancerefarr = explode('_', $instanceid);
 
         $parts = explode('_', $nodeid);
+
         for ($i = 0; $i < count($parts); $i++) {
-            $instanceidarr[] = 0 + @$instancerefarr[$i];
+            if (!isset($instancerefarr[$i]) || !is_numeric($instancerefarr[$i])) {
+                $instanceidarr[] = 0;
+            } else {
+                $instanceidarr[] = 0 + @$instancerefarr[$i];
+            }
         }
 
         $instanceid = implode('_', $instanceidarr);
@@ -736,6 +822,9 @@ class metadata {
     public static function normalize_storage($shrentryid, $processroot = true) {
         global $DB;
 
+        // TEMPORARY till we agree with the normalize algorithm.
+        return;
+
         $storagearr = self::storage_to_array($shrentryid);
 
         if (empty($storagearr)) {
@@ -778,7 +867,6 @@ class metadata {
         if (!empty($replacementsarr)) {
             $transaction = $DB->start_delegated_transaction();
             foreach ($replacementsarr as $from => $to) {
-                echo "Replacing in db $from => $to ";
                 $DB->set_field('sharedresource_metadata', 'element', $to, array('element' => $from, 'entryid' => $shrentryid));
             }
             $transaction->allow_commit();

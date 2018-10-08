@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
  * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
@@ -151,22 +152,22 @@ class plugin_lom extends plugin_base {
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
-                'author_write'  => 0,
-                'author_read'  => 0,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
         '1_4' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
-                'author_write'  => 0,
-                'author_read'  => 0,
+                'author_write'  => 1,
+                'author_read'  => 1,
             ),
             'widget' => 'freetext',
         ),
@@ -201,7 +202,7 @@ class plugin_lom extends plugin_base {
         '1_7' => array(
             'name' => 'Structure',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('atomic', 'collection', 'networked', 'hierarchical', 'linear'),
             'checked' => array(
                 'system_write'  => 1,
@@ -242,8 +243,8 @@ class plugin_lom extends plugin_base {
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
-                'author_write'  => 0,
-                'author_read'  => 0,
+                'author_write'  => 1,
+                'author_read'  => 1,
             )
         ),
         '2_1' => array(
@@ -253,8 +254,8 @@ class plugin_lom extends plugin_base {
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
-                'indexer_write' => 1,
-                'indexer_read' => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
             ),
@@ -268,8 +269,8 @@ class plugin_lom extends plugin_base {
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
-                'indexer_write' => 1,
-                'indexer_read' => 1,
+                'indexer_write' => 0,
+                'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
             ),
@@ -296,7 +297,7 @@ class plugin_lom extends plugin_base {
         '2_3_1' => array(
             'name' => 'Role',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert'),
             'checked' => array(
                 'system_write'  => 1,
@@ -311,7 +312,7 @@ class plugin_lom extends plugin_base {
         '2_3_2' => array(
             'name' => 'Entity',
             'source' => 'lom',
-            'type' => 'codetext',
+            'type' => 'vcard',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -436,7 +437,7 @@ class plugin_lom extends plugin_base {
         '3_2_2' => array(
             'name' => 'Entity',
             'source' => 'lom',
-            'type' => 'codetext',
+            'type' => 'vcard',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -604,7 +605,7 @@ class plugin_lom extends plugin_base {
         '4_4_1_2' => array(
             'name' => 'Name',
             'source' => 'lom',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya'),
             'checked' => array(
                 'system_write'  => 1,
@@ -730,8 +731,23 @@ class plugin_lom extends plugin_base {
         '5_2' => array(
             'name' => 'Learning Resource Type',
             'source' => 'lom',
-            'type' => 'select',
-            'values' => array('exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide', 'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture'),
+            'type' => 'sortedselect',
+            'values' => array(
+                'exercise',
+                'simulation',
+                'questionnaire',
+                'diagram',
+                'figure',
+                'graph',
+                'index',
+                'slide',
+                'table',
+                'narrative text',
+                'exam',
+                'experiment',
+                'problem statement',
+                'self assessment',
+                'lecture'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -791,7 +807,11 @@ class plugin_lom extends plugin_base {
             'name' => 'Context',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('school', 'higher education', 'training', 'other'),
+            'values' => array(
+                'school',
+                'higher education',
+                'training',
+                'other'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -848,7 +868,7 @@ class plugin_lom extends plugin_base {
         '5_10' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -924,7 +944,7 @@ class plugin_lom extends plugin_base {
         '6_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -956,7 +976,16 @@ class plugin_lom extends plugin_base {
             'name' => 'Kind',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon'),
+            'values' => array(
+                'ispartof',
+                'haspart',
+                'isversionof',
+                'hasversion',
+                'isformatof',
+                'hasformat',
+                'references',
+                'isreferencedby',
+                'isbasedon'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1032,7 +1061,7 @@ class plugin_lom extends plugin_base {
         '7_2_2' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1064,7 +1093,7 @@ class plugin_lom extends plugin_base {
         '8_1' => array(
             'name' => 'Entity',
             'source' => 'lom',
-            'type' => 'codetext',
+            'type' => 'vcard',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1092,7 +1121,7 @@ class plugin_lom extends plugin_base {
         '8_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1125,8 +1154,17 @@ class plugin_lom extends plugin_base {
         '9_1' => array(
             'name' => 'Purpose',
             'source' => 'lom',
-            'type' => 'select',
-            'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency'),
+            'type' => 'sortedselect',
+            'values' => array(
+                'discipline',
+                'idea',
+                'prerequisite',
+                'educational objective',
+                'accessibility restrictions',
+                'educational level',
+                'skill level',
+                'security level',
+                'competency'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1156,7 +1194,9 @@ class plugin_lom extends plugin_base {
         '9_2_1' => array(
             'name' => 'Source',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'select',
+            'func' => array('class' => '\local_sharedresources\browser\navigation', 'method' => 'get_taxonomies_menu'),
+            'extraclass' => 'taxonomy-source',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1213,7 +1253,7 @@ class plugin_lom extends plugin_base {
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1576,7 +1616,12 @@ class plugin_lom extends plugin_base {
     }
 
     /**
-     * Allow to get the taxumpath category and other information about its children node.
+     * Get the metadata elements identifiers that stores a taxon index binding
+     * for a resource. the "main" designates the root of a complete taxon
+     * entry in metadata. Taxon may be composed of a set of subproperties.
+     * The "source" holds a reference to a classification source, @see table mdl_sharedresource_classif
+     * The "id" points to the local id to the taxon in the taxonoy source table
+     * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
     function getTaxumpath() {
         $element = array();
@@ -1589,7 +1634,7 @@ class plugin_lom extends plugin_base {
     }
 
     /**
-     * Allow to get the taxumpath category and other information about its children node.
+     * Gets the metadata node identifier that provides classification storage capability.
      */
     function getClassification() {
         $element = "9";
@@ -1607,7 +1652,8 @@ class plugin_lom extends plugin_base {
         }
 
         $keywordSource = $this->METADATATREE['1_5']['source'];
-        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ", array($this->entryid));
+        $select = " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
+        $DB->delete_records_select('sharedresource_metadata', $select, array($this->entryid));
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
@@ -1626,7 +1672,7 @@ class plugin_lom extends plugin_base {
     /**
     * records title in metadata flat table from db attributes
     */
-    function setTitle($title){
+    function setTitle($title) {
         global $DB;
 
         if (empty($this->entryid)) {
