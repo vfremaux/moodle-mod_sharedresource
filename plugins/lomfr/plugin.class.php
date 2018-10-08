@@ -16,7 +16,7 @@
 
 /**
  *
- * @author  Valery Fremaux valery@valeisti.fr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package sharedresource
  * @subpackage sharedresource_lomfr

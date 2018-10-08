@@ -23,6 +23,8 @@
  */
 global $SITE;
 
+$string['privacy:metadata'] = "The Sharedresources module do not manipulate any data belonging to users";
+
 // Capabilities.
 $string['sharedresource:addinstance'] = 'Can add an instance';
 $string['sharedresource:manageblocks'] = 'Manage blocks in the library';

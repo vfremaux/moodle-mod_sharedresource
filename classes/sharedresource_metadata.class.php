@@ -761,10 +761,15 @@ class metadata {
     public static function to_instance($nodeid, $instanceid = null) {
 
         $instancerefarr = explode('_', $instanceid);
+
         $parts = explode('_', $nodeid);
 
         for ($i = 0; $i < count($parts); $i++) {
-            $instanceidarr[] = 0 + @$instancerefarr[$i];
+            if (!isset($instancerefarr[$i]) || !is_numeric($instancerefarr[$i])) {
+                $instanceidarr[] = 0;
+            } else {
+                $instanceidarr[] = 0 + @$instancerefarr[$i];
+            }
         }
 
         $instanceid = implode('_', $instanceidarr);

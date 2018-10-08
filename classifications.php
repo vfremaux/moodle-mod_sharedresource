@@ -113,7 +113,8 @@ if (empty($classifications)) {
         $data[] = $navigation->count_taxons();
         $data[] = $classif->tablename;
         $data[] = $classif->sqlrestriction;
-        $taxoncount = count(explode(',', $classif->taxonselection));
+        // Storage form adds one
+        $taxoncount = count(explode(',', $classif->taxonselection)) - 1;
         $data[] = (!empty($classif->taxonselection)) ? $filteredicon.' ('.$taxoncount.')' : '';
 
         $enabledicon = $classif->enabled ? $visibleicon : $hiddenicon;

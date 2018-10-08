@@ -865,7 +865,11 @@ class metadata_renderer extends \plugin_renderer_base {
                 // If we are printing the last occurence, or have no occurence, let diplay an add button.
                 // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
-                $template->nextoccur = $template->occur + 1;
+                if (is_numeric($template->occur)) {
+                    $template->nextoccur = $template->occur + 1;
+                } else {
+                    $template->nextoccur = 1;
+                }
                 $template->addid = metadata::storage_to_html($addelementkey);
                 $template->addclass = 'is-list';
                 if ($elminstance->maxoccur === '') {
