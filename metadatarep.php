@@ -40,25 +40,25 @@ $add = optional_param('add', 0, PARAM_ALPHA);
 $update = optional_param('update', 0, PARAM_INT);
 $return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
 $section = optional_param('section', 0, PARAM_INT);
-$course = required_param('course', PARAM_INT);
+$courseid = required_param('course', PARAM_INT);
 $type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
-$metadataentries = data_submitted();
-
-if (array_key_exists('cancel', $metadataentries)) {
-    $params = array('course' => $course, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
-    $cancelurl = new moodle_url('/course/modedit.php', $params);
-    redirect($cancelurl);
-}
-
-if (!$course = $DB->get_record('course', array('id' => $course))) {
+if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('badcourseid', 'sharedresource');
 }
 
 require_login($course);
-$context = context_course::instance($course->id);
+$context = context_course::instance($courseid);
 require_capability('repository/sharedresources:create', $context);
+
+$metadataentries = data_submitted();
+
+if (array_key_exists('cancel', $metadataentries)) {
+    $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
+    $cancelurl = new moodle_url('/course/modedit.php', $params);
+    redirect($cancelurl);
+}
 
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
@@ -101,8 +101,7 @@ if ($result['error'] != array()) {
     $SESSION->sr_entry = $srentry;
     $error = serialize($result['error']);
     $SESSION->error = $error;
-    $mtdclass = 'sharedresource_plugin_'.$config->schema;
-    $mtdstandard = new $mtdclass();
+    $mtdstandard = sharedresource_get_plugin($config->schema);
 
     echo $OUTPUT->header();
 
@@ -154,8 +153,12 @@ if ($result['error'] != array()) {
         $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
         redirect($fullurl);
 
-    } else if (!$shrentry->update_instance()) {
-        print_error('failupdate', 'sharedresource');
+    } else if ($mode == 'update') {
+        if (!$shrentry->update_instance()) {
+            print_error('failupdate', 'sharedresource');
+        }
+        $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
+        redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
         if (!$shrentry->add_instance()) {
             print_error('failadd', 'sharedresource');

@@ -57,6 +57,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             selector += ',.' + namespace + '-author-read';
             $(selector).bind('change', this.enable_search_widget_checkbox);
             $('.taxonomy-source').bind('change', this.reload_taxonomy);
+            // Change to this form : indefinitely add binding to all now and future elements.
+            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -123,7 +125,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             var elmid = matches[1];
             var fieldtype = matches[2];
 
-            var realoccur = 0; // To be changed.
+            var realoccur = that.attr('data-occur');
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
@@ -227,6 +229,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
         add_list_item: function(elmname, realoccur) {
 
             var newname = metadata.next_occurrence_name(elmname);
+            realoccur++;
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;

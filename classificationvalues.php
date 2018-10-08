@@ -93,7 +93,7 @@ if ($classification->tablename != 'sharedresource_taxonomy') {
     $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
     $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
-    $upicon = $OUTPUT->('t/up', '', 'core', $attrs);
+    $upicon = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
     $attrs = array('class' => 'mod-sharedresource-tokens-ctl');
     $downicon = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
 

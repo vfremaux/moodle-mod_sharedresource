@@ -426,7 +426,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser {
      * Reset child nodes iteration
      */
     function reset_childs($path) {
-        foreach($this->nodes_tree as $key => $value) {
+        foreach ($this->nodes_tree as $key => $value) {
             if (strpos($key, $path.'/') === 0) {
                 $this->nodes_tree[$key]['iteration'] = -1;
             }
@@ -467,7 +467,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser {
      * @return  bool            True
      */
     function start_element($parser, $name, $attrs) {
-        if (strpos($name,':') !== false) {
+        if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
 
@@ -553,9 +553,9 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser {
     /**
      * Switch the character-data handler to ignore the next chunk of data
      *
-     * @param   mixed   $parser The XML parser
-     * @param   string  $name   The name of the tag, e.g. method_call
-     * @return  bool            True
+     * @param mixed $parser The XML parser
+     * @param string $name The name of the tag, e.g. method_call
+     * @return bool true
      */
     function end_element($parser, $name) {
         if (strpos($name, ':') !== false) {
