@@ -682,6 +682,28 @@ class metadata {
     }
 
     /**
+     * Checks for mandatory status of the node.
+     */
+    function node_is_mandatory() {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$this->get_node_id();
+        $configstate = get_config('sharedresource', $configkey);
+
+        // Also check in tree scan in DB.
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+
+        return $configstate || $dbstate;
+    }
+
+    /**
      * Get the ancestor metadata instance in the branch at some level. this element may not have
      * database storage.
      */

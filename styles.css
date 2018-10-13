@@ -400,3 +400,9 @@ fieldset > legend{
     cursor: not-allowed;
     background-color: #eee;
 }
+
+/* Mandatory elements */
+.is-mandatory label,
+.is-mandatory legend {
+    color: #F00000;
+}

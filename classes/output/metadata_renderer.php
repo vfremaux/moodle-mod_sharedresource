@@ -900,6 +900,13 @@ class metadata_renderer extends \plugin_renderer_base {
         $elmoccur = $elminstance->get_instance_index();
         $maxoccur = $elminstance->get_max_occurrence();
 
+        $template->mandatoryclass = '';
+        $template->mandatorysign = '';
+        if ($elminstance->node_is_mandatory()) {
+            $template->mandatoryclass = 'is-mandatory';
+            $template->mandatorysign = '(*)';
+        }
+
         if ($elmoccur > 0 || $maxoccur > 0) {
             $template->occur = $elmoccur + 1;
         }

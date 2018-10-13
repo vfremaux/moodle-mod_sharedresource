@@ -89,7 +89,14 @@ $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'))
 $PAGE->requires->js_call_amd('mod_sharedresource/metadata', 'init', array($config->schema));
 $PAGE->requires->js_call_amd('mod_sharedresource/metadataedit', 'init', array($config->schema));
 
-$url = new moodle_url('/mod/sharedresource/forms/metadata_form.php');
+$params = array('add' => $add,
+                'update' => $update,
+                'return' => $return,
+                'section' => $section,
+                'mode' => $mode,
+                'course' => $courseid,
+                'context' => $sharingcontext);
+$url = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
 $PAGE->set_url($url);
 
 echo $OUTPUT->header();

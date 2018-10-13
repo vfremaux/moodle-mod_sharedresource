@@ -213,6 +213,7 @@ $string['localizeadvice'] = '<p>La ressource a été relocalisée, cela veut dir
 $string['localizetocourse'] = 'Localiser dans le cours';
 $string['location'] = 'Emplacement de la ressource';
 $string['m'] = 'm(s)';
+$string['mandatory'] = 'Obligatoire';
 $string['medatadaconfiguration_desc'] = 'Cette <a href="{$a}">page supplémentaire</a> permet la configuration des formulaires de metadonnées pour chaque rôle, et de choisir les widgets de recherche.';
 $string['metadata'] = 'Métadonnées';
 $string['metadataconfiguration'] = 'Configuration des métadonnées';

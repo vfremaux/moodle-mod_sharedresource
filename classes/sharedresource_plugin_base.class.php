@@ -285,6 +285,7 @@ abstract class plugin_base {
         $template->systemstr = get_string('system', 'sharedresource');
         $template->indexerstr = get_string('indexer', 'sharedresource');
         $template->authorstr = get_string('author', 'sharedresource');
+        $template->mandatorystr = get_string('mandatory', 'sharedresource');
         $template->widgetstr = get_string('widget', 'sharedresource');
         $template->namespace = $this->namespace;
 

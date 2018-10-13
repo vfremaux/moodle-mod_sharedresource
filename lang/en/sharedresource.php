@@ -68,6 +68,7 @@ $string['bycapability'] = 'By capability';
 $string['byprofilefield'] = 'By profilefield';
 $string['profilefieldname'] = 'Profile field';
 $string['matchedvalues'] = 'Matching values';
+$string['mandatory'] = 'Mandatory';
 $string['somewhere'] = 'Somewhere (site, course or category)';
 $string['profilefieldname_help'] = '
    Name is given as a prefix:fieldname value. Prefix can be "user" or "profile_field", and respectively addresses core user 
