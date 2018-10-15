@@ -334,7 +334,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 }
 
                 // unlock form submit if no more empty on whole form.
-                var otherempty = $('#mtd-form-input .is-mandatory.is-empty');
+                var otherempty = $('#mtd-form-input.is-mandatory.is-empty');
                 if (!otherempty || (otherempty.length === 0)) {
                     $('#id-mtd-submit').attr('disabled', false);
                     $('#id-mtd-submit').removeClass('is-disabled');
