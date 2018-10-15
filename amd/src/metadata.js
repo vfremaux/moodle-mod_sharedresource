@@ -33,10 +33,10 @@ define(['jquery', 'core/log'], function ($, log) {
          * leaf element in sequence
          */
         next_occurrence : function(elementid) {
-            parts = elementid.split(':');
-            instanceid = parts[1];
-            pathelms = instanceid.split('_');
-            lastpart = pathelms.pop();
+            var parts = elementid.split(':');
+            var instanceid = parts[1];
+            var pathelms = instanceid.split('_');
+            var lastpart = pathelms.pop();
             lastpart++;
             pathelms.push(lastpart);
             instanceid = pathelms.join('_');
@@ -52,7 +52,7 @@ define(['jquery', 'core/log'], function ($, log) {
         next_occurrence_name : function(elmname) {
             var parts = elmname.split('n');
             var lastoccurrence = parts.pop();
-            lastoccurrence++
+            lastoccurrence++;
             parts.push(lastoccurrence);
             elmname = parts.join('n');
             return elmname;
@@ -63,7 +63,7 @@ define(['jquery', 'core/log'], function ($, log) {
          * mnx_nny
          */
         parent_name : function(elementname) {
-            parts = elementname.split('_');
+            var parts = elementname.split('_');
             parts.pop();
             return parts.join('_');
         }

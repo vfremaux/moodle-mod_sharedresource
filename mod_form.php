@@ -63,6 +63,18 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements();
 
+        $config = get_config('sharedresource');
+        $pluginname = $config->schema;
+        $plugin = sharedresource_get_plugin($pluginname, null);
+        $descriptionelementnodeid = $plugin->getDescriptionElement()->node;
+        $key = 'config_'.$pluginname.'_mandatory_'.$descriptionelementnodeid;
+        $required = get_config($key, 'sharedmetadata_'.$pluginname);
+
+        if ($required) {
+            $mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
+        }
+
+
         $mform->addElement('header', 'typedesc', get_string('resourcetypefile', 'sharedresource'));
 
         $this->resourceinstance->setup_elements($mform);

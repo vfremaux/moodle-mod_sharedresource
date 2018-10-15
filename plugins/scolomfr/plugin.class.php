@@ -225,7 +225,7 @@ class plugin_scolomfr extends plugin_base {
         '1_4' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1004,7 +1004,7 @@ class plugin_scolomfr extends plugin_base {
         '5_10' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1081,7 +1081,7 @@ class plugin_scolomfr extends plugin_base {
         '5_14' => array(
             'name' => 'Lieux', //rajouter fichier langue
             'source' => 'scolomfr',
-            'type' => 'select',
+            'type' => 'sortedselect',
             'values' => array(
                 'en amphithéâtre',
                 'en atelier',
@@ -1300,7 +1300,7 @@ class plugin_scolomfr extends plugin_base {
         '6_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1332,7 +1332,28 @@ class plugin_scolomfr extends plugin_base {
             'name' => 'Kind',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references', 'isreferencedby', 'isbasedon', 'isbasisfor', 'requires', 'isrequiredby', 'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis', 'a pour vignette', 'a pour logo', 'est aperçu de', 'a pour aperçu'),
+            'values' => array(
+                'ispartof',
+                'haspart',
+                'isversionof',
+                'hasversion',
+                'isformatof',
+                'hasformat',
+                'references',
+                'isreferencedby',
+                'isbasedon',
+                'isbasisfor',
+                'requires',
+                'isrequiredby',
+                'est associée à',
+                'est la traduction de',
+                'fait l\'objet d\'une traduction',
+                'est prérequis de',
+                'a pour prérequis',
+                'a pour vignette',
+                'a pour logo',
+                'est aperçu de',
+                'a pour aperçu'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1408,7 +1429,7 @@ class plugin_scolomfr extends plugin_base {
         '7_2_2' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1468,7 +1489,7 @@ class plugin_scolomfr extends plugin_base {
         '8_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1501,8 +1522,21 @@ class plugin_scolomfr extends plugin_base {
         '9_1' => array(
             'name' => 'Purpose',
             'source' => 'lom',
-            'type' => 'select',
-            'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions', 'educational level', 'skill level', 'security level', 'competency', 'enseignement', 'public cible détaillé', 'label', 'type de diffusion'),
+            'type' => 'sortedselect',
+            'values' => array(
+                'discipline',
+                'idea',
+                'prerequisite',
+                'educational objective',
+                'accessibility restrictions',
+                'educational level',
+                'skill level',
+                'security level',
+                'competency',
+                'enseignement',
+                'public cible détaillé',
+                'label',
+                'type de diffusion'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1532,7 +1566,9 @@ class plugin_scolomfr extends plugin_base {
         '9_2_1' => array(
             'name' => 'Source',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'select',
+            'func' => array('class' => '\local_sharedresources\browser\navigation', 'method' => 'get_taxonomies_menu'),
+            'extraclass' => 'taxonomy-source',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1589,7 +1625,7 @@ class plugin_scolomfr extends plugin_base {
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
-            'type' => 'text',
+            'type' => 'longtext',
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1699,7 +1735,7 @@ class plugin_scolomfr extends plugin_base {
                         case 'select':
                             if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['ScoLOMFRv1.0'])) {
                                 $source = 'ScoLOMFRv1.0';
-                            } elseif (in_array($metadata[$elem][$path], $this->OTHERSOURCES['LOMFRv1.0'])) {
+                            } else if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['LOMFRv1.0'])) {
                                 $source = 'LOMFRv1.0';
                             } else {
                                 $source = $this->DEFAULTSOURCE;
@@ -1863,7 +1899,12 @@ class plugin_scolomfr extends plugin_base {
     }
 
     /**
-     * Allow to get the taxumpath category and other information about its children node.
+     * Get the metadata elements identifiers that stores a taxon index binding
+     * for a resource. the "main" designates the root of a complete taxon
+     * entry in metadata. Taxon may be composed of a set of subproperties.
+     * The "source" holds a reference to a classification source, @see table mdl_sharedresource_classif
+     * The "id" points to the local id to the taxon in the taxonoy source table
+     * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
     function getTaxumpath() {
         $element = array();
@@ -1876,7 +1917,7 @@ class plugin_scolomfr extends plugin_base {
     }
 
     /**
-     * Allow to get the taxumpath category and other information about its children node.
+     * Gets the metadata node identifier that provides classification storage capability.
      */
     function getClassification() {
         $element = "9";
@@ -1894,7 +1935,8 @@ class plugin_scolomfr extends plugin_base {
         }
 
         $keywordSource = $this->METADATATREE['1_5']['source'];
-        $DB->delete_records_select('sharedresource_metadata', " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ", array($this->entryid));
+        $select = " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
+        $DB->delete_records_select('sharedresource_metadata', $select, array($this->entryid));
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {

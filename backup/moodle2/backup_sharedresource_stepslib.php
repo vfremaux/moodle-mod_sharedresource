@@ -41,7 +41,10 @@ class backup_sharedresource_activity_structure_step extends backup_activity_stru
            'name', 'type', 'identifier', 'intro', 'introformat', 'alltext', 'popup', 'options', 'timemodified'));
 
         if (!empty($CFG->sharedresource_backup_index)) {
-            $entry = new backup_nested_element('sharedresource_entry');
+            $entry = new backup_nested_element('sharedresource_entry', array('id'), array('title', 'type', 'mimetype',
+            'identifier', 'remoteid', 'file', 'url', 'lang', 'description', 'keywords', 'timemodified', 'provider',
+            'isvalid', 'displayed', 'scoreview', 'scorelike', 'score'
+            ));
 
             $metadata = new backup_nested_element('metadata');
 

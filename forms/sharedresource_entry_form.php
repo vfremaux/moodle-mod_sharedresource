@@ -71,6 +71,17 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
+        $config = get_config('sharedresource');
+        $pluginname = $config->schema;
+        $plugin = sharedresource_get_plugin($pluginname, null);
+        $descriptionelementnodeid = $plugin->getDescriptionElement()->node;
+        $key = 'config_'.$pluginname.'_mandatory_'.$descriptionelementnodeid;
+        $required = get_config('sharedmetadata_'.$pluginname, $key);
+
+        if ($required) {
+            $mform->addRule('description', get_string('required'), 'required', null, 'client');
+        }
+
         // Sharing context:
         /*
          * Users can share a sharedresource at public system context level, or share privately to a specific
@@ -85,6 +96,7 @@ class mod_sharedresource_entry_form extends moodleform {
         // Resource access :
         // TODO : try incorporate the accesscontrol form.
         if (mod_sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
+            assert(1);
         }
 
         // Url or file.
@@ -96,6 +108,12 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
             $mform->setType('url', PARAM_URL); 
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
+        }
+
+        if (mod_sharedresource_supports_feature('entry/scorable')) {
+            $mform->addElement('text', 'score', get_string('score', 'mod_sharedresource'), array('size' => '8', 'style' => 'width:8em;'));
+            $mform->setType('score', PARAM_INT);
+            $mform->setAdvanced('score');
         }
 
         if (mod_sharedresource_supports_feature('entry/customicon')) {

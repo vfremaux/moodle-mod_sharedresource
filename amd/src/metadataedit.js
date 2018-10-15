@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], function ($, str, log, metadata) {
+define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/metadata'], function ($, str, log, cfg, metadata) {
 
     var namespace;
     var mtdstrings;
@@ -28,9 +28,10 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
     var metadataedit = {
 
         init: function(args) {
+
             namespace = args;
 
-            stringsreq = [
+            var stringsreq = [
                 {
                     key: 'fillprevious',
                     component: 'sharedresource'
@@ -45,17 +46,27 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                 mtdstrings = strings;
             });
 
+            // Add check handlers to mandatory elements.
+            $('.mtd-form-element.is-mandatory input[type="text"]').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory input[type="text"]').trigger('change');
+            $('.mtd-form-element.is-mandatory select').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory select').trigger('change');
+            $('.mtd-form-element.is-mandatory textarea').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory textarea').trigger('change');
+
             $('.mtd-form-addbutton').bind('click', this.add_node);
             $('.mtd-tab').bind('click', this.switch_tab);
             $('.mtd-form-input').bind('change', this.activate_add_button);
             $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
 
             // Read checkboxes may ask search widget being enabled.
-            selector = '.' + namespace + '-system-read';
+            var selector = '.' + namespace + '-system-read';
             selector += ',.' + namespace + '-indexer-read';
             selector += ',.' + namespace + '-author-read';
             $(selector).bind('change', this.enable_search_widget_checkbox);
             $('.taxonomy-source').bind('change', this.reload_taxonomy);
+            // Change to this form : indefinitely add binding to all now and future elements.
+            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -79,15 +90,15 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is a form tab link, or a form tab LI.
-            that = $(this);
+            var that = $(this);
             if (!that.attr('id')) {
                 that = that.parent();
             }
 
             var menuid = that.attr('id');
 
-            regexp = /id-menu-([^-]+)$/;
-            matches = that.attr('id').match(regexp);
+            var regexp = /id-menu-([^-]+)$/;
+            var matches = that.attr('id').match(regexp);
             var tabid = 'id-tab-' + matches[1];
 
             $('.mtd-tab').removeClass('here');
@@ -108,28 +119,29 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is the add button.
-            that = $(this);
+            var that = $(this);
 
             // Comes in order : "btn-$elmname-$fieldtype"
             /*
-             * elmname : the complete occurence id as xny_wnz (ex : 1n1_1n2, which is the JS id base for the second instance of element 1_1
+             * elmname : the complete occurence id as xny_wnz (ex : 1n1_1n2, which is the JS id
+             * base for the second instance of element 1_1
              * fieldtype : typeof field
              */
-            regexp = /btn-([^-]+)-([^-]+)/;
-            matches = that.attr('name').match(regexp);
+            var regexp = /btn-([^-]+)-([^-]+)/;
+            var matches = that.attr('name').match(regexp);
 
             var elmid = matches[1];
             var fieldtype = matches[2];
+            var rgx = '';
 
-            var islist = that.hasClass('is-list');
-            var realoccur = 0; // To be changed.
+            var realoccur = that.attr('data-occur');
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
                     case 'text':
                     case 'codetext': {
                         if ($('#' + elmid).val() === '') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -137,7 +149,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
                     case 'select': {
                         if ($('#' + elmid).val() === 'basicvalue') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -145,7 +157,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
                     case 'date': {
                         if ($('#' + elmid + "_dateyear").val() === '- Year -') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -156,15 +168,17 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                             ($('#' + elmid + "_Hou").val() === '' || $('#' + elmid + "_Hou").val() === '0') &&
                                 ($('#' + elmid + "_Min").val() === '' || $('#' + elmid + "_Min").val() === '0') &&
                                     ($('#' + elmid + "_Sec").val() === '' || $('#' + elmid+"_Sec").val() === '0')) {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
                     }
 
                     case 'vcard': {
-                        if ($('#' + elmid).val().replace(new RegExp("(\r\n|\r|\n)", "g" ),'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
-                            alert(mtdstrings[0]);
+                        // eslint-disable-next-line no-control-regex
+                        rgx = new RegExp("(\r\n|\r|\n)", "g");
+                        if ($('#' + elmid).val().replace(rgx,'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -178,8 +192,9 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                 var listchildren = that.attr('data');
                 var listtab = listchildren.split(';');
                 var nbremptyfield = 0;
+                var childid;
 
-                for (i = 0; i < listtab.length; i++) {
+                for (var i = 0; i < listtab.length; i++) {
 
                     childid = listtab[i];
 
@@ -199,15 +214,17 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                         nbremptyfield++;
                     }
                     if ($('#' + childid).val() === 'undefined') {
-                        if ($('#' + childid).val().replace(new RegExp("(\r\n|\r|\n)", "g" ), '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
+                        // eslint-disable-next-line no-control-regex
+                        rgx = new RegExp("(\r\n|\r|\n)", "g" );
+                        if ($('#' + childid).val().replace(rgx, '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
                             nbremptyfield++;
                         }
                     }
                 }
                 if (nbremptyfield == listtab.length) {
-                    alert(mtdstrings[1]);
+                    window.alert(mtdstrings[1]);
                 } else {
-                    metadataedit.add_list_item(elmid, realoccur)
+                    metadataedit.add_list_item(elmid, realoccur);
                 }
             }
         },
@@ -220,15 +237,16 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
          */
         add_list_item: function(elmname, realoccur) {
 
-            newname = metadata.next_occurrence_name(elmname);
+            var newname = metadata.next_occurrence_name(elmname);
+            realoccur++;
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
             params += "&realoccur=" + realoccur;
-            var url = M.cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
+            var url = cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
-            $.get(url, function(data, status) {
-                zonename = "#add-zone-" + elmname;
+            $.get(url, function(data) {
+                var zonename = "#add-zone-" + elmname;
                 $(data.html).insertBefore(zonename);
 
                 // Recode the add button id for next play, incrementing occurence index
@@ -258,22 +276,24 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             e.stopPropagation();
 
             // Target is an input field.
-            that = $(this);
+            var that = $(this);
 
-            elementname = that.attr('id');
+            var elementname = that.attr('id');
 
             if (that.val()) {
                 $('#id-add-' + elementname).prop('disabled', false);
             } else {
                 $('#id-add-' + elementname).prop('disabled', true);
             }
-            parentname = elementname;
+            var parentname = elementname;
             log.debug("Processing to elementkey " + elementname);
-            while (parentname = metadata.parent_name(parentname)) {
+            parentname = metadata.parent_name(parentname);
+            while (parentname) {
                 log.debug("Escalading to parentkey " + parentname);
                 log.debug("Detected " + $('#id-add-' + parentname).attr('name'));
                 log.debug("Detected " + $('#id-add-' + parentname).prop('disabled'));
                 $('#id-add-' + CSS.escape(parentname)).prop('disabled', false);
+                parentname = metadata.parent_name(parentname);
             }
         },
 
@@ -281,23 +301,56 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
             e.stopPropagation();
 
-            that = $(this);
-            var taxonomyoptionshtml = '';
+            var that = $(this);
 
             // Fetch new taxonomy.
-            url = M.cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
+            var url = cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
             $.get(url, function(data){
 
-                parentid = metadata.parent_name(that.attr('id'));
+                var parentid = metadata.parent_name(that.attr('id'));
 
                 // Clear out all values and change option list.
-                $('[data-source="' + parentid + '"]').each(function(index) {
+                $('[data-source="' + parentid + '"]').each(function() {
                     $(this).html(data);
                     $(this).val('');
                 });
 
             }, 'html');
 
+        },
+
+        check_empty: function() {
+            var that = $(this);
+            var branchid = that.attr('id').substring(0, 1);
+
+            if (that.val()) {
+                // mark element as fullfilled.
+                that.parent('.is-mandatory').removeClass('is-empty');
+
+                // mark same branch tab as fullfilled.
+                var otheremptyonbranch = $('#mtd-form-input.is-mandatory-' + branchid + '.is-empty');
+                if (!otheremptyonbranch || (otheremptyonbranch.length === 0)) {
+                    $('#id-menu-' + branchid).removeClass('is-empty');
+                }
+
+                // unlock form submit if no more empty on whole form.
+                var otherempty = $('#mtd-form-input .is-mandatory.is-empty');
+                if (!otherempty || (otherempty.length === 0)) {
+                    $('#id-mtd-submit').attr('disabled', false);
+                    $('#id-mtd-submit').removeClass('is-disabled');
+                }
+
+            } else {
+                // mark element as empty.
+                that.parent('.is-mandatory').addClass('is-empty');
+
+                // lock form submit.
+                $('#id-mtd-submit').attr('disabled', true);
+                $('#id-mtd-submit').addClass('is-disabled');
+
+                // mark same branch tab as empty.
+                $('#id-menu-' + branchid).addClass('is-empty');
+            }
         }
     };
 
