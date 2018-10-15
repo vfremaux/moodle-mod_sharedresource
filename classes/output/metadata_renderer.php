@@ -124,6 +124,15 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $tabtpl = new StdClass;
         $tabtpl->i = $nodeid;
+
+        if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
+            $tabtpl->mandatoryclass = 'is-mandatory is-empty';
+            $tabtpl->mandatorysign = '(*)';
+        } else {
+            $tabtpl->mandatoryclass = '';
+            $tabtpl->mandatorysign = '';
+        }
+
         if (\mod_sharedresource\metadata::use_branch($nodeid, $capability, $mode)) {
             $tabtpl->tabclass = 'mtd-tab-visible';
         } else {
@@ -531,11 +540,12 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param string $elementkey the standard element id m_n_o:x_y_z
      * @param string $capability tells if the field is visible or not depending of the category of the user
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not 
-     * appear anymore on the metadata form.
+     * appear anymore on the metadata form. Realoccur is the visible occurrence the user should see for the part.
      */
     function part_form(&$parenttemplate, $elementkey, $capability, $realoccur = 0, $ispanel = false) {
         global $SESSION, $CFG, $DB;
         static $taxumarray;
+        static $classifsiblingsdone = false;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -543,6 +553,7 @@ class metadata_renderer extends \plugin_renderer_base {
         list($nodeid, $instanceid) = explode(':', $elementkey);
         $htmlname = metadata::storage_to_html($elementkey);
         $standardelm = $mtdstandard->getElement($nodeid);
+        $addelementkey = $elementkey;
 
         if (!$mtdstandard->hasNode($nodeid)) {
             // Trap out if not exists.
@@ -582,8 +593,17 @@ class metadata_renderer extends \plugin_renderer_base {
         // It may not come from database.
         $elminstance = metadata::instance($shrentry->id, $instancekey, $namespace, false);
         $elminstance->numoccur = $elminstance->get_instance_index();
+        $elminstance->realoccur = $realoccur;
         $elminstance->maxoccur = $elminstance->get_max_occurrence();
+        if ($elminstance->maxoccur < $elminstance->numoccur) {
+            $elminstance->maxoccur = $elminstance->numoccur;
+        }
 
+        $numoccur = $elminstance->numoccur;
+        $maxoccur = $elminstance->maxoccur;
+
+        // echo "NodeID : $nodeid ";
+        // echo "InstanceID : $instanceid ";
         // print_object($elminstance);
         // print_object($standardelm);
         // echo "numoccur $numoccur ";
@@ -594,19 +614,20 @@ class metadata_renderer extends \plugin_renderer_base {
         }
 
         $template->occur = '';
+        if (!empty($realoccur)) {
+            $template->occur = $realoccur;
+        }
 
         /*
          * an array storing the child element name references for JS.
          */
         $listresult = array();
 
-        $numoccur = $elminstance->get_instance_index();
-        $maxoccur = $elminstance->get_max_occurrence();
-
         if ($standardelm->type == 'category') {
-
+            // echo "// $elementkey iscategory \n";
             if (!is_null($taxumarray) && $nodeid == $taxumarray['main']) {
 
+                // echo "// $elementkey isclassification \n";
                 // If the field concerns classification :
                 /*
                  * we need group the id and item fields into one unique input widget.
@@ -616,7 +637,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->isclassification = true;
                 $template->nodeid = $taxumarray['id'];
 
-                if ($numoccur >= 0) {
+                if ($numoccur >= 0 && !$realoccur) {
                     $template->occur = $numoccur + 1;
                 }
 
@@ -627,19 +648,50 @@ class metadata_renderer extends \plugin_renderer_base {
 
                 $value = $sourceelm->get_value();
                 if (empty($value)) {
+                    // initial value : Undefined \n";
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
-                    if ($firsts = $DB->get_records('sharedresource_classif', $params, 'name', '*', 0, 1)) {
-                        $sourceelm = array_pop($firsts);
+                    $instanceindex = $elminstance->get_instance_index();
+                    // echo "// Node index : $instanceindex \n";
+                    if ($instanceindex == 0) {
+                        // echo "// Take first available source \n";
+                        /*
+                         * If we are the first unvalued element, take the first classification available
+                         * as it will be loaded in the upper "source" select chooser
+                         */
+                        if ($firsts = $DB->get_records('sharedresource_classif', $params, 'name', '*', 0, 1)) {
+                            // Should take the active classification of the upper node that is: 9nx_2ny_1n0
+                            $sourceelm = array_pop($firsts);
+                            $sourceelmid = $sourceelm->id;
+                        } else {
+                            // echo "// No classification source \n";
+                        }
+                    } else {
+                        // echo "// Take parent source \n";
+                        // Here we need to find wich classif was already fixed for this branch.
+                        // Get immediate parent and require the source on node 0.
+                        $parentinstance = $elminstance->get_parent(false); // Do not explicitely exist.
+                        $sourcenodeid = $parentinstance->get_node_id().'_1';
+                        $sourceinstanceid = $parentinstance->get_instance_id().'_0';
+                        $sourceinstanceid = metadata::to_instance($sourcenodeid, $sourceinstanceid);
+                        // The instance must exist.
+                        $sourceinstance = metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
+                        // Id of the source taxonomy is the value of this source instance.
+                        $params = array('id' => $sourceinstance->get_value());
+                        $sourceelm = $DB->get_record('sharedresource_classif', $params);
                         $sourceelmid = $sourceelm->id;
                     }
                 } else {
+                    // echo "// initial value : $value \n";
                     $params = array('id' => $value);
                     $sourceelmid = $DB->get_field('sharedresource_classif', 'id', $params);
                 }
 
+                // echo "// Source element id : $sourceelmid \n";
                 if (empty($sourceelmid)) {
-                    $template->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+                    $taxontpl = new StdClass;
+                    $taxontpl->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+                    $template->taxons[] = $taxontpl;
                 } else {
                     /*
                      * We check if there is metadata saved for this field.
@@ -648,19 +700,86 @@ class metadata_renderer extends \plugin_renderer_base {
                      * that dynamic subsequent form parts in the same binding will all catch the binding source.
                      */
                     $classificationoptions = metadata_get_classification_options($sourceelmid);
-                    $htmlsourcekey = \mod_sharedresource\metadata::storage_to_html($taxonelm->get_element_key());
+                    $htmlsourcekey = metadata::storage_to_html($taxonelm->get_element_key());
                     $attrs = array('class' => 'mtd-form-input', 'id' => $template->elmname, 'data-source' => $htmlsourcekey);
                     $nochoice = array('' => get_string('none', 'sharedresource'));
 
                     // Get value in associated taxonid element.
-                    $taxonidelmkey = \mod_sharedresource\metadata::to_instance($taxumarray['id'], $elminstance->get_instance_id());
-                    $taxonidelm = \mod_sharedresource\metadata::instance($shrentry->id, $taxonidelmkey, $namespace, false);
+                    $taxonidelmkey = metadata::to_instance($taxumarray['id'], $elminstance->get_instance_id());
+                    $taxonidelm = metadata::instance($shrentry->id, $taxonidelmkey, $namespace, false);
+
                     $value = $taxonidelm->get_value();
-                    $template->classificationselect = html_writer::select($classificationoptions, $template->elmname, $value, $nochoice, $attrs);
+                    $taxontpl = new StdClass;
+                    $taxontpl->classificationselect = html_writer::select($classificationoptions, $template->elmname, $value, $nochoice, $attrs);
+                    $taxontpl->occur = $template->occur;
+                    $template->taxons[] = $taxontpl;
+
+                    /*
+                     * Get all other taxons that may be added to this classification set. This will shift the apparent $addelementkey
+                     * puhshing it up for any available taxon sibling.
+                     */
+                    if ($value) {
+                        /*
+                         * If we have a value we are building an updating form. If we have no value on the
+                         * first taxon, this is a new form or a new form part got by ajax for adding a taxon.
+                         */
+                        $siblings = $taxonidelm->get_siblings(1);
+                        $i = 2;
+                        foreach ($siblings as $sib) {
+                            $taxontpl = new StdClass;
+                            /*
+                             * Taxon subelements are bundled in form into the parent classification taxon. As this parent is
+                             * a virtual container, we do NOT require it exists in database.
+                             */
+                            $siblingelementkey = $sib->get_parent(false)->get_element_key();
+                            $addelementkey = $siblingelementkey;
+                            $htmlname = metadata::storage_to_html($siblingelementkey);
+                            $taxontpl->elmname = $htmlname;
+                            $attrs = array('class' => 'mtd-form-input', 'id' => $htmlname, 'data-source' => $htmlsourcekey);
+                            $taxontpl->classificationselect = html_writer::select($classificationoptions, $htmlname, $sib->get_value(), $nochoice, $attrs);
+                            $taxontpl->occur = $i;
+                            $template->taxons[] = $taxontpl;
+                            $i++;
+
+                            // Also increment the effective template occurrence to push the "new instance button id up".
+                            if ($numoccur >= 0) {
+                                $template->occur = $numoccur + 1;
+                            }
+                        }
+
+                        // Fetch the level-1 siblings only for the first source.
+                        if ($realoccur == 0 && !$classifsiblingsdone) {
+                            $classifsiblingsdone = true;
+                            $siblingcollector = new StdClass;
+                            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
+                            $maxoccur = $elminstance->get_max_occurrence();
+                            // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
+                            /*
+                             * this is a relative guess of higher level siblings. We need explore the "source" childs of the element as parent
+                             * does not explictely exist in metadata, thus breacking the standard case form recursion.
+                             */
+                            // $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $elminstance->get_parent(false)->get_node_id().'_1', null, false);
+                            $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $taxumarray['source'], null, false);
+                            if (!empty($classifsets)) {
+                                $i = 1;
+                                foreach ($classifsets as $clf) {
+                                    $thisinstancekey = metadata::to_instance($taxumarray['source']);
+                                    if ($clf->get_element_key() == $thisinstancekey) {
+                                        // Avoid looping on self.
+                                        continue;
+                                    }
+                                    $i++;
+                                    // echo "Realoccur : $realoccur Requiring form for ".$clf->get_parent(false)->get_element_key();
+                                    $this->part_form($siblingcollector, $clf->get_parent(false)->get_element_key(), $capability, $i);
+                                }
+                            }
+                        }
+                    }
                 }
 
             } else {
                 $template->iscontainer = true;
+                // echo "// $elementkey iscontainer \n";
 
                 // If the category is a list, we have to check the number of occurrence of the category.
                 if ($elminstance->isstored) {
@@ -674,7 +793,7 @@ class metadata_renderer extends \plugin_renderer_base {
                     // If NOT a stored element, fetch the childs in the metadata definition.
                     $standardchilds = $mtdstandard->getElementChilds($nodeid, $capability, 'write', true);
                     foreach ($standardchilds as $chid => $islist) {
-                        $elementid = metadata::to_instance($chid);
+                        $elementid = metadata::to_instance($chid, $elminstance->get_instance_id());
                         $element = metadata::instance($shrentry->id, $elementid, $namespace, false);
                         if ($element->node_has_capability($capability, 'write')) {
                             $listresults[$elementid] = $element;
@@ -692,7 +811,8 @@ class metadata_renderer extends \plugin_renderer_base {
 
                     foreach ($listresults as $childkey => $elementinstance) {
                         // $childstandard = $mtdstandard->getElement($elementinstance->get_node_id());
-                        $this->part_form($template, $childkey, $capability, 0);
+                        // echo "Require form for child $childkey ";
+                        $this->part_form($template, $childkey, $capability, $elementinstance->get_instance_index());
                         if (count($template->childs)) {
                             $template->hascontent = true;
                         }
@@ -700,6 +820,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 }
             }
         } else {
+            // echo "// $elementkey iswidget \n";
             // Final widgets always have content.
             $template->hascontent = true;
             $this->print_widget($mtdstandard, $elminstance, $standardelm, $template, $shrentry);
@@ -710,27 +831,33 @@ class metadata_renderer extends \plugin_renderer_base {
          * than we need first get all other siblings and print those instances.
          * If we were not stored, the form part is for getting a first value and is enough.
          * Do not process if we are adding a new from instance through AJAX calls.
+         * This is the general case. But special sibling collector may exist from previous processing (@see classification).
          */
-        $siblingcollector = new StdClass;
-        if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
-            $maxoccur = $elminstance->get_max_occurrence();
-            $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true);
+        if (!isset($siblingcollector)) {
+            $siblingcollector = new StdClass;
+            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
+            if (( ((integer) $numoccur) === 0)) {
+                $maxoccur = $elminstance->get_max_occurrence();
+                // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
+                $siblings = $elminstance->get_siblings(0);
 
-            if (!empty($siblings)) {
-                // All siblings will have a numoccur > 0.
-                foreach ($siblings as $sib) {
-                    $this->part_form($siblingcollector, $sib->get_element_key(), $capability, 0);
+                if (!empty($siblings)) {
+                    // All siblings will have a numoccur > 0.
+                    $i = 1;
+                    foreach ($siblings as $sib) {
+                        $i++;
+                        $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
+                    }
                 }
             }
         }
 
         $template->hasaddbutton = false;
         if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-
-            if ($numoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
+            if ($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
 
                 /*
-                 * If element is a list we need display a add button to allow adding.
+                 * If element is a list we need display an add button to allow adding.
                  * an aditional form fragment. This button should be disabled until the
                  * first free form has not been filled. Children are named agains the last form
                  * occurrenc available. All previous occurences are supposed to be filled.
@@ -747,7 +874,12 @@ class metadata_renderer extends \plugin_renderer_base {
                 // If we are printing the last occurence, or have no occurence, let diplay an add button.
                 // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
-                $template->addid = metadata::storage_to_html($elementkey);
+                if (is_numeric($template->occur)) {
+                    $template->nextoccur = $template->occur + 1;
+                } else {
+                    $template->nextoccur = 1;
+                }
+                $template->addid = metadata::storage_to_html($addelementkey);
                 $template->addclass = 'is-list';
                 if ($elminstance->maxoccur === '') {
                     $template->adddisabled = 'disabled="disabled"';
@@ -777,6 +909,17 @@ class metadata_renderer extends \plugin_renderer_base {
         $elmoccur = $elminstance->get_instance_index();
         $maxoccur = $elminstance->get_max_occurrence();
 
+        $template->mandatoryclass = '';
+        $template->mandatorysign = '';
+        if ($elminstance->node_is_mandatory()) {
+            if ($elminstance->get_value() != '') {
+                $template->mandatoryclass = 'is-mandatory is-mandatory-'.$elminstance->get_branch_id();
+            } else {
+                $template->mandatoryclass = 'is-mandatory is-empty is-mandatory-'.$elminstance->get_branch_id();
+            }
+            $template->mandatorysign = '(*)';
+        }
+
         if ($elmoccur > 0 || $maxoccur > 0) {
             $template->occur = $elmoccur + 1;
         }
@@ -802,12 +945,20 @@ class metadata_renderer extends \plugin_renderer_base {
                     // Lock only the first instance.
                     $template->value = $shrentry->title;
                     $template->readonly = 'readonly="readonly"';
+                    if (!empty($template->mandatoryclass)) {
+                        // Remove the is-empty potential initial state.
+                        $template->mandatoryclass = 'is-mandatory';
+                    }
                 }
             } else if ($nodeid == $mtdstandard->getDescriptionElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
                     $template->value = $shrentry->description;
                     // Lock only the first instance.
                     $template->readonly = 'readonly="readonly"';
+                    if (!empty($template->mandatoryclass)) {
+                        // Remove the is-empty potential initial state.
+                        $template->mandatoryclass = 'is-mandatory';
+                    }
                 }
             } else if ($nodeid == $mtdstandard->getLocationElement()->node && $elminstance->get_value() == '') {
                 $template->value = $shrentry->url;

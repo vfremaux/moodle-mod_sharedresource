@@ -285,6 +285,7 @@ abstract class plugin_base {
         $template->systemstr = get_string('system', 'sharedresource');
         $template->indexerstr = get_string('indexer', 'sharedresource');
         $template->authorstr = get_string('author', 'sharedresource');
+        $template->mandatorystr = get_string('mandatory', 'sharedresource');
         $template->widgetstr = get_string('widget', 'sharedresource');
         $template->namespace = $this->namespace;
 
@@ -375,6 +376,11 @@ abstract class plugin_base {
         $template->aparentclassr = $this->namespace.'-author-read-'.$parentid;
         $template->acheckedw = (!empty($config->{$template->cakw})) ? 'checked="checked"' : '';
         $template->acheckedr = (!empty($config->{$template->cakr})) ? 'checked="checked"' : '';
+
+        $template->cmk = 'config_'.$this->namespace.'_mandatory_'.$fieldid;
+        $template->mparentclass = $this->namespace.'-mandatory-'.$parentid;
+        $template->mk = $this->namespace.'-mandatory-'.$fieldid;
+        $template->mchecked = (!empty($config->{$template->cmk})) ? 'checked="checked"' : '';
 
         $template->wk = $this->namespace.'-widget-'.$fieldid;
         $template->wn = 'widget_'.$this->namespace.'_'.$fieldid;
@@ -920,7 +926,7 @@ abstract class plugin_base {
 
     /**
      * Finds all resources that are using this taxon in metadata and removes all
-     * the metadata record srelated to this binding.
+     * the metadata records related to this binding.
      */
     public function unbind_taxon($classifid, $taxonid) {
 

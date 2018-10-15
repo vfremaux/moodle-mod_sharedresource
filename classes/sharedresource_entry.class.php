@@ -617,9 +617,10 @@ class entry {
             $firstdescelmkey = metadata::to_instance($desc->node);
         }
         foreach ($this->metadataelements as $element) {
+
             $element->entryid = $this->id;
 
-            // Todo recheck this. this is a pass through quick fix
+            // Todo recheck this. this is a pass through quick fix.
             if (empty($element->namespace)) {
                 $element->namespace = 'lom';
             }
@@ -713,10 +714,27 @@ class entry {
         }
     }
 
+    /**
+     * Check if a resource exists and binds the record to represent this instance with
+     * new current data.
+     */
     public function exists() {
         global $DB;
 
-        return $DB->record_exists('sharedresource_entry', array('identifier' => $this->identifier));
+        if ($oldrec = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))) {
+            $this->id = $oldrec->id;
+
+            // Update all internal metadata references.
+            if (!empty($this->metadataelements)) {
+                foreach ($this->metadataelements as $element) {
+                    $element->entryid = $this->id;
+                }
+            }
+
+            return $this->id;
+        }
+
+        return false;
     }
 
     /**

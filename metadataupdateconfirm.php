@@ -36,6 +36,8 @@ $config = get_config('sharedresource');
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
+// Receive params.
+
 $mode = required_param('mode', PARAM_ALPHA);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $cancel = optional_param('cancel', 0, PARAM_BOOL);
@@ -49,6 +51,8 @@ if (!$course = $DB->get_record('course', array('id' => $course))) {
     print_error('badcourseid', 'sharedresource');
 }
 
+// Security.
+
 require_login($course);
 $context = context_course::instance($course->id);
 require_capability('repository/sharedresources:create', $context);
@@ -59,22 +63,6 @@ if ($cancel) {
     redirect($cancelurl);
 }
 
-$pagetitle = strip_tags($course->shortname);
-$strtitle = $pagetitle;
-$PAGE->set_pagelayout('standard');
-$system_context = context_system::instance();
-$PAGE->set_context($system_context);
-$urlparams = array('mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return);
-$url = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $urlparams);
-$PAGE->set_url($url);
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($SITE->fullname);
-
-// Navigation.
-$PAGE->set_cacheable(false);
-
-$renderer = $PAGE->get_renderer('mod_sharedresource');
-
 $SESSION->error = '';
 $srentry = $SESSION->sr_entry;
 $shrentry = unserialize($srentry);
@@ -82,12 +70,14 @@ $shrentry = unserialize($srentry);
 if ($confirm) {
 
     // It's an update, metadata of the sharedresource should be deleted before adding new ones.
+    /*
     foreach ($shrentry->metadataelements as $key => $metadata) {
         unset($shrentry->metadataelements[$key]);
     }
+    */
 
     // These two lines in comment can be used if you want to show the user values of saved fields.
-    if (!$shrentry->add_instance()) {
+    if (!$shrentry->update_instance()) {
         print_error('failadd', 'mod_sharedresource');
     }
 
@@ -107,25 +97,42 @@ if ($confirm) {
         $fullurl = new moodle_url('/course/modedit.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
-} else {
-
-    $cancelurlparams = $urlparams;
-    $cancelurlparams['cancel'] = 1;
-    $cancelurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $cancelurlparams);
-
-    $confirmurlparams = $urlparams;
-    $confirmurlparams['confirm'] = 1;
-    $confirmurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $confirmurlparams);
-
-    $message = '<div id="sharedresource-in-the-way"><p>'.get_string('resourceintheway', 'sharedresource').'</p></div>';
-    $oldresource = \mod_sharedresource\entry::get_by_identifier($shrentry->identifier);
-
-    $message .= $renderer->resourcecompare($shrentry, $oldresource);
-
-    $message .= '<div id="sharedresource-update-confirm"><p>'.get_string('resourceupdate', 'sharedresource').'</p></div>';
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->box($message, 'sharedresource-compare');
-    echo $OUTPUT->confirm('', $confirmurl, $cancelurl);
-    echo $OUTPUT->footer();
 }
+
+// Build and print the page.
+
+$pagetitle = strip_tags($course->shortname);
+$strtitle = $pagetitle;
+$PAGE->set_pagelayout('standard');
+$system_context = context_system::instance();
+$PAGE->set_context($system_context);
+$urlparams = array('mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return);
+$url = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $urlparams);
+$PAGE->set_url($url);
+$PAGE->set_title($strtitle);
+$PAGE->set_heading($SITE->fullname);
+
+// Navigation.
+$PAGE->set_cacheable(false);
+
+$renderer = $PAGE->get_renderer('mod_sharedresource');
+
+$cancelurlparams = $urlparams;
+$cancelurlparams['cancel'] = 1;
+$cancelurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $cancelurlparams);
+
+$confirmurlparams = $urlparams;
+$confirmurlparams['confirm'] = 1;
+$confirmurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $confirmurlparams);
+
+$message = '<div id="sharedresource-in-the-way"><p>'.get_string('resourceintheway', 'sharedresource').'</p></div>';
+$oldresource = \mod_sharedresource\entry::get_by_identifier($shrentry->identifier);
+
+$message .= $renderer->resourcecompare($shrentry, $oldresource);
+
+$message .= '<div id="sharedresource-update-confirm"><p>'.get_string('resourceupdate', 'sharedresource').'</p></div>';
+
+echo $OUTPUT->header();
+echo $OUTPUT->box($message, 'sharedresource-compare');
+echo $OUTPUT->confirm('', $confirmurl, $cancelurl);
+echo $OUTPUT->footer();

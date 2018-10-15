@@ -89,8 +89,10 @@ if ($mode == 'file') {
     die;
 }
 
-// The sharedresource has been recognized as a deployable backup.
-// Take the physical file and deploy it with the activity publisher utility.
+/*
+ * The sharedresource has been recognized as a deployable backup.
+ * Take the physical file and deploy it with the activity publisher utility.
+ */
 if ($mode == 'deploy') {
     require_capability('moodle/course:manageactivities', $context);
 
@@ -112,6 +114,9 @@ if ($mode == 'deploy') {
     // No one should be here....
 }
 
+/*
+ * The sharedresource has been recognized as being a LTI descriptor
+ */
 if ($mode == 'ltiinstall') {
 
     // We build an LTI Tool instance.
@@ -206,25 +211,8 @@ if ($mode == 'ltiinstall') {
     $modulename = 'sharedresource';
 }
 
-$sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
-
-// Make a new course module.
-$module = $DB->get_record('modules', array('name'=> $modulename));
-$cm = new StdClass;
-$cm->instance = $instance->id;
-$cm->module = $module->id;
-$cm->course = $courseid;
-$cm->section = $sectionid;
-
-// Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
-// Valid also if LTI tool.
-if (!empty($shrentry->remoteid)) {
-    $cm->idnumber = $shrentry->remoteid;
-}
-
-// Insert the course module in course.
-if (!$cm->id = add_course_module($cm)) {
-    print_error('errorcmaddition', 'sharedresource');
+if (empty($cm)) {
+    $cm  = sharedresource_build_cm($courseid);
 }
 
 // Reset the course modinfo cache.

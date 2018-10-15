@@ -184,6 +184,7 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
         // Locally defined resource ie. we are the master.
         $shrentry->type = 'file'; // Obsolete ?
 
+        $hasentry = false;
         // Is this a local resource or a remote one?
         if (!empty($formdata->url)) {
             $shrentry->url = $formdata->url;

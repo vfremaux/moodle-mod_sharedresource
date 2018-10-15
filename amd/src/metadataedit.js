@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], function ($, str, log, metadata) {
+define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/metadata'], function ($, str, log, cfg, metadata) {
 
     var namespace;
     var mtdstrings;
@@ -46,6 +46,14 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                 mtdstrings = strings;
             });
 
+            // Add check handlers to mandatory elements.
+            $('.mtd-form-element.is-mandatory input[type="text"]').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory input[type="text"]').trigger('change');
+            $('.mtd-form-element.is-mandatory select').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory select').trigger('change');
+            $('.mtd-form-element.is-mandatory textarea').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory textarea').trigger('change');
+
             $('.mtd-form-addbutton').bind('click', this.add_node);
             $('.mtd-tab').bind('click', this.switch_tab);
             $('.mtd-form-input').bind('change', this.activate_add_button);
@@ -57,6 +65,8 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             selector += ',.' + namespace + '-author-read';
             $(selector).bind('change', this.enable_search_widget_checkbox);
             $('.taxonomy-source').bind('change', this.reload_taxonomy);
+            // Change to this form : indefinitely add binding to all now and future elements.
+            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -122,16 +132,16 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
             var elmid = matches[1];
             var fieldtype = matches[2];
+            var rgx = '';
 
-            var islist = that.hasClass('is-list');
-            var realoccur = 0; // To be changed.
+            var realoccur = that.attr('data-occur');
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
                     case 'text':
                     case 'codetext': {
                         if ($('#' + elmid).val() === '') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -139,7 +149,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
                     case 'select': {
                         if ($('#' + elmid).val() === 'basicvalue') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -147,7 +157,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
                     case 'date': {
                         if ($('#' + elmid + "_dateyear").val() === '- Year -') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -158,7 +168,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                             ($('#' + elmid + "_Hou").val() === '' || $('#' + elmid + "_Hou").val() === '0') &&
                                 ($('#' + elmid + "_Min").val() === '' || $('#' + elmid + "_Min").val() === '0') &&
                                     ($('#' + elmid + "_Sec").val() === '' || $('#' + elmid+"_Sec").val() === '0')) {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -166,9 +176,9 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
                     case 'vcard': {
                         // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g");
+                        rgx = new RegExp("(\r\n|\r|\n)", "g");
                         if ($('#' + elmid).val().replace(rgx,'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -205,14 +215,14 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
                     }
                     if ($('#' + childid).val() === 'undefined') {
                         // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g" );
+                        rgx = new RegExp("(\r\n|\r|\n)", "g" );
                         if ($('#' + childid).val().replace(rgx, '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
                             nbremptyfield++;
                         }
                     }
                 }
                 if (nbremptyfield == listtab.length) {
-                    alert(mtdstrings[1]);
+                    window.alert(mtdstrings[1]);
                 } else {
                     metadataedit.add_list_item(elmid, realoccur);
                 }
@@ -228,11 +238,12 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
         add_list_item: function(elmname, realoccur) {
 
             var newname = metadata.next_occurrence_name(elmname);
+            realoccur++;
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
             params += "&realoccur=" + realoccur;
-            var url = M.cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
+            var url = cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
             $.get(url, function(data) {
                 var zonename = "#add-zone-" + elmname;
@@ -293,7 +304,7 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
             var that = $(this);
 
             // Fetch new taxonomy.
-            var url = M.cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
+            var url = cfg.wwwroot + '/mod/sharedresource/ajax/gettaxonomymenu.php?id=' + that.val();
             $.get(url, function(data){
 
                 var parentid = metadata.parent_name(that.attr('id'));
@@ -306,6 +317,40 @@ define(['jquery', 'core/str', 'core/log', 'mod_sharedresource/metadata'], functi
 
             }, 'html');
 
+        },
+
+        check_empty: function() {
+            var that = $(this);
+            var branchid = that.attr('id').substring(0, 1);
+
+            if (that.val()) {
+                // mark element as fullfilled.
+                that.parent('.is-mandatory').removeClass('is-empty');
+
+                // mark same branch tab as fullfilled.
+                var otheremptyonbranch = $('.mtd-form-element.is-mandatory-' + branchid + '.is-empty');
+                if (!otheremptyonbranch || (otheremptyonbranch.length === 0)) {
+                    $('#id-menu-' + branchid).removeClass('is-empty');
+                }
+
+                // unlock form submit if no more empty on whole form.
+                var otherempty = $('.mtd-form-element.is-mandatory.is-empty');
+                if (!otherempty || (otherempty.length === 0)) {
+                    $('#id-mtd-submit').attr('disabled', false);
+                    $('#id-mtd-submit').removeClass('is-disabled');
+                }
+
+            } else {
+                // mark element as empty.
+                that.parent('.is-mandatory').addClass('is-empty');
+
+                // lock form submit.
+                $('#id-mtd-submit').attr('disabled', true);
+                $('#id-mtd-submit').addClass('is-disabled');
+
+                // mark same branch tab as empty.
+                $('#id-menu-' + branchid).addClass('is-empty');
+            }
         }
     };
 

@@ -501,3 +501,30 @@ function sharedresource_clean_field($field) {
     }
     return $value;
 }
+
+function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance = null) {
+    $sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
+
+    // Make a new course module.
+    $module = $DB->get_record('modules', array('name'=> $modulename));
+    $cm = new StdClass;
+    if (!empty($instance)) {
+        $cm->instance = $instance->id;
+    }
+    $cm->module = $module->id;
+    $cm->course = $courseid;
+    $cm->section = $sectionid;
+
+    // Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
+    // Valid also if LTI tool.
+    if (!empty($shrentry->remoteid)) {
+        $cm->idnumber = $shrentry->remoteid;
+    }
+
+    // Insert the course module in course.
+    if (!$cm->id = add_course_module($cm)) {
+        print_error('errorcmaddition', 'sharedresource');
+    }
+
+    return $cm;
+}
