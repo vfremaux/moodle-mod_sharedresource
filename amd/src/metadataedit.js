@@ -328,13 +328,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 that.parent('.is-mandatory').removeClass('is-empty');
 
                 // mark same branch tab as fullfilled.
-                var otheremptyonbranch = $('#mtd-form-input.is-mandatory-' + branchid + '.is-empty');
+                var otheremptyonbranch = $('.mtd-form-element.is-mandatory-' + branchid + '.is-empty');
                 if (!otheremptyonbranch || (otheremptyonbranch.length === 0)) {
                     $('#id-menu-' + branchid).removeClass('is-empty');
                 }
 
                 // unlock form submit if no more empty on whole form.
-                var otherempty = $('#mtd-form-input.is-mandatory.is-empty');
+                var otherempty = $('.mtd-form-element.is-mandatory.is-empty');
                 if (!otherempty || (otherempty.length === 0)) {
                     $('#id-mtd-submit').attr('disabled', false);
                     $('#id-mtd-submit').removeClass('is-disabled');
