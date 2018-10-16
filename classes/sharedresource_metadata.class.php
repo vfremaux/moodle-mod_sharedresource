@@ -305,6 +305,21 @@ class metadata {
         }
     }
 
+    /**
+     * Get the lowest possible instance on this tree node.
+     * May even not exist in the stored metadata. this is obtained by setting
+     * the last instance path index to 0.
+     *
+     * return a new metadata object with changed ids.
+     */
+    public function base_instance_sibling() {
+        $sibling = clone($this);
+        array_pop($sibling->instancepath);
+        array_push($sibling->instancepath, 0);
+        $sibling->instanceid = implode('_', $sibling->instancepath);
+        return $sibling;
+    }
+
     public function get_element_key() {
         return $this->element;
     }
@@ -1042,4 +1057,41 @@ class metadata {
         return $dbstate;
     }
 
+    /**
+     * Decodes to internal storage a ful branch info comming from an add button
+     * entry is mnw_nnx_ony:<value>;mnw_nnx_ony:<value> list form.
+     * @param string serialized branch info
+     * @return array of elementids to value mapping.
+     */
+    public static function decode_branch_info($branch) {
+        if (empty($branch)) {
+            return false;
+        }
+        $branchelms = explode(';', $branch);
+
+        $brancharr = array();
+        foreach ($branchelms as $elmpair) {
+            list($elementid, $value) = explode(':', $elmpair);
+            $brancharr[self::html_to_storage($elementid)] = $value;
+        }
+
+        return $brancharr;
+    }
+
+    /**
+     * A utility function : finds some tree prefixes into an array.
+     */
+    public static function find($what, $ids) {
+
+        $result = array();
+        if (!empty($ids)) {
+            foreach ($ids as $id) {
+                if (strpos($id, $what) === 0) {
+                    $result[] = $id;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

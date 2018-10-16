@@ -296,8 +296,15 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
     $mtdstandard = sharedresource_get_plugin($namespace);
     $mtdelement = $mtdstandard->getElement($element);
 
+    $params = array();
+
     if ($what == 'values') {
-        $clause = ($mtdelement->type == 'list') ? " element LIKE '{$mtdelement->id}:' " : " element = '{$mtdelement->id}' ";
+        if ($mtdelement->type == 'list') {
+            $params[] = $mtdelement->id.':';
+        } else {
+            $params[] = $mtdelement->id;
+        }
+        $clause = " element LIKE ? ";
         $fields = 'value';
     } else {
         if ($mtdelement->widget == 'treeselect') {
@@ -305,10 +312,14 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             if (preg_match('/^subs:/', $using)) {
                 // Search all subpaths of the required category.
                 $using = str_replace('subs:', '', $using);
-                $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $using.'%';
+                $params[] = $mtdelement->id.':%';
+                $clause = " value LIKE ? AND element LIKE ? ";
             } else {
                 // Search an exact taxon idpath match.
-                $clause = "  value = '{$using}' AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $using;
+                $params[] = $mtdelement->id.':%';
+                $clause = "  value = ? AND element LIKE ? ";
             }
 
         } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
@@ -325,22 +336,26 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     switch ($textoption) {
 
                         case 'includes': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'%\' ';
+                            $params[] = '%'.strtoupper(trim($token)).'%';
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
                         case 'equals': {
-                            $listsearchoptions[] = ' UPPER(value) = \''.strtoupper(trim($token)).'\' ';
+                            $params[] = strtoupper(trim($token));
+                            $listsearchoptions[] = ' UPPER(value) = ? ';
                             break;
                         }
 
                         case 'beginswith': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \''.strtoupper(trim($token)).'%\' ';
+                            $params[] = strtoupper(trim($token)).'%';
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
                         case 'endswith': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'\' ';
+                            $params[] = '%'.strtoupper(trim($token));
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
@@ -348,7 +363,8 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     }
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
-                $clause = " ( $listsearch ) AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $mtdelement->id.':%';
+                $clause = " ( $listsearch ) AND element LIKE ? ";
             } else {
                 $clause = '';
             }
