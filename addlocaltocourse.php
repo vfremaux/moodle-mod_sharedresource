@@ -189,6 +189,27 @@ if ($mode == 'ltiinstall') {
     }
 
     $modulename = 'lti';
+
+}
+
+/*
+ * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
+ * activity. We build an externally referenced scorm type
+ */
+else if ($mode = 'scorm') {
+
+    $scorm = new StdClass;
+    $scorm->name = $shrentry->name;
+    $scorm->scormtype = SCORM_TYPE_EXTERNAL;
+
+    /*
+     * We cannot use standard scorm_add_intance() as it needs the coursemodule preexists
+     * the instance.
+     */
+     $cm = sharedresource_build_module();
+
+    $modulename = 'scorm';
+
 } else {
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.

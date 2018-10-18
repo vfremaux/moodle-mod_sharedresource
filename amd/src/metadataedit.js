@@ -27,6 +27,42 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
     var metadataedit = {
 
+        bind_all: function() {
+
+            $('.mtd-form-input').off('change');
+            $('.taxonomy-source').off('change');
+            $('.mtd-form-addbutton').off('click');
+            $('.mtd-form-element.is-mandatory select').off('change');
+            $('.mtd-form-element.is-mandatory textarea').off('change');
+            $('.mtd-form-element.is-mandatory input[type="text"]').off('change');
+            $('.mtd-tab').off('click');
+            $('.mtd-tab a').off('click');
+
+            // Add check handlers to mandatory elements.
+            $('.mtd-form-element.is-mandatory input[type="text"]').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory input[type="text"]').trigger('change');
+            $('.mtd-form-element.is-mandatory select').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory select').trigger('change');
+            $('.mtd-form-element.is-mandatory textarea').bind('change', this.check_empty);
+            $('.mtd-form-element.is-mandatory textarea').trigger('change');
+
+            $('.mtd-form-addbutton').bind('click', this.add_node);
+            $('.mtd-tab').bind('click', this.switch_tab);
+            $('.mtd-form-input').bind('change', this.activate_add_button);
+            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
+
+            // Read checkboxes may ask search widget being enabled.
+            var selector = '.' + namespace + '-system-read';
+            selector += ',.' + namespace + '-indexer-read';
+            selector += ',.' + namespace + '-author-read';
+            $(selector).off('change');
+            $(selector).bind('change', this.enable_search_widget_checkbox);
+
+            $('.taxonomy-source').bind('change', this.reload_taxonomy);
+            // Change to this form : indefinitely add binding to all now and future elements.
+            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
+        },
+
         init: function(args) {
 
             namespace = args;
@@ -46,27 +82,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 mtdstrings = strings;
             });
 
-            // Add check handlers to mandatory elements.
-            $('.mtd-form-element.is-mandatory input[type="text"]').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory input[type="text"]').trigger('change');
-            $('.mtd-form-element.is-mandatory select').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory select').trigger('change');
-            $('.mtd-form-element.is-mandatory textarea').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory textarea').trigger('change');
-
-            $('.mtd-form-addbutton').bind('click', this.add_node);
-            $('.mtd-tab').bind('click', this.switch_tab);
-            $('.mtd-form-input').bind('change', this.activate_add_button);
-            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
-
-            // Read checkboxes may ask search widget being enabled.
-            var selector = '.' + namespace + '-system-read';
-            selector += ',.' + namespace + '-indexer-read';
-            selector += ',.' + namespace + '-author-read';
-            $(selector).bind('change', this.enable_search_widget_checkbox);
-            $('.taxonomy-source').bind('change', this.reload_taxonomy);
-            // Change to this form : indefinitely add binding to all now and future elements.
-            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
+            this.bind_all();
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -193,10 +209,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 var listtab = listchildren.split(';');
                 var nbremptyfield = 0;
                 var childid;
+                var listvalsarr = [];
 
                 for (var i = 0; i < listtab.length; i++) {
 
                     childid = listtab[i];
+
+                    listvalsarr.push(childid + ":" + $('#' + childid).val());
 
                     if ($('#' + childid).val() === '') {
                         nbremptyfield++;
@@ -224,7 +243,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 if (nbremptyfield == listtab.length) {
                     window.alert(mtdstrings[1]);
                 } else {
-                    metadataedit.add_list_item(elmid, realoccur);
+                    metadataedit.add_list_item(elmid, realoccur, listvalsarr.join(';'));
                 }
             }
         },
@@ -235,13 +254,14 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
          * numoccur : the occurrence number of the node (int)
          * realoccur :
          */
-        add_list_item: function(elmname, realoccur) {
+        add_list_item: function(elmname, realoccur, branchvalues) {
 
             var newname = metadata.next_occurrence_name(elmname);
             realoccur++;
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
+            params += "&branch=" + encodeURIComponent(branchvalues);
             params += "&realoccur=" + realoccur;
             var url = cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
@@ -249,7 +269,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 var zonename = "#add-zone-" + elmname;
                 $(data.html).insertBefore(zonename);
 
-                // Recode the add button id for next play, incrementing occurence index
+                // Recode the add button id for next play, incrementing occurence index.
                 var oldid = 'id-add-' + elmname;
                 oldid = CSS.escape(oldid);
 
@@ -265,8 +285,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 $('#add-zone-' + elmname).attr('id', 'add-zone-' + newname);
 
                 // Rebind all change handlers, including on new elements.
-                $('#' + elmname).unbind('change');
-                $('#' + newname).bind('change', metadataedit.activate_add_button);
+                metadataedit.bind_all();
 
             }, 'json');
         },

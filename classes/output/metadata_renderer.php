@@ -624,7 +624,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $listresult = array();
 
         if ($standardelm->type == 'category') {
-            // echo "// $elementkey iscategory \n";
             if (!is_null($taxumarray) && $nodeid == $taxumarray['main']) {
 
                 // echo "// $elementkey isclassification \n";
@@ -674,12 +673,34 @@ class metadata_renderer extends \plugin_renderer_base {
                         $sourcenodeid = $parentinstance->get_node_id().'_1';
                         $sourceinstanceid = $parentinstance->get_instance_id().'_0';
                         $sourceinstanceid = metadata::to_instance($sourcenodeid, $sourceinstanceid);
-                        // The instance must exist.
+                        /*
+                         * The instance must exist. If it does not, this is because it has NOT YET be recorded, f.e.
+                         * when trying to multi-taxon a just recently client-side added form-part. In this case
+                         * will we get it from the "branch" data of the template comming from ajax input.
+                         */
                         $sourceinstance = metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
                         // Id of the source taxonomy is the value of this source instance.
-                        $params = array('id' => $sourceinstance->get_value());
-                        $sourceelm = $DB->get_record('sharedresource_classif', $params);
-                        $sourceelmid = $sourceelm->id;
+                        if ($sourceinstance->isstored) {
+                            $params = array('id' => $sourceinstance->get_value());
+                            $sourceelm = $DB->get_record('sharedresource_classif', $params);
+                            $sourceelmid = $sourceelm->id;
+                        } else {
+                            // echo "// Comes from form branch info ";
+                            // sourceelmid comes from some data in branch. Let's decode id.
+                            /*
+                             * branch comes as a succession of mnw_nnx_ony_pnz:value list from
+                             * the childrenlist value of an add button.
+                             */
+                            $branch = metadata::decode_branch_info($parenttemplate->branch);
+                            $prefix = $taxumarray['source'].':';
+                            $sourceinstanceids = metadata::find($prefix, array_keys($branch));
+                            // Should be one.
+                            $sourceinstanceid = array_shift($sourceinstanceids);
+                            $sourceinstanceelm = new metadata(null, $sourceinstanceid, 0, $namespace);
+                            $basesiblingkey = $sourceinstanceelm->base_instance_sibling()->get_element_key();
+                            $sourceelmid = $branch[$basesiblingkey];
+                            // echo "// Final sourcelmid $sourceelmid ";
+                        }
                     }
                 } else {
                     // echo "// initial value : $value \n";
@@ -853,7 +874,8 @@ class metadata_renderer extends \plugin_renderer_base {
         }
 
         $template->hasaddbutton = false;
-        if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
+        if ($standardelm->islist) {
+        // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
             if ($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
 
                 /*
@@ -871,11 +893,11 @@ class metadata_renderer extends \plugin_renderer_base {
                     $template->listchildren = implode(';', $childkeys);
                 }
 
-                // If we are printing the last occurence, or have no occurence, let diplay an add button.
+                // If we are printing the last occurence, or have no occurence, let NOT display an add button.
                 // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
                 if (is_numeric($template->occur)) {
-                    $template->nextoccur = $template->occur + 1;
+                    $template->nextoccur = $template->occur;
                 } else {
                     $template->nextoccur = 1;
                 }
