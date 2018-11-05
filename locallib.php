@@ -296,8 +296,15 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
     $mtdstandard = sharedresource_get_plugin($namespace);
     $mtdelement = $mtdstandard->getElement($element);
 
+    $params = array();
+
     if ($what == 'values') {
-        $clause = ($mtdelement->type == 'list') ? " element LIKE '{$mtdelement->id}:' " : " element = '{$mtdelement->id}' ";
+        if ($mtdelement->type == 'list') {
+            $params[] = $mtdelement->id.':';
+        } else {
+            $params[] = $mtdelement->id;
+        }
+        $clause = " element LIKE ? ";
         $fields = 'value';
     } else {
         if ($mtdelement->widget == 'treeselect') {
@@ -305,10 +312,14 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             if (preg_match('/^subs:/', $using)) {
                 // Search all subpaths of the required category.
                 $using = str_replace('subs:', '', $using);
-                $clause = "  value LIKE '{$using}%' AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $using.'%';
+                $params[] = $mtdelement->id.':%';
+                $clause = " value LIKE ? AND element LIKE ? ";
             } else {
                 // Search an exact taxon idpath match.
-                $clause = "  value = '{$using}' AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $using;
+                $params[] = $mtdelement->id.':%';
+                $clause = "  value = ? AND element LIKE ? ";
             }
 
         } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
@@ -325,22 +336,26 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     switch ($textoption) {
 
                         case 'includes': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'%\' ';
+                            $params[] = '%'.strtoupper(trim($token)).'%';
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
                         case 'equals': {
-                            $listsearchoptions[] = ' UPPER(value) = \''.strtoupper(trim($token)).'\' ';
+                            $params[] = strtoupper(trim($token));
+                            $listsearchoptions[] = ' UPPER(value) = ? ';
                             break;
                         }
 
                         case 'beginswith': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \''.strtoupper(trim($token)).'%\' ';
+                            $params[] = strtoupper(trim($token)).'%';
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
                         case 'endswith': {
-                            $listsearchoptions[] = ' UPPER(value) LIKE \'%'.strtoupper(trim($token)).'\' ';
+                            $params[] = '%'.strtoupper(trim($token));
+                            $listsearchoptions[] = ' UPPER(value) LIKE ? ';
                             break;
                         }
 
@@ -348,7 +363,8 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     }
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
-                $clause = " ( $listsearch ) AND element LIKE '{$mtdelement->id}:%' ";
+                $params[] = $mtdelement->id.':%';
+                $clause = " ( $listsearch ) AND element LIKE ? ";
             } else {
                 $clause = '';
             }
@@ -502,7 +518,12 @@ function sharedresource_clean_field($field) {
     return $value;
 }
 
+/**
+ * Makes a new course module record.
+ */
 function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance = null) {
+    global $DB;
+
     $sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
 
     // Make a new course module.
@@ -527,4 +548,273 @@ function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $i
     }
 
     return $cm;
+}
+
+/**
+ * Get physically a remote file and prepare a local draft file with it.
+ * @param string $url
+ */
+function sharedresource_get_remote_file($url, $filename) {
+    global $USER;
+
+    $fs = get_file_storage();
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // Set it to pretty big files.
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
+    curl_setopt($ch, CURLOPT_POST, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    if ($rawresponse = curl_exec($ch)) {
+        $filename = preg_replace('/[0-9a-f]+-/i', '', basename($filename));  // Removes the unique shacode.
+
+        $filerecord = new StdClass;
+        $filerecord->contextid = context_user::instance($USER->id)->id;
+        $filerecord->component = 'user';
+        $filerecord->filearea = 'draft';
+        $filerecord->itemid = file_get_unused_draft_itemid();
+        $filerecord->filepath = '/';
+        $filerecord->filename = $filename;
+
+        $file = $fs->create_file_from_string($filerecord, $rawresponse);
+    } else {
+        print_error('unreachablefile', 'sharedresource');
+    }
+
+    return $file;
+}
+
+/**
+ * deploys a scorm from a local or remote resource.
+ * @param objectref &$shrentry
+ * @param objectref &$course the course where to deploy
+ * @param int $section
+ * @param int $draftid If empty, the sharedresource is local and we get a new draft file from that entry. If not empty, denotes
+ * a remote resource which file was remotely retrieved.
+ */
+function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = false) {
+    global $CFG, $DB;
+
+    include_once($CFG->dirroot.'/course/modlib.php');
+
+    $config = get_config('sharedresource');
+
+    // Check for completion setup.
+    $completion = new completion_info($course);
+    if ($completion->is_enabled()) {
+        $trackingdefault = COMPLETION_TRACKING_NONE;
+        // If system and activity default is on, set it.
+        $defaultcompletion = plugin_supports('mod', 'scorm', FEATURE_MODEDIT_DEFAULT_COMPLETION, true);
+        if ($CFG->completiondefault && $defaultcompletion) {
+            $trackingdefault = COMPLETION_TRACKING_MANUAL;
+        }
+
+        $completionview = false;
+        if (plugin_supports('mod', 'scorm', FEATURE_COMPLETION_TRACKS_VIEWS, false)) {
+            $trackingdefault = COMPLETION_TRACKING_AUTOMATIC;
+            $completionview = false;
+        }
+    }
+
+    $moduleinfo = new StdClass;
+    $moduleinfo->modulename = 'scorm';
+    $moduleinfo->module = $DB->get_field('modules', 'id', array('name' => 'scorm'));
+    $moduleinfo->visible = true;
+    $moduleinfo->visibleoncoursepage = true;
+    $moduleinfo->cmidnumber = '';
+    $moduleinfo->section = $section;
+    $moduleinfo->sr = $section;
+    $moduleinfo->groupmode = $course->groupmode;
+    $moduleinfo->groupingid = $course->defaultgroupingid;
+    $moduleinfo->completion = $trackingdefault;
+    $moduleinfo->completionview = $completionview;
+
+    $moduleinfo->name = $shrentry->title;
+    $moduleinfo->intro = $shrentry->description;
+
+    $moduleinfo->scormtype = $config->scormintegration;
+    switch ($config->scormintegration) {
+        case SCORM_TYPE_LOCAL : {
+
+            if (empty($draftid)) {
+                // We need fake a draft area at it would come back from form.
+                $fs = get_file_storage();
+
+                echo "Deploying $shrentry->file ";
+                $scormfile = $fs->get_file_by_id($shrentry->file);
+
+                $draftid = file_get_unused_draft_itemid();
+                $filerecord = new StdClass;
+                $usercontext = context_user::instance($USER->id);
+                $filerecord->contextid = $usercontext->id;
+                $filerecord->component = 'user';
+                $filerecord->filearea = 'draft';
+                $filerecord->itemid = $draftid;
+                $filerecord->filepath = '/';
+                $filerecord->filename = $scormfile->get_filename();
+
+                echo "File is item $draftid ";
+                $fs->delete_area_files($filerecord->contextid, 'user', 'draft', $draftid);
+                $draftfile = $fs->create_file_from_storedfile($filerecord, $shrentry->file);
+            }
+            $moduleinfo->packagefile = $draftid;
+            break;
+        }
+
+        default : {
+            // All other cases.
+            $moduleinfo->packageurl = $shrentry->url;
+        }
+    }
+
+    $moduleinfo->width = 100;
+    $moduleinfo->height = 100;
+
+    /*
+     * We cannot use directly scorm_add_intance() as it needs the coursemodule preexists
+     * the instance, but we can simulate a course add_moduleinfo call.
+     */
+    $moduleinfo = add_moduleinfo($moduleinfo, $course, null);
+    $cm = $DB->get_record('course_modules', array('id' => $moduleinfo->coursemodule));
+    $instance = $DB->get_record('scorm', array('id' => $moduleinfo->instance));
+    $modulename = 'scorm';
+
+    if ($course->format == 'page') {
+        require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
+        require_once($CFG->dirroot.'/course/format/page/lib.php');
+        $coursepage = course_page::get_current_page($course->id);
+        $coursepage->add_cm_to_page($cm->id);
+    }
+
+    return array($cm, $instance, $modulename);
+}
+
+function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
+    global $CFG, $OUTPUT, $PAGE;
+
+    // We build an LTI Tool instance.
+    include_once($CFG->dirroot.'/mod/sharedresource/forms/lti_mod_form.php');
+    include_once($CFG->dirroot.'/mod/lti/lib.php');
+
+    $instance = new StdClass();
+    $instance->name = $shrentry->title;
+    $instance->intro = $shrentry->description;
+    $instance->introformat = FORMAT_MOODLE;
+    $time = time();
+    $instance->timecreated = $time;
+    $instance->timemodified = $time;
+    $instance->typeid = 0;
+    if (preg_match('#^https://#', $shrentry->url)) {
+        $instance->toolurl = '';
+        $instance->securetoolurl = $shrentry->url;
+    } else {
+        $instance->toolurl = $shrentry->url;
+        $instance->securetoolurl = '';
+    }
+    $instance->instructorchoicesendname = 1; // Default lti form value.
+    $instance->instructorchoicesendemailaddr = 1;
+    $instance->instructorchoiceallowroster = 1;
+    $instance->instructorchoiceallowsetting = 1;
+    $instance->instructorcustomparameters = '';
+    $instance->instructorchoiceacceptgrades = 1;
+    $instance->grade = 0;
+    $instance->launchcontainer = LTI_LAUNCH_CONTAINER_DEFAULT;
+    $instance->resourcekey = ''; // Client identification key for remote service.
+    $instance->password = ''; // Server password for accessing the service.
+    $instance->debuglaunch = 0;
+    $instance->showtitlelaunch = 0;
+    $instance->showdescriptionlaunch = 0;
+    $instance->servicesalt = ''; // Unique salt autocalculated.
+    $instance->icon = '';
+    $instance->secureicon = '';
+    $instance->coursemodule = ''; // New module.
+
+    $mform = new lti_mod_form();
+    if ($mform->is_cancelled()) {
+        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
+    }
+    if ($data = $mform->get_data()) {
+        $intancearr = (array)$instance;
+        $data->intro = $data->introeditor['text'];
+        $data->introformat = $data->introeditor['format'];
+
+        // Report changes from form.
+        foreach (array_keys($intancearr) as $key) {
+            if (isset($data->$key)) {
+                $instance->$key = $data->$key;
+            }
+        }
+        $instance->course = $courseid;
+        $instance->id = lti_add_instance($instance, null);
+    } else {
+        echo $OUTPUT->header();
+        echo $OUTPUT->heading(get_string('addltiinstall', 'sharedresource'));
+        $instance->identifier = $shrentry->identifier;
+        $instance->mode = 'ltiinstall';
+        $instance->id = $courseid;
+        $instance->section = $section;
+        $instance->title = $shrentry->title;
+        $instance->description = $shrentry->description;
+        $instance->provider = $shrentry->provider;
+
+        $mform->set_data($instance);
+        $mform->display();
+        echo $OUTPUT->footer();
+        die;
+    }
+
+    return $instance;
+}
+
+/**
+ * deploys a moodle activity backup using the activity publisher.
+ * @param objectref &$shrentry
+ * @param objectref &$course the course where to deploy
+ * @param int $section
+ * @param int $draftfile If empty, the sharedresource is local and we get the file from that entry. If not empty, denotes
+ * a remote resource which file was remotely retrieved as a new draft.
+ */
+function sharedresource_deploy_activity(&$shrentry, &$course, $section, $draftfile) {
+    global $CFG;
+
+    include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
+
+    $fs = get_file_storage();
+
+    if (empty($draftid)) {
+        // Internal resource.
+        $draftfile = $fs->get_file_by_id($shrentry->file);
+    } else {
+        // Resource is remote and has been localized as a draft temporary file.
+        assert(1);
+    }
+    activity_publisher::restore_single_module($course->id, $draftfile);
+}
+
+/**
+ * Tries to find a suitable activity or course icon for a sharedresource entry mapping an MBZ archive.
+ */
+function sharedresource_extract_activity_icon(&$resourcedesc) {
+    global $OUTPUT;
+
+    if (preg_match('/-activity-(\d+)-/', $resourcedesc['file_filename'], $matches)) {
+        // Extract item id.
+        $itemid = $matches[1];
+
+        if (preg_match("/-activity-(\d+)-([a-z]+)/", $resourcedesc['file_filename'], $matches)) {
+            $modulename = $matches[2];
+            $resourcedesc['mpduletype'] = $modulename;
+            $iconurl = $OUTPUT->image_url('icon', 'mod_'.$modulename);
+        }
+    }
+
+    if (empty($iconurl)) {
+        $iconurl = $OUTPUT->image_url('moodlebackup', 'sharedresource');
+    }
+
+    return ''.$iconurl;
 }

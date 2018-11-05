@@ -377,6 +377,11 @@ abstract class plugin_base {
         $template->acheckedw = (!empty($config->{$template->cakw})) ? 'checked="checked"' : '';
         $template->acheckedr = (!empty($config->{$template->cakr})) ? 'checked="checked"' : '';
 
+        $template->cmk = 'config_'.$this->namespace.'_mandatory_'.$fieldid;
+        $template->mparentclass = $this->namespace.'-mandatory-'.$parentid;
+        $template->mk = $this->namespace.'-mandatory-'.$fieldid;
+        $template->mchecked = (!empty($config->{$template->cmk})) ? 'checked="checked"' : '';
+
         $template->wk = $this->namespace.'-widget-'.$fieldid;
         $template->wn = 'widget_'.$this->namespace.'_'.$fieldid;
 

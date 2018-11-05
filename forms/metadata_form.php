@@ -72,9 +72,7 @@ $tempentry = $SESSION->sr_entry;
 $shrentry = unserialize($tempentry);
 // Load working metadata plugin.
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
-$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
-$mtdstandard = new $mtdclass();
+$mtdstandard = sharedresource_get_plugin($config->schema);
 
 // Building $PAGE.
 

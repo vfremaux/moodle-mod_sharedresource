@@ -305,12 +305,31 @@ class metadata {
         }
     }
 
+    /**
+     * Get the lowest possible instance on this tree node.
+     * May even not exist in the stored metadata. this is obtained by setting
+     * the last instance path index to 0.
+     *
+     * return a new metadata object with changed ids.
+     */
+    public function base_instance_sibling() {
+        $sibling = clone($this);
+        array_pop($sibling->instancepath);
+        array_push($sibling->instancepath, 0);
+        $sibling->instanceid = implode('_', $sibling->instancepath);
+        return $sibling;
+    }
+
     public function get_element_key() {
         return $this->element;
     }
 
     public function get_node_id() {
         return $this->nodeid;
+    }
+
+    public function get_branch_id() {
+        return array_shift($this->nodepath);
     }
 
     public function get_value() {
@@ -468,7 +487,7 @@ class metadata {
             $childsarr = array();
             if (!empty($childs)) {
                 foreach ($childs as $child) {
-                    $childelm = self::instance($child->entryid, $child->element, $namespace);
+                    $childelm = self::instance($child->entryid, $child->element, $namespace, false);
                     if (!empty($capability)) {
                         if (!$childelm->node_has_capability($capability, $rw)) {
                             continue;
@@ -1020,4 +1039,59 @@ class metadata {
         return $legacy;
     }
 
+    /**
+     * Checks for mandatory status of the node.
+     */
+    public static function has_mandatories($branchid) {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$branchid.'%';
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+        return $dbstate;
+    }
+
+    /**
+     * Decodes to internal storage a ful branch info comming from an add button
+     * entry is mnw_nnx_ony:<value>;mnw_nnx_ony:<value> list form.
+     * @param string serialized branch info
+     * @return array of elementids to value mapping.
+     */
+    public static function decode_branch_info($branch) {
+        if (empty($branch)) {
+            return false;
+        }
+        $branchelms = explode(';', $branch);
+
+        $brancharr = array();
+        foreach ($branchelms as $elmpair) {
+            list($elementid, $value) = explode(':', $elmpair);
+            $brancharr[self::html_to_storage($elementid)] = $value;
+        }
+
+        return $brancharr;
+    }
+
+    /**
+     * A utility function : finds some tree prefixes into an array.
+     */
+    public static function find($what, $ids) {
+
+        $result = array();
+        if (!empty($ids)) {
+            foreach ($ids as $id) {
+                if (strpos($id, $what) === 0) {
+                    $result[] = $id;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

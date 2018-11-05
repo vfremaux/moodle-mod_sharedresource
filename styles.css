@@ -1,5 +1,10 @@
 @charset "utf-8";
 
+.mtd-setting {
+    padding: 3px;
+    text-align: center;
+}
+
 #mtd-form-container {
     text-align: center;
     width: 95%;
@@ -134,6 +139,11 @@ input.mtd-form-duration {
     cursor: pointer;
 }
 
+.mtd-form input[type="submit"].is-disabled:hover {
+    background-color: #ff3333;
+    cursor: none;
+}
+
 .mtd-form input[type="reset"] {
     border: #DDEEFF 1px solid;
     width: 27%;
@@ -163,6 +173,11 @@ input.mtd-form-duration {
 .mtd-form-element textarea.mtd-form-input {
     min-height: 6em;
     min-width: 50%;
+}
+
+.mtd-form-addbutton {
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 .mtd-tab {
@@ -300,6 +315,10 @@ td.mtd-value {
     margin-left: 1%;
 }
 
+#mtd-edit-form-submits {
+    margin-top: 20px;
+}
+
 fieldset.subbranch{
     margin-left: 5px;
 }
@@ -404,5 +423,20 @@ fieldset > legend{
 /* Mandatory elements */
 .is-mandatory label,
 .is-mandatory legend {
-    color: #F00000;
+    color: #f00000;
+}
+
+.here.is-mandatory.is-empty a span {
+    background-color: #a00000 !important;
+}
+
+.is-mandatory.is-empty a span {
+    background-color: #faaaaa !important;
+}
+
+.is-mandatory.is-empty input[type=text],
+.is-mandatory.is-empty select,
+.is-mandatory.is-empty textarea {
+    border: 2px solid #a00000 !important;
+    background-color: #faaaaa !important;
 }

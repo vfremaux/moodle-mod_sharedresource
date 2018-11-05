@@ -29,76 +29,141 @@ require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/admin_convert_form.php');
+require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
+require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
 $courseid = optional_param('id', '', PARAM_INT);
-$identifier = optional_param('identifier', '', PARAM_TEXT);
-$mode = optional_param('mode', 'shared', PARAM_ALPHA);
+$section = optional_param('section', '', PARAM_INT);
+$identifier = optional_param('identifier', '', PARAM_TEXT); // The remote identifier.
+$filename = optional_param('filename', '', PARAM_TEXT); // The local filename of the remote file.
+$filepath = optional_param('filepath', '', PARAM_TEXT); // The local filepath of the remote file.
+$mode = optional_param('mode', 'shared', PARAM_ALPHA); // The deployment operation mode.
+$token = optional_param('token', '', PARAM_TEXT);
+
+$url = urldecode(required_param('url', PARAM_TEXT));
+if (!empty($token)) {
+    $url .= '&token='.$token;
+}
 
 $course =  $DB->get_record('course', array('id' => "$courseid"));
 if (empty($course)) {
     print_error('coursemisconf');
 }
 
+// Some attributes of $PAGE must be defined.
+$params = array('id' => $courseid, 'url' => $url, 'file' => $filename);
+$pageurl = new moodle_url('/mod/sharedresource/addremotetocourse.php', $params);
+$PAGE->set_url($pageurl);
+
 // Security.
 
 require_login($course);
+
 $context = context_course::instance($course->id);
 if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
     print_error('noaccessform', 'sharedresource');
 }
 
-// If we have a physical file to get, get it.
-if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
-    $url = required_param('url', PARAM_URL);
-    $filename = required_param('file', PARAM_TEXT);
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // Set it to pretty big files.
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
-    curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    if ($rawresponse = curl_exec($ch)) {
-        $filename = preg_replace('/[0-9a-f]+-/i', '', basename($filename));  // Removes the unique shacode.
-        $path = $CFG->dataroot.'/'.$course->id.'/'.$filename;
-        $FILE = fopen($path, 'wb');
-        fwrite($FILE, $rawresponse);
-        fclose($FILE);
-    }
-    // If we are just getting the file, that's enough.
-    if ($mode == 'file') {
-        redirect($CFG->wwwroot.'/files/index.php?id='.$course->id);
-    }
+if (!$section) {
+    // When we add directly from library without course action.
+    $section = sharedresource_get_course_section_to_add($course);
 }
-if ($mode != 'file') {
+
+$config = get_config('sharedresource');
+
+// check wether the deployment mode needs the remote file to be localized here.
+$needsfileinlocalfs = ($mode == 'deploy') ||
+            ($mode == 'file') ||
+                    (($mode == 'scorm') && $config->scormintegration == SCORM_TYPE_LOCAL);
+
+$tempfile = null;
+if ($needsfileinlocalfs) {
+    // Remote file will be restored in a local draft filearea at root filepath.
+    $tempfile = sharedresource_get_remote_file($url, $filename);
+}
+
+// Make a sharedresource representation of the imported resource.
+$title = required_param('title', PARAM_TEXT);
+$desc = required_param('description', PARAM_TEXT);
+$provider = required_param('provider', PARAM_TEXT);
+$keywords = optional_param('keywords', '', PARAM_TEXT);
+
+// Make a sharedresource_entry.
+$entryclass = \mod_sharedresource\entry_factory::get_entry_class();
+$shrentry = new $entryclass(false);
+$shrentry->title = $title;
+$shrentry->description = $desc;
+$shrentry->keywords = $keywords;
+$shrentry->url = $url;
+$shrentry->sharedresourcefile = '';
+if (!empty($identifier)) {
+    $shrentry->identifier = $identifier;
+} else {
+    $shrentry->identifier = sha1($url);
+}
+$shrentry->provider = $provider;
+
+/*
+ * The sharedresource has been recognized as being a LTI descriptor
+ */
+if ($mode == 'ltiinstall' || $mode == 'lticonfirm') {
+    $instance = sharedresource_deploy_lti($shrentry, $courseid, $section, $url);
+    $modulename = 'lti';
+}
+
+/*
+ * The sharedresource has been recognized as a deployable backup by the remote library.
+ * Take the physical file and deploy it with the activity publisher utility.
+ */
+if ($mode == 'deploy') {
+    require_capability('moodle/course:manageactivities', $context);
+
+    if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
+        sharedresource_deploy_activity($shrentry, $course, $section, $tempfile);
+        // TODO : Terminate procedure and return to course silently.
+        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    } else {
+        print_error('Activity publisher not installed. Deployment cannot be performed.');
+    }
+
+    // No one should be here....
+}
+
+if ($mode == 'scorm') {
+    require_capability('moodle/course:manageactivities', $context);
+
+    // Check and fix scormintegration settings regarding scorm config. Defaults to local.
+    $configkey = 'allow'.$config->scormintegration;
+    if (empty($config->$configkey)) {
+        set_config('scormintegration', SCORM_TYPE_LOCAL, 'sharedresource');
+        $config->scormintegration = SCORM_TYPE_LOCAL;
+    }
+
+    $draftid = false;
+    if (!empty($tempfile)) {
+        // The remote scorm package has been relocalized as a local tempfile.
+        $draftid = $tempfile->get_itemid();
+    }
+    if (empty($draftid) && ($config->scormintegration == SCORM_TYPE_LOCAL)) {
+        print_error('errorscormtypelocalwithnofile', 'sharedresource');
+    }
+
+    list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section, $draftid);
+
+    if (empty($cm)) {
+        print_error('errorscorm', 'sharedresource');
+    }
+
+    // TODO : Terminate procedure and return to course silently.
+    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+}
+
+if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall'))) {
     /*
      * The resource IS NOT known in the local repository but we may have the identifier and the provider
      * if identifier is empty the resource is submitted from an external search interface.
      * if not empty, the resource comes from another MNET shared repository
      */
-    $title = required_param('title', PARAM_TEXT);
-    $desc = required_param('description', PARAM_TEXT);
-    $provider = required_param('provider', PARAM_TEXT);
-    $keywords = required_param('keywords', PARAM_TEXT);
-
-    // Make a sharedresource_entry.
-    $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
-    $shrentry = new $entryclass(false);
-    $shrentry->title = $title;
-    $shrentry->description = $desc;
-    $shrentry->keywords = $keywords;
-    $shrentry->url = $url;
-    $shrentry->sharedresourcefile = '';
-    if (!empty($identifier)) {
-        $shrentry->identifier = $identifier;
-    } else {
-        $shrentry->identifier = sha1($url);
-    }
-    $shrentry->provider = $provider;
     if (!$DB->record_exists('sharedresource_entry', array('identifier' => $shrentry->identifier))) {
         $shrentry->add_instance();
     } else {
@@ -107,59 +172,62 @@ if ($mode != 'file') {
         }
     }
 
-    // Add a sharedresource.
-    $sharedresource = new \mod_sharedresource\base(0, $shrentry->identifier);
-    $sharedresource->options = 0;
-    $sharedresource->popup = 0;
-    $sharedresource->type = 'file';
-    $sharedresource->identifier = $shrentry->identifier;
-    $sharedresource->name = $title;
-    $sharedresource->course = $courseid;
-    $sharedresource->description = $desc;
-    $sharedresource->alltext = '';
-    $sharedresource->timemodified = time();
+    // Add a sharedresource instance.
+    $instance = new \mod_sharedresource\base(0, $shrentry->identifier);
+    $instance->options = 0;
+    $instance->popup = 0;
+    $instance->type = 'file';
+    $instance->identifier = $shrentry->identifier;
+    $instance->name = $title;
+    $instance->course = $courseid;
+    $instance->description = $desc;
+    $instance->alltext = '';
+    $instance->timemodified = time();
+
     if ($mode == 'local') {
         // We make a standard resource from the sharedresource.
-        $resourceid = sharedresource_convertfrom($sharedresource, false);
-        $modulename = 'resource';
+        $resourceid = sharedresource_convertfrom($instance, false);
+
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
             $resource = $DB->get_record('resource',array( 'id' => $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
+
+        $modulename = 'resource';
     } else {
-        if (!$resourceid = $sharedresource->add_instance($sharedresource)) {
+        if (!$sharedresource->id = $sharedresource->add_instance($sharedresource)) {
             print_error('erroraddinstance', 'sharedresource');
         }
         $modulename = 'sharedresource';
     }
-    // Make a new course module.
-    $module = $DB->get_record('modules', array('name' => $modulename));
-    $cm->instance = $resourceid;
-    $cm->module = $module->id;
-    $cm->course = $courseid;
-    $cm->section = 1;
-    // Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
-    if (!empty($shrentry->remoteid)) {
-        $cm->idnumber = $shrentry->remoteid;
-    }
-    // Insert the course module in course.
-    if (!$cm->coursemodule = add_course_module($cm)) {
-        print_error('errorcmaddition', 'sharedresource');
-    }
-    if (!$sectionid = add_mod_to_section($cm)) {
-        print_error('errorsectionaddition', 'sharedresource');
-    }
-    if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->coursemodule))) {
-        print_error('errorcmsectionbinding', 'sharedresource');
-    }
+}
+
+$cm  = sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance);
+
+// Remoteid may be obtained by $shrentry->add_instance() plugin hooking !!
+if (!empty($shrentry->remoteid)) {
+    $cm->idnumber = $shrentry->remoteid;
+}
+
+if (!$sectionid = course_add_cm_to_section($courseid, $cm->id, $section)) {
+    print_error('errorsectionaddition', 'sharedresource');
+}
+
+if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
+    print_error('errorcmsectionbinding', 'sharedresource');
+}
+
+// If we are in page format, add page_item to section bound page.
+if ($course->format == 'page') {
+    require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
+    require_once($CFG->dirroot.'/course/format/page/lib.php');
+    $coursepage = course_page::get_current_page($course->id);
+    $coursepage->add_cm_to_page($cm->id);
 }
 
 // Finish.
-$params = array('id' => $courseid, 'url' => $url, 'file' => $filename);
-$url = new moodle_url('/mod/sharedresource/addremotetocourse.php', $params);
-$PAGE->set_url($url);
 $PAGE->set_title('');
 $PAGE->set_heading('');
 $PAGE->set_focuscontrol('');
