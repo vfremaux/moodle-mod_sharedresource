@@ -111,6 +111,12 @@ if ($mode == 'ltiinstall' || $mode == 'lticonfirm') {
     $modulename = 'lti';
 }
 
+if ($mode == 'mplayerdeploy') {
+    // Deployes asking for remote setting.
+    $instance = sharedresource_add_mplayer($shrentry, $courseid, true);
+    $modulename = 'mplayer';
+}
+
 /*
  * The sharedresource has been recognized as a deployable backup by the remote library.
  * Take the physical file and deploy it with the activity publisher utility.
@@ -158,7 +164,7 @@ if ($mode == 'scorm') {
     redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall'))) {
+if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))) {
     /*
      * The resource IS NOT known in the local repository but we may have the identifier and the provider
      * if identifier is empty the resource is submitted from an external search interface.
@@ -197,7 +203,7 @@ if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall'))) {
 
         $modulename = 'resource';
     } else {
-        if (!$sharedresource->id = $sharedresource->add_instance($sharedresource)) {
+        if (!$instance->id = $instance->add_instance($instance)) {
             print_error('erroraddinstance', 'sharedresource');
         }
         $modulename = 'sharedresource';
@@ -239,7 +245,7 @@ $PAGE->navbar->add(get_string('addremote', 'sharedresource'));
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('addremote', 'sharedresource'));
+echo $OUTPUT->heading(get_string('addremote', 'sharedresource').' : '.get_string('pluginname', $modulename));
 
 echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid)));
 echo $OUTPUT->footer($course);

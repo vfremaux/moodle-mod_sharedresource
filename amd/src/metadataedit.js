@@ -29,6 +29,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
         bind_all: function() {
 
+            log.debug('AMD Mod sharedresource metadata edition binding all events');
+
             $('.mtd-form-input').off('change');
             $('.taxonomy-source').off('change');
             $('.mtd-form-addbutton').off('click');
@@ -60,6 +62,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
         },
 
         trigger_all: function() {
+            log.debug('AMD Mod sharedresource metadata edition triggering changes');
             $('.mtd-form-element input[type="text"]').trigger('change');
             $('.mtd-form-element select').trigger('change');
             $('.mtd-form-element textarea').trigger('change');
@@ -84,8 +87,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 mtdstrings = strings;
             });
 
-            this.bind_all();
-            this.trigger_all();
+            log.debug('AMD Mod sharedresource BIND ALL CALL');
+            metadataedit.bind_all();
+            metadataedit.trigger_all();
 
             // check and set the initial button state.
             $('.mtd-form-addbutton').each(metadataedit.check_button_status);

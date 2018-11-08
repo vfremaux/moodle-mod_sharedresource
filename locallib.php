@@ -284,7 +284,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
  * Get either entries that match a single metadata element value, or retrieves all values present for 
  * a single metadata element.
  *
- * @param string $element the metadata element
+ * @param string $element the metadata element as an m_n_o_p element identifier.
  * @param string $namespace which plugin is searched for metadata
  * @param string $what if values, get a list of metadata values, else gives a list of sharedresources entries
  * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens or operator:value
@@ -299,12 +299,12 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
     $params = array();
 
     if ($what == 'values') {
+        $clause = " element LIKE ? ";
         if ($mtdelement->type == 'list') {
             $params[] = $mtdelement->id.':';
         } else {
             $params[] = $mtdelement->id;
         }
-        $clause = " element LIKE ? ";
         $fields = 'value';
     } else {
         if ($mtdelement->widget == 'treeselect') {
@@ -312,14 +312,14 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             if (preg_match('/^subs:/', $using)) {
                 // Search all subpaths of the required category.
                 $using = str_replace('subs:', '', $using);
+                $clause = " value LIKE ? AND element LIKE ? ";
                 $params[] = $using.'%';
                 $params[] = $mtdelement->id.':%';
-                $clause = " value LIKE ? AND element LIKE ? ";
             } else {
                 // Search an exact taxon idpath match.
+                $clause = "  value = ? AND element LIKE ? ";
                 $params[] = $using;
                 $params[] = $mtdelement->id.':%';
-                $clause = "  value = ? AND element LIKE ? ";
             }
 
         } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
@@ -336,26 +336,26 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     switch ($textoption) {
 
                         case 'includes': {
-                            $params[] = '%'.strtoupper(trim($token)).'%';
                             $listsearchoptions[] = ' UPPER(value) LIKE ? ';
+                            $params[] = '%'.strtoupper(trim($token)).'%';
                             break;
                         }
 
                         case 'equals': {
-                            $params[] = strtoupper(trim($token));
                             $listsearchoptions[] = ' UPPER(value) = ? ';
+                            $params[] = strtoupper(trim($token));
                             break;
                         }
 
                         case 'beginswith': {
-                            $params[] = strtoupper(trim($token)).'%';
                             $listsearchoptions[] = ' UPPER(value) LIKE ? ';
+                            $params[] = strtoupper(trim($token)).'%';
                             break;
                         }
 
                         case 'endswith': {
-                            $params[] = '%'.strtoupper(trim($token));
                             $listsearchoptions[] = ' UPPER(value) LIKE ? ';
+                            $params[] = '%'.strtoupper(trim($token));
                             break;
                         }
 
@@ -363,8 +363,8 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                     }
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
-                $params[] = $mtdelement->id.':%';
                 $clause = " ( $listsearch ) AND element LIKE ? ";
+                $params[] = $mtdelement->id.':%';
             } else {
                 $clause = '';
             }
@@ -376,26 +376,34 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             if ($datestart != 'Begin' && $dateend != 'End') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
-                $clause = "  value >= $start AND value <= $end AND element LIKE '{$mtdelement->id}:%' ";
+                $clause = "  value >= ? AND value <= ? AND element LIKE ? ";
+                $params[] = $start;
+                $params[] = $end;
+                $params[] = '{$mtdelement->id}:%';
             } else if ($datestart != 'Begin') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
-                $clause = "  value >= $start AND element LIKE '{$mtdelement->id}:%' ";
+                $clause = "  value >= $start AND element LIKE ? ";
+                $params[] = '{$mtdelement->id}:%';
             } else if ($dateend != 'End') {
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
-                $clause = "  value <= $end AND element LIKE '{$mtdelement->id}:%' ";
+                $clause = "  value <= ? AND element LIKE ? ";
+                $params[] = $end;
+                $params[] = '{$mtdelement->id}:%';
             }
 
         } else if ($mtdelement->type == 'numeric') {
 
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
-            $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
+            $clause = "  value $symbol $value AND element LIKE ? ";
+            $params[] = '{$mtdelement->id}:%';
 
         } else if ($mtdelement->type == 'duration') {
 
             $symbol = substr($using, 0, strpos($using,':'));
             $value = substr($using, strpos($using,':') + 1);
-            $clause = "  value $symbol $value AND element LIKE '{$mtdelement->id}:%' ";
+            $clause = "  value $symbol $value AND element LIKE ? ";
+            $params[] = '{$mtdelement->id}:%';
 
         } else {
 
@@ -403,10 +411,12 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
                 foreach($listtokens as $token) {
-                    $listsearchoptions[] = ' value = \''.trim($token).'\' ';
+                    $listsearchoptions[] = ' value = ? ';
+                    $params[] = trim($token);
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
-                $clause = " ( $listsearch ) AND element LIKE '{$mtdelement->id}:%' ";
+                $clause = " ( $listsearch ) AND element LIKE ? ";
+                $params[] = '{$mtdelement->id}:%';
             } else {
                 $clause = '';
             }
@@ -416,7 +426,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
     // Search in all possible sources for this metadata namespace.
     // list($insql, $params) = $DB->get_in_or_equal($mtdstandard->ALLSOURCES); // For future polystandard hypothesis.
-    list($insql, $params) = $DB->get_in_or_equal(array($namespace));
+    list($insql, $nsparams) = $DB->get_in_or_equal(array($namespace));
     $sql = "
         SELECT DISTINCT
             $fields
@@ -428,6 +438,14 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
         ORDER BY
             value
      ";
+
+    foreach ($nsparams as $p) {
+        // Add namespace params to all params.
+        $params[] = $p;
+    }
+
+    debug_trace("search: $sql");
+    debug_trace($params);
 
     $items = array();
     // debug_trace('localsearch : '.$sql);
@@ -644,7 +662,6 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
                 // We need fake a draft area at it would come back from form.
                 $fs = get_file_storage();
 
-                echo "Deploying $shrentry->file ";
                 $scormfile = $fs->get_file_by_id($shrentry->file);
 
                 $draftid = file_get_unused_draft_itemid();
@@ -657,7 +674,6 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
                 $filerecord->filepath = '/';
                 $filerecord->filename = $scormfile->get_filename();
 
-                echo "File is item $draftid ";
                 $fs->delete_area_files($filerecord->contextid, 'user', 'draft', $draftid);
                 $draftfile = $fs->create_file_from_storedfile($filerecord, $shrentry->file);
             }
@@ -766,6 +782,66 @@ function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
         echo $OUTPUT->footer();
         die;
     }
+
+    return $instance;
+}
+
+/**
+ * Deploys a mplayer instance using best fit settings. If the resource is remote, forces to
+ * flowplayer technology. If the resource is a youtube url, forces to jwplayer < 8 with youtube support.
+ * @param object $shrentry
+ * @param int $courseid
+ * @param bool $isremote
+ * @return completed instance record with insert id
+ */
+function sharedresource_add_mplayer($shrentry, $courseid, $isremote = false) {
+    global $CFG, $OUTPUT, $PAGE;
+
+    $config = get_config('mplayer');
+
+    // We build a MPlayer instance.
+    include_once($CFG->dirroot.'/mod/mplayer/lib.php');
+
+    $instance = new StdClass();
+    // General instance attributes.
+    $instance->name = $shrentry->title;
+    $instance->intro = $shrentry->description;
+    $instance->introformat = FORMAT_MOODLE;
+    $time = time();
+    $instance->timecreated = $time;
+    $instance->timemodified = $time;
+
+    $instance->type = 'url'; // Common to both technologies, jwplayer and flowplayer.
+    $instance->external = $shrentry->url;
+
+    // Determine best fit technology
+    $instance->technology = $config->default_player;
+    if ($isremote) {
+        // JW player external url does'nt work well with foreign urls.
+        $instance->technology = 'flowlayer';
+    }
+
+    if (preg_match('/youtube/', $shrentry->url)) {
+        $instance->technology = 'jw712';
+        $instance->type = 'url'; // Common to both technologies, jwplayer and flowplayer.
+    }
+
+    // Specific instance attributes and assets.
+    $instance->width = $config->default_width;
+    $instance->height = $config->default_height;
+    $instance->controlbar = $config->default_controlbar;
+    $instance->frontcolor = $config->default_frontcolor;
+    $instance->backcolor = $config->default_backcolor;
+    $instance->lightcolor = $config->default_lightcolor;
+    $instance->screencolor = $config->default_screencolor;
+    $instance->autostart = $config->default_autostart;
+    $instance->fullscreen = $config->default_fullscreen;
+    $instance->streching = $config->default_stretching;
+
+    $instance->coursemodule = ''; // New module.
+
+    $instance->course = $courseid;
+    $instance->id = mplayer_add_instance($instance, null);
 
     return $instance;
 }
