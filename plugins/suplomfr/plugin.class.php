@@ -1140,13 +1140,13 @@ class plugin_suplomfr extends plugin_base {
         '7_2' => array(
             'name' => 'Resource',
             'source' => 'lom',
-            'type' => 'category',
+            'type' => 'codetext',
+            /*
             'childs' => array(
-                /*
                 '7_2_1' => 'list',
                 '7_2_2' => 'list'
-                */
             ),
+            */
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1427,17 +1427,17 @@ class plugin_suplomfr extends plugin_base {
 */
     );
 
-    function __construct($entryid = 0) {
+    public function __construct($entryid = 0) {
         $this->entryid = $entryid;
         $this->context = \context_system::instance();
         $this->pluginname = 'suplomfr';
         $this->namespace = 'suplomfr';
-    }    
+    }
 
     /**
      * Provides lom metadata fragment header
      */
-    function lomHeader() {
+    public function lomHeader() {
         return "
             <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\" 
                         xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\"
@@ -1448,7 +1448,7 @@ class plugin_suplomfr extends plugin_base {
      * Generates metadata element as XML
      *
      */
-    function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+    public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
         $tmpname = str_replace(' ','',$value['name']);
@@ -1474,7 +1474,7 @@ class plugin_suplomfr extends plugin_base {
             for ($i = 0; $i < count($tab); $i++) {
                 $fatherstr .= $tab[$i];
             }
-        } elseif ($value['type'] == 'category') {
+        } else if ($value['type'] == 'category') {
             $tab = array();
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
@@ -1498,7 +1498,7 @@ class plugin_suplomfr extends plugin_base {
                 $fatherstr .= "
                 </{$namespace}:{$name}>";
             }
-        } elseif (count(@$metadata[$elem]) > 0) {
+        } else if (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
                 // a "node" that contains data 
                 if (strpos($path, $pathcode) === 0) {
@@ -1509,7 +1509,7 @@ class plugin_suplomfr extends plugin_base {
                         </{$namespace}:{$name}>";
                             break;
 
-                        case 'select':
+                        case 'select': {
                             if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['SupLOMFRv1.0'])) {
                                 $source = 'SupLOMFRv1.0';
                             } else if (in_array($metadata[$elem][$path], $this->OTHERSOURCES['LOMFRv1.0'])) {
@@ -1523,24 +1523,28 @@ class plugin_suplomfr extends plugin_base {
                             <{$namespace}:value>".$metadata[$elem][$path]."</{$namespace}:value>
                         </{$namespace}:{$name}>";
                             break;
+                        }
 
-                        case 'date':
+                        case 'date': {
                             $fatherstr .= "
                         <{$namespace}:{$name}>
                             <{$namespace}:dateTime>".$metadata[$elem][$path]."</{$namespace}:dateTime>
                         </{$namespace}:{$name}>";
                             break;
+                        }
 
-                        case 'duration':
+                        case 'duration': {
                             $fatherstr .= "
                         <{$namespace}:{$name}>
                             <{$namespace}:duration>".$metadata[$elem][$path]."</{$namespace}:duration>
                         </{$namespace}:{$name}>";
                             break;
+                        }
 
-                        default:
+                        default: {
                             $fatherstr .= "
                         <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
+                        }
                     }
                     $valid = 1;
                 }
@@ -1558,7 +1562,7 @@ class plugin_suplomfr extends plugin_base {
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    function after_save(&$shrentry) {
+    public function after_save(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1574,7 +1578,7 @@ class plugin_suplomfr extends plugin_base {
         return true;
     }
 
-    function after_update(&$shrentry) {
+    public function after_update(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1593,7 +1597,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getTitleElement() {
+    public function getTitleElement() {
         $element = (object)$this->METADATATREE['1_2'];
         $element->node = '1_2';
         return $element;
@@ -1602,7 +1606,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getDescriptionElement() {
+    public function getDescriptionElement() {
         $element = (object)$this->METADATATREE['1_4'];
         $element->node = '1_4';
         return $element;
@@ -1611,7 +1615,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    function getKeywordElement() {
+    public function getKeywordElement() {
         $element = (object)$this->METADATATREE['1_5'];
         $element->node = '1_5';
         return $element;
@@ -1620,7 +1624,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getFileFormatElement() {
+    public function getFileFormatElement() {
         $element = (object)$this->METADATATREE['4_1'];
         $element->node = '4_1';
         return $element;
@@ -1629,7 +1633,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getSizeElement() {
+    public function getSizeElement() {
         $element = (object)$this->METADATATREE['4_2'];
         $element->node = '4_2';
         return $element;
@@ -1638,7 +1642,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    function getLocationElement() {
+    public function getLocationElement() {
         $element = (object)$this->METADATATREE['4_3'];
         $element->node = '4_3';
         return $element;
@@ -1647,7 +1651,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getTaxonomyPurposeElement() {
+    public function getTaxonomyPurposeElement() {
         $element = (object)$this->METADATATREE['9_1'];
         $element->node = '9_1';
         return $element;
@@ -1656,7 +1660,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getTaxonomyValueElement() {
+    public function getTaxonomyValueElement() {
         $element = (object)$this->METADATATREE['9_2_2_1'];
         $element->node = '9_2_2_1';
         return $element;
@@ -1665,7 +1669,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    function getKeywordValues($metadata) {
+    public function getKeywordValues($metadata) {
         $keyelm = $this->getKeywordElement();
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
@@ -1683,7 +1687,7 @@ class plugin_suplomfr extends plugin_base {
      * The "id" points to the local id to the taxon in the taxonoy source table
      * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
-    function getTaxumpath() {
+    public function getTaxumpath() {
         $element = array();
         $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
@@ -1696,15 +1700,27 @@ class plugin_suplomfr extends plugin_base {
     /**
      * Gets the metadata node identifier that provides classification storage capability.
      */
-    function getClassification() {
+    public function getClassification() {
         $element = "9";
+        return $element;
+    }
+
+    /**
+     * versionned sharedresources entry must use Relation elements to link each other.
+     */
+    public function getVersionSupportElement() {
+        $element = array();
+        $element['mainname'] = "Relation";
+        $element['main'] = "7";
+        $element['kind'] = "7_1";
+        $element['entry'] = "7_2";
         return $element;
     }
 
     /**
      * records keywords in metadata flat table
      */
-    function setKeywords($keywords) {
+    public function setKeywords($keywords) {
         global $DB;
 
         if (empty($this->entryid)) {
@@ -1730,9 +1746,9 @@ class plugin_suplomfr extends plugin_base {
     }
 
     /**
-    * records title in metadata flat table from db attributes
-    */
-    function setTitle($title) {
+     * records title in metadata flat table from db attributes
+     */
+    public function setTitle($title) {
         global $DB;
 
         if (empty($this->entryid)) {

@@ -40,7 +40,12 @@ $PAGE->set_url($url);
 // echo $OUTPUT->header(); // will be done by sharedresource::display();
 
 if ($identifier) {
-    if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+    $resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
+
+    $resourceentry = new sharedresource_entry($resource);
+    $resourceentry = $resourceentry->fetch_ahead();
+
+    if (!$resource) {
         sharedresource_not_found(SITEID, 'Code 00');
     }
 
