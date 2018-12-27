@@ -138,7 +138,11 @@ $mform->set_data(($formdata));
 
 if ($mform->is_cancelled()) {
     // Cancel - go back to course.
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    if ($course->id == SITEID) {
+        redirect(new moodle_url('/local/sharedresources/index.php'));
+    } else {
+        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    }
 }
 
 // Is this a successful POST ?
@@ -210,6 +214,23 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
     }
 
     if ($hasentry) {
+        // Catch the case the identifier is already known for this object.
+        // Save updated state in session.
+        if (($mode == 'add') && $shrentry->exists()) {
+            $srentry = serialize($shrentry);
+            $SESSION->sr_entry = $srentry;
+
+            // We are coming from the library. Go back to it.
+            $params = array('course' => $course->id,
+                            'mode' => 'add',
+                            'add' => 1,
+                            'return' => $return,
+                            'section' => $section,
+                            'context' => $sharingcontext);
+            $fullurl = new moodle_url('/mod/sharedresource/metadatapreupdateconfirm.php', $params);
+            redirect($fullurl);
+        }
+
         // Prepare thumbnail if any.
         if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
             $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];

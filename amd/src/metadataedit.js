@@ -27,29 +27,31 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
     var metadataedit = {
 
+        bind_tabs: function() {
+            log.debug('AMD Mod sharedresource metadata edition binding tab events');
+            $('.mtd-tab').bind('click', this.switch_tab);
+            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
+        },
+
         bind_all: function() {
+
+            log.debug('AMD Mod sharedresource metadata edition binding all events');
 
             $('.mtd-form-input').off('change');
             $('.taxonomy-source').off('change');
             $('.mtd-form-addbutton').off('click');
-            $('.mtd-form-element.is-mandatory select').off('change');
-            $('.mtd-form-element.is-mandatory textarea').off('change');
-            $('.mtd-form-element.is-mandatory input[type="text"]').off('change');
+            $('.mtd-form-element select').off('change');
+            $('.mtd-form-element textarea').off('change');
+            $('.mtd-form-element input[type="text"]').off('change');
             $('.mtd-tab').off('click');
             $('.mtd-tab a').off('click');
 
-            // Add check handlers to mandatory elements.
-            $('.mtd-form-element.is-mandatory input[type="text"]').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory input[type="text"]').trigger('change');
-            $('.mtd-form-element.is-mandatory select').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory select').trigger('change');
-            $('.mtd-form-element.is-mandatory textarea').bind('change', this.check_empty);
-            $('.mtd-form-element.is-mandatory textarea').trigger('change');
+            // Add check handlers to all elements.
+            $('.mtd-form-element input[type="text"]').bind('change', this.check_empty);
+            $('.mtd-form-element select').bind('change', this.check_empty);
+            $('.mtd-form-element textarea').bind('change', this.check_empty);
 
             $('.mtd-form-addbutton').bind('click', this.add_node);
-            $('.mtd-tab').bind('click', this.switch_tab);
-            $('.mtd-form-input').bind('change', this.activate_add_button);
-            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
 
             // Read checkboxes may ask search widget being enabled.
             var selector = '.' + namespace + '-system-read';
@@ -61,6 +63,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('.taxonomy-source').bind('change', this.reload_taxonomy);
             // Change to this form : indefinitely add binding to all now and future elements.
             $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
+        },
+
+        trigger_all: function() {
+            log.debug('AMD Mod sharedresource metadata edition triggering changes');
+            $('.mtd-form-element input[type="text"]').trigger('change');
+            $('.mtd-form-element select').trigger('change');
+            $('.mtd-form-element textarea').trigger('change');
         },
 
         init: function(args) {
@@ -82,7 +91,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 mtdstrings = strings;
             });
 
-            this.bind_all();
+            log.debug('AMD Mod sharedresource BIND ALL CALL');
+            metadataedit.bind_all();
+            metadataedit.bind_tabs();
+            metadataedit.trigger_all();
+
+            // check and set the initial button state.
+            $('.mtd-form-addbutton').each(metadataedit.check_button_status);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -99,6 +114,36 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('#id-tab-1').addClass('on');
 
             log.debug('AMD Mod sharedresource metadata default switch to tab General');
+        },
+
+        check_button_status: function() {
+            var that = $(this);
+            log.debug('Check add button ' + that.attr('id'));
+            var elementname = that.attr('id').replace('id-add-', '');
+            var deps = that.attr('data');
+            var depsarr = deps.split(';');
+            var hassomeempty = false;
+            var depelm = '';
+            var dep;
+
+            dep = depsarr.shift();
+            while (dep !== undefined) {
+                depelm = $('#' + dep);
+                log.debug('   Check button dep ' + depelm.attr('id'));
+                if (depelm.parent('.mtd-form-element').hasClass('is-empty')) {
+                    hassomeempty = true;
+                    break;
+                }
+                dep = depsarr.shift();
+            }
+
+            if (hassomeempty) {
+                that.prop('disabled', true);
+            } else {
+                that.prop('disabled', false);
+            }
+
+            metadataedit.activate_up_chain(elementname);
         },
 
         switch_tab: function(e) {
@@ -206,16 +251,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // This is a category. We need adding a full new branch.
                 //  Check we really need to add an item (something filled in the subs  ?)
                 var listchildren = that.attr('data');
-                var listtab = listchildren.split(';');
+                var listtab = listchildren.split(' ');
                 var nbremptyfield = 0;
                 var childid;
-                var listvalsarr = [];
 
                 for (var i = 0; i < listtab.length; i++) {
 
                     childid = listtab[i];
-
-                    listvalsarr.push(childid + ":" + $('#' + childid).val());
 
                     if ($('#' + childid).val() === '') {
                         nbremptyfield++;
@@ -240,10 +282,22 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                         }
                     }
                 }
+
                 if (nbremptyfield == listtab.length) {
                     window.alert(mtdstrings[1]);
                 } else {
-                    metadataedit.add_list_item(elmid, realoccur, listvalsarr.join(';'));
+                    // Our current taxonsource can be found by following the route :
+                    // 1. button clicked has last taxon in 'data'.
+                    // 2. last taxon select has its source select ref in 'source'
+                    // 3. source select has current value of taxon source
+                    log.debug("Get source for #" + that.attr('data'));
+                    var lasttaxon = $('#' + that.attr('data'));
+                    log.debug("Get source in #" + lasttaxon.attr('data-source') + '_1n0');
+                    var sourceselect = $('#' + lasttaxon.attr('data-source') + '_1n0');
+                    var taxonsourceid = sourceselect.val();
+                    log.debug("Resulting taxonrourceid  = " + taxonsourceid);
+
+                    metadataedit.add_list_item(elmid, realoccur, taxonsourceid);
                 }
             }
         },
@@ -254,14 +308,19 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
          * numoccur : the occurrence number of the node (int)
          * realoccur :
          */
-        add_list_item: function(elmname, realoccur, branchvalues) {
+        add_list_item: function(elmname, realoccur, taxonsourceid) {
+
+            var oldid = 'id-add-' + elmname;
+            var olddata = $('#' + oldid).attr('data');
 
             var newname = metadata.next_occurrence_name(elmname);
             realoccur++;
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
-            params += "&branch=" + encodeURIComponent(branchvalues);
+            if (taxonsourceid) {
+                params += "&taxonsourceid=" + taxonsourceid;
+            }
             params += "&realoccur=" + realoccur;
             var url = cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
@@ -270,7 +329,6 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 $(data.html).insertBefore(zonename);
 
                 // Recode the add button id for next play, incrementing occurence index.
-                var oldid = 'id-add-' + elmname;
                 oldid = CSS.escape(oldid);
 
                 var newid = 'id-add-' + newname;
@@ -281,8 +339,10 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // Change the button id so next press launches query for next occurence.
                 $('#' + oldid).attr('id', newid);
                 $('#' + newid).prop('disabled', true);
+                $('#' + newid).attr('data-occur', realoccur);
                 // Shift add zone name to match new button.
                 $('#add-zone-' + elmname).attr('id', 'add-zone-' + newname);
+                $('#' + newid).attr('data', olddata);
 
                 // Rebind all change handlers, including on new elements.
                 metadataedit.bind_all();
@@ -290,20 +350,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             }, 'json');
         },
 
-        activate_add_button: function(e) {
+        activate_up_chain: function(elementname) {
 
-            e.stopPropagation();
-
-            // Target is an input field.
-            var that = $(this);
-
-            var elementname = that.attr('id');
-
-            if (that.val()) {
-                $('#id-add-' + elementname).prop('disabled', false);
-            } else {
-                $('#id-add-' + elementname).prop('disabled', true);
-            }
+            // Unlock upper buttons in chain.
             var parentname = elementname;
             log.debug("Processing to elementkey " + elementname);
             parentname = metadata.parent_name(parentname);
@@ -340,11 +389,12 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
         check_empty: function() {
             var that = $(this);
+            log.debug("Check " + that.attr('id'));
             var branchid = that.attr('id').substring(0, 1);
 
             if (that.val()) {
                 // mark element as fullfilled.
-                that.parent('.is-mandatory').removeClass('is-empty');
+                that.parent('.mtd-form-element').removeClass('is-empty');
 
                 // mark same branch tab as fullfilled.
                 var otheremptyonbranch = $('.mtd-form-element.is-mandatory-' + branchid + '.is-empty');
@@ -361,15 +411,21 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             } else {
                 // mark element as empty.
-                that.parent('.is-mandatory').addClass('is-empty');
+                that.parent('.mtd-form-element').addClass('is-empty');
 
-                // lock form submit.
-                $('#id-mtd-submit').attr('disabled', true);
-                $('#id-mtd-submit').addClass('is-disabled');
+                if (that.hasClass('is-mandatory')) {
+                    // lock form submit.
+                    $('#id-mtd-submit').attr('disabled', true);
+                    $('#id-mtd-submit').addClass('is-disabled');
 
-                // mark same branch tab as empty.
-                $('#id-menu-' + branchid).addClass('is-empty');
+                    // mark same branch tab as empty.
+                    $('#id-menu-' + branchid).addClass('is-empty');
+                }
             }
+
+            // Whatever the result, search the potentially affected buttons and update them.
+            var affectedaddbtns = $('.mtd-form-addbutton[data~="' + that.attr('id') + '"]');
+            affectedaddbtns.each(metadataedit.check_button_status);
         }
     };
 

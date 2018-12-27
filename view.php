@@ -33,11 +33,6 @@ $cmid = 0;
 
 $systemcontext = context_system::instance();
 $strtitle = get_string('sharedresourcedetails', 'sharedresource');
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($strtitle, 'view.php', 'misc');
-$PAGE->set_cacheable(false);
 
 $url = new moodle_url('/mod/sharedresource/view.php', array('id' => $id, 'identifier' => $identifier));
 $PAGE->set_url($url);
@@ -88,6 +83,14 @@ if ($identifier) {
     if (!$course =  $DB->get_record('course', array('id' => $cm->course))) {
         print_error('badcourseid', 'sharedresource');
     }
+
+    $coursecontext = context_course::instance($course->id);
+    $PAGE->set_context($coursecontext);
+    $PAGE->set_title($strtitle);
+    $PAGE->set_pagelayout('standard');
+    $PAGE->set_heading($SITE->fullname);
+    $PAGE->navbar->add($strtitle, 'view.php', 'misc');
+    $PAGE->set_cacheable(false);
 
     require_course_login($course, true, $cm);
     $cmid = $cm->id;

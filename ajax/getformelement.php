@@ -37,7 +37,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.
 $elementname = required_param('elementname', PARAM_TEXT);
 
 // contextual values in the branch that has been triggered for addition.
-$branch = optional_param('branch', '', PARAM_TEXT);
+$taxonsourceid = optional_param('taxonsourceid', '', PARAM_TEXT);
 
 // The required apparent occurrence.
 $realoccur = optional_param('realoccur', null, PARAM_INT);
@@ -62,7 +62,8 @@ $capability = metadata_get_user_capability();
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
 $template = new StdClass;
-$template->branch = $branch;
+$template->taxonsourceid = $taxonsourceid;
+$template->is_ajax_root = true;
 $renderer->part_form($template, $elementid, $capability, $realoccur);
 $result = new StdClass;
 $result->html = $OUTPUT->render_from_template('mod_sharedresource/metadataeditformchilds', $template);

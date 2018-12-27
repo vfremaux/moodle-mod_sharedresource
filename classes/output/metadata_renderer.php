@@ -506,7 +506,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->durationhelpicon = $this->output->help_icon('durationdescr', 'sharedresource', $template->durationdescstr);
         $template->vcardstr = get_string('vcard', 'sharedresource');
         $template->vcardhelpicon = $this->output->help_icon('vcard', 'sharedresource', $template->vcardstr);
-        $template->addstr = get_string('add', 'sharedresource');
 
         $i = 1;
 
@@ -602,12 +601,13 @@ class metadata_renderer extends \plugin_renderer_base {
         $numoccur = $elminstance->numoccur;
         $maxoccur = $elminstance->maxoccur;
 
-        // echo "NodeID : $nodeid ";
-        // echo "InstanceID : $instanceid ";
+        $debug = "NodeID : $nodeid\n";
+        $debug .= "InstanceID : $instanceid \n";
+        $debug .= "numoccur $numoccur\n";
+        $debug .= "maxoccur $maxoccur\n";
+        // debug_trace($debug);
         // print_object($elminstance);
-        // print_object($standardelm);
-        // echo "numoccur $numoccur ";
-        // echo "maxoccur $maxoccur ";
+        // debug_trace($standardelm);
 
         if (!$elminstance->node_has_capability($capability, 'write')) {
             return null;
@@ -645,8 +645,8 @@ class metadata_renderer extends \plugin_renderer_base {
                 $sourceelm = \mod_sharedresource\metadata::instance($shrentry->id, $sourceelminstancekey, $namespace, false);
                 $taxonelm = $sourceelm->get_parent(false); // May not really exist in DB.
 
-                $value = $sourceelm->get_value();
-                if (empty($value)) {
+                $sourcevalue = $sourceelm->get_value();
+                if (empty($sourcevalue)) {
                     // initial value : Undefined \n";
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
@@ -685,33 +685,25 @@ class metadata_renderer extends \plugin_renderer_base {
                             $sourceelm = $DB->get_record('sharedresource_classif', $params);
                             $sourceelmid = $sourceelm->id;
                         } else {
-                            // echo "// Comes from form branch info ";
+                            // echo "// Comes from client side ";
                             // sourceelmid comes from some data in branch. Let's decode id.
-                            /*
-                             * branch comes as a succession of mnw_nnx_ony_pnz:value list from
-                             * the childrenlist value of an add button.
-                             */
-                            $branch = metadata::decode_branch_info($parenttemplate->branch);
-                            $prefix = $taxumarray['source'].':';
-                            $sourceinstanceids = metadata::find($prefix, array_keys($branch));
-                            // Should be one.
-                            $sourceinstanceid = array_shift($sourceinstanceids);
-                            $sourceinstanceelm = new metadata(null, $sourceinstanceid, 0, $namespace);
-                            $basesiblingkey = $sourceinstanceelm->base_instance_sibling()->get_element_key();
-                            $sourceelmid = $branch[$basesiblingkey];
+                            $sourceelmid = $parenttemplate->taxonsourceid;
                             // echo "// Final sourcelmid $sourceelmid ";
                         }
                     }
                 } else {
                     // echo "// initial value : $value \n";
-                    $params = array('id' => $value);
+                    $params = array('id' => $sourcevalue);
                     $sourceelmid = $DB->get_field('sharedresource_classif', 'id', $params);
                 }
 
-                // echo "// Source element id : $sourceelmid \n";
                 if (empty($sourceelmid)) {
+                    /*
+                     * No taxonomy available for this id.
+                     */
                     $taxontpl = new StdClass;
                     $taxontpl->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+                    $taxontpl->occur = $template->occur;
                     $template->taxons[] = $taxontpl;
                 } else {
                     /*
@@ -876,7 +868,7 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
         // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-            if ($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
+            if (($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) && empty($parenttemplate->is_ajax_root)) {
 
                 /*
                  * If element is a list we need display an add button to allow adding.
@@ -884,18 +876,28 @@ class metadata_renderer extends \plugin_renderer_base {
                  * first free form has not been filled. Children are named agains the last form
                  * occurrenc available. All previous occurences are supposed to be filled.
                  */
+                $childkeys = array();
                 if (!empty($listresults)) {
                     // Provide all children identities to the add button so it can locally check if inputs are empty or filled.
                     $childkeys = array_keys($listresults);
                     foreach ($childkeys as &$ckey) {
                         $ckey = metadata::storage_to_html($ckey);
                     }
-                    $template->listchildren = implode(';', $childkeys);
+                    // Add current element as it is part of the dependencies.
                 }
+                $childkeys[] = $htmlname;
+                // space is important here, because let us search using ~= attribute css operator.
+                $template->listdeps = implode(' ', $childkeys);
 
                 // If we are printing the last occurence, or have no occurence, let NOT display an add button.
                 // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
+                if (!empty($template->isclassification)) {
+                    // Mark this button as is-taxon-level
+                    // This will help a lot to grap current taxonomy when adding a taxon.
+                    $template->buttonistaxonlevel = 'is-taxon-level';
+                }
+                $template->addstr = get_string('add', 'sharedresource');
                 if (is_numeric($template->occur)) {
                     $template->nextoccur = $template->occur;
                 } else {
