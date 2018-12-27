@@ -605,9 +605,9 @@ class metadata_renderer extends \plugin_renderer_base {
         $debug .= "InstanceID : $instanceid \n";
         $debug .= "numoccur $numoccur\n";
         $debug .= "maxoccur $maxoccur\n";
-        // debug_trace($debug);
-        // print_object($elminstance);
-        // debug_trace($standardelm);
+        debug_trace($debug);
+        debug_trace($elminstance);
+        debug_trace($standardelm);
 
         if (!$elminstance->node_has_capability($capability, 'write')) {
             return null;
@@ -723,7 +723,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
                     $value = $taxonidelm->get_value();
                     $taxontpl = new StdClass;
-                    $taxontpl->classificationselect = html_writer::select($classificationoptions, $template->elmname, $value, $nochoice, $attrs);
+                    $sourceselect = html_writer::select($classificationoptions, $template->elmname, $value, $nochoice, $attrs);
+                    // debug_trace($sourceselect);
+                    $taxontpl->classificationselect = $sourceselect;
                     $taxontpl->occur = $template->occur;
                     $template->taxons[] = $taxontpl;
 
@@ -868,13 +870,14 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
         // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-            if (($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) && empty($parenttemplate->is_ajax_root)) {
+            // debug_trace("Realoccur:{$elminstance->realoccur};MaxOccur:{$elminstance->maxoccur};IsAjaxRoot:{$elminstance->maxoccur}");
+            if ((($elminstance->realoccur == $elminstance->maxoccur - 1) || empty($elminstance->maxoccur)) && empty($parenttemplate->is_ajax_root)) {
 
                 /*
                  * If element is a list we need display an add button to allow adding.
                  * an aditional form fragment. This button should be disabled until the
                  * first free form has not been filled. Children are named agains the last form
-                 * occurrenc available. All previous occurences are supposed to be filled.
+                 * occurrence available. All previous occurences are supposed to be filled.
                  */
                 $childkeys = array();
                 if (!empty($listresults)) {

@@ -68,7 +68,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
         trigger_all: function() {
             log.debug('AMD Mod sharedresource metadata edition triggering changes');
             $('.mtd-form-element input[type="text"]').trigger('change');
-            $('.mtd-form-element select').trigger('change');
+            // On selects, triggering empties preload choices on taxonomy.
+            // $('.mtd-form-element select').trigger('change');
             $('.mtd-form-element textarea').trigger('change');
         },
 
