@@ -1585,6 +1585,19 @@ class plugin_lomfr extends plugin_base {
     }
 
     /**
+     * versionned sharedresources entry must use Relation elements to link each other.
+     */
+    public function getVersionSupportElement() {
+        $element = array();
+        $element['mainname'] = "Relation";
+        $element['main'] = "7";
+        $element['kind'] = "7_1";
+        $element['catalog'] = "7_2_1_1";
+        $element['entry'] = "7_2_1_2";
+        return $element;
+    }
+
+    /**
      * records keywords in metadata flat table
      */
     function setKeywords($keywords) {

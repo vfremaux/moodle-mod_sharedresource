@@ -68,6 +68,19 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'section');
         $mform->setType('section', PARAM_INT);
 
+        $mform->addElement('hidden', 'url'); // Shared resource url.
+        $mform->setType('url', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'title');
+        $mform->setType('title', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'description');
+        $mform->setType('description', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'provider');
+        $mform->setType('provider', PARAM_TEXT);
+
+
         $mform->addElement('hidden', 'mode');
         $mform->setType('mode', PARAM_TEXT);
 

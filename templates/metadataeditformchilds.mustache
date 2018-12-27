@@ -32,8 +32,10 @@
 {{#isclassification}}
     {{#taxons}}
     <fieldset>
-        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
         {{{classificationselect}}}
+    </div>
     </fieldset>
     {{/taxons}}
 {{/isclassification}}
@@ -41,8 +43,8 @@
 {{#iscontainer}}
 {{#hascontent}}
 
-    <fieldset>
-        <legend>{{fieldnum}} {{fieldvisiblename}} {{occur}}</legend>
+    <fieldset class="{{mandatoryclass}}">
+        <legend>{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</legend>
 
          {{> mod_sharedresource/metadataeditformchilds }}
 
@@ -52,8 +54,8 @@
 {{/iscontainer}}
 
 {{#istext}}
-    <div class="mtd-form-element">
-        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
 
         <input type="text" id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" value="{{value}}" {{{readonly}}} />
 
@@ -62,7 +64,7 @@
 {{/istext}}
 
 {{#islongtext}}
-    <div class="mtd-form-element">
+    <div class="mtd-form-element {{mandatoryclass}}">
         <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
 
         <textarea id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" {{{readonly}}} {{{attributes}}} />{{{value}}}</textarea>
@@ -72,14 +74,14 @@
 {{/islongtext}}
 
 {{#isselect}}
-    <div class="mtd-form-element">
+    <div class="mtd-form-element {{mandatoryclass}}">
         <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
         {{{select}}}
     </div>
 {{/isselect}}
 
 {{#isdate}}
-    <div class="mtd-form-element mtd-date-element">
+    <div class="mtd-form-element mtd-date-element {{mandatoryclass}}">
         <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
 
             {{{yearselect}}}
@@ -91,8 +93,8 @@
 {{/isdate}}
 
 {{#isduration}}
-    <div class="mtd-form-element">
-        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
 
         <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Day" name="{{elmname}}_Day" value="{{valueday}}" /> {{daysstr}}
         <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Hou" name="{{elmname}}_Hou" value="{{valuehour}}" /> {{hoursstr}}
@@ -106,8 +108,8 @@
 {{/isduration}}
 
 {{#isvcard}}
-    <div class="mtd-form-element">
-        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
 
         <textarea cols="40" rows="5" id="{{elmname}}" class=" mtd-form-input" name="{{elmname}}">{{{value}}}</textarea>
 
@@ -123,8 +125,13 @@
     <div id="add_{{nodeid}}">
     <input type="button" id="id-add-{{addid}}"
            name="btn-{{addid}}-{{fieldtype}}"
+<<<<<<< HEAD
            class="mtd-form-addbutton {{addclass}}"
            data="{{{listchildren}}}"
+=======
+           class="mtd-form-addbutton {{addclass}} {{buttonistaxonlevel}}"
+           data="{{{listdeps}}}"
+>>>>>>> MOODLE_36_STABLE
            data-occur="{{nextoccur}}"
            value="{{addstr}} {{fieldvisiblename}}" {{{adddisabled}}} />
     </div>

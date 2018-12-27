@@ -71,6 +71,17 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'description', 'sharedresource');
 
+        $config = get_config('sharedresource');
+        $pluginname = $config->schema;
+        $plugin = sharedresource_get_plugin($pluginname, null);
+        $descriptionelementnodeid = $plugin->getDescriptionElement()->node;
+        $key = 'config_'.$pluginname.'_mandatory_'.$descriptionelementnodeid;
+        $required = get_config('sharedmetadata_'.$pluginname, $key);
+
+        if ($required) {
+            $mform->addRule('description', get_string('required'), 'required', null, 'client');
+        }
+
         // Sharing context:
         /*
          * Users can share a sharedresource at public system context level, or share privately to a specific

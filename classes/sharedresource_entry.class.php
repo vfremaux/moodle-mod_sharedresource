@@ -617,9 +617,10 @@ class entry {
             $firstdescelmkey = metadata::to_instance($desc->node);
         }
         foreach ($this->metadataelements as $element) {
+
             $element->entryid = $this->id;
 
-            // Todo recheck this. this is a pass through quick fix
+            // Todo recheck this. this is a pass through quick fix.
             if (empty($element->namespace)) {
                 $element->namespace = 'lom';
             }
@@ -713,10 +714,53 @@ class entry {
         }
     }
 
+    /**
+     * Check if a resource exists and binds the record to represent this instance with
+     * new current data.
+     */
     public function exists() {
         global $DB;
 
-        return $DB->record_exists('sharedresource_entry', array('identifier' => $this->identifier));
+        if ($oldrec = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))) {
+            $this->id = $oldrec->id;
+
+            // Update all internal metadata references.
+            if (!empty($this->metadataelements)) {
+                foreach ($this->metadataelements as $element) {
+                    $element->entryid = $this->id;
+                }
+            }
+
+            return $this->id;
+        }
+
+        return false;
+    }
+
+    /**
+     * Fetches the next resource version reference in the chain. Uses the Relation
+     * metadata branch. Returns self if no other version
+     * @param bool $fullchain if true, fetch untill new ids are found. Stops when the next is same than last.
+     * @return the next sharedresource id in the version daisy chain.
+     */
+    public function fetch_ahead($fullchain = false) {
+         $mtdstandard = sharedresource_get_plugin($config->schema, $this->shrentryrec->id);
+
+        if (is_null($mtdstandard->getVersionSupportElement())) {
+            return $this;
+        }
+
+        $nextid = $mtdstandard->getNext();
+        if ($nextid != $this->id) {
+            $next = self::get_by_id($nextid);
+            if (empty($next)) {
+                throw new MoodleException("Non existing versionned resource");
+                // return $this ?
+            }
+            return $next->fetch_ahead($fullchain);
+        }
+
+        return $this;
     }
 
     /**

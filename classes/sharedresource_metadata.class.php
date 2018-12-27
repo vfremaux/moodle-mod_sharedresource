@@ -303,6 +303,24 @@ class metadata {
             // Skip inserting but do NOT block the update process. So answer true.
             return true;
         }
+<<<<<<< HEAD
+=======
+    }
+
+    /**
+     * Get the lowest possible instance on this tree node.
+     * May even not exist in the stored metadata. this is obtained by setting
+     * the last instance path index to 0.
+     *
+     * return a new metadata object with changed ids.
+     */
+    public function base_instance_sibling() {
+        $sibling = clone($this);
+        array_pop($sibling->instancepath);
+        array_push($sibling->instancepath, 0);
+        $sibling->instanceid = implode('_', $sibling->instancepath);
+        return $sibling;
+>>>>>>> MOODLE_36_STABLE
     }
 
     public function get_element_key() {
@@ -311,6 +329,10 @@ class metadata {
 
     public function get_node_id() {
         return $this->nodeid;
+    }
+
+    public function get_branch_id() {
+        return array_shift($this->nodepath);
     }
 
     public function get_value() {
@@ -468,7 +490,7 @@ class metadata {
             $childsarr = array();
             if (!empty($childs)) {
                 foreach ($childs as $child) {
-                    $childelm = self::instance($child->entryid, $child->element, $namespace);
+                    $childelm = self::instance($child->entryid, $child->element, $namespace, false);
                     if (!empty($capability)) {
                         if (!$childelm->node_has_capability($capability, $rw)) {
                             continue;
@@ -579,6 +601,7 @@ class metadata {
      */
     public function get_max_occurrence() {
         global $DB;
+<<<<<<< HEAD
 
         $select = "
             entryid = ? AND
@@ -609,6 +632,38 @@ class metadata {
     public function get_max_instance_index() {
         static $subnodes;
 
+=======
+
+        $select = "
+            entryid = ? AND
+            element LIKE ? AND
+            namespace = ?
+        ";
+
+        $mynode = $this->nodeid;
+        $parent = $this->get_parent(false);
+        if ($parent) {
+            $instanceid = $parent->instanceid.'_%';
+        } else {
+            $instanceid = '%';
+        }
+
+        $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
+        return $DB->count_records_select('sharedresource_metadata', $select, $params);
+    }
+
+    /**
+     * Get the highest sibling element in the current node level.
+     * The max occurence may be implicit f.e for categories that only are
+     * containers. there will be no direct records for the category in the metadata table, 
+     * but some child that holds effective data.
+     * the function will track all the node childs of the current node, and will scan for the highest index
+     * representing its own level.
+     */
+    public function get_max_instance_index() {
+        static $subnodes;
+
+>>>>>>> MOODLE_36_STABLE
         if (!isset($subnodes)) {
             $subnodes = $this->get_all_subnodes();
         }
@@ -679,6 +734,28 @@ class metadata {
         $configkey = "config_{$namespace}_{$capability}_{$rw}_".$this->get_node_id();
         $params = array($configkey);
         return $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+    }
+
+    /**
+     * Checks for mandatory status of the node.
+     */
+    function node_is_mandatory() {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$this->get_node_id();
+        $configstate = get_config('sharedresource', $configkey);
+
+        // Also check in tree scan in DB.
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+
+        return $configstate || $dbstate;
     }
 
     /**
@@ -998,4 +1075,59 @@ class metadata {
         return $legacy;
     }
 
+    /**
+     * Checks for mandatory status of the node.
+     */
+    public static function has_mandatories($branchid) {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$branchid.'%';
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+        return $dbstate;
+    }
+
+    /**
+     * Decodes to internal storage a ful branch info comming from an add button
+     * entry is mnw_nnx_ony:<value>;mnw_nnx_ony:<value> list form.
+     * @param string serialized branch info
+     * @return array of elementids to value mapping.
+     */
+    public static function decode_branch_info($branch) {
+        if (empty($branch)) {
+            return false;
+        }
+        $branchelms = explode(';', $branch);
+
+        $brancharr = array();
+        foreach ($branchelms as $elmpair) {
+            list($elementid, $value) = explode(':', $elmpair);
+            $brancharr[self::html_to_storage($elementid)] = $value;
+        }
+
+        return $brancharr;
+    }
+
+    /**
+     * A utility function : finds some tree prefixes into an array.
+     */
+    public static function find($what, $ids) {
+
+        $result = array();
+        if (!empty($ids)) {
+            foreach ($ids as $id) {
+                if (strpos($id, $what) === 0) {
+                    $result[] = $id;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

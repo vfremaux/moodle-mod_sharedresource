@@ -37,6 +37,8 @@ define(['jquery', 'core/log'], function ($, log) {
             $('#id-indexer-mtd-selectall-read').bind('click', this.selectall_indexer_read);
             $('#id-author-mtd-selectall-read').bind('click', this.selectall_author_read);
 
+            $('#id-mandatory-mtd-selectall').bind('click', this.selectall_mandatory);
+
             $('#id-system-mtd-selectnone-write').bind('click', this.selectnone_system_write);
             $('#id-indexer-mtd-selectnone-write').bind('click', this.selectnone_indexer_write);
             $('#id-author-mtd-selectnone-write').bind('click', this.selectnone_author_write);
@@ -44,6 +46,8 @@ define(['jquery', 'core/log'], function ($, log) {
             $('#id-system-mtd-selectnone-read').bind('click', this.selectnone_system_read);
             $('#id-indexer-mtd-selectnone-read').bind('click', this.selectnone_indexer_read);
             $('#id-author-mtd-selectnone-read').bind('click', this.selectnone_author_read);
+
+            $('#id-mandatory-mtd-selectnone').bind('click', this.selectnone_mandatory);
 
             $('.mtd-check').bind('change', this.toggle_childs);
             $('.mtd-parent').bind('init', this.init_parent);
@@ -84,6 +88,10 @@ define(['jquery', 'core/log'], function ($, log) {
             $('.' + namespace + '-author-read').prop('checked', true);
         },
 
+        selectall_mandatory: function (){
+            $('.' + namespace + '-mandatory').prop('checked', true);
+        },
+
         selectnone_system_write: function (){
             $('.' + namespace + '-system-write').prop('checked', false);
             $('.' + namespace + '-system-read').prop('disabled', false);
@@ -109,6 +117,10 @@ define(['jquery', 'core/log'], function ($, log) {
 
         selectnone_author_read: function (){
             $('.' + namespace + '-author-read').prop('checked', false);
+        },
+
+        selectnone_mandatory: function (){
+            $('.' + namespace + '-mandatory').prop('checked', false);
         },
 
         init_parent: function () {

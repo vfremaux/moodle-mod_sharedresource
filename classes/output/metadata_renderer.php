@@ -124,6 +124,15 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $tabtpl = new StdClass;
         $tabtpl->i = $nodeid;
+
+        if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
+            $tabtpl->mandatoryclass = 'is-mandatory is-empty';
+            $tabtpl->mandatorysign = '(*)';
+        } else {
+            $tabtpl->mandatoryclass = '';
+            $tabtpl->mandatorysign = '';
+        }
+
         if (\mod_sharedresource\metadata::use_branch($nodeid, $capability, $mode)) {
             $tabtpl->tabclass = 'mtd-tab-visible';
         } else {
@@ -497,7 +506,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->durationhelpicon = $this->output->help_icon('durationdescr', 'sharedresource', $template->durationdescstr);
         $template->vcardstr = get_string('vcard', 'sharedresource');
         $template->vcardhelpicon = $this->output->help_icon('vcard', 'sharedresource', $template->vcardstr);
-        $template->addstr = get_string('add', 'sharedresource');
 
         $i = 1;
 
@@ -589,10 +597,17 @@ class metadata_renderer extends \plugin_renderer_base {
         if ($elminstance->maxoccur < $elminstance->numoccur) {
             $elminstance->maxoccur = $elminstance->numoccur;
         }
+<<<<<<< HEAD
 
         $numoccur = $elminstance->numoccur;
         $maxoccur = $elminstance->maxoccur;
 
+=======
+
+        $numoccur = $elminstance->numoccur;
+        $maxoccur = $elminstance->maxoccur;
+
+>>>>>>> MOODLE_36_STABLE
         // echo "NodeID : $nodeid ";
         // echo "InstanceID : $instanceid ";
         // print_object($elminstance);
@@ -615,7 +630,10 @@ class metadata_renderer extends \plugin_renderer_base {
         $listresult = array();
 
         if ($standardelm->type == 'category') {
+<<<<<<< HEAD
             // echo "// $elementkey iscategory \n";
+=======
+>>>>>>> MOODLE_36_STABLE
             if (!is_null($taxumarray) && $nodeid == $taxumarray['main']) {
 
                 // echo "// $elementkey isclassification \n";
@@ -665,12 +683,32 @@ class metadata_renderer extends \plugin_renderer_base {
                         $sourcenodeid = $parentinstance->get_node_id().'_1';
                         $sourceinstanceid = $parentinstance->get_instance_id().'_0';
                         $sourceinstanceid = metadata::to_instance($sourcenodeid, $sourceinstanceid);
+<<<<<<< HEAD
                         // The instance must exist.
                         $sourceinstance = metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
                         // Id of the source taxonomy is the value of this source instance.
                         $params = array('id' => $sourceinstance->get_value());
                         $sourceelm = $DB->get_record('sharedresource_classif', $params);
                         $sourceelmid = $sourceelm->id;
+=======
+                        /*
+                         * The instance must exist. If it does not, this is because it has NOT YET be recorded, f.e.
+                         * when trying to multi-taxon a just recently client-side added form-part. In this case
+                         * will we get it from the "branch" data of the template comming from ajax input.
+                         */
+                        $sourceinstance = metadata::instance($shrentry->id, $sourceinstanceid, $namespace, false);
+                        // Id of the source taxonomy is the value of this source instance.
+                        if ($sourceinstance->isstored) {
+                            $params = array('id' => $sourceinstance->get_value());
+                            $sourceelm = $DB->get_record('sharedresource_classif', $params);
+                            $sourceelmid = $sourceelm->id;
+                        } else {
+                            // echo "// Comes from client side ";
+                            // sourceelmid comes from some data in branch. Let's decode id.
+                            $sourceelmid = $parenttemplate->taxonsourceid;
+                            // echo "// Final sourcelmid $sourceelmid ";
+                        }
+>>>>>>> MOODLE_36_STABLE
                     }
                 } else {
                     // echo "// initial value : $value \n";
@@ -682,6 +720,10 @@ class metadata_renderer extends \plugin_renderer_base {
                 if (empty($sourceelmid)) {
                     $taxontpl = new StdClass;
                     $taxontpl->classificationselect = $this->output->notification(get_string('notaxonomies', 'sharedresource'));
+<<<<<<< HEAD
+=======
+                    $taxontpl->occur = $template->occur;
+>>>>>>> MOODLE_36_STABLE
                     $template->taxons[] = $taxontpl;
                 } else {
                     /*
@@ -844,8 +886,14 @@ class metadata_renderer extends \plugin_renderer_base {
         }
 
         $template->hasaddbutton = false;
+<<<<<<< HEAD
         if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
             if ($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) {
+=======
+        if ($standardelm->islist) {
+        // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
+            if (($elminstance->realoccur == $elminstance->maxoccur || empty($elminstance->maxoccur)) && empty($parenttemplate->is_ajax_root)) {
+>>>>>>> MOODLE_36_STABLE
 
                 /*
                  * If element is a list we need display an add button to allow adding.
@@ -853,20 +901,35 @@ class metadata_renderer extends \plugin_renderer_base {
                  * first free form has not been filled. Children are named agains the last form
                  * occurrenc available. All previous occurences are supposed to be filled.
                  */
+                $childkeys = array();
                 if (!empty($listresults)) {
                     // Provide all children identities to the add button so it can locally check if inputs are empty or filled.
                     $childkeys = array_keys($listresults);
                     foreach ($childkeys as &$ckey) {
                         $ckey = metadata::storage_to_html($ckey);
                     }
-                    $template->listchildren = implode(';', $childkeys);
+                    // Add current element as it is part of the dependencies.
                 }
+                $childkeys[] = $htmlname;
+                // space is important here, because let us search using ~= attribute css operator.
+                $template->listdeps = implode(' ', $childkeys);
 
-                // If we are printing the last occurence, or have no occurence, let diplay an add button.
+                // If we are printing the last occurence, or have no occurence, let NOT display an add button.
                 // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
+<<<<<<< HEAD
                 if (is_numeric($template->occur)) {
                     $template->nextoccur = $template->occur + 1;
+=======
+                if (!empty($template->isclassification)) {
+                    // Mark this button as is-taxon-level
+                    // This will help a lot to grap current taxonomy when adding a taxon.
+                    $template->buttonistaxonlevel = 'is-taxon-level';
+                }
+                $template->addstr = get_string('add', 'sharedresource');
+                if (is_numeric($template->occur)) {
+                    $template->nextoccur = $template->occur;
+>>>>>>> MOODLE_36_STABLE
                 } else {
                     $template->nextoccur = 1;
                 }
@@ -900,6 +963,17 @@ class metadata_renderer extends \plugin_renderer_base {
         $elmoccur = $elminstance->get_instance_index();
         $maxoccur = $elminstance->get_max_occurrence();
 
+        $template->mandatoryclass = '';
+        $template->mandatorysign = '';
+        if ($elminstance->node_is_mandatory()) {
+            if ($elminstance->get_value() != '') {
+                $template->mandatoryclass = 'is-mandatory is-mandatory-'.$elminstance->get_branch_id();
+            } else {
+                $template->mandatoryclass = 'is-mandatory is-empty is-mandatory-'.$elminstance->get_branch_id();
+            }
+            $template->mandatorysign = '(*)';
+        }
+
         if ($elmoccur > 0 || $maxoccur > 0) {
             $template->occur = $elmoccur + 1;
         }
@@ -925,12 +999,20 @@ class metadata_renderer extends \plugin_renderer_base {
                     // Lock only the first instance.
                     $template->value = $shrentry->title;
                     $template->readonly = 'readonly="readonly"';
+                    if (!empty($template->mandatoryclass)) {
+                        // Remove the is-empty potential initial state.
+                        $template->mandatoryclass = 'is-mandatory';
+                    }
                 }
             } else if ($nodeid == $mtdstandard->getDescriptionElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
                     $template->value = $shrentry->description;
                     // Lock only the first instance.
                     $template->readonly = 'readonly="readonly"';
+                    if (!empty($template->mandatoryclass)) {
+                        // Remove the is-empty potential initial state.
+                        $template->mandatoryclass = 'is-mandatory';
+                    }
                 }
             } else if ($nodeid == $mtdstandard->getLocationElement()->node && $elminstance->get_value() == '') {
                 $template->value = $shrentry->url;
