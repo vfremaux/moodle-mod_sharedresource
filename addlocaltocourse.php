@@ -38,6 +38,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
 $courseid = optional_param('id', '', PARAM_INT);
 $section = optional_param('section', '', PARAM_INT);
@@ -49,6 +50,11 @@ if (empty($course)) {
     print_error('coursemisconf');
 }
 
+if (!$section) {
+    // When we add directly from library without course action.
+    $section = sharedresource_get_course_section_to_add($course);
+}
+
 // Security.
 
 require_login($course);
@@ -56,6 +62,8 @@ $context = context_course::instance($course->id);
 if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
     print_error('noaccessform', 'sharedresource');
 }
+
+$config = get_config('sharedresource');
 
 $strtitle = get_string('addlocal', 'sharedresource');
 
@@ -97,120 +105,37 @@ if ($mode == 'deploy') {
     require_capability('moodle/course:manageactivities', $context);
 
     if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
-        include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
-
-        $fs = get_file_storage();
-
-        $shrentry = $DB->get_record('sharedresource_entry', array('identifier' => required_param('identifier', PARAM_TEXT)));
-
-        $file = $fs->get_file_by_id($shrentry->file);
-        activity_publisher::restore_single_module($courseid, $file);
-
+        sharedresource_deploy_activity($shrentry, $course, $section);
         // TODO : Terminate procedure and return to course silently.
         redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
-        die;
     }
 
     // No one should be here....
 }
 
+// Scorm package case.
+
+if ($mode == 'scorm') {
+    list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section);
+    // TODO : Terminate procedure and return to course silently.
+    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+}
+
 /*
  * The sharedresource has been recognized as being a LTI descriptor
  */
-if ($mode == 'ltiinstall') {
-
-    // We build an LTI Tool instance.
-    include_once($CFG->dirroot.'/mod/sharedresource/forms/lti_mod_form.php');
-    include_once($CFG->dirroot.'/mod/lti/lib.php');
-
-    $instance = new StdClass();
-    $instance->name = $shrentry->title;
-    $instance->intro = $shrentry->description;
-    $instance->introformat = FORMAT_MOODLE;
-    $time = time();
-    $instance->timecreated = $time;
-    $instance->timemodified = $time;
-    $instance->typeid = 0;
-    if (preg_match('#^https://#', $shrentry->url)) {
-        $instance->toolurl = '';
-        $instance->securetoolurl = $shrentry->url;
-    } else {
-        $instance->toolurl = $shrentry->url;
-        $instance->securetoolurl = '';
-    }
-    $instance->instructorchoicesendname = 1; // Default lti form value.
-    $instance->instructorchoicesendemailaddr = 1;
-    $instance->instructorchoiceallowroster = 1;
-    $instance->instructorchoiceallowsetting = 1;
-    $instance->instructorcustomparameters = '';
-    $instance->instructorchoiceacceptgrades = 1;
-    $instance->grade = 0;
-    $instance->launchcontainer = LTI_LAUNCH_CONTAINER_DEFAULT;
-    $instance->resourcekey = ''; // Client identification key for remote service.
-    $instance->password = ''; // Server password for accessing the service.
-    $instance->debuglaunch = 0;
-    $instance->showtitlelaunch = 0;
-    $instance->showdescriptionlaunch = 0;
-    $instance->servicesalt = ''; // Unique salt autocalculated.
-    $instance->icon = '';
-    $instance->secureicon = '';
-
-    $mform = new lti_mod_form();
-    if ($mform->is_cancelled()) {
-        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
-    }
-    if ($data = $mform->get_data()) {
-        echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
-
-        $intancearr = (array)$instance;
-        $data->intro = $data->introeditor['text'];
-        $data->introformat = $data->introeditor['format'];
-
-        // Report changes from form.
-        foreach (array_keys($intancearr) as $key) {
-            if (isset($data->$key)) {
-                $instance->$key = $data->$key;
-            }
-        }
-        $instance->course = $courseid;
-        $instance->id = lti_add_instance($instance, null);
-    } else {
-        echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
-        $instance->identifier = $identifier;
-        $instance->mode = $mode;
-        $instance->id = $courseid;
-        $instance->section = $section;
-        $mform->set_data($instance);
-        $mform->display();
-        echo $OUTPUT->footer();
-        die;
-    }
+if (($mode == 'ltiinstall') || ($mode == 'lticonfirm')) {
+    $instance = sharedresource_deploy_lti($shrentry, $courseid, $section);
 
     $modulename = 'lti';
-
 }
 
 /*
  * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
- * activity. We build an externally referenced scorm type
+ * activity. Scorm type will depend on global configuration of 
+ * the content integratron section of sharedresource.
  */
-else if ($mode = 'scorm') {
-
-    $scorm = new StdClass;
-    $scorm->name = $shrentry->name;
-    $scorm->scormtype = SCORM_TYPE_EXTERNAL;
-
-    /*
-     * We cannot use standard scorm_add_intance() as it needs the coursemodule preexists
-     * the instance.
-     */
-     $cm = sharedresource_build_module();
-
-    $modulename = 'scorm';
-
-} else {
+else {
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
     $instance = new \mod_sharedresource\base(0, $shrentry->identifier);
@@ -233,17 +158,12 @@ else if ($mode = 'scorm') {
 }
 
 if (empty($cm)) {
-    $cm  = sharedresource_build_cm($courseid);
+    $cm  = sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance);
 }
 
 // Reset the course modinfo cache.
 $course->modinfo = null;
 $DB->update_record('course', $course);
-
-if (!$section) {
-    // When we add directly from library without course action.
-    $section = sharedresource_get_course_section_to_add($COURSE);
-}
 
 if (!$sectionid = course_add_cm_to_section($course, $cm->id, $section)) {
     print_error('errorsectionaddition', 'sharedresource');
@@ -263,12 +183,14 @@ if ($course->format == 'page') {
 
 $report = '';
 // Finally if localization was asked, transform the sharedresource in real resource.
-if ($mode == 'local') {
-    // We make a standard resource from the sharedresource.
-    $instance->id = sharedresource_convertfrom($instance, $report);
-    $modulename = 'resource';
-} else {
-    $modulename = 'sharedresource';
+if (empty($modulename)) {
+    if ($mode == 'local') {
+        // We make a standard resource from the sharedresource.
+        $instance->id = sharedresource_convertfrom($instance, $report);
+        $modulename = 'resource';
+    } else {
+        $modulename = 'sharedresource';
+    }
 }
 
 // Fire event.

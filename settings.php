@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
 global $SHAREDRESOURCE_WINDOW_OPTIONS; // Make sure we have the pesky global.
 
@@ -59,59 +60,60 @@ if ($ADMIN->fulltree) {
     $checkedyesno = array('' => get_string('no'), 'checked' => get_string('yes')); // Not nice at all.
 
     $key = 'sharedresource/freeze_index';
-    $label = get_string('freeze_index', 'sharedresource');
-    $desc = get_string('configfreezeindex', 'sharedresource');
+    $label = get_string('configfreezeindex', 'sharedresource');
+    $desc = get_string('configfreezeindex_desc', 'sharedresource');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
     $key = 'sharedresource/backup_index';
-    $label = get_string('backup_index', 'sharedresource');
-    $desc = get_string('configbackupindex', 'sharedresource');
+    $label = get_string('configbackupindex', 'sharedresource');
+    $desc = get_string('configbackupindex_desc', 'sharedresource');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
     $key = 'sharedresource/restore_index';
-    $label = get_string('restore_index', 'sharedresource');
-    $desc = get_string('configrestoreindex', 'sharedresource');
+    $label = get_string('configrestoreindex', 'sharedresource');
+    $desc = get_string('configrestoreindex_desc', 'sharedresource');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
     $key = 'sharedresource/defaulturl';
-    $label = get_string('resourcedefaulturl', 'sharedresource');
-    $desc = get_string('configdefaulturl', 'sharedresource');
+    $label = get_string('configdefaulturl', 'sharedresource');
+    $desc = get_string('configdefaulturl_desc', 'sharedresource');
     $settings->add(new admin_setting_configtext($key, $label, $desc , 'http://'));
 
     $key = 'sharedresource/foreignurl';
-    $label = get_string('resourceaccessurlasforeign', 'sharedresource');
-    $desc = get_string('configforeignurlsheme', 'sharedresource');
+    $label = get_string('configforeignurlscheme', 'sharedresource');
+    $desc = get_string('configforeignurlsheme_desc', 'sharedresource');
     $settings->add(new admin_setting_configtext($key, $label, $desc, ''), PARAM_RAW, 80);
 
     $label = get_string('layout', 'sharedresource');
-    $settings->add(new admin_setting_heading('h1', $label, ''));
+    $settings->add(new admin_setting_heading('layouthdr', $label, ''));
 
     $key = 'sharedresource/framesize';
-    $label = get_string('framesize', 'sharedresource');
-    $desc = get_string('configframesize', 'sharedresource');
+    $label = get_string('configframesize', 'sharedresource');
+    $desc = get_string('configframesize_desc', 'sharedresource');
     $settings->add(new admin_setting_configtext($key, $label, $desc, 130, PARAM_INT));
 
-    $woptions = array('' => get_string('newwindow', 'sharedresource'), 'checked' => get_string('pagewindow', 'sharedresource'));
+    $woptions = array('' => get_string('newwindow', 'sharedresource'),
+                      'checked' => get_string('pagewindow', 'sharedresource'));
     $key = 'sharedresource/popup';
-    $label = get_string('display', 'sharedresource');
-    $desc = get_string('configpopup', 'sharedresource');
+    $label = get_string('configpopup', 'sharedresource');
+    $desc = get_string('configpopup_desc', 'sharedresource');
     $settings->add(new admin_setting_configselect($key, $label, $desc, '', $woptions));
 
     foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $optionname) {
         $popupoption = "sharedresource/popup$optionname";
         if ($popupoption == 'sharedresource_popupheight') {
             $key = 'sharedresource/popupheight';
-            $label = get_string('newheight', 'sharedresource');
-            $desc = get_string('configpopupheight', 'sharedresource');
+            $label = get_string('configpopupheight', 'sharedresource');
+            $desc = get_string('configpopupheight_desc', 'sharedresource');
             $settings->add(new admin_setting_configtext($key, $label, $desc , 600, PARAM_INT));
         } else if ($popupoption == 'sharedresource/popupwidth') {
             $key = 'sharedresource/popupwidth';
-            $label = get_string('newwidth', 'sharedresource');
-            $desc = get_string('configpopupwidth', 'sharedresource');
+            $label = get_string('configpopupwidth', 'sharedresource');
+            $desc = get_string('configpopupwidth_desc', 'sharedresource');
             $settings->add(new admin_setting_configtext($key, $label, $desc , 800, PARAM_INT));
         } else {
-            $label = get_string('new'.$optionname, 'sharedresource');
-            $desc = get_string('configpopup'.$optionname, 'sharedresource');
+            $label = get_string('configpopup'.$optionname, 'sharedresource');
+            $desc = get_string('configpopup'.$optionname.'_desc', 'sharedresource');
             $settings->add(new admin_setting_configselect($popupoption, $label, $desc, 'checked', $checkedyesno));
         }
     }
@@ -119,11 +121,37 @@ if ($ADMIN->fulltree) {
     $label = get_string('libraryengine', 'sharedresource');
     $settings->add(new admin_setting_heading('h2', $label, ''));
 
+    // Content integration
+
+    $key = 'contentintegrationhdr';
+    $label = get_string('contentintegration', 'sharedresource');
+    $desc = '';
+    $settings->add(new admin_setting_heading($key, $label, $desc));
+
+    $scormcfg = get_config('scorm');
+    $options = array(SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm'));
+    if ($scormcfg->allowtypelocalsync) {
+        $options[SCORM_TYPE_LOCALSYNC] = get_string('typelocalsync', 'scorm');
+    }
+    if ($scormcfg->allowtypeexternal) {
+        $options[SCORM_TYPE_EXTERNAL] = get_string('typeexternal', 'scorm');
+    }
+    if ($scormcfg->allowtypeexternalaicc) {
+        $options[SCORM_TYPE_AICCURL] = get_string('typeaiccurl', 'scorm');
+    }
+
+    $key = 'sharedresource/scormintegration';
+    $label = get_string('configscormintegration', 'sharedresource');
+    $desc = get_string('configscormintegration_desc', 'sharedresource');
+    $default = SCORM_TYPE_LOCALSYNC;
+    $settings->add(new admin_setting_configselect($key, $label, $desc, $default, $options));
+
     // Get plugins list for enabling/disabling.
 
-    $pluginscontrolstr = get_string('pluginscontrol', 'sharedresource');
-    $pluginscontrolinfostr = get_string('pluginscontrolinfo', 'sharedresource');
-    $settings->add(new admin_setting_heading('plugincontrol', $pluginscontrolstr, $pluginscontrolinfostr));
+    $key = 'plugincontrol';
+    $label = get_string('configpluginscontrol', 'sharedresource');
+    $desc = get_string('configpluginscontrol_desc', 'sharedresource');
+    $settings->add(new admin_setting_heading($key, $label, $desc));
 
     $checkedoptions = array(0 => get_string('no'), 1 => get_string('yes'));
 
@@ -132,15 +160,16 @@ if ($ADMIN->fulltree) {
     foreach ($sharedresourcesplugins as $p => $ppath) {
         $pluginsoptions[$p] = get_string('pluginname', 'sharedmetadata_'.$p);
     }
+
     $key = 'sharedresource/schema';
-    $label = get_string('schema', 'sharedresource');
-    $desc = get_string('schema_desc', 'sharedresource');
+    $label = get_string('configschema', 'sharedresource');
+    $desc = get_string('configschema_desc', 'sharedresource');
     $item = new admin_setting_configselect($key, $label, $desc, '', $pluginsoptions);
     $settings->add($item);
 
     $key = 'sharedresource/accesscontrol';
-    $label = get_string('accesscontrol', 'sharedresource');
-    $desc = get_string('configaccesscontrol', 'sharedresource');
+    $label = get_string('configaccesscontrol', 'sharedresource');
+    $desc = get_string('configaccesscontrol_desc', 'sharedresource');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
     /*
@@ -159,7 +188,7 @@ if ($ADMIN->fulltree) {
     */
 
     $key = 'sharedresource/hidemetadatadesc';
-    $label = get_string('hidemetadatadesc', 'sharedresource');
+    $label = get_string('confighidemetadatadesc', 'sharedresource');
     $desc = '';
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
 
@@ -184,12 +213,13 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_heading('h10', $label, ''));
 
         $key = 'sharedresource/enablerssfeeds';
-        $label = get_string('enablerssfeeds', 'admin');
-        $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $options));
+        $label = get_string('configenablerssfeeds', 'admin');
+        $desc = 0;
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
 
         $key = 'sharedresource/article_quantity';
-        $label = get_string('articlequantity', 'sharedresource');
-        $desc = get_string('configarticlequantity', 'sharedresource');
+        $label = get_string('configarticlequantity', 'sharedresource');
+        $desc = get_string('configarticlequantity_desc', 'sharedresource');
         $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
     }
 

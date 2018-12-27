@@ -31,37 +31,37 @@
     border-bottom: none;
 }
 
-#mtd-form-title {
+.path-mod-sharedresource-form #mtd-form-title {
     font-size: 1.7em;
     font-weight: bold;
     text-align: center;
     margin: 20px 0 20px 0;
 }
 
-.mtd-form p {
+.path-mod-sharedresource-form p {
     margin: 2px 0;
     margin-bottom: 10px;
 }
 
-.mtd-form fieldset {
+.path-mod-sharedresource-form fieldset {
     border: #ccc 1px solid;
     margin-bottom: 10px;
     margin-top: 10px;
     padding: 7px 7px 7px 7px;
 }
 
-.mtd-form fieldset:hover {
+.path-mod-sharedresource-form fieldset:hover {
     background-color: #fff;
 }
 
-.mtd-form fieldset legend {
+.path-mod-sharedresource-form fieldset legend {
     color: #999;
     font-size: 1.3em;
     padding: 0 10px;
 }
 
 /* Label */
-.mtd-form label {
+.path-mod-sharedresource-form label {
     background: #dcdcdc;
     display: block;
     float: left;
@@ -72,43 +72,43 @@
     width: 35%;
 }
 
-.mtd-form label:hover {
+.path-mod-sharedresource-form label:hover {
     font-weight: bold;
 }
 
-.mtd-form label .error{
+.path-mod-sharedresource-form label .error{
     background-color: #ff0000;
 }
 
-.mtd-form .form_label_nostyle {
+.path-mod-sharedresource-form .form_label_nostyle {
     background: none;
 }
 
 /* Input */
-.mtd-form input,
-.mtd-form select {
+.path-mod-sharedresource-form input,
+.path-mod-sharedresource-form select {
     border: #ccc 1px solid;
     margin-left: 1%;
     width: 62%;
 }
 
-input.mtd-form-duration {
+.path-mod-sharedresource-form input.mtd-form-duration {
     width: 2em;
 }
 
-.mtd-form input:hover,
-.mtd-form select:hover,
-.mtd-form input:focus,
-.mtd-form select:focus {
+.path-mod-sharedresource-form input:hover,
+.path-mod-sharedresource-form select:hover,
+.path-mod-sharedresource-form input:focus,
+.path-mod-sharedresource-form select:focus {
     border: #ccc 1px solid;
 }
 
-.mtd-form .form_input_day {
+.path-mod-sharedresource-form .form_input_day {
     text-align: center;
     width: 20%;
 }
 
-.mtd-form .form_input_month {
+.path-mod-sharedresource-form .form_input_month {
     text-align: center;
     width: 20%;
 }
@@ -139,17 +139,17 @@ input.mtd-form-duration {
     cursor: pointer;
 }
 
-.mtd-form input[type="submit"].is-disabled:hover {
+.path-mod-sharedresource-form input[type="submit"].is-disabled:hover {
     background-color: #ff3333;
     cursor: none;
 }
 
-.mtd-form input[type="reset"] {
+.path-mod-sharedresource-form input[type="reset"] {
     border: #DDEEFF 1px solid;
     width: 27%;
 }
 
-.mtd-form input[type="reset"]:hover {
+.path-mod-sharedresource-form input[type="reset"]:hover {
     background-color: #E6484D;
     cursor: pointer;
 }
@@ -334,27 +334,6 @@ fieldset > legend{
     text-align: center;
 }
 
-#notice-menu li {
-    background-color: #A7A3BA;
-    color: #f0f0f0;
-    font-weight: bolder;
-    padding: 4px;
-}
-
-#notice-menu .active{
-    background-color: #4D4860;
-    color: #f0f0f0;
-}
-
-#page-mod-sharedresource-metadatanotice #ecform_content{
-    padding: 0;
-}
-
-#page-mod-sharedresource-metadatanotice #ecform_content .mtd-description-panel {
-    padding: 20px;
-    text-align: left;
-}
-
 /** Tableless search engine **/
 
 #sharedresource-search{
@@ -421,22 +400,80 @@ fieldset > legend{
 }
 
 /* Mandatory elements */
-.is-mandatory label,
-.is-mandatory legend {
+.path-mod-sharedresource-form .is-mandatory label,
+.path-mod-sharedresource-form .is-mandatory legend {
     color: #f00000;
 }
 
-.here.is-mandatory.is-empty a span {
+.path-mod-sharedresource-form .here.is-mandatory.is-empty a span {
     background-color: #a00000 !important;
 }
 
-.is-mandatory.is-empty a span {
+.path-mod-sharedresource-form .is-mandatory.is-empty a span {
     background-color: #faaaaa !important;
 }
 
-.is-mandatory.is-empty input[type=text],
-.is-mandatory.is-empty select,
-.is-mandatory.is-empty textarea {
+.path-mod-sharedresource-form .is-mandatory.is-empty input[type=text],
+.path-mod-sharedresource-form .is-mandatory.is-empty select,
+.path-mod-sharedresource-form .is-mandatory.is-empty textarea {
     border: 2px solid #a00000 !important;
     background-color: #faaaaa !important;
+}
+
+a.sharedresource-actionlink {
+    background-color: #ccc;
+    color: #fff;
+    margin-bottom: 20px;
+    padding: 3px 10px;
+    border-radius: 4px;
+}
+
+#sharedresources-link-to-search input[type=button], #sharedresources-link-to-browser input[type=button] {
+    color: #fff;
+    background-color: #ccc;
+    border-radius: 3px;
+    padding: .375rem .75rem;
+}
+
+.sharedresources-pager a {
+    margin-right: 20px;
+    background-color: #ccc;
+    color: #fff; 
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.path-mod-sharedresource .tabrow0 .here a span {
+    background-color: #ccc;
+    background-image: none!important;
+    color: white;
+}
+
+#page-mod-sharedresource-metadatanotice #ecform_content{
+    padding: 0;
+}
+
+#notice-menu li {
+    background-color: #A7A3BA;
+    color: #f0f0f0;
+    font-weight: bolder;
+    padding: 4px;
+}
+
+#notice-menu .active{
+    background-color: #4D4860;
+    color: #f0f0f0;
+}
+
+#page-mod-sharedresource-metadatanotice #ecform_content .mtd-description-panel {
+    padding: 20px;
+    text-align: left;
+}
+
+#page-mod-sharedresource-metadatanotice h2 {
+    background-color: #e6e6e6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
 }
