@@ -738,6 +738,32 @@ class entry {
     }
 
     /**
+     * Fetches the next resource version reference in the chain. Uses the Relation
+     * metadata branch. Returns self if no other version
+     * @param bool $fullchain if true, fetch untill new ids are found. Stops when the next is same than last.
+     * @return the next sharedresource id in the version daisy chain.
+     */
+    public function fetch_ahead($fullchain = false) {
+         $mtdstandard = sharedresource_get_plugin($config->schema, $this->shrentryrec->id);
+
+        if (is_null($mtdstandard->getVersionSupportElement())) {
+            return $this;
+        }
+
+        $nextid = $mtdstandard->getNext();
+        if ($nextid != $this->id) {
+            $next = self::get_by_id($nextid);
+            if (empty($next)) {
+                throw new MoodleException("Non existing versionned resource");
+                // return $this ?
+            }
+            return $next->fetch_ahead($fullchain);
+        }
+
+        return $this;
+    }
+
+    /**
      * Checks some simple access policy on ressource.
      * A user may have a user_info_field holding an acceptable value to match
      * in resource allowed value.

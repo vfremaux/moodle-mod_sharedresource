@@ -27,6 +27,12 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
     var metadataedit = {
 
+        bind_tabs: function() {
+            log.debug('AMD Mod sharedresource metadata edition binding tab events');
+            $('.mtd-tab').bind('click', this.switch_tab);
+            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
+        },
+
         bind_all: function() {
 
             log.debug('AMD Mod sharedresource metadata edition binding all events');
@@ -46,8 +52,6 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('.mtd-form-element textarea').bind('change', this.check_empty);
 
             $('.mtd-form-addbutton').bind('click', this.add_node);
-            $('.mtd-tab').bind('click', this.switch_tab);
-            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
 
             // Read checkboxes may ask search widget being enabled.
             var selector = '.' + namespace + '-system-read';
@@ -64,7 +68,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
         trigger_all: function() {
             log.debug('AMD Mod sharedresource metadata edition triggering changes');
             $('.mtd-form-element input[type="text"]').trigger('change');
-            $('.mtd-form-element select').trigger('change');
+            // On selects, triggering empties preload choices on taxonomy.
+            // $('.mtd-form-element select').trigger('change');
             $('.mtd-form-element textarea').trigger('change');
         },
 
@@ -89,6 +94,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             log.debug('AMD Mod sharedresource BIND ALL CALL');
             metadataedit.bind_all();
+            metadataedit.bind_tabs();
             metadataedit.trigger_all();
 
             // check and set the initial button state.
@@ -191,6 +197,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             var rgx = '';
 
             var realoccur = that.attr('data-occur');
+            log.debug("found real occur as " + realoccur);
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
@@ -285,12 +292,12 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                     // 1. button clicked has last taxon in 'data'.
                     // 2. last taxon select has its source select ref in 'source'
                     // 3. source select has current value of taxon source
-                    log.debug("Get source for #" + that.attr('data'));
-                    var lasttaxon = $('#' + that.attr('data'));
-                    log.debug("Get source in #" + lasttaxon.attr('data-source') + '_1n0');
-                    var sourceselect = $('#' + lasttaxon.attr('data-source') + '_1n0');
+                    var sourcetaxons = that.attr('data').split(' ');
+                    var basetaxon = sourcetaxons.pop();
+                    log.debug("Get source taxon in #" + basetaxon + '_1n0');
+                    var sourceselect = $('#' + basetaxon + '_1n0');
                     var taxonsourceid = sourceselect.val();
-                    log.debug("Resulting taxonrourceid  = " + taxonsourceid);
+                    log.debug("Resulting taxonresourceid  = " + taxonsourceid);
 
                     metadataedit.add_list_item(elmid, realoccur, taxonsourceid);
                 }
@@ -310,6 +317,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             var newname = metadata.next_occurrence_name(elmname);
             realoccur++;
+            log.debug("Next real occur is " + realoccur);
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
@@ -335,6 +343,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 $('#' + oldid).attr('id', newid);
                 $('#' + newid).prop('disabled', true);
                 $('#' + newid).attr('data-occur', realoccur);
+                log.debug("Shifting button " + newid + " real occur as " + realoccur);
                 // Shift add zone name to match new button.
                 $('#add-zone-' + elmname).attr('id', 'add-zone-' + newname);
                 $('#' + newid).attr('data', olddata);
@@ -408,12 +417,14 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // mark element as empty.
                 that.parent('.mtd-form-element').addClass('is-empty');
 
-                // lock form submit.
-                $('#id-mtd-submit').attr('disabled', true);
-                $('#id-mtd-submit').addClass('is-disabled');
+                if (that.hasClass('is-mandatory')) {
+                    // lock form submit.
+                    $('#id-mtd-submit').attr('disabled', true);
+                    $('#id-mtd-submit').addClass('is-disabled');
 
-                // mark same branch tab as empty.
-                $('#id-menu-' + branchid).addClass('is-empty');
+                    // mark same branch tab as empty.
+                    $('#id-menu-' + branchid).addClass('is-empty');
+                }
             }
 
             // Whatever the result, search the potentially affected buttons and update them.

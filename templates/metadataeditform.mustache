@@ -29,7 +29,9 @@
         {{metadatadescrstr}} {{pluginname}}
     </div>
 
+    <!-- tabs -->
     {{> mod_sharedresource/tabs}}
+    <!-- /tabs -->
 
     <div id="mtd-form-content" style="margin-right: auto; margin-left: auto">
         <div id="id-tab-99" class="on mtd-content">
@@ -47,7 +49,7 @@
         </div>
 
         <div style="margin-left: 67px;">
-            <form id="id-mtd-form" action="{{{receiverurl}}}" method="post" class="mtd-form">
+            <form id="id-mtd-form" action="{{{receiverurl}}}" method="post" class="mtd-form" autocomplete="off">
                 <input type="hidden"  name="mode"  value="{{mode}}">
                 <input type="hidden"  name="course"  value="{{course}}">
                 <input type="hidden"  name="section"  value="{{section}}">
@@ -55,7 +57,7 @@
                 <input type="hidden"  name="add"  value="{{add}}">
                 <input type="hidden"  name="return"  value="{{return}}">
 
-                {{> mod_sharedresource/metadataeditformchilds}}
+                {{> mod_sharedresource/metadataeditpanel}}
 
                 <div align="center" id="mtd-edit-form-submits">
                     <input type="submit" name="go-btn" value="{{validateformstr}}" id="id-mtd-submit"/>

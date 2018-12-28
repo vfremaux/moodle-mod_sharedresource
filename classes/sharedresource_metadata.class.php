@@ -82,6 +82,9 @@ class metadata {
      */
     protected $instancepath;
 
+    /**
+     * The tree level.
+     */
     protected $level;
 
     /**
@@ -369,8 +372,8 @@ class metadata {
         return $this->instancepath[count($this->instancepath) - 1];
     }
 
-    public function get_instance_path($i = 0) {
-        if ($i) {
+    public function get_instance_path($i = null) {
+        if (!is_null($i)) {
             return $this->instancepath[$i];
         }
         return $this->instancepath;
@@ -430,13 +433,19 @@ class metadata {
                 // All instances of one single root index.
                 $select = " entryid = ? AND namespace = ? AND element NOT LIKE '%_%' AND element LIKE ? ";
                 $params = array($this->entryid, $namespace, $nodeid.':%');
+
+                // Guess all nodes have at least one N_1 element.
+                $subselect = " entryid = ? AND namespace = ? AND element LIKE ? ";
+                $subparams = array($this->entryid, $namespace, $nodeid.'_1:%');
             } else {
                 // All instances of all roots.
                 $select = " entryid = ? AND namespace = ? AND element NOT LIKE '%_%' ";
                 $params = array($this->entryid, $namespace);
             }
 
+            // first search on really stored elements. (generally none).
             $roots = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element');
+
             $rootsarr = array();
             foreach ($roots as $r) {
                 $relm = self::instance($r->entryid, $r->element, $namespace);
@@ -447,7 +456,28 @@ class metadata {
                 }
                 $rootsarr[$r->element] = $relm;
             }
+
+            // Second search on some stored subelements.
+            if ($nodeid) {
+                $rootsubs = $DB->get_records_select('sharedresource_metadata', $subselect, $subparams, 'element');
+                if ($rootsubs) {
+                    foreach ($rootsubs as $subnode) {
+                        list($subnodeid, $instanceid) = explode(':', $subnode->element);
+                        $instancearr = explode('_', $instanceid);
+                        $rootelementid = $instancearr[0];
+                        $rootelement = $nodeid.':'.$rootelementid;
+                        $relm = self::instance(0, $rootelement, $namespace, false);
+                        if (!empty($capability)) {
+                            if (!$relm->node_has_capability($capability, $rw)) {
+                                continue;
+                            }
+                        }
+                        $rootsarr[$rootelement] = $relm;
+                    }
+                }
+            }
         }
+
         return $rootsarr;
     }
 
@@ -614,7 +644,36 @@ class metadata {
         }
 
         $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
-        return $DB->count_records_select('sharedresource_metadata', $select, $params);
+        $subs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
+        $params = array($this->entryid, $mynode.'_%:'.$instanceid, $this->namespace);
+        $subsubs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
+
+        // echo "Getting for {$this->nodeid} with $mynode.':'.$instanceid";
+        if ($subs) {
+            $allnodes = $subs;
+        } else {
+            $allnodes = array();
+        }
+        if ($subsubs) {
+            $allnodes += $subsubs;
+        }
+
+        $lastoccur = '';
+        if (!empty($allnodes)) {
+            $lastoccur = 0;
+            foreach ($allnodes as $node) {
+                list($nodeid, $instanceid) = explode(':', $node->element);
+
+                $instancearr = explode('_', $instanceid);
+                if ($instancearr[$this->level - 1] > $lastoccur) {
+                    $lastoccur = $instancearr[$this->level - 1];
+                }
+            }
+        }
+
+        // echo "Last occurrence for $this->nodeid : $lastoccur<br/>";
+
+        return $lastoccur;
     }
 
     /**

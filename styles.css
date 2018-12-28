@@ -31,37 +31,37 @@
     border-bottom: none;
 }
 
-#mtd-form-title {
+.path-mod-sharedresource-forms #mtd-form-title {
     font-size: 1.7em;
     font-weight: bold;
     text-align: center;
     margin: 20px 0 20px 0;
 }
 
-.mtd-form p {
+.path-mod-sharedresource-forms p {
     margin: 2px 0;
     margin-bottom: 10px;
 }
 
-.mtd-form fieldset {
+.path-mod-sharedresource-forms fieldset {
     border: #ccc 1px solid;
     margin-bottom: 10px;
     margin-top: 10px;
     padding: 7px 7px 7px 7px;
 }
 
-.mtd-form fieldset:hover {
+.path-mod-sharedresource-forms fieldset:hover {
     background-color: #fff;
 }
 
-.mtd-form fieldset legend {
+.path-mod-sharedresource-forms fieldset legend {
     color: #999;
     font-size: 1.3em;
     padding: 0 10px;
 }
 
 /* Label */
-.mtd-form label {
+.path-mod-sharedresource-forms label {
     background: #dcdcdc;
     display: block;
     float: left;
@@ -72,43 +72,43 @@
     width: 35%;
 }
 
-.mtd-form label:hover {
+.path-mod-sharedresource-forms label:hover {
     font-weight: bold;
 }
 
-.mtd-form label .error{
+.path-mod-sharedresource-forms label .error{
     background-color: #ff0000;
 }
 
-.mtd-form .form_label_nostyle {
+.path-mod-sharedresource-forms .form_label_nostyle {
     background: none;
 }
 
 /* Input */
-.mtd-form input,
-.mtd-form select {
+.path-mod-sharedresource-forms input,
+.path-mod-sharedresource-forms select {
     border: #ccc 1px solid;
     margin-left: 1%;
     width: 62%;
 }
 
-input.mtd-form-duration {
+.path-mod-sharedresource-forms input.mtd-form-duration {
     width: 2em;
 }
 
-.mtd-form input:hover,
-.mtd-form select:hover,
-.mtd-form input:focus,
-.mtd-form select:focus {
+.path-mod-sharedresource-forms input:hover,
+.path-mod-sharedresource-forms select:hover,
+.path-mod-sharedresource-forms input:focus,
+.path-mod-sharedresource-forms select:focus {
     border: #ccc 1px solid;
 }
 
-.mtd-form .form_input_day {
+.path-mod-sharedresource-forms .form_input_day {
     text-align: center;
     width: 20%;
 }
 
-.mtd-form .form_input_month {
+.path-mod-sharedresource-forms .form_input_month {
     text-align: center;
     width: 20%;
 }
@@ -128,6 +128,10 @@ input.mtd-form-duration {
     width: 40%;
 }
 
+#mtd-edit-form-submits {
+    margin-top:20px;
+}
+
 /* button submit */
 .mtd-form input[type="submit"] {
     border: #DDEEFF 1px solid;
@@ -139,17 +143,12 @@ input.mtd-form-duration {
     cursor: pointer;
 }
 
-.mtd-form input[type="submit"].is-disabled:hover {
-    background-color: #ff3333;
-    cursor: none;
-}
-
-.mtd-form input[type="reset"] {
+.path-mod-sharedresource-forms input[type="reset"] {
     border: #DDEEFF 1px solid;
     width: 27%;
 }
 
-.mtd-form input[type="reset"]:hover {
+.path-mod-sharedresource-forms input[type="reset"]:hover {
     background-color: #E6484D;
     cursor: pointer;
 }
@@ -173,11 +172,6 @@ input.mtd-form-duration {
 .mtd-form-element textarea.mtd-form-input {
     min-height: 6em;
     min-width: 50%;
-}
-
-.mtd-form-addbutton {
-    margin-top: 5px;
-    margin-bottom: 10px;
 }
 
 .mtd-tab {
@@ -315,10 +309,6 @@ td.mtd-value {
     margin-left: 1%;
 }
 
-#mtd-edit-form-submits {
-    margin-top: 20px;
-}
-
 fieldset.subbranch{
     margin-left: 5px;
 }
@@ -329,30 +319,9 @@ fieldset > legend{
     padding: 5px;
 }
 
-.sharedresource-listsection{
+.sharedresource-listsection {
     font-weight: bold;
     text-align: center;
-}
-
-#notice-menu li {
-    background-color: #A7A3BA;
-    color: #f0f0f0;
-    font-weight: bolder;
-    padding: 4px;
-}
-
-#notice-menu .active{
-    background-color: #4D4860;
-    color: #f0f0f0;
-}
-
-#page-mod-sharedresource-metadatanotice #ecform_content{
-    padding: 0;
-}
-
-#page-mod-sharedresource-metadatanotice #ecform_content .mtd-description-panel {
-    padding: 20px;
-    text-align: left;
 }
 
 /** Tableless search engine **/
@@ -410,33 +379,76 @@ fieldset > legend{
     text-align: center;
 }
 
-.path-mod-sharedresource-form input[disabled],
-.path-mod-sharedresource-form input[readonly],
-.path-mod-sharedresource-form select[disabled],
-.path-mod-sharedresource-form select[readonly],
-.path-mod-sharedresource-form textarea[disabled],
-.path-mod-sharedresource-form textarea[readonly] {
+.path-mod-sharedresource-forms input[disabled],
+.path-mod-sharedresource-forms input[readonly],
+.path-mod-sharedresource-forms select[disabled],
+.path-mod-sharedresource-forms select[readonly],
+.path-mod-sharedresource-forms textarea[disabled],
+.path-mod-sharedresource-forms textarea[readonly] {
     cursor: not-allowed;
     background-color: #eee;
 }
 
 /* Mandatory elements */
-.is-mandatory label,
-.is-mandatory legend {
-    color: #f00000;
+.path-mod-sharedresource-forms .is-mandatory label,
+.path-mod-sharedresource-forms .is-mandatory legend {
+    color: #F00000;
 }
 
-.here.is-mandatory.is-empty a span {
-    background-color: #a00000 !important;
+a.sharedresource-actionlink {
+    background-color: #ccc;
+    color: #fff;
+    margin-bottom: 20px;
+    padding: 3px 10px;
+    border-radius: 4px;
 }
 
-.is-mandatory.is-empty a span {
-    background-color: #faaaaa !important;
+#sharedresources-link-to-search input[type=button], #sharedresources-link-to-browser input[type=button] {
+    color: #fff;
+    background-color: #ccc;
+    border-radius: 3px;
+    padding: .375rem .75rem;
 }
 
-.is-mandatory.is-empty input[type=text],
-.is-mandatory.is-empty select,
-.is-mandatory.is-empty textarea {
-    border: 2px solid #a00000 !important;
-    background-color: #faaaaa !important;
+.sharedresources-pager a {
+    margin-right: 20px;
+    background-color: #ccc;
+    color: #fff; 
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.path-mod-sharedresource .tabrow0 .here a span {
+    background-color: #ccc;
+    background-image: none!important;
+    color: white;
+}
+
+#page-mod-sharedresource-metadatanotice #ecform_content{
+    padding: 0;
+}
+
+#notice-menu li {
+    background-color: #A7A3BA;
+    color: #f0f0f0;
+    font-weight: bolder;
+    padding: 4px;
+}
+
+#notice-menu .active{
+    background-color: #4D4860;
+    color: #f0f0f0;
+}
+
+#page-mod-sharedresource-metadatanotice #ecform_content .mtd-description-panel {
+    padding: 20px;
+    text-align: left;
+}
+
+#page-mod-sharedresource-metadatanotice h2 {
+    background-color: #e6e6e6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
 }
