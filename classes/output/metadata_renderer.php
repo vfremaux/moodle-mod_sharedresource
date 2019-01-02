@@ -193,8 +193,8 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->isvcard = false;
 
         // Check how many occurrences of ourself we have in database.
-        $maxoccur =  $elminstance->get_max_occurrence();
-        if ($maxoccur < 1) {
+        $lastoccur =  $elminstance->get_max_occurrence();
+        if ($lastoccur < 1) {
             // Do not display occurence index if we have only one possible.
             unset($template->numoccur);
         }
@@ -511,21 +511,25 @@ class metadata_renderer extends \plugin_renderer_base {
 
         foreach ($rootnodes as $rootid => $islist) {
 
+            $panelchildtpl = new StdClass;
+
             // Start with instance 0.
             $rootelementid = $rootid.':0';
 
-            // Build the form.
-            $paneltpl = $this->part_form($template, $rootelementid, $capability, 0, true);
+            // Build the form. The panel parts are provided in a panelchilds array.
+            $paneltpl = $this->part_form($panelchildtpl, $rootelementid, $capability, 0, true);
 
-            if (empty($paneltpl)) {
-                // Hidden panels for current user.
+            if (empty($panelchildtpl->panelchilds)) {
+                // Hidden panels with no content for current user.
                 $i++;
                 continue;
             }
 
-            $paneltpl->i = $rootid;
+            $panelchildtpl->i = $rootid;
             $lowername = strtolower($mtdstandard->METADATATREE[$rootid]['name']);
-            $paneltpl->tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$template->namespace);
+            $panelchildtpl->tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$template->namespace);
+
+            $template->panels[] = $panelchildtpl;
             $template->tabs[] = $this->tab($rootid, $capability, $template, 'write');
 
             $template->hascontent = true;
@@ -545,6 +549,10 @@ class metadata_renderer extends \plugin_renderer_base {
         global $SESSION, $CFG, $DB;
         static $taxumarray;
         static $classifsiblingsdone = false;
+        static $traceindentlevel = 0;
+
+        $traceindentlevel++;
+        $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -556,12 +564,14 @@ class metadata_renderer extends \plugin_renderer_base {
 
         if (!$mtdstandard->hasNode($nodeid)) {
             // Trap out if not exists.
+            $traceindentlevel--;
+            $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
             return null;
         }
 
         $template = new Stdclass;
+        $template->debugdata = '';
         $template->childs = array(); // Stop the uplooking recursion.
-        $template->ispanel = $ispanel;
         $template->hascontent = false;
         $template->islist = $standardelm->islist;
 
@@ -591,31 +601,35 @@ class metadata_renderer extends \plugin_renderer_base {
         // Get a full loaded metadata object. this object will provide all metadata instance related primitives.
         // It may not come from database.
         $elminstance = metadata::instance($shrentry->id, $instancekey, $namespace, false);
-        $elminstance->numoccur = $elminstance->get_instance_index();
-        $elminstance->realoccur = $realoccur;
-        $elminstance->maxoccur = $elminstance->get_max_occurrence();
-        if ($elminstance->maxoccur < $elminstance->numoccur) {
-            $elminstance->maxoccur = $elminstance->numoccur;
+
+        $numoccur = $elminstance->get_instance_index();
+        $lastoccur = $elminstance->get_max_occurrence();
+        if ($lastoccur < $numoccur) {
+            $lastoccur = $numoccur;
         }
 
-        $numoccur = $elminstance->numoccur;
-        $maxoccur = $elminstance->maxoccur;
-
-        $debug = "NodeID : $nodeid\n";
+        $debug = ">>>>\nNodeID : $nodeid\n";
         $debug .= "InstanceID : $instanceid \n";
         $debug .= "numoccur $numoccur\n";
-        $debug .= "maxoccur $maxoccur\n";
+        $debug .= "lastoccur $lastoccur\n";
         debug_trace($debug);
-        debug_trace($elminstance);
-        debug_trace($standardelm);
+        // debug_trace($elminstance);
+        // debug_trace($standardelm);
 
         if (!$elminstance->node_has_capability($capability, 'write')) {
+            $traceindentlevel--;
+            $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
             return null;
         }
 
+        /*
+         * occur is the printable suffix of the list instances.
+         */
         $template->occur = '';
         if (!empty($realoccur)) {
             $template->occur = $realoccur;
+        } else {
+            $template->occur = (!empty($numoccur)) ? $numoccur : '';
         }
 
         /*
@@ -637,6 +651,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->nodeid = $taxumarray['id'];
 
                 if ($numoccur >= 0 && !$realoccur) {
+                    // Adjust for printing from 1.
                     $template->occur = $numoccur + 1;
                 }
 
@@ -754,27 +769,23 @@ class metadata_renderer extends \plugin_renderer_base {
                             $taxontpl->classificationselect = html_writer::select($classificationoptions, $htmlname, $sib->get_value(), $nochoice, $attrs);
                             $taxontpl->occur = $i;
                             $template->taxons[] = $taxontpl;
+                            $realoccur++;
                             $i++;
-
-                            // Also increment the effective template occurrence to push the "new instance button id up".
-                            if ($numoccur >= 0) {
-                                $template->occur = $numoccur + 1;
-                            }
                         }
 
                         // Fetch the level-1 siblings only for the first source.
                         if ($realoccur == 0 && !$classifsiblingsdone) {
                             $classifsiblingsdone = true;
                             $siblingcollector = new StdClass;
-                            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
-                            $maxoccur = $elminstance->get_max_occurrence();
-                            // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
                             /*
                              * this is a relative guess of higher level siblings. We need explore the "source" childs of the element as parent
-                             * does not explictely exist in metadata, thus breacking the standard case form recursion.
+                             * does not explictely exist in metadata, thus breaking the standard case form recursion.
                              */
                             // $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $elminstance->get_parent(false)->get_node_id().'_1', null, false);
-                            $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $taxumarray['source'], null, false);
+                            // $classifsets = metadata::instances_by_element($shrentry->id, $namespace, $taxumarray['source'], null, false);
+                            $rootbranch = $sourceelm->get_instance_path(0);
+                            $sourcepattern = "{$taxumarray['source']}:{$rootbranch}_%_%";
+                            $classifsets = metadata::instances_by_element($shrentry->id, $namespace, $sourcepattern, null, false);
                             if (!empty($classifsets)) {
                                 $i = 1;
                                 foreach ($classifsets as $clf) {
@@ -783,9 +794,11 @@ class metadata_renderer extends \plugin_renderer_base {
                                         // Avoid looping on self.
                                         continue;
                                     }
-                                    $i++;
                                     // echo "Realoccur : $realoccur Requiring form for ".$clf->get_parent(false)->get_element_key();
+                                    debug_trace("Calling form for source siblings");
                                     $this->part_form($siblingcollector, $clf->get_parent(false)->get_element_key(), $capability, $i);
+                                    debug_trace("Call out");
+                                    $i++;
                                 }
                             }
                         }
@@ -820,13 +833,8 @@ class metadata_renderer extends \plugin_renderer_base {
                 if (!empty($listresults)) {
                     // It's ok and we display the category instances, then display children recursively.
 
-                    if ($numoccur > 0 || $maxoccur > 0) {
-                        $template->occur = $numoccur + 1;
-                    }
-
                     foreach ($listresults as $childkey => $elementinstance) {
                         // $childstandard = $mtdstandard->getElement($elementinstance->get_node_id());
-                        // echo "Require form for child $childkey ";
                         $this->part_form($template, $childkey, $capability, $elementinstance->get_instance_index());
                         if (count($template->childs)) {
                             $template->hascontent = true;
@@ -850,19 +858,21 @@ class metadata_renderer extends \plugin_renderer_base {
          */
         if (!isset($siblingcollector)) {
             $siblingcollector = new StdClass;
-            // if (( ((integer) $numoccur) === 0) && $elminstance->isstored) {
+
             if (( ((integer) $numoccur) === 0)) {
-                $maxoccur = $elminstance->get_max_occurrence();
-                // $siblings = $elminstance->get_siblings($nodeid, $capability, 'write', true); // Obsolete form ? 
                 $siblings = $elminstance->get_siblings(0);
 
                 if (!empty($siblings)) {
                     // All siblings will have a numoccur > 0.
                     $i = 1;
                     foreach ($siblings as $sib) {
-                        $i++;
+                        debug_trace("Calling form for element siblings");
                         $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
+                        debug_trace("Call out");
+                        $i++;
                     }
+                    // Reajust maxoccur on last numoccur
+                    $lastoccur = $i;
                 }
             }
         }
@@ -870,8 +880,28 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
         // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-            // debug_trace("Realoccur:{$elminstance->realoccur};MaxOccur:{$elminstance->maxoccur};IsAjaxRoot:{$elminstance->maxoccur}");
-            if ((($elminstance->realoccur == $elminstance->maxoccur - 1) || empty($elminstance->maxoccur)) && empty($parenttemplate->is_ajax_root)) {
+            debug_trace($elminstance);
+            debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root);
+            $template->debugdata .= "Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root;
+
+            $printaddbutton = false;
+            if (empty($parenttemplate->is_ajax_root)) {
+                if (!empty($elminstance->maxoccur) && ($lastoccur >= $elminstance->maxoccur)) {
+                    // If there is a hard limit in the element definition, play it if reached.
+                    if ($realoccur == $elminstance->maxoccur - 1) {
+                        $printaddbutton = true;
+                    }
+                } else {
+                    if ($realoccur == $lastoccur) {
+                        // Print add button on last element occurrence.
+                        $printaddbutton = true;
+                    }
+                }
+            }
+
+            if ($printaddbutton) {
+                debug_trace("PrintAddButton");
+                $template->debugdata .= " Print Add Button ";
 
                 /*
                  * If element is a list we need display an add button to allow adding.
@@ -893,7 +923,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->listdeps = implode(' ', $childkeys);
 
                 // If we are printing the last occurence, or have no occurence, let NOT display an add button.
-                // If $maxoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
+                // If $lastoccur is really empty, the form is a "new element form", so disable the button, untill the value is changed.
                 $template->hasaddbutton = true;
                 if (!empty($template->isclassification)) {
                     // Mark this button as is-taxon-level
@@ -901,40 +931,62 @@ class metadata_renderer extends \plugin_renderer_base {
                     $template->buttonistaxonlevel = 'is-taxon-level';
                 }
                 $template->addstr = get_string('add', 'sharedresource');
-                if (is_numeric($template->occur)) {
-                    $template->nextoccur = $template->occur;
+                if (is_numeric($realoccur)) {
+                    $template->nextoccur = $realoccur + 1;
                 } else {
                     $template->nextoccur = 1;
                 }
                 $template->addid = metadata::storage_to_html($addelementkey);
                 $template->addclass = 'is-list';
-                if ($elminstance->maxoccur === '') {
+                if ($lastoccur === '') {
                     $template->adddisabled = 'disabled="disabled"';
                 }
             }
         }
 
+        if (($CFG->debug != DEBUG_DEVELOPER) || !optional_param('debug', false, PARAM_BOOL)) {
+            $template->debugdata = '';
+        }
+
         // Assemble all siblings in order.
-        $parenttemplate->childs[] = $template;
+        if ($ispanel) {
+            $template->iscontainer = true;
+
+            $childcontainer = new StdClass;
+            $childcontainer->childs[] = $template;
+            $parenttemplate->panelchilds[] = $childcontainer;
+        } else {
+            $parenttemplate->childs[] = $template;
+        }
         // $parenttemplate->childs[$elementkey] = $template;
         if (!empty($siblingcollector->childs)) {
             foreach ($siblingcollector->childs as $sibid => $sibtpl) {
                 // $parenttemplate->childs[$sibid] = $sibtpl;
-                $parenttemplate->childs[] = $sibtpl;
+                if ($ispanel) {
+                    $sibtpl->iscontainer = true;
+                    $childcontainer = new StdClass;
+                    $childcontainer->childs[] = $sibtpl;
+                    $parenttemplate->panelchilds[] = $childcontainer;
+                } else {
+                    $parenttemplate->childs[] = $sibtpl;
+                }
             }
         }
 
+        debug_trace("<<<<\n");
+        $traceindentlevel--;
+        $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
         return $template;
     }
 
-    protected function print_widget(&$mtdstandard, &$elminstance, &$standardelm, &$template, &$shrentry) {
+    protected function print_widget(&$mtdstandard, $elminstance, &$standardelm, &$template, &$shrentry) {
         global $OUTPUT;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
 
         $elmoccur = $elminstance->get_instance_index();
-        $maxoccur = $elminstance->get_max_occurrence();
+        $lastoccur = $elminstance->get_max_occurrence();
 
         $template->mandatoryclass = '';
         $template->mandatorysign = '';
@@ -947,7 +999,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $template->mandatorysign = '(*)';
         }
 
-        if ($elmoccur > 0 || $maxoccur > 0) {
+        if ($elmoccur > 0 || $lastoccur > 0) {
             $template->occur = $elmoccur + 1;
         }
 

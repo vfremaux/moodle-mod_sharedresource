@@ -197,6 +197,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             var rgx = '';
 
             var realoccur = that.attr('data-occur');
+            log.debug("found real occur as " + realoccur);
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
@@ -291,12 +292,12 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                     // 1. button clicked has last taxon in 'data'.
                     // 2. last taxon select has its source select ref in 'source'
                     // 3. source select has current value of taxon source
-                    log.debug("Get source for #" + that.attr('data'));
-                    var lasttaxon = $('#' + that.attr('data'));
-                    log.debug("Get source in #" + lasttaxon.attr('data-source') + '_1n0');
-                    var sourceselect = $('#' + lasttaxon.attr('data-source') + '_1n0');
+                    var sourcetaxons = that.attr('data').split(' ');
+                    var basetaxon = sourcetaxons.pop();
+                    log.debug("Get source taxon in #" + basetaxon + '_1n0');
+                    var sourceselect = $('#' + basetaxon + '_1n0');
                     var taxonsourceid = sourceselect.val();
-                    log.debug("Resulting taxonrourceid  = " + taxonsourceid);
+                    log.debug("Resulting taxonresourceid  = " + taxonsourceid);
 
                     metadataedit.add_list_item(elmid, realoccur, taxonsourceid);
                 }
@@ -316,6 +317,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             var newname = metadata.next_occurrence_name(elmname);
             realoccur++;
+            log.debug("Next real occur is " + realoccur);
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
@@ -341,6 +343,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 $('#' + oldid).attr('id', newid);
                 $('#' + newid).prop('disabled', true);
                 $('#' + newid).attr('data-occur', realoccur);
+                log.debug("Shifting button " + newid + " real occur as " + realoccur);
                 // Shift add zone name to match new button.
                 $('#add-zone-' + elmname).attr('id', 'add-zone-' + newname);
                 $('#' + newid).attr('data', olddata);
@@ -425,7 +428,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             }
 
             // Whatever the result, search the potentially affected buttons and update them.
-            var affectedaddbtns = $('.mtd-form-addbutton[data~="' + that.attr('id') + '"]');
+            var affectedaddbtns = $('input[name^="btn-' + that.attr('id') + '-"]');
             affectedaddbtns.each(metadataedit.check_button_status);
         }
     };

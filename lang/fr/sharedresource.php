@@ -254,6 +254,7 @@ $string['mtdfieldname'] = 'Nom du champ';
 $string['mtdvalue'] = 'Valeur';
 $string['name'] = 'Nom';
 $string['newwindow'] = 'Nouvelle fenêtre';
+$string['newscrollbars'] = 'Autoriser le défilement';
 $string['noaccessform'] = 'Votre catégorie d\'utilisateur n\'a pas accès à ce formulaire';
 $string['noclassification'] = 'Aucune classification repertoriée';
 $string['node'] = 'Branche';

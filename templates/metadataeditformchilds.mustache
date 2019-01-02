@@ -25,10 +25,6 @@
 
 {{#childs}}
 
-{{#ispanel}}
-<div id="id-tab-{{i}}" class="mtd-editform-panel off mtd-content">
-{{/ispanel}}
-
 {{#isclassification}}
     {{#taxons}}
     <fieldset>
@@ -132,9 +128,11 @@
     </div>
 {{/hasaddbutton}}
 
-{{#ispanel}}
-</div>
-{{/ispanel}}
+{{#debugdata}}
+<pre>
+{{{debugdata}}}
+</pre>
+{{/debugdata}}
 
 {{/childs}}
 <!-- /metadataeditformchilds -->

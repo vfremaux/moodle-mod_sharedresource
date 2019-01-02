@@ -251,6 +251,7 @@ $string['mtdvalue'] = 'Value';
 $string['name'] = 'Name';
 $string['configpopupdirectories'] = 'Show the directory links';
 $string['newwindow'] = 'New window';
+$string['newscrollbars'] = 'Enable scrollbars';
 $string['noaccessform'] = 'Your user category do not have access to this form';
 $string['noclassification'] = 'No classification found';
 $string['node'] = 'Node';
