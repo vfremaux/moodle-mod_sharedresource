@@ -32,9 +32,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$return        = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
+$catid         = optional_param('catid', 0, PARAM_INT);
+$catpath       = optional_param('catpath', '', PARAM_TEXT);
 $courseid      = required_param('course', PARAM_INT);
 $sharingcontext = required_param('context', PARAM_INT);
 
@@ -92,6 +94,8 @@ $params = array('add' => $add,
                 'return' => $return,
                 'section' => $section,
                 'mode' => $mode,
+                'catid' => $catid,
+                'catpath' => $catpath,
                 'course' => $courseid,
                 'context' => $sharingcontext);
 $url = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);

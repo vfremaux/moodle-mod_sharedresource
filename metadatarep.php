@@ -38,9 +38,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plug
 $mode = required_param('mode', PARAM_ALPHA);
 $add = optional_param('add', 0, PARAM_ALPHA);
 $update = optional_param('update', 0, PARAM_INT);
-$return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
 $section = optional_param('section', 0, PARAM_INT);
 $courseid = required_param('course', PARAM_INT);
+$catid = optional_param('catid', 0, PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_TEXT);
 $type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
@@ -152,6 +154,8 @@ if ($result['error'] != array()) {
         $params = array('course' => $course->id,
                         'mode' => 'add',
                         'add' => 1,
+                        'catid' => $catid,
+                        'catpath' => $catpath,
                         'return' => $return,
                         'section' => $section,
                         'context' => $sharingcontext);
@@ -162,7 +166,11 @@ if ($result['error'] != array()) {
         if (!$shrentry->update_instance()) {
             print_error('failupdate', 'sharedresource');
         }
-        $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
+        if ($return == 1) {
+            $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
+        } else {
+            $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
+        }
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
         if (!$shrentry->add_instance()) {
@@ -171,7 +179,12 @@ if ($result['error'] != array()) {
         // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
             // We are coming from the library. Go back to it.
-            $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
+        // We are coming from the library. Go back to it.
+            if ($return == 1) {
+                $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
+            } else {
+                $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
+            }
             redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
         } else {
             // We are coming from a new sharedresource instance call.

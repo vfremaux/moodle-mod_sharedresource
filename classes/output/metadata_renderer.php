@@ -446,8 +446,10 @@ class metadata_renderer extends \plugin_renderer_base {
         // Get context params in.
         $add = optional_param('add', 0, PARAM_ALPHA);
         $update = optional_param('update', 0, PARAM_INT);
-        $return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+        $return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
         $section = optional_param('section', 0, PARAM_INT);
+        $catid = optional_param('catid', 0, PARAM_INT);
+        $catpath = optional_param('catpath', '', PARAM_TEXT);
         $sharingcontext = optional_param('context', 1, PARAM_INT);
         $mode = required_param('mode', PARAM_ALPHA);
         $courseid = required_param('course', PARAM_INT);
@@ -458,6 +460,8 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->namespace = $namespace;
         $template->receiverurl = new moodle_url('/mod/sharedresource/metadatarep.php');
         $template->mode = $mode;
+        $template->catid = $catid;
+        $template->catpath = $catpath;
         $template->hascontent = false;
         $template->course = $courseid;
         $template->section = $section;
@@ -608,10 +612,10 @@ class metadata_renderer extends \plugin_renderer_base {
             $lastoccur = $numoccur;
         }
 
-        $debug = ">>>>\nNodeID : $nodeid\n";
-        $debug .= "InstanceID : $instanceid \n";
-        $debug .= "numoccur $numoccur\n";
-        $debug .= "lastoccur $lastoccur\n";
+        $debug = ">>>>\nNodeID : $nodeid\n<br>";
+        $debug .= "InstanceID : $instanceid \n<br>";
+        $debug .= "numoccur $numoccur\n<br>";
+        $debug .= "lastoccur $lastoccur\n<br>";
         debug_trace($debug);
         // debug_trace($elminstance);
         // debug_trace($standardelm);
@@ -638,7 +642,9 @@ class metadata_renderer extends \plugin_renderer_base {
         $listresult = array();
 
         if ($standardelm->type == 'category') {
-            if (!is_null($taxumarray) && $nodeid == $taxumarray['main']) {
+            if (!is_null($taxumarray) && ($nodeid == $taxumarray['main'])) {
+
+                debug_trace('Processing taxonomy element');
 
                 // echo "// $elementkey isclassification \n";
                 // If the field concerns classification :
@@ -663,16 +669,17 @@ class metadata_renderer extends \plugin_renderer_base {
                 $sourcevalue = $sourceelm->get_value();
                 if (empty($sourcevalue)) {
                     // initial value : Undefined \n";
+                    debug_trace(" Taxon Source initial value is undefined");
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
                     $instanceindex = $elminstance->get_instance_index();
-                    // echo "// Node index : $instanceindex \n";
                     if ($instanceindex == 0) {
                         // echo "// Take first available source \n";
                         /*
                          * If we are the first unvalued element, take the first classification available
                          * as it will be loaded in the upper "source" select chooser
                          */
+                        debug_trace(" Taxon Source initial : Take first one");
                         if ($firsts = $DB->get_records('sharedresource_classif', $params, 'name', '*', 0, 1)) {
                             // Should take the active classification of the upper node that is: 9nx_2ny_1n0
                             $sourceelm = array_pop($firsts);
@@ -700,7 +707,6 @@ class metadata_renderer extends \plugin_renderer_base {
                             $sourceelm = $DB->get_record('sharedresource_classif', $params);
                             $sourceelmid = $sourceelm->id;
                         } else {
-                            // echo "// Comes from client side ";
                             // sourceelmid comes from some data in branch. Let's decode id.
                             $sourceelmid = $parenttemplate->taxonsourceid;
                             // echo "// Final sourcelmid $sourceelmid ";
@@ -774,6 +780,8 @@ class metadata_renderer extends \plugin_renderer_base {
                         }
 
                         // Fetch the level-1 siblings only for the first source.
+                        // OBSOLETE since repair of the get_siblings()
+                        /*
                         if ($realoccur == 0 && !$classifsiblingsdone) {
                             $classifsiblingsdone = true;
                             $siblingcollector = new StdClass;
@@ -781,6 +789,7 @@ class metadata_renderer extends \plugin_renderer_base {
                              * this is a relative guess of higher level siblings. We need explore the "source" childs of the element as parent
                              * does not explictely exist in metadata, thus breaking the standard case form recursion.
                              */
+                             /*
                             // $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $elminstance->get_parent(false)->get_node_id().'_1', null, false);
                             // $classifsets = metadata::instances_by_element($shrentry->id, $namespace, $taxumarray['source'], null, false);
                             $rootbranch = $sourceelm->get_instance_path(0);
@@ -802,9 +811,9 @@ class metadata_renderer extends \plugin_renderer_base {
                                 }
                             }
                         }
+                        */
                     }
                 }
-
             } else {
                 $template->iscontainer = true;
                 // echo "// $elementkey iscontainer \n";
@@ -820,6 +829,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 } else {
                     // If NOT a stored element, fetch the childs in the metadata definition.
                     $standardchilds = $mtdstandard->getElementChilds($nodeid, $capability, 'write', true);
+                    $listresults = array();
                     foreach ($standardchilds as $chid => $islist) {
                         $elementid = metadata::to_instance($chid, $elminstance->get_instance_id());
                         $element = metadata::instance($shrentry->id, $elementid, $namespace, false);
@@ -862,11 +872,12 @@ class metadata_renderer extends \plugin_renderer_base {
             if (( ((integer) $numoccur) === 0)) {
                 $siblings = $elminstance->get_siblings(0);
 
+                debug_trace("START Element siblings for ".$elminstance->get_element_key());
                 if (!empty($siblings)) {
                     // All siblings will have a numoccur > 0.
                     $i = 1;
                     foreach ($siblings as $sib) {
-                        debug_trace("Calling form for element siblings");
+                        debug_trace("Calling form for element sibling ".$sib->get_element_key());
                         $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
                         debug_trace("Call out");
                         $i++;
@@ -874,6 +885,7 @@ class metadata_renderer extends \plugin_renderer_base {
                     // Reajust maxoccur on last numoccur
                     $lastoccur = $i;
                 }
+                debug_trace("END Element siblings");
             }
         }
 

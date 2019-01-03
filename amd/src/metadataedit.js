@@ -41,15 +41,15 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('.taxonomy-source').off('change');
             $('.mtd-form-addbutton').off('click');
             $('.mtd-form-element select').off('change');
-            $('.mtd-form-element textarea').off('change');
-            $('.mtd-form-element input[type="text"]').off('change');
+            $('.mtd-form-element textarea').off('keyup');
+            $('.mtd-form-element input[type="text"]').off('keyup');
             $('.mtd-tab').off('click');
             $('.mtd-tab a').off('click');
 
             // Add check handlers to all elements.
-            $('.mtd-form-element input[type="text"]').bind('change', this.check_empty);
+            $('.mtd-form-element input[type="text"]').bind('keyup', this.check_empty);
             $('.mtd-form-element select').bind('change', this.check_empty);
-            $('.mtd-form-element textarea').bind('change', this.check_empty);
+            $('.mtd-form-element textarea').bind('keyup', this.check_empty);
 
             $('.mtd-form-addbutton').bind('click', this.add_node);
 
@@ -67,10 +67,10 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
         trigger_all: function() {
             log.debug('AMD Mod sharedresource metadata edition triggering changes');
-            $('.mtd-form-element input[type="text"]').trigger('change');
+            $('.mtd-form-element input[type="text"]').trigger('keyup');
             // On selects, triggering empties preload choices on taxonomy.
             // $('.mtd-form-element select').trigger('change');
-            $('.mtd-form-element textarea').trigger('change');
+            $('.mtd-form-element textarea').trigger('keyup');
         },
 
         init: function(args) {
@@ -294,8 +294,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                     // 3. source select has current value of taxon source
                     var sourcetaxons = that.attr('data').split(' ');
                     var basetaxon = sourcetaxons.pop();
-                    log.debug("Get source taxon in #" + basetaxon + '_1n0');
-                    var sourceselect = $('#' + basetaxon + '_1n0');
+                    log.debug("Get source taxon in #" + metadata.parent_name(basetaxon) + '_1n0');
+                    var sourceselect = $('#' + metadata.parent_name(basetaxon) + '_1n0');
                     var taxonsourceid = sourceselect.val();
                     log.debug("Resulting taxonresourceid  = " + taxonsourceid);
 
@@ -350,6 +350,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
                 // Rebind all change handlers, including on new elements.
                 metadataedit.bind_all();
+                metadataedit.bind_tabs();
 
             }, 'json');
         },

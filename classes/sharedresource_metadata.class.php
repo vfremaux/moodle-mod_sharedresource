@@ -491,8 +491,9 @@ class metadata {
     public function get_childs($nodeindex = 0, $capability = null, $rw = 'read', $recurse = false) {
         global $DB;
 
+        $childsarr = array();
+
         if ($recurse) {
-            $childsarr = array();
             $subnodes = $this->get_all_subnodes(true);
             if (!empty($subnodes)) {
                 foreach ($subnodes as $node) {
@@ -508,13 +509,12 @@ class metadata {
 
             $select = " entryid = ? AND namespace = ? AND element LIKE ? ";
             if (!$nodeindex) {
-                    $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
+                $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
             } else {
                 $params = array($this->entryid, $namespace, $this->nodeid.'_'.$nodeindex.':'.$this->instanceid.'_%');
             }
 
             $childs = $DB->get_records_select('sharedresource_metadata', $select, $params);
-            $childsarr = array();
             if (!empty($childs)) {
                 foreach ($childs as $child) {
                     $childelm = self::instance($child->entryid, $child->element, $namespace, false);
@@ -526,7 +526,37 @@ class metadata {
                     $childsarr[$child->element] = $childelm;
                 }
             }
+
+            // Getting hidden branches for virtual nodes.
+            if ($this->level == 1) {
+                $select = " entryid = ? AND namespace = ? AND element LIKE ? ";
+                if (!$nodeindex) {
+                    $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
+                } else {
+                    $params = array($this->entryid, $namespace, $this->nodeid.'_'.$nodeindex.'_%:'.$this->instanceid.'_%');
+                }
+
+                $subbranches = $DB->get_records_select_menu('sharedresource_metadata', $select, $params, 'element', 'id,element');
+
+                if (!empty($subbranches)) {
+                    foreach ($subbranches as $eid => $element) {
+                        $childnodes = array();
+                        $childinstances = array();
+                        $metadata = new metadata($this->entryid, $element, 0, $namespace);
+                        for ($i = 0; $i <= $this->level; $i++) {
+                            $childnodes[] = $metadata->nodepath[$i];
+                            $childinstances[] = $metadata->instancepath[$i];
+                        }
+                        $childelementid = implode('_', $childnodes).':'.implode('_', $childinstances);
+                        if (!array_key_exists($childelementid, $childsarr)) {
+                            $otherchild = new metadata($this->entryid, $childelementid, 0, $namespace);
+                            $childsarr[$childelementid] = $otherchild;
+                        }
+                    }
+                }
+            }
         }
+
         return $childsarr;
     }
 
@@ -546,9 +576,11 @@ class metadata {
                 $siblings = $this->get_roots($this->get_node_index());
             } else {
                 $parentnode = $this->get_parent(false);
+                debug_trace("My parent for ".$this->element.' at '.$this->level);
+                debug_trace($parentnode);
                 $siblings = $parentnode->get_childs($this->get_node_index());
+                debug_trace("Getting parent other childs than me My node index ".$this->get_node_index());
             }
-            unset($siblings[$this->element]); // Remove myself from siblings..
         }
 
         if ($level == 1) {
@@ -575,12 +607,18 @@ class metadata {
                 foreach ($extendedsiblings as $extsib) {
                     if ($extsib->element != $this->element) {
                         // Do not add myself.
-                        $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                        if (!array_key_exists($extsib->element, $siblings)) {
+                            $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                        }
                     }
                 }
             }
         }
 
+        if (array_key_exists($this->element, $siblings)) {
+            unset($siblings[$this->element]); // Remove myself from siblings..
+        }
+        debug_trace($siblings);
         return $siblings;
     }
 
