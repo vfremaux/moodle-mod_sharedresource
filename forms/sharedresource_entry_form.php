@@ -46,7 +46,9 @@ class mod_sharedresource_entry_form extends moodleform {
         $add           = optional_param('add', 0, PARAM_ALPHA);
         $update        = optional_param('update', 0, PARAM_INT);
         // Return to course/view.php if false or mod/modname/view.php if true.
-        $return        = optional_param('return', 0, PARAM_BOOL);
+        $return        = optional_param('return', 0, PARAM_INT);
+        $catid         = optional_param('catid', 0, PARAM_INT);
+        $catpath       = optional_param('catpath', '', PARAM_TEXT);
         $type          = optional_param('type', '', PARAM_ALPHANUM);
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
@@ -140,6 +142,12 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $mform->addElement('hidden', 'mode', $mode);
         $mform->setType('mode', PARAM_ALPHA); 
+
+        $mform->addElement('hidden', 'catid', $catid);
+        $mform->setType('catid', PARAM_INT); 
+
+        $mform->addElement('hidden', 'catpath', $catpath);
+        $mform->setType('catpath', PARAM_TEXT); 
 
         $mform->addElement('hidden', 'entryid', $this->entryid);
         $mform->setType('entryid', PARAM_INT);

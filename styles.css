@@ -31,6 +31,16 @@
     border-bottom: none;
 }
 
+#mtd-form-menu.tabrow0 li.is-empty.here a span {
+    background-color:red;
+    color: white;
+}
+
+#mtd-form-menu.tabrow0 li.is-empty a span {
+    background-color:#ffd0d0;
+    color: #000;
+}
+
 .path-mod-sharedresource-forms #mtd-form-title {
     font-size: 1.7em;
     font-weight: bold;
@@ -387,6 +397,12 @@ fieldset > legend{
 .path-mod-sharedresource-forms textarea[readonly] {
     cursor: not-allowed;
     background-color: #eee;
+}
+
+.path-mod-sharedresource-forms .mtd-form-element.is-empty.is-mandatory input,
+.path-mod-sharedresource-forms .mtd-form-element.is-empty.is-mandatory select,
+.path-mod-sharedresource-forms .mtd-form-element.is-empty.is-mandatory textarea {
+    background-color: #ffd0d0;
 }
 
 /* Mandatory elements */

@@ -405,19 +405,8 @@ class entry {
         if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && !empty($value)) {
             $this->$element = $value;
         } else {
-            $location = false;
-            $i = 0;
-            foreach ($this->metadataelements as $el) {
-                if ($el->element == $element) {
-                    $location = $i;
-                    break;
-                }
-                $i++;
-            }
-            if ($location === false) {
-                $this->metadataelements[] = new metadata($this->id, $element, $value, $namespace);
-            } else {
-                $this->metadataelements[$location] = new metadata($this->id, $element, $value, $namespace);
+            if (!array_key_exists($element, $this->metadataelements)) {
+                $this->metadataelements[$element] = new metadata($this->id, $element, $value, $namespace);
             }
         }
     }
@@ -616,7 +605,8 @@ class entry {
         if ($desc) {
             $firstdescelmkey = metadata::to_instance($desc->node);
         }
-        foreach ($this->metadataelements as $element) {
+
+        foreach (array_values($this->metadataelements) as $element) {
 
             $element->entryid = $this->id;
 
