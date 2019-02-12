@@ -1491,7 +1491,7 @@ class plugin_lom extends plugin_base {
 
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved. 
+     * is saved.
      * 
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
@@ -1683,8 +1683,8 @@ class plugin_lom extends plugin_base {
     }
 
     /**
-    * records title in metadata flat table from db attributes
-    */
+     * records title in metadata flat table from db attributes
+     */
     function setTitle($title) {
         global $DB;
 

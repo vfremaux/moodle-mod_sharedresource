@@ -43,7 +43,14 @@ if ($identifier) {
     $resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
 
     $resourceentry = new sharedresource_entry($resource);
+
+    $originresource = $resourceentry;
     $resourceentry = $resourceentry->fetch_ahead();
+    if ($CFG->debug == DEBUG_DEVELOPER) {
+        if ($originresource->identifier != $resourceentry->identifier) {
+            echo "Raising effective version up to $resourceentry->identifier ";
+        }
+    }
 
     if (!$resource) {
         sharedresource_not_found(SITEID, 'Code 00');

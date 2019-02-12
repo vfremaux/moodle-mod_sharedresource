@@ -1966,8 +1966,8 @@ class plugin_scolomfr extends plugin_base {
     }
 
     /**
-    * records title in metadata flat table from db attributes
-    */
+     * records title in metadata flat table from db attributes
+     */
     function setTitle($title) {
         global $DB;
 

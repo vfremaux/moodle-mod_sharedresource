@@ -1555,7 +1555,7 @@ class plugin_suplomfr extends plugin_base {
 
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved. 
+     * is saved.
      * 
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
