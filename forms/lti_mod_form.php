@@ -68,6 +68,19 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'section');
         $mform->setType('section', PARAM_INT);
 
+        $mform->addElement('hidden', 'url'); // Shared resource url.
+        $mform->setType('url', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'title');
+        $mform->setType('title', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'description');
+        $mform->setType('description', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'provider');
+        $mform->setType('provider', PARAM_TEXT);
+
+
         $mform->addElement('hidden', 'mode');
         $mform->setType('mode', PARAM_TEXT);
 
@@ -190,11 +203,11 @@ class lti_mod_form extends moodleform {
         $ajaxurl = new moodle_url('/mod/lti/ajax.php');
 
         $jsinfo = (object)array(
-                        'edit_icon_url' => (string)$OUTPUT->pix_url('t/edit'),
-                        'add_icon_url' => (string)$OUTPUT->pix_url('t/add'),
-                        'delete_icon_url' => (string)$OUTPUT->pix_url('t/delete'),
-                        'green_check_icon_url' => (string)$OUTPUT->pix_url('i/valid'),
-                        'warning_icon_url' => (string)$OUTPUT->pix_url('warning', 'lti'),
+                        'edit_icon_url' => (string)$OUTPUT->image_url('t/edit'),
+                        'add_icon_url' => (string)$OUTPUT->image_url('t/add'),
+                        'delete_icon_url' => (string)$OUTPUT->image_url('t/delete'),
+                        'green_check_icon_url' => (string)$OUTPUT->image_url('i/valid'),
+                        'warning_icon_url' => (string)$OUTPUT->image_url('warning', 'lti'),
                         'instructor_tool_type_edit_url' => $editurl->out(false),
                         'ajax_url' => $ajaxurl->out(true),
                         'courseId' => $COURSE->id

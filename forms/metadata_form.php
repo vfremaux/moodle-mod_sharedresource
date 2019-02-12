@@ -32,9 +32,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
 $add           = optional_param('add', 0, PARAM_ALPHA);
 $update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$return        = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
+$catid         = optional_param('catid', 0, PARAM_INT);
+$catpath       = optional_param('catpath', '', PARAM_TEXT);
 $courseid      = required_param('course', PARAM_INT);
 $sharingcontext = required_param('context', PARAM_INT);
 
@@ -72,9 +74,7 @@ $tempentry = $SESSION->sr_entry;
 $shrentry = unserialize($tempentry);
 // Load working metadata plugin.
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
-$mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
-$mtdstandard = new $mtdclass();
+$mtdstandard = sharedresource_get_plugin($config->schema);
 
 // Building $PAGE.
 
@@ -89,7 +89,16 @@ $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'))
 $PAGE->requires->js_call_amd('mod_sharedresource/metadata', 'init', array($config->schema));
 $PAGE->requires->js_call_amd('mod_sharedresource/metadataedit', 'init', array($config->schema));
 
-$url = new moodle_url('/mod/sharedresource/forms/metadata_form.php');
+$params = array('add' => $add,
+                'update' => $update,
+                'return' => $return,
+                'section' => $section,
+                'mode' => $mode,
+                'catid' => $catid,
+                'catpath' => $catpath,
+                'course' => $courseid,
+                'context' => $sharingcontext);
+$url = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
 $PAGE->set_url($url);
 
 echo $OUTPUT->header();

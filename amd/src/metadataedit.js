@@ -27,6 +27,52 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
     var metadataedit = {
 
+        bind_tabs: function() {
+            log.debug('AMD Mod sharedresource metadata edition binding tab events');
+            $('.mtd-tab').bind('click', this.switch_tab);
+            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
+        },
+
+        bind_all: function() {
+
+            log.debug('AMD Mod sharedresource metadata edition binding all events');
+
+            $('.mtd-form-input').off('change');
+            $('.taxonomy-source').off('change');
+            $('.mtd-form-addbutton').off('click');
+            $('.mtd-form-element select').off('change');
+            $('.mtd-form-element textarea').off('keyup');
+            $('.mtd-form-element input[type="text"]').off('keyup');
+            $('.mtd-tab').off('click');
+            $('.mtd-tab a').off('click');
+
+            // Add check handlers to all elements.
+            $('.mtd-form-element input[type="text"]').bind('keyup', this.check_empty);
+            $('.mtd-form-element select').bind('change', this.check_empty);
+            $('.mtd-form-element textarea').bind('keyup', this.check_empty);
+
+            $('.mtd-form-addbutton').bind('click', this.add_node);
+
+            // Read checkboxes may ask search widget being enabled.
+            var selector = '.' + namespace + '-system-read';
+            selector += ',.' + namespace + '-indexer-read';
+            selector += ',.' + namespace + '-author-read';
+            $(selector).off('change');
+            $(selector).bind('change', this.enable_search_widget_checkbox);
+
+            $('.taxonomy-source').bind('change', this.reload_taxonomy);
+            // Change to this form : indefinitely add binding to all now and future elements.
+            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
+        },
+
+        trigger_all: function() {
+            log.debug('AMD Mod sharedresource metadata edition triggering changes');
+            $('.mtd-form-element input[type="text"]').trigger('keyup');
+            // On selects, triggering empties preload choices on taxonomy.
+            // $('.mtd-form-element select').trigger('change');
+            $('.mtd-form-element textarea').trigger('keyup');
+        },
+
         init: function(args) {
 
             namespace = args;
@@ -46,19 +92,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 mtdstrings = strings;
             });
 
-            $('.mtd-form-addbutton').bind('click', this.add_node);
-            $('.mtd-tab').bind('click', this.switch_tab);
-            $('.mtd-form-input').bind('change', this.activate_add_button);
-            $('.mtd-tab a').bind('click', function(e) { e.preventDefault(); });
+            log.debug('AMD Mod sharedresource BIND ALL CALL');
+            metadataedit.bind_all();
+            metadataedit.bind_tabs();
+            metadataedit.trigger_all();
 
-            // Read checkboxes may ask search widget being enabled.
-            var selector = '.' + namespace + '-system-read';
-            selector += ',.' + namespace + '-indexer-read';
-            selector += ',.' + namespace + '-author-read';
-            $(selector).bind('change', this.enable_search_widget_checkbox);
-            $('.taxonomy-source').bind('change', this.reload_taxonomy);
-            // Change to this form : indefinitely add binding to all now and future elements.
-            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
+            // check and set the initial button state.
+            $('.mtd-form-addbutton').each(metadataedit.check_button_status);
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
@@ -75,6 +115,36 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('#id-tab-1').addClass('on');
 
             log.debug('AMD Mod sharedresource metadata default switch to tab General');
+        },
+
+        check_button_status: function() {
+            var that = $(this);
+            log.debug('Check add button ' + that.attr('id'));
+            var elementname = that.attr('id').replace('id-add-', '');
+            var deps = that.attr('data');
+            var depsarr = deps.split(';');
+            var hassomeempty = false;
+            var depelm = '';
+            var dep;
+
+            dep = depsarr.shift();
+            while (dep !== undefined) {
+                depelm = $('#' + dep);
+                log.debug('   Check button dep ' + depelm.attr('id'));
+                if (depelm.parent('.mtd-form-element').hasClass('is-empty')) {
+                    hassomeempty = true;
+                    break;
+                }
+                dep = depsarr.shift();
+            }
+
+            if (hassomeempty) {
+                that.prop('disabled', true);
+            } else {
+                that.prop('disabled', false);
+            }
+
+            metadataedit.activate_up_chain(elementname);
         },
 
         switch_tab: function(e) {
@@ -124,15 +194,17 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             var elmid = matches[1];
             var fieldtype = matches[2];
+            var rgx = '';
 
             var realoccur = that.attr('data-occur');
+            log.debug("found real occur as " + realoccur);
 
             if (fieldtype != 'category') {
                 switch (fieldtype) {
                     case 'text':
                     case 'codetext': {
                         if ($('#' + elmid).val() === '') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -140,7 +212,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
                     case 'select': {
                         if ($('#' + elmid).val() === 'basicvalue') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -148,7 +220,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
                     case 'date': {
                         if ($('#' + elmid + "_dateyear").val() === '- Year -') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -159,7 +231,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                             ($('#' + elmid + "_Hou").val() === '' || $('#' + elmid + "_Hou").val() === '0') &&
                                 ($('#' + elmid + "_Min").val() === '' || $('#' + elmid + "_Min").val() === '0') &&
                                     ($('#' + elmid + "_Sec").val() === '' || $('#' + elmid+"_Sec").val() === '0')) {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -167,9 +239,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
                     case 'vcard': {
                         // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g");
+                        rgx = new RegExp("(\r\n|\r|\n)", "g");
                         if ($('#' + elmid).val().replace(rgx,'').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
-                            alert(mtdstrings[0]);
+                            window.alert(mtdstrings[0]);
                             return;
                         }
                         break;
@@ -181,7 +253,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // This is a category. We need adding a full new branch.
                 //  Check we really need to add an item (something filled in the subs  ?)
                 var listchildren = that.attr('data');
-                var listtab = listchildren.split(';');
+                var listtab = listchildren.split(' ');
                 var nbremptyfield = 0;
                 var childid;
 
@@ -206,16 +278,28 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                     }
                     if ($('#' + childid).val() === 'undefined') {
                         // eslint-disable-next-line no-control-regex
-                        var rgx = new RegExp("(\r\n|\r|\n)", "g" );
+                        rgx = new RegExp("(\r\n|\r|\n)", "g" );
                         if ($('#' + childid).val().replace(rgx, '').replace(/ /g, '') === 'BEGIN:VCARDVERSION:FN:N:END:VCARD') {
                             nbremptyfield++;
                         }
                     }
                 }
+
                 if (nbremptyfield == listtab.length) {
-                    alert(mtdstrings[1]);
+                    window.alert(mtdstrings[1]);
                 } else {
-                    metadataedit.add_list_item(elmid, realoccur);
+                    // Our current taxonsource can be found by following the route :
+                    // 1. button clicked has last taxon in 'data'.
+                    // 2. last taxon select has its source select ref in 'source'
+                    // 3. source select has current value of taxon source
+                    var sourcetaxons = that.attr('data').split(' ');
+                    var basetaxon = sourcetaxons.pop();
+                    log.debug("Get source taxon in #" + metadata.parent_name(basetaxon) + '_1n0');
+                    var sourceselect = $('#' + metadata.parent_name(basetaxon) + '_1n0');
+                    var taxonsourceid = sourceselect.val();
+                    log.debug("Resulting taxonresourceid  = " + taxonsourceid);
+
+                    metadataedit.add_list_item(elmid, realoccur, taxonsourceid);
                 }
             }
         },
@@ -226,13 +310,20 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
          * numoccur : the occurrence number of the node (int)
          * realoccur :
          */
-        add_list_item: function(elmname, realoccur) {
+        add_list_item: function(elmname, realoccur, taxonsourceid) {
+
+            var oldid = 'id-add-' + elmname;
+            var olddata = $('#' + oldid).attr('data');
 
             var newname = metadata.next_occurrence_name(elmname);
             realoccur++;
+            log.debug("Next real occur is " + realoccur);
 
             // Get form fragment for next occurrence.
             var params = "elementname=" + newname;
+            if (taxonsourceid) {
+                params += "&taxonsourceid=" + taxonsourceid;
+            }
             params += "&realoccur=" + realoccur;
             var url = cfg.wwwroot + "/mod/sharedresource/ajax/getformelement.php?" + params;
 
@@ -240,8 +331,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 var zonename = "#add-zone-" + elmname;
                 $(data.html).insertBefore(zonename);
 
-                // Recode the add button id for next play, incrementing occurence index
-                var oldid = 'id-add-' + elmname;
+                // Recode the add button id for next play, incrementing occurence index.
                 oldid = CSS.escape(oldid);
 
                 var newid = 'id-add-' + newname;
@@ -252,30 +342,22 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // Change the button id so next press launches query for next occurence.
                 $('#' + oldid).attr('id', newid);
                 $('#' + newid).prop('disabled', true);
+                $('#' + newid).attr('data-occur', realoccur);
+                log.debug("Shifting button " + newid + " real occur as " + realoccur);
                 // Shift add zone name to match new button.
                 $('#add-zone-' + elmname).attr('id', 'add-zone-' + newname);
+                $('#' + newid).attr('data', olddata);
 
                 // Rebind all change handlers, including on new elements.
-                $('#' + elmname).unbind('change');
-                $('#' + newname).bind('change', metadataedit.activate_add_button);
+                metadataedit.bind_all();
+                metadataedit.bind_tabs();
 
             }, 'json');
         },
 
-        activate_add_button: function(e) {
+        activate_up_chain: function(elementname) {
 
-            e.stopPropagation();
-
-            // Target is an input field.
-            var that = $(this);
-
-            var elementname = that.attr('id');
-
-            if (that.val()) {
-                $('#id-add-' + elementname).prop('disabled', false);
-            } else {
-                $('#id-add-' + elementname).prop('disabled', true);
-            }
+            // Unlock upper buttons in chain.
             var parentname = elementname;
             log.debug("Processing to elementkey " + elementname);
             parentname = metadata.parent_name(parentname);
@@ -308,6 +390,47 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
             }, 'html');
 
+        },
+
+        check_empty: function() {
+            var that = $(this);
+            log.debug("Check " + that.attr('id'));
+            var branchid = that.attr('id').substring(0, 1);
+
+            if (that.val()) {
+                // mark element as fullfilled.
+                that.parent('.mtd-form-element').removeClass('is-empty');
+
+                // mark same branch tab as fullfilled.
+                var otheremptyonbranch = $('.mtd-form-element.is-mandatory-' + branchid + '.is-empty');
+                if (!otheremptyonbranch || (otheremptyonbranch.length === 0)) {
+                    $('#id-menu-' + branchid).removeClass('is-empty');
+                }
+
+                // unlock form submit if no more empty on whole form.
+                var otherempty = $('.mtd-form-element.is-mandatory.is-empty');
+                if (!otherempty || (otherempty.length === 0)) {
+                    $('#id-mtd-submit').attr('disabled', false);
+                    $('#id-mtd-submit').removeClass('is-disabled');
+                }
+
+            } else {
+                // mark element as empty.
+                that.parent('.mtd-form-element').addClass('is-empty');
+
+                if (that.hasClass('is-mandatory')) {
+                    // lock form submit.
+                    $('#id-mtd-submit').attr('disabled', true);
+                    $('#id-mtd-submit').addClass('is-disabled');
+
+                    // mark same branch tab as empty.
+                    $('#id-menu-' + branchid).addClass('is-empty');
+                }
+            }
+
+            // Whatever the result, search the potentially affected buttons and update them.
+            var affectedaddbtns = $('input[name^="btn-' + that.attr('id') + '-"]');
+            affectedaddbtns.each(metadataedit.check_button_status);
         }
     };
 

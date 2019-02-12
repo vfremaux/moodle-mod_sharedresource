@@ -74,7 +74,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
     foreach ($metadataentries as $htmlkey => $value) {
 
         // Discard any non-metadata entry.
-        if (in_array($htmlkey, array('mode', 'add', 'update', 'course', 'section', 'return', 'context', 'go-btn'))) {
+        if (in_array($htmlkey, array('mode', 'add', 'update', 'catid', 'catpath', 'course', 'section', 'return', 'context', 'go-btn'))) {
             continue;
         }
 
@@ -213,7 +213,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $idelementkey = \mod_sharedresource\metadata::to_instance($idnodeid, $instanceid);
                 $elementtpl->elmkey = $idelementkey;
                 $elementtpl->elmvalue = $value;
+
+                // Actually adds the metadata value to the shared entry.
                 $shrentry->add_element($idelementkey, $value, $namespace);
+
                 $template->elements[] = $elementtpl;
 
                 // Value for ENTRY is deduced from the taxonomy source.
@@ -223,10 +226,14 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $entryelementkey = \mod_sharedresource\metadata::to_instance($entrynodeid, $instanceid);
                 $elementtpl->elmkey = $entryelementkey;
                 $elementtpl->elmvalue = $value;
+
+                // Actually adds the metadata value to the shared entry.
                 $shrentry->add_element($entryelementkey, $value, $namespace);
+
                 $template->elements[] = $elementtpl;
 
             } else {
+                // All other cases (standard metadata).
                 if ($errortemp != '') {
                     $error[$htmlkey] = $errortemp;
                 }
@@ -241,6 +248,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                     $elementtpl->elmvalue = $value;
                     $template->elements[] = $elementtpl;
 
+                    // Actually adds the metadata value to the shared entry.
                     $shrentry->add_element($elementkey, $value, $namespace);
                 }
             }
@@ -248,6 +256,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
     }
     $result['display'] = $template;
     $result['error'] = $error;
+
     return $result;
 }
 
@@ -279,14 +288,15 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
     global $USER, $DB, $CFG, $SESSION;
 
     $config = get_config('sharedresource');
+    $namespace = $config->schema;
 
     // Initialise metadata elements from core : description and title
     $descriptionelement = $mtdstandard->getDescriptionElement();
-    $fieldnamespace = $descriptionelement->source;
-    $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $fieldnamespace);
+
+    $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $namespace);
     $titleelement = $mtdstandard->getTitleElement();
-    $fieldnamespace = $titleelement->source;
-    $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $fieldnamespace);
+
+    $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $namespace);
 
     // If we have a file, find the size element and update value from known size
     $usercontext = context_user::instance($USER->id);
@@ -295,8 +305,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
         if (method_exists($mtdstandard, 'getSizeElement')) {
             $draftsize = $DB->get_field('files', 'filesize', array('id' => $filerecid));
             $element = $mtdstandard->getSizeElement();
-            $fieldnamespace = $element->source;
-            $shrentry->update_element($element->node.':0_0', $draftsize, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $draftsize, $namespace);
         }
     }
 
@@ -305,8 +314,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
         if (method_exists($mtdstandard, 'getFileFormatElement')) {
             $mimetype = $DB->get_field('files', 'mimetype', array('id' => $filerecid));
             $element = $mtdstandard->getFileFormatElement();
-            $fieldnamespace = $element->source;
-            $shrentry->update_element($element->node.':0_0', $mimetype, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $mimetype, $namespace);
         }
     }
 
@@ -320,8 +328,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
                 $url = str_replace('<%%ID%%>', $identifier, $config->foreignurl);
             }
             $element = $mtdstandard->getLocationElement();
-            $fieldnamespace = $element->source;
-            $shrentry->update_element($element->node.':0_0', $url, $fieldnamespace);
+            $shrentry->update_element($element->node.':0_0', $url, $namespace);
         }
     }
 

@@ -82,6 +82,9 @@ class metadata {
      */
     protected $instancepath;
 
+    /**
+     * The tree level.
+     */
     protected $level;
 
     /**
@@ -280,7 +283,9 @@ class metadata {
             return;
         }
 
-        $params = array('entryid' => $this->entryid, 'element' => $this->element, 'namespace' => $this->namespace);
+        $params = array('entryid' => $this->entryid,
+                        'element' => $this->element,
+                        'namespace' => $this->namespace);
         $oldentry = $DB->get_record('sharedresource_metadata', $params);
         if ($oldentry) {
             $value = $this->value; // Beware of the __get magic trap.
@@ -305,12 +310,31 @@ class metadata {
         }
     }
 
+    /**
+     * Get the lowest possible instance on this tree node.
+     * May even not exist in the stored metadata. this is obtained by setting
+     * the last instance path index to 0.
+     *
+     * return a new metadata object with changed ids.
+     */
+    public function base_instance_sibling() {
+        $sibling = clone($this);
+        array_pop($sibling->instancepath);
+        array_push($sibling->instancepath, 0);
+        $sibling->instanceid = implode('_', $sibling->instancepath);
+        return $sibling;
+    }
+
     public function get_element_key() {
         return $this->element;
     }
 
     public function get_node_id() {
         return $this->nodeid;
+    }
+
+    public function get_branch_id() {
+        return $this->nodepath[0];
     }
 
     public function get_value() {
@@ -350,8 +374,8 @@ class metadata {
         return $this->instancepath[count($this->instancepath) - 1];
     }
 
-    public function get_instance_path($i = 0) {
-        if ($i) {
+    public function get_instance_path($i = null) {
+        if (!is_null($i)) {
             return $this->instancepath[$i];
         }
         return $this->instancepath;
@@ -370,15 +394,15 @@ class metadata {
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
 
-        $parentnodeidarr = array_slice($this->nodepath, 0, $this->level - 1);
-        $parentinstanceidarr = array_slice($this->instancepath, 0, $this->level - 1);
-
-        $parentnodeid = implode('_', $parentnodeidarr);
-        $parentinstanceid = implode('_', $parentinstanceidarr);
+        $parentnodeid = implode('_', $this->nodepath);
+        $parentinstanceid = implode('_', $this->instancepath);
+        $parentnodeid = preg_replace('/_[^_]+$/', '', $parentnodeid);
+        $parentinstanceid = preg_replace('/_[^_]+$/', '', $parentinstanceid);
 
         $parentelementkey = "$parentnodeid:$parentinstanceid";
 
-        return self::instance($this->entryid, $parentelementkey, $namespace, $mustexist);
+        $parentnode = self::instance($this->entryid, $parentelementkey, $namespace, $mustexist);
+        return $parentnode;
     }
 
     /**
@@ -411,13 +435,19 @@ class metadata {
                 // All instances of one single root index.
                 $select = " entryid = ? AND namespace = ? AND element NOT LIKE '%_%' AND element LIKE ? ";
                 $params = array($this->entryid, $namespace, $nodeid.':%');
+
+                // Guess all nodes have at least one N_1 element.
+                $subselect = " entryid = ? AND namespace = ? AND element LIKE ? ";
+                $subparams = array($this->entryid, $namespace, $nodeid.'_1:%');
             } else {
                 // All instances of all roots.
                 $select = " entryid = ? AND namespace = ? AND element NOT LIKE '%_%' ";
                 $params = array($this->entryid, $namespace);
             }
 
+            // first search on really stored elements. (generally none).
             $roots = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element');
+
             $rootsarr = array();
             foreach ($roots as $r) {
                 $relm = self::instance($r->entryid, $r->element, $namespace);
@@ -428,7 +458,28 @@ class metadata {
                 }
                 $rootsarr[$r->element] = $relm;
             }
+
+            // Second search on some stored subelements.
+            if ($nodeid) {
+                $rootsubs = $DB->get_records_select('sharedresource_metadata', $subselect, $subparams, 'element');
+                if ($rootsubs) {
+                    foreach ($rootsubs as $subnode) {
+                        list($subnodeid, $instanceid) = explode(':', $subnode->element);
+                        $instancearr = explode('_', $instanceid);
+                        $rootelementid = $instancearr[0];
+                        $rootelement = $nodeid.':'.$rootelementid;
+                        $relm = self::instance(0, $rootelement, $namespace, false);
+                        if (!empty($capability)) {
+                            if (!$relm->node_has_capability($capability, $rw)) {
+                                continue;
+                            }
+                        }
+                        $rootsarr[$rootelement] = $relm;
+                    }
+                }
+            }
         }
+
         return $rootsarr;
     }
 
@@ -442,8 +493,9 @@ class metadata {
     public function get_childs($nodeindex = 0, $capability = null, $rw = 'read', $recurse = false) {
         global $DB;
 
+        $childsarr = array();
+
         if ($recurse) {
-            $childsarr = array();
             $subnodes = $this->get_all_subnodes(true);
             if (!empty($subnodes)) {
                 foreach ($subnodes as $node) {
@@ -459,16 +511,15 @@ class metadata {
 
             $select = " entryid = ? AND namespace = ? AND element LIKE ? ";
             if (!$nodeindex) {
-                    $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
+                $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
             } else {
                 $params = array($this->entryid, $namespace, $this->nodeid.'_'.$nodeindex.':'.$this->instanceid.'_%');
             }
 
             $childs = $DB->get_records_select('sharedresource_metadata', $select, $params);
-            $childsarr = array();
             if (!empty($childs)) {
                 foreach ($childs as $child) {
-                    $childelm = self::instance($child->entryid, $child->element, $namespace);
+                    $childelm = self::instance($child->entryid, $child->element, $namespace, false);
                     if (!empty($capability)) {
                         if (!$childelm->node_has_capability($capability, $rw)) {
                             continue;
@@ -477,7 +528,37 @@ class metadata {
                     $childsarr[$child->element] = $childelm;
                 }
             }
+
+            // Getting hidden branches for virtual nodes.
+            if ($this->level == 1) {
+                $select = " entryid = ? AND namespace = ? AND element LIKE ? ";
+                if (!$nodeindex) {
+                    $params = array($this->entryid, $namespace, $this->nodeid.'_%:'.$this->instanceid.'_%');
+                } else {
+                    $params = array($this->entryid, $namespace, $this->nodeid.'_'.$nodeindex.'_%:'.$this->instanceid.'_%');
+                }
+
+                $subbranches = $DB->get_records_select_menu('sharedresource_metadata', $select, $params, 'element', 'id,element');
+
+                if (!empty($subbranches)) {
+                    foreach ($subbranches as $eid => $element) {
+                        $childnodes = array();
+                        $childinstances = array();
+                        $metadata = new metadata($this->entryid, $element, 0, $namespace);
+                        for ($i = 0; $i <= $this->level; $i++) {
+                            $childnodes[] = $metadata->nodepath[$i];
+                            $childinstances[] = $metadata->instancepath[$i];
+                        }
+                        $childelementid = implode('_', $childnodes).':'.implode('_', $childinstances);
+                        if (!array_key_exists($childelementid, $childsarr)) {
+                            $otherchild = new metadata($this->entryid, $childelementid, 0, $namespace);
+                            $childsarr[$childelementid] = $otherchild;
+                        }
+                    }
+                }
+            }
         }
+
         return $childsarr;
     }
 
@@ -496,9 +577,12 @@ class metadata {
             if ($this->level == 1) {
                 $siblings = $this->get_roots($this->get_node_index());
             } else {
-                $siblings = $this->get_parent(false)->get_childs($this->get_node_index());
+                $parentnode = $this->get_parent(false);
+                debug_trace("My parent for ".$this->element.' at '.$this->level);
+                debug_trace($parentnode);
+                $siblings = $parentnode->get_childs($this->get_node_index());
+                debug_trace("Getting parent other childs than me My node index ".$this->get_node_index());
             }
-            unset($siblings[$this->element]); // Remove myself from siblings..
         }
 
         if ($level == 1) {
@@ -525,12 +609,18 @@ class metadata {
                 foreach ($extendedsiblings as $extsib) {
                     if ($extsib->element != $this->element) {
                         // Do not add myself.
-                        $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                        if (!array_key_exists($extsib->element, $siblings)) {
+                            $siblings[$extsib->element] = self::instance($this->entryid, $extsib->element, $namespace);
+                        }
                     }
                 }
             }
         }
 
+        if (array_key_exists($this->element, $siblings)) {
+            unset($siblings[$this->element]); // Remove myself from siblings..
+        }
+        debug_trace($siblings);
         return $siblings;
     }
 
@@ -595,7 +685,36 @@ class metadata {
         }
 
         $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
-        return $DB->count_records_select('sharedresource_metadata', $select, $params);
+        $subs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
+        $params = array($this->entryid, $mynode.'_%:'.$instanceid, $this->namespace);
+        $subsubs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
+
+        // echo "Getting for {$this->nodeid} with $mynode.':'.$instanceid";
+        if ($subs) {
+            $allnodes = $subs;
+        } else {
+            $allnodes = array();
+        }
+        if ($subsubs) {
+            $allnodes += $subsubs;
+        }
+
+        $lastoccur = '';
+        if (!empty($allnodes)) {
+            $lastoccur = 0;
+            foreach ($allnodes as $node) {
+                list($nodeid, $instanceid) = explode(':', $node->element);
+
+                $instancearr = explode('_', $instanceid);
+                if ($instancearr[$this->level - 1] > $lastoccur) {
+                    $lastoccur = $instancearr[$this->level - 1];
+                }
+            }
+        }
+
+        // echo "Last occurrence for $this->nodeid : $lastoccur<br/>";
+
+        return $lastoccur;
     }
 
     /**
@@ -679,6 +798,28 @@ class metadata {
         $configkey = "config_{$namespace}_{$capability}_{$rw}_".$this->get_node_id();
         $params = array($configkey);
         return $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+    }
+
+    /**
+     * Checks for mandatory status of the node.
+     */
+    function node_is_mandatory() {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$this->get_node_id();
+        $configstate = get_config('sharedresource', $configkey);
+
+        // Also check in tree scan in DB.
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+
+        return $configstate || $dbstate;
     }
 
     /**
@@ -998,4 +1139,59 @@ class metadata {
         return $legacy;
     }
 
+    /**
+     * Checks for mandatory status of the node.
+     */
+    public static function has_mandatories($branchid) {
+        global $DB;
+
+        /*
+         * We need to call real used schema to check capability, not the element source schema
+         * which may be different.
+         */
+        $namespace = get_config('sharedresource', 'schema');
+
+        $configkey = "config_{$namespace}_mandatory_".$branchid.'%';
+        $params = array($configkey);
+        $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
+        return $dbstate;
+    }
+
+    /**
+     * Decodes to internal storage a ful branch info comming from an add button
+     * entry is mnw_nnx_ony:<value>;mnw_nnx_ony:<value> list form.
+     * @param string serialized branch info
+     * @return array of elementids to value mapping.
+     */
+    public static function decode_branch_info($branch) {
+        if (empty($branch)) {
+            return false;
+        }
+        $branchelms = explode(';', $branch);
+
+        $brancharr = array();
+        foreach ($branchelms as $elmpair) {
+            list($elementid, $value) = explode(':', $elmpair);
+            $brancharr[self::html_to_storage($elementid)] = $value;
+        }
+
+        return $brancharr;
+    }
+
+    /**
+     * A utility function : finds some tree prefixes into an array.
+     */
+    public static function find($what, $ids) {
+
+        $result = array();
+        if (!empty($ids)) {
+            foreach ($ids as $id) {
+                if (strpos($id, $what) === 0) {
+                    $result[] = $id;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

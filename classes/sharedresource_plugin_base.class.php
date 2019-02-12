@@ -285,6 +285,7 @@ abstract class plugin_base {
         $template->systemstr = get_string('system', 'sharedresource');
         $template->indexerstr = get_string('indexer', 'sharedresource');
         $template->authorstr = get_string('author', 'sharedresource');
+        $template->mandatorystr = get_string('mandatory', 'sharedresource');
         $template->widgetstr = get_string('widget', 'sharedresource');
         $template->namespace = $this->namespace;
 
@@ -375,6 +376,11 @@ abstract class plugin_base {
         $template->aparentclassr = $this->namespace.'-author-read-'.$parentid;
         $template->acheckedw = (!empty($config->{$template->cakw})) ? 'checked="checked"' : '';
         $template->acheckedr = (!empty($config->{$template->cakr})) ? 'checked="checked"' : '';
+
+        $template->cmk = 'config_'.$this->namespace.'_mandatory_'.$fieldid;
+        $template->mparentclass = $this->namespace.'-mandatory-'.$parentid;
+        $template->mk = $this->namespace.'-mandatory-'.$fieldid;
+        $template->mchecked = (!empty($config->{$template->cmk})) ? 'checked="checked"' : '';
 
         $template->wk = $this->namespace.'-widget-'.$fieldid;
         $template->wn = 'widget_'.$this->namespace.'_'.$fieldid;
@@ -656,42 +662,132 @@ abstract class plugin_base {
     /**
      * keyword have a special status as stored both in metadata and in entry record
      */
-    abstract function getKeywordValues($metadata);
+    abstract public function getKeywordValues($metadata);
 
     /**
      * get the metadata node identity for title
      */
-    abstract function getTitleElement();
+    abstract public function getTitleElement();
 
     /**
      * get the metadata node identity for description
      */
-    abstract function getDescriptionElement();
+    abstract public function getDescriptionElement();
 
     /**
      * get the metadata node identity for keyword
      */
-    abstract function getKeywordElement();
+    abstract public function getKeywordElement();
 
     /**
      * get the metadata node identity for taxonomy purpose
      */
-    function getTaxonomyPurposeElement() {
+    public function getTaxonomyPurposeElement() {
         return null;
     }
 
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getTaxonomyValueElement() {
+    public function getTaxonomyValueElement() {
         return null;
+    }
+
+    /**
+     * versionned sharedresources entry must use Relation elements to link each other.
+     */
+    public function getVersionSupportElement() {
+        return null;
+    }
+
+    /**
+     * Get the next entry reference using Relation metadata record. We should use only one
+     * hasversion <-> isversionof chaining between resources at the moment.
+     * @return the internal id of the next sharedresource entry in the version chaining, or our
+     * self resource id if nothing is next.
+     */
+    public function getNext() {
+        global $DB;
+
+        $config = get_config('sharedresource');
+
+        if (is_null($this->getVersionSupportElement())) {
+            return $this->entryid;
+        }
+
+        $select = "
+            entryid = :entryid AND
+            element LIKE :element AND
+            value = :value AND
+            namespace = :namespace
+        ";
+        $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $config->schema);
+        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $params);
+        if ($versionelementid) {
+            $resourceelementid = metadata::to_instance('7_2_1_2', $versionelementid);
+            $params = array('entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $config->schema);
+            $resourceid = $DB->get_record('sharedresource_metadata', 'value', $params);
+            return $resourceid;
+        }
+
+        return $this->entryid;
+    }
+
+    public function setNext($sharedresourceentry) {
+        $this->setRelation($sharedresourceentry, 'hasversion');
+    }
+
+    public function setPrevious($sharedresourceentry) {
+        $this->setRelation($sharedresourceentry, 'isversionof');
+    }
+
+    protected function setRelation($sharedresourceentry, $kind) {
+
+        $config = get_config('sharedresource');
+
+        if (is_null($this->getVersionSupportElement())) {
+            return $this->entryid;
+        }
+
+        $select = "
+            entryid = :entryid AND
+            element LIKE :element AND
+            value = :value AND
+            namespace = :namespace
+        ";
+        $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => $kind, 'namespace' => $config->schema);
+        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $params);
+
+        if ($versionelementid) {
+            // We have already.
+            throw new MoodleException('New version already registered.');
+        }
+
+        // We do not have this and must register a new Relation.
+
+        $versionsupport = $this->getVersionSupportElement();
+        $mainnodeid = $versionsupport['main'];
+        $mainnode = metadata::instance($this->entryid, $mainnodeid.':0', $config->schema, false);
+        $maxoccurrence = $mainnode->get_max_occurrence();
+
+        $entrynodeid = $versionsupport['entry'];
+        $kindnodeid = $versionsupport['kind'];
+
+        // Register the relation kind.
+        $kindnode = new metadata($this->entryid, $kindnodeid.':'.$maxoccurrence.'_0', $kind, $config->namespace);
+        $kindnode->add_instance();
+
+        // Register the linked sharedresource.
+        $kindnode = new metadata($this->entryid, $entrynodeid.':'.$maxoccurrence.'_0_0_0', $sharedresourceentry->id, $config->namespace);
+        $kindnode->add_instance();
+
     }
 
     /**
      * add keywords metadata entries from a comma separated list
      * of values. Each plugin know how and where to put values
      */
-    abstract function setKeywords($keywords);
+    abstract public function setKeywords($keywords);
 
     /**
      * get any element definition given its node number.

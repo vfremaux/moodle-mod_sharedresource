@@ -55,10 +55,12 @@ $ignorelist = array_merge($ignorelist, $mtdstandard->sharedresource_get_ignored(
 
 $add = optional_param('add', 0, PARAM_ALPHA);
 $update = optional_param('update', 0, PARAM_INT);
-$return = optional_param('return', 0, PARAM_BOOL);
+$return = optional_param('return', 0, PARAM_INT);
 $type = optional_param('type', '', PARAM_ALPHANUM);
 $section = optional_param('section', 0, PARAM_INT);
 $mode = required_param('mode', PARAM_ALPHA);
+$catid = optional_param('catid', 0, PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_TEXT);
 $course = required_param('course', PARAM_INT);
 $sharingcontext = optional_param('context', SITEID, PARAM_INT);
 
@@ -132,18 +134,31 @@ if ($mode == 'update') {
     $shrentry = new $entryclass(null, null);
 }
 
+$formdata->catid = $catid;
+$formdata->catpath = $catpath;
+
 $mform = false;
 $mform = new mod_sharedresource_entry_form($mode);
 $mform->set_data(($formdata));
 
 if ($mform->is_cancelled()) {
     // Cancel - go back to course.
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    if ($course->id == SITEID) {
+        redirect(new moodle_url('/local/sharedresources/index.php'));
+    } else {
+        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    }
 }
 
 // Is this a successful POST ?
 
 if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('sharedresourcefile', null, PARAM_INT))) {
+
+    if (empty($formdata)) {
+        $formdata = new StdClass;
+    }
+    $formdata->catid = $catid;
+    $formdata->catpath = $catpath;
 
     // Fake feed formdata with directly query params when call for addition comes from other sources.
     if (empty($formdata)) {
@@ -210,6 +225,25 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
     }
 
     if ($hasentry) {
+        // Catch the case the identifier is already known for this object.
+        // Save updated state in session.
+        if (($mode == 'add') && $shrentry->exists()) {
+            $srentry = serialize($shrentry);
+            $SESSION->sr_entry = $srentry;
+
+            // We are coming from the library. Go back to it.
+            $params = array('course' => $course->id,
+                            'mode' => 'add',
+                            'add' => 1,
+                            'return' => $return,
+                            'section' => $section,
+                            'context' => $sharingcontext,
+                            'catid' => $catid,
+                            'catpath' => $catpath);
+            $fullurl = new moodle_url('/mod/sharedresource/metadatapreupdateconfirm.php', $params);
+            redirect($fullurl);
+        }
+
         // Prepare thumbnail if any.
         if (empty($formdata->thumbnailgroup['clearthumbnail'])) {
             $thumbnailpickeritemid = $formdata->thumbnailgroup['thumbnail'];
@@ -237,7 +271,9 @@ if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('s
                         'add' => 'sharedresource',
                         'return' => $return,
                         'mode' => $mode,
-                        'context' => $sharingcontext);
+                        'context' => $sharingcontext,
+                        'catid' => $catid,
+                        'catpath' => $catpath);
         $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
         redirect($fullurl);
     }

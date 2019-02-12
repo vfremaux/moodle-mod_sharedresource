@@ -37,28 +37,32 @@
         </td>
 {{/iscategory}}
 
-        <td class="mtdsetting">
+        <td class="mtd-setting">
             <input id="{{skw}}" class="{{isparentclass}} {{sparentclassw}} {{namespace}}-system-write mtd-check" type="checkbox" name="{{cskw}}" {{{scheckedw}}} value="1" {{{sdisabledw}}} /> W / 
             <input id="{{skr}}" class="{{isparentclass}} {{sparentclassr}} {{namespace}}-system-read mtd-check" type="checkbox" name="{{cskr}}" {{{scheckedr}}} value="1" {{{sdisabledr}}} /> R
         </td>
 
-        <td class="mtdsetting">
+        <td class="mtd-setting">
             <input id="{{ikw}}" class="{{isparentclass}} {{iparentclassw}} {{namespace}}-indexer-write mtd-check" type="checkbox" name="{{cikw}}" {{{icheckedw}}} value="1" {{{idisabledw}}} /> W /
             <input id="{{ikr}}" class="{{isparentclass}} {{iparentclassr}} {{namespace}}-indexer-read mtd-check" type="checkbox" name="{{cikr}}" {{{icheckedr}}} value="1" {{{idisabledr}}} /> R
         </td>
 
-        <td class="mtdsetting">
+        <td class="mtd-setting">
             <input id="{{akw}}" class="{{isparentclass}} {{aparentclassw}} {{namespace}}-author-write mtd-check" type="checkbox" name="{{cakw}}" {{{acheckedw}}} value="1" {{{adisabledw}}} /> W / 
             <input id="{{akr}}" class="{{isparentclass}} {{aparentclassr}} {{namespace}}-author-read mtd-check" type="checkbox" name="{{cakr}}" {{{acheckedr}}} value="1" {{{adisabledr}}} /> R
         </td>
 
+        <td class="mtd-setting">
+            <input id="{{mk}}" class="{{isparentclass}} {{mparentclass}} {{namespace}}-mandatory mtd-check" type="checkbox" name="{{cmk}}" {{{mchecked}}} value="1" {{{mdisabled}}} />
+        </td>
+
     {{#haswidget}}
-            <td class="mtdsetting">
+            <td class="mtd-setting">
                 <input id="{{wk}}" class="mtd-widget {{wparentclass}}" type="checkbox" name="{{wn}}" {{{wchecked}}} value="1" {{{wdisabled}}} />
             </td>
     {{/haswidget}}
     {{^haswidget}}
-            <td class="mtdsetting"></td>
+            <td class="mtd-setting"></td>
     {{/haswidget}}
 
 </tr>
