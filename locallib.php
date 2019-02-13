@@ -899,5 +899,28 @@ function sharedresource_extract_activity_icon(&$resourcedesc) {
     }
 
     return ''.$iconurl;
->>>>>>> MOODLE_36_STABLE
+}
+
+function sharedresource_build_vcard($person) {
+
+    $person = trim($person);
+    if (preg_match('/(\S+)\s+(.*)/', $person, $matches)) {
+        $firstname = $matches[1];
+        $lastname = $matches[2];
+    } else {
+        $lastname = $person;
+        $firstname = '';
+    }
+
+    $str = "BEGIN:VCARD\n";
+    $str .= "VERSION:3.0\n";
+    $str .= "N:{$lastname};{$firstname}\n";
+    $str .= "FN:{$firstname} {$lastname}\n";
+    $str .= "ORG:\n";
+    $str .= "TITLE:\n";
+    $vcarddate = date('Ymd\This\Z');
+    $str .= "REV:{$vcarddate}\n";
+    $str .= "END:VCARD\n";
+
+    return $str;
 }

@@ -25,10 +25,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-// This is used for a build_vcard utility function.
-require_once $CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php';
-
-// MODRESORUCETYPE addesses LOM 5_2 node (Learning Resource Type).
+// MODRESOURCETYPE addesses LOM 5_2 node (Learning Resource Type).
 global $MODRESOURCETYPES;
 
 $MODRESOURCETYPES = array(
@@ -317,7 +314,7 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
         $i = 0;
         foreach ($editingteachers as $et) {
 
-            $vcard = file_importer_base::build_vcard($et);
+            $vcard = sharedresource_build_vcard($et);
 
             sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $config->schema);
             sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $config->schema);

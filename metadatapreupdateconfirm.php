@@ -41,9 +41,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plug
 $mode = required_param('mode', PARAM_ALPHA);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $cancel = optional_param('cancel', 0, PARAM_BOOL);
-$return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
 $section = optional_param('section', 0, PARAM_INT);
 $course = required_param('course', PARAM_INT);
+$catid = optional_param('catid', 0, PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_TEXT);
 $type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
@@ -60,11 +62,15 @@ require_capability('repository/sharedresources:create', $context);
 if ($cancel) {
     if ($return) {
         // We are coming from the library. Go back to it.
-        $fullurl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id));
+        if ($return == 1) {
+            $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
+        } else {
+            $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
+        }
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
 
-    // We are coming from a course sharedresouce selection operation.
+    // We are coming from a course sharedresource selection operation.
     $params = array('course' => $course->id, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);
@@ -82,6 +88,8 @@ if ($confirm) {
                     'add' => 'sharedresource',
                     'type' => $type,
                     'mode' => 'update',
+                    'catid' => $catid,
+                    'catpath' => $catpath,
                     'return' => $return,
                     'entryid' => $oldshrentryid);
     $fullurl = new moodle_url('/mod/sharedresource/edit.php', $params);
