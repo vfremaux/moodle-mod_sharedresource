@@ -611,7 +611,6 @@ class metadata_renderer extends \plugin_renderer_base {
         if ($lastoccur < $numoccur) {
             $lastoccur = $numoccur;
         }
-<<<<<<< HEAD
 
         $debug = ">>>>\nNodeID : $nodeid\n<br>";
         $debug .= "InstanceID : $instanceid \n<br>";
@@ -620,7 +619,6 @@ class metadata_renderer extends \plugin_renderer_base {
         debug_trace($debug);
         // debug_trace($elminstance);
         // debug_trace($standardelm);
-
 
         if (!$elminstance->node_has_capability($capability, 'write')) {
             $traceindentlevel--;
@@ -644,7 +642,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $listresult = array();
 
         if ($standardelm->type == 'category') {
-
             if (!is_null($taxumarray) && ($nodeid == $taxumarray['main'])) {
 
                 debug_trace('Processing taxonomy element');
@@ -721,7 +718,6 @@ class metadata_renderer extends \plugin_renderer_base {
                     $sourceelmid = $DB->get_field('sharedresource_classif', 'id', $params);
                 }
 
-                // echo "// Source element id : $sourceelmid \n";
                 if (empty($sourceelmid)) {
                     /*
                      * No taxonomy available for this id.

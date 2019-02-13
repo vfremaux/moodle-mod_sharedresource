@@ -33,14 +33,6 @@ $cmid = 0;
 
 $systemcontext = context_system::instance();
 $strtitle = get_string('sharedresourcedetails', 'sharedresource');
-<<<<<<< HEAD
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($strtitle, 'view.php', 'misc');
-$PAGE->set_cacheable(false);
-=======
->>>>>>> MOODLE_36_STABLE
 
 $url = new moodle_url('/mod/sharedresource/view.php', array('id' => $id, 'identifier' => $identifier));
 $PAGE->set_url($url);

@@ -50,14 +50,10 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
         return $this->output->render_from_template('mod_sharedresource/addinstance', $template);
     }
 
-<<<<<<< HEAD
-    public function resourcecompare($new, $old) {
-=======
     /**
      * Print resource comparison board.
      */
     public function resourcecompare($new, $old, $step = 'postdata') {
->>>>>>> MOODLE_36_STABLE
 
         $config = get_config('sharedresource');
         if (!$config->schema) {
@@ -92,15 +88,11 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
                 $attribute->newvalue = $elm->get_value();
                 $attributes[$elmkey] = $attribute;
             } else {
-<<<<<<< HEAD
-                $attributes[$elm->get_element_key()]->newvalue = $elm->get_value();
-=======
                 if ($step == 'predata') {
                     $attributes[$elm->get_element_key()]->newvalue = get_string('predatanotprovided', 'sharedesource');
                 } else {
                     $attributes[$elm->get_element_key()]->newvalue = $elm->get_value();
                 }
->>>>>>> MOODLE_36_STABLE
             }
         }
 

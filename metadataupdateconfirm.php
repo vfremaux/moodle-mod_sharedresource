@@ -117,8 +117,6 @@ if ($confirm) {
     }
     redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
 }
-=======
-}
 
 // Build and print the page.
 
@@ -157,4 +155,3 @@ echo $OUTPUT->header();
 echo $OUTPUT->box($message, 'sharedresource-compare');
 echo $OUTPUT->confirm('', $confirmurl, $cancelurl);
 echo $OUTPUT->footer();
-

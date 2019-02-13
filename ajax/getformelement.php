@@ -35,13 +35,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.
 
 // The required element identity as mnx_nny_onz html format.
 $elementname = required_param('elementname', PARAM_TEXT);
-<<<<<<< HEAD
-=======
 
 // contextual values in the branch that has been triggered for addition.
 $taxonsourceid = optional_param('taxonsourceid', '', PARAM_TEXT);
 
->>>>>>> MOODLE_36_STABLE
 // The required apparent occurrence.
 $realoccur = optional_param('realoccur', null, PARAM_INT);
 

@@ -536,16 +536,12 @@ function sharedresource_clean_field($field) {
     return $value;
 }
 
-<<<<<<< HEAD
-function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance = null) {
-=======
 /**
  * Makes a new course module record.
  */
 function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance = null) {
     global $DB;
 
->>>>>>> MOODLE_36_STABLE
     $sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
 
     // Make a new course module.
@@ -570,8 +566,6 @@ function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $i
     }
 
     return $cm;
-<<<<<<< HEAD
-=======
 }
 
 /**

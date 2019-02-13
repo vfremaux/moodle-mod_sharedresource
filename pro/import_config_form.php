@@ -15,24 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
- *
  * @package mod_sharedresource
  * @category mod
- * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- */
-
+ * @author Valery Fremaux (valery@club-internet.fr)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
+*/
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018110200;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2018112800;       // Requires this Moodle version.
-$plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.6.0 (Build 2018110200)';
-$plugin->dependencies = array('local_sharedresources' => 201801180);
+require_once $CFG->libdir.'/formslib.php';
 
-// Non Moodle attributes.
-$plugin->codeincrement = '3.6.0009';
-$plugin->privacy = 'dualrelease';
+class import_config_form extends moodleform {
+
+    function __construct($action) {
+        parent::__construct($action);
+    }
+
+    function definition() {
+
+        $mform = $this->_form;
+
+        $label = get_string('dropconfig', 'mod_sharedresource');
+        $mform->addElement('textarea', 'configdata', $label, array('rows' => 5, 'cols' => 100));
+
+        $this->add_action_buttons();
+    }
+}

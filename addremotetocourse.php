@@ -64,28 +64,6 @@ if (!has_any_capability(array('repository/sharedresources:use', 'repository/shar
     print_error('noaccessform', 'sharedresource');
 }
 
-<<<<<<< HEAD
-// If we have a physical file to get, get it.
-if ($mode == 'file' || ($mode == 'local' && !empty($filename))) {
-    $url = required_param('url', PARAM_URL);
-    $filename = required_param('file', PARAM_TEXT);
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // Set it to pretty big files.
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // Set it to retrieve any content type.
-    curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    if ($rawresponse = curl_exec($ch)) {
-        $filename = preg_replace('/[0-9a-f]+-/i', '', basename($filename));  // Removes the unique shacode.
-        $path = $CFG->dataroot.'/'.$course->id.'/'.$filename;
-        $FILE = fopen($path, 'wb');
-        fwrite($FILE, $rawresponse);
-        fclose($FILE);
-=======
 if (!$section) {
     // When we add directly from library without course action.
     $section = sharedresource_get_course_section_to_add($course);
@@ -152,7 +130,6 @@ if ($mode == 'deploy') {
         redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
     } else {
         print_error('Activity publisher not installed. Deployment cannot be performed.');
->>>>>>> MOODLE_36_STABLE
     }
 
     // No one should be here....

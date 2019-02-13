@@ -97,19 +97,8 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             metadataedit.bind_tabs();
             metadataedit.trigger_all();
 
-<<<<<<< HEAD
-            // Read checkboxes may ask search widget being enabled.
-            var selector = '.' + namespace + '-system-read';
-            selector += ',.' + namespace + '-indexer-read';
-            selector += ',.' + namespace + '-author-read';
-            $(selector).bind('change', this.enable_search_widget_checkbox);
-            $('.taxonomy-source').bind('change', this.reload_taxonomy);
-            // Change to this form : indefinitely add binding to all now and future elements.
-            $('#id-mtd-form').on('change', '.taxonomy-source', null, this.reload_taxonomy);
-=======
             // check and set the initial button state.
             $('.mtd-form-addbutton').each(metadataedit.check_button_status);
->>>>>>> MOODLE_36_STABLE
 
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 

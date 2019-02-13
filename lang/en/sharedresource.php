@@ -299,15 +299,7 @@ $string['resource_consumer_description'] = 'By publishing this service, you allo
 $string['resource_consumer_name'] = 'Service of resources consumption';
 $string['resource_provider_description'] = 'By publishing this service, you allow remote "consumers" to use the shared resources of your catalogue.<br/><br/>By subscribing to this service, you provide your local catalogue to remote "consumer" platforms.<br/><br/>';
 $string['resource_provider_name'] = 'Service of resources providing';
-<<<<<<< HEAD
-$string['resourceaccessurlasforeign'] = 'URL to access resources';
-$string['resourceolddescription'] = 'Previous description';
-$string['resourcenewdescription'] = 'New description';
-$string['resourceintheway'] = 'A resource with same signature is already registered in the library.';
-$string['resourceupdate'] = 'When confirming you will update the resource description with your new values. Do you confirm ';
-=======
 $string['resourceacls'] = 'Access control on resource: {$a}';
->>>>>>> MOODLE_36_STABLE
 $string['resourcebuilt'] = 'New resource built : {$a}';
 $string['resourceconversion'] = 'Resource conversion';
 $string['resourceexists'] = 'A resource with this signature allready exists';

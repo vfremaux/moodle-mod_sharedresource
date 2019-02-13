@@ -54,15 +54,10 @@ require_login($course);
 $context = context_course::instance($courseid);
 require_capability('repository/sharedresources:create', $context);
 
-<<<<<<< HEAD
-$metadataentries = data_submitted();
-
-=======
 $mtdstandard = sharedresource_get_plugin($config->schema);
 
 // Receive input from form.
 $metadataentries = data_submitted();
->>>>>>> MOODLE_36_STABLE
 if (array_key_exists('cancel', $metadataentries)) {
     $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
     $cancelurl = new moodle_url('/course/modedit.php', $params);
@@ -110,10 +105,6 @@ if ($result['error'] != array()) {
     $SESSION->sr_entry = $srentry;
     $error = serialize($result['error']);
     $SESSION->error = $error;
-<<<<<<< HEAD
-    $mtdstandard = sharedresource_get_plugin($config->schema);
-=======
->>>>>>> MOODLE_36_STABLE
 
     echo $OUTPUT->header();
 
@@ -155,13 +146,10 @@ if ($result['error'] != array()) {
     // These two lines in comment can be used if you want to show the user values of saved fields.
     if ($mode == 'add' && $shrentry->exists()) {
 
-<<<<<<< HEAD
-=======
         // Save updated state in session.
         $srentry = serialize($shrentry);
         $SESSION->sr_entry = $srentry;
 
->>>>>>> MOODLE_36_STABLE
         // We are coming from the library. Go back to it.
         $params = array('course' => $course->id,
                         'mode' => 'add',

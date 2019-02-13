@@ -62,11 +62,8 @@ $context = context_course::instance($course->id);
 if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
     print_error('noaccessform', 'sharedresource');
 }
-<<<<<<< HEAD
-=======
 
 $config = get_config('sharedresource');
->>>>>>> MOODLE_36_STABLE
 
 $strtitle = get_string('addlocal', 'sharedresource');
 
@@ -116,14 +113,7 @@ if ($mode == 'deploy') {
     // No one should be here....
 }
 
-<<<<<<< HEAD
-/*
- * The sharedresource has been recognized as being a LTI descriptor
- */
-if ($mode == 'ltiinstall') {
-=======
 // Scorm package case.
->>>>>>> MOODLE_36_STABLE
 
 if ($mode == 'scorm') {
     list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section);
@@ -138,38 +128,14 @@ if (($mode == 'ltiinstall') || ($mode == 'lticonfirm')) {
     $instance = sharedresource_deploy_lti($shrentry, $courseid, $section);
 
     $modulename = 'lti';
-<<<<<<< HEAD
-
-=======
->>>>>>> MOODLE_36_STABLE
 }
 
 /*
  * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
-<<<<<<< HEAD
- * activity. We build an externally referenced scorm type
- */
-else if ($mode = 'scorm') {
-
-    $scorm = new StdClass;
-    $scorm->name = $shrentry->name;
-    $scorm->scormtype = SCORM_TYPE_EXTERNAL;
-
-    /*
-     * We cannot use standard scorm_add_intance() as it needs the coursemodule preexists
-     * the instance.
-     */
-     $cm = sharedresource_build_module
-
-    $modulename = 'scorm';
-
-} else {
-=======
  * activity. Scorm type will depend on global configuration of 
  * the content integratron section of sharedresource.
  */
 else {
->>>>>>> MOODLE_36_STABLE
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
     $instance = new \mod_sharedresource\base(0, $shrentry->identifier);
@@ -192,11 +158,7 @@ else {
 }
 
 if (empty($cm)) {
-<<<<<<< HEAD
-    $cm  = sharedresource_build_cm($courseid);
-=======
     $cm  = sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance);
->>>>>>> MOODLE_36_STABLE
 }
 
 // Reset the course modinfo cache.

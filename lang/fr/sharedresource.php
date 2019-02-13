@@ -312,15 +312,7 @@ $string['resources'] = 'Ressources';
 $string['resourceaskupdate'] = 'Voulez vous rééditer cette ressource ?';
 $string['resourcetorepository'] = 'Cours vers Librairie';
 $string['resourcetypefile'] = 'Identification de la ressource';
-<<<<<<< HEAD
-$string['resourceolddescription'] = 'Ancienne description';
-$string['resourcenewdescription'] = 'Nouvelle description';
-$string['resourceintheway'] = 'Une ressource de même signature est déjà présente dans la librairie.';
 $string['resourceupdate'] = 'En confirmant, vous autorisez la mise à jour de la description avec les nouvelles données. Voulez-vous continuer ?';
-$string['restore_index'] = 'Restaurer la librairie';
-=======
-$string['resourceupdate'] = 'En confirmant, vous autorisez la mise à jour de la description avec les nouvelles données. Voulez-vous continuer ?';
->>>>>>> MOODLE_36_STABLE
 $string['restrictclassification'] = 'Restreindre une classification';
 $string['restrictsql'] = 'Entrez une clause SQL WHERE pour restreindre une classification : ';
 $string['rss'] = 'RSS (en dévelopement)';

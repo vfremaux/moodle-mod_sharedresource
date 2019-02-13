@@ -308,8 +308,6 @@ class metadata {
             // Skip inserting but do NOT block the update process. So answer true.
             return true;
         }
-<<<<<<< HEAD
-=======
     }
 
     /**
@@ -325,7 +323,6 @@ class metadata {
         array_push($sibling->instancepath, 0);
         $sibling->instanceid = implode('_', $sibling->instancepath);
         return $sibling;
->>>>>>> MOODLE_36_STABLE
     }
 
     public function get_element_key() {
@@ -672,7 +669,6 @@ class metadata {
      */
     public function get_max_occurrence() {
         global $DB;
-<<<<<<< HEAD
 
         $select = "
             entryid = ? AND
@@ -732,38 +728,6 @@ class metadata {
     public function get_max_instance_index() {
         static $subnodes;
 
-=======
-
-        $select = "
-            entryid = ? AND
-            element LIKE ? AND
-            namespace = ?
-        ";
-
-        $mynode = $this->nodeid;
-        $parent = $this->get_parent(false);
-        if ($parent) {
-            $instanceid = $parent->instanceid.'_%';
-        } else {
-            $instanceid = '%';
-        }
-
-        $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
-        return $DB->count_records_select('sharedresource_metadata', $select, $params);
-    }
-
-    /**
-     * Get the highest sibling element in the current node level.
-     * The max occurence may be implicit f.e for categories that only are
-     * containers. there will be no direct records for the category in the metadata table, 
-     * but some child that holds effective data.
-     * the function will track all the node childs of the current node, and will scan for the highest index
-     * representing its own level.
-     */
-    public function get_max_instance_index() {
-        static $subnodes;
-
->>>>>>> MOODLE_36_STABLE
         if (!isset($subnodes)) {
             $subnodes = $this->get_all_subnodes();
         }
