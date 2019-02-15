@@ -132,18 +132,37 @@ class sharedresource_document_wrapper extends document_wrapper {
     public static function single_document($id, $itemtype) {
         global $DB;
 
+        $config = get_config('local_search');
+
+        $systemcontext = \context_system::instance();
         $sharedresourceentry = $DB->get_record('sharedresource_entry', array('id' => $id));
 
         if ($sharedresourceentry->context) {
             $context = context_helper::get_from_id($sharedresourceentry->context);
         } else {
-            $context = context_system::instance();
+            $context = $systemcontext;
         }
 
-        $sharedresourceentry->authors = '';
-        $sharedresourceentryarr = get_object_vars($page);
-        $document = new SharedresourceSearchDocument($sharedresourceentryarr, $context->id);
-        return $document;
+        $fs = get_file_storage();
+
+        $hasdocument = !$fs->is_area_empty($systemcontext->id, 'mod_sharedresource', 'sharedresource', $sharedresourceentry->id, true);
+
+        if ($hasdocument && @$config->enable_file_indexing) {
+            $files = $fs->get_area_files($systemcontext->id, 'mod_sharedresource', 'sharedresource', $sharedresourceentry->id, true);
+            $file = array_shift($files);
+            $void = array();
+            $document = search_get_physical_file($void, $file, $sharedresourceentry, 'SharedresourceSearchDocument');
+            $document['authors'] = ''; // TODO : Get metadata from entry to index author.
+            if (!$document) {
+                mtrace("Warning : this document {$sharedresourceentry->identifier}:{$sharedresourceentry->title} will not be indexed");
+            }
+            return $document;
+        } else {
+            $sharedresourceentry->authors = ''; // TODO : Get metadata from entry to index author.
+            $sharedresourceentryarr = get_object_vars($page);
+            $document = new SharedresourceSearchDocument($sharedresourceentryarr, $context->id);
+            return $document;
+        }
     }
 
     /**
@@ -171,6 +190,8 @@ class sharedresource_document_wrapper extends document_wrapper {
      */
     public static function check_text_access($path, $itemtype, $thisid, $user, $groupidunused, $contextidunused) {
         global $CFG, $DB;
+
+        // TODO : apply access check rules on documents to current user.
 
         $config = get_config('local_sharedresources');
 
