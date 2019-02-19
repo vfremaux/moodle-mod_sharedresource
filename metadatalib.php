@@ -360,7 +360,6 @@ function metadata_increment_name_occurrence($elmname) {
 
     $occurrence = array_pop($parts);
     if (is_numeric($occurrence)) {
-        debug_trace("Is numeric ".$occurrence);
         array_push($parts, $occurrrence + 1);
     } else {
         // Can be in the xny format.

@@ -468,3 +468,7 @@ a.sharedresource-actionlink {
     border-radius: 8px;
     padding: 10px;
 }
+
+#mtd-form-schema {
+    padding: 10px;
+}
