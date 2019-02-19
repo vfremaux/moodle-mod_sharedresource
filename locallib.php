@@ -444,9 +444,6 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
         $params[] = $p;
     }
 
-    debug_trace("search: $sql");
-    debug_trace($params);
-
     $items = array();
     // debug_trace('localsearch : '.$sql);
     if ($recs = $DB->get_records_sql($sql, $params)) {
