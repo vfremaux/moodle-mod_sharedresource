@@ -109,10 +109,8 @@ if (has_capability('repository/sharedresources:systemmetadata', $context)) {
     $capability = 'system';
 } else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
     $capability = 'indexer';
-} else if (has_capability('repository/sharedresources:authormetadata', $context)) {
-    $capability = 'author';
 } else {
-    print_error('noaccessform', 'sharedresource');
+    $capability = 'author';
 }
 
 if (!empty($CFG->METADATATREE_DEFAULTS)) {
