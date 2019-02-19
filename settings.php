@@ -130,13 +130,13 @@ if ($ADMIN->fulltree) {
 
     $scormcfg = get_config('scorm');
     $options = array(SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm'));
-    if ($scormcfg->allowtypelocalsync) {
+    if (!empty($scormcfg->allowtypelocalsync)) {
         $options[SCORM_TYPE_LOCALSYNC] = get_string('typelocalsync', 'scorm');
     }
-    if ($scormcfg->allowtypeexternal) {
+    if (!empty($scormcfg->allowtypeexternal)) {
         $options[SCORM_TYPE_EXTERNAL] = get_string('typeexternal', 'scorm');
     }
-    if ($scormcfg->allowtypeexternalaicc) {
+    if (!empty($scormcfg->allowtypeexternalaicc)) {
         $options[SCORM_TYPE_AICCURL] = get_string('typeaiccurl', 'scorm');
     }
 

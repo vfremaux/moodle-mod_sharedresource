@@ -125,12 +125,14 @@ class metadata_renderer extends \plugin_renderer_base {
         $tabtpl = new StdClass;
         $tabtpl->i = $nodeid;
 
-        if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
-            $tabtpl->mandatoryclass = 'is-mandatory is-empty';
-            $tabtpl->mandatorysign = '(*)';
-        } else {
-            $tabtpl->mandatoryclass = '';
-            $tabtpl->mandatorysign = '';
+        if ($mode != 'read') {
+            if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
+                $tabtpl->mandatoryclass = 'is-mandatory is-empty';
+                $tabtpl->mandatorysign = '(*)';
+            } else {
+                $tabtpl->mandatoryclass = '';
+                $tabtpl->mandatorysign = '';
+            }
         }
 
         if (\mod_sharedresource\metadata::use_branch($nodeid, $capability, $mode)) {
@@ -209,6 +211,13 @@ class metadata_renderer extends \plugin_renderer_base {
 
         // print_object($standardelm);
 
+        /*
+        echo "NodeID : $nodeid <br/>";
+        echo "elementType : {$standardelm->type} <br/>";
+        echo "elementIsList : {$standardelm->islist} <br/>";
+        echo "<br/>";
+        */
+
         $template->keyid =  $elementkey;
         $listresult = array();
         if ($standardelm->type == 'category') {
@@ -253,15 +262,17 @@ class metadata_renderer extends \plugin_renderer_base {
                 // We are in a category.
                 $template->iscontainer = true;
 
-                $hascontent = false;
+                $template->hascontent = false;
+                /*
                 // Get all subs.
                 $listresult = $elminstance->get_childs($nodeid, $capability, 'read', true);
                 if (!empty($listresult)) {
                     // We verify if all children subbranchs of this category have been filled.
-                    $hascontent = $elminstance->childs_have_content($capability, 'read');
+                    $template->hascontent = $elminstance->childs_have_content($capability, 'read');
                 }
 
-                if (!empty($hascontent)) {
+                if (!empty($template->hascontent)) {
+                */
                     // It's ok and we display the category, then display children recursively.
                     $template->fieldnum = $nodeid;
 
@@ -270,6 +281,9 @@ class metadata_renderer extends \plugin_renderer_base {
                     }
 
                     $standardelmchilds = $mtdstandard->getElementChilds($nodeid);
+                    if (!empty($standardelmchilds)) {
+                        $template->hascontent = true;
+                    }
                     $nbrchilds = count($standardelmchilds);
                     $parenttemplate->childs[] = $template;
                     foreach ($standardelmchilds as $childnodeid => $islist) {
@@ -277,7 +291,9 @@ class metadata_renderer extends \plugin_renderer_base {
                         $this->part_view($template, $shrentry, $childkey, $capability, 0);
                         $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
                     }
+                /*
                 }
+                */
 
                 $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
                 if (!empty($siblings)) {
@@ -288,6 +304,16 @@ class metadata_renderer extends \plugin_renderer_base {
                 }
             }
         } else {
+            if (!empty($taxumarray) && $nodeid == $taxumarray['source']) {
+                // Special case : we are the source in a taxonomy. We must get the souce name indirectly.
+                // Mtdvalue contains the sharedresource_classif id. We want the name.
+                if (is_numeric($elminstance->get_value())) {
+                    $navigator = \local_sharedresources\browser\navigation::instance_by_id($elminstance->get_value());
+                    $elminstance->set_value($navigator->name);
+                    $standardelm->type = 'text';
+                }
+            }
+
             if ($elminstance->get_instance_index() == 0 && $standardelm->islist) {
                 /*
                  * If we are first element of a list of scalar values, aggregate all values of siblings in a textual
@@ -304,12 +330,13 @@ class metadata_renderer extends \plugin_renderer_base {
                     $elminstance->set_value($values);
                 }
             }
+            $template->hascontent = true;
 
             $this->print_data($standardelm, $elminstance, $template);
             $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
-            if (!empty($template->mtdvalue)) {
+            // if (!empty($template->mtdvalue)) {
                 $parenttemplate->childs[] = $template;
-            }
+            // }
         }
 
         // Not really necessary now.
