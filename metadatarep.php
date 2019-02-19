@@ -28,6 +28,7 @@
  */
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
@@ -50,9 +51,21 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('badcourseid', 'sharedresource');
 }
 
-require_login($course);
-$context = context_course::instance($courseid);
-require_capability('repository/sharedresources:create', $context);
+// Security.
+$systemcontext = context_system::instance();
+$context = context_course::instance($course->id);
+if ($course->id > 1) {
+    require_login($course);
+    require_capability('moodle/course:manageactivities', $context);
+} else {
+    require_login();
+    $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
+    if (!has_any_capability($caps, context_system::instance())) {
+        if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+            print_error('noaccess');
+        }
+    }
+}
 
 $mtdstandard = sharedresource_get_plugin($config->schema);
 

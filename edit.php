@@ -25,6 +25,7 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/sharedresource_entry_form.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
 
@@ -76,7 +77,24 @@ if ($course->id > 1) {
     require_login($course);
     require_capability('moodle/course:manageactivities', $context);
 } else {
-    require_capability('repository/sharedresources:manage', context_system::instance());
+    // Use system level test as shortpath.
+    $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
+    if (!has_any_capability($caps, context_system::instance())) {
+        if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+            print_error('noaccess');
+        }
+    }
+}
+
+// Compute returnurl.
+if ($return == 1) {
+    $returnurl = new moodle_url('/local/sharedresource/index.php', array('id' => $course->id));
+} else {
+    if ($course->id > SITEID) {
+        $returnurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
+    } else {
+        $returnurl = new moodle_url('/course/view.php', array('id' => $course->id));
+    }
 }
 
 // Page construction.
@@ -89,7 +107,6 @@ $url = new moodle_url('/mod/sharedresource/edit.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$returnurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $returnurl);
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 $PAGE->navbar->add($strtitle, 'edit.php', 'misc');
@@ -142,17 +159,14 @@ $mform = new mod_sharedresource_entry_form($mode);
 $mform->set_data(($formdata));
 
 if ($mform->is_cancelled()) {
-    // Cancel - go back to course.
-    if ($course->id == SITEID) {
-        redirect(new moodle_url('/local/sharedresources/index.php'));
-    } else {
-        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
-    }
+    unset($SESSION->sr_entry);
+    redirect($returnurl);
 }
 
 // Is this a successful POST ?
 
-if (($formdata = $mform->get_data()) || ($sharedresourcefile = optional_param('sharedresourcefile', null, PARAM_INT))) {
+if (($formdata = $mform->get_data()) ||
+        ($sharedresourcefile = optional_param('sharedresourcefile', null, PARAM_INT))) {
 
     if (empty($formdata)) {
         $formdata = new StdClass;
