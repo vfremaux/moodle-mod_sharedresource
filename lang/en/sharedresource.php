@@ -113,6 +113,7 @@ $string['configsecretphrase'] = 'This secret phrase is used to generate the encr
 $string['configscormintegration'] = 'Scorm integration mode';
 $string['configwebsearch'] = 'URL displayed during the add of a web page or a link, in order to allow the user to search the desired URL.';
 $string['configwindowsettings'] = 'Determines if the zone configuration of windows is displayed or not by default when adding new resources. After the first use, this setting is individual.';
+$string['confirmclassifdeletion'] = 'Deleting a complete classification may have big impact on resource indexation. Are you sure this is what you want ?';
 $string['contentintegration'] = 'Content integration';
 $string['conversioncancelled'] = 'conversion cancelled';
 $string['conversioncancelledtocourse'] = 'Conversion canceled. You are going to be redirect to the management of activities';

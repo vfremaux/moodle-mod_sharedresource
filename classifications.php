@@ -59,6 +59,8 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
+$PAGE->requires->js_call_amd('mod_sharedresource/classifications', 'init');
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('classificationconfiguration', 'sharedresource'));
@@ -135,7 +137,8 @@ if (empty($classifications)) {
         $params = array('what' => 'delete', 'id' => $classif->id);
         $deleteurl = new moodle_url('/mod/sharedresource/classifications.php', $params);
         $attrs = array('alt' => get_string('delete', 'sharedresource'),
-                       'title' => get_string('delete', 'sharedresource'));
+                       'title' => get_string('delete', 'sharedresource'),
+                       'class' => 'sharedresource-delete-classification');
         $cmds .= '&nbsp;'.html_writer::link($deleteurl, $deleteicon, $attrs);
 
         $params = array('id' => $classif->id);
