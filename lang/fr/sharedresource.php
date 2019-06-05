@@ -132,6 +132,7 @@ $string['configscormintegration'] = 'Mode d\'intégration scorm';
 $string['configscormintegration_desc'] = 'Détermine comment les scorms sont intégrés dans les cours à partir de la librairie.';
 $string['configwebsearch'] = 'URL affichée lors de l\'ajout d\'une page web ou d\'un lien, pour permettre à l\'utilisateur de rechercher l\'URL désirée.';
 $string['configwindowsettings'] = 'Détermine si, par défaut, la zone de configuration des fenêtres est affichée ou non, lors de l\'ajout de nouvelles ressources. Après la première utilisation, ce réglage devient individuel.';
+$string['confirmclassifdeletion'] = 'Supprimer une classification peut avoir un impact important sur votre base de ressources. Confirmez-vous la suppression ?';
 $string['contentintegration'] = 'Intégration de contenus';
 $string['conversioncancelled'] = 'conversion annulée';
 $string['conversioncancelledtocourse'] = 'Conversion annulée. Vous allez être redirigés vers la gestion des activités';
