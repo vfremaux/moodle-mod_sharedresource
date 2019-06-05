@@ -56,6 +56,9 @@ if ($mform->is_cancelled()) {
 }
 
 if ($data = $mform->get_data()) {
+    if (empty($data->enabled)) {
+        $data->enabled = 0;
+    }
     if (!empty($data->id)) {
         $DB->update_record('sharedresource_classif', $data);
     } else {
