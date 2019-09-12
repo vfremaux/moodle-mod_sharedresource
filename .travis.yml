@@ -1,14 +1,13 @@
 language: php
 
-sudo: false
+sudo: true
 
 addons:
   firefox: "47.0.1"
-  postgresql: "9.3"
+  postgresql: "9.4"
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jre-headless
 
 cache:
   directories:
@@ -20,7 +19,7 @@ php:
 
 env:
   global:
-    - MOODLE_BRANCH=MOODLE_36_STABLE
+    - MOODLE_BRANCH=MOODLE_37_STABLE
   matrix:
     - DB=mysqli
     - DB=pgsql
@@ -47,5 +46,5 @@ script:
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
-  - moodle-plugin-ci phpunit
+#  - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat

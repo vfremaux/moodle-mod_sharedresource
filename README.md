@@ -28,3 +28,20 @@ Related Components
 Shared resource works together with a central addditional component of Moodle that will provide "central"
 management entry point for the shared resource catalog. Please check
 http://github.com/vfremaux/moodle-resources repository for information.
+
+Changes for 2018021700
+=======================
+
+Fix subplugin names in settings
+
+Changes for 2018110200 (x.x.0009)
+=================================
+
+Large rework of the remote library bindings. Add security to the remote library access when 
+remote library is a private catalog (uses auth_ticket). Add scorm local and remote detection
+and quick deployment mode.
+
+Changes for 2019062000 (x.x.0010)
+=================================
+
+Add capabilities to control classification and classification tokens deletion.
