@@ -699,7 +699,7 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
     if ($course->format == 'page') {
         require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
         require_once($CFG->dirroot.'/course/format/page/lib.php');
-        $coursepage = course_page::get_current_page($course->id);
+        $coursepage = \format\page\course_page::get_current_page($course->id);
         $coursepage->add_cm_to_page($cm->id);
     }
 

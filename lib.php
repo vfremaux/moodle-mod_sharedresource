@@ -80,6 +80,13 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_ba
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
+if (!function_exists('debug_trace')) {
+    // Fake it if advancedperfs/perfdebug not installed.
+    function debug_trace() {
+        assert(1);
+    }
+}
+
 /**
  * List of features supported in Resource module
  * @param string $feature FEATURE_xx constant for requested feature

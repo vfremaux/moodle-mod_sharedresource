@@ -27,6 +27,8 @@ global $SITE;
 // Capabilities
 $string['sharedresource:addinstance'] = 'Peut ajouter une instance';
 $string['sharedresource:manageblocks'] = 'Gérer les blocs dans la librairie';
+$string['sharedresource:manageclassifications'] = 'Gérer les classifications';
+$string['sharedresource:manageclassificationtokens'] = 'Gérer les tokens de classification';
 
 $string['privacy:metadata'] = "Le modules Ressource Mutualisée ne stocke aucune données en relation avec les utilisateurs.";
 
