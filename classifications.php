@@ -134,25 +134,29 @@ if (empty($classifications)) {
                        'title' => get_string('updateclassification', 'sharedresource'));
         $cmds .= '&nbsp;'.html_writer::link($editurl, $editicon, $attrs);
 
-        $params = array('what' => 'delete', 'id' => $classif->id);
-        $deleteurl = new moodle_url('/mod/sharedresource/classifications.php', $params);
-        $attrs = array('alt' => get_string('delete', 'sharedresource'),
-                       'title' => get_string('delete', 'sharedresource'),
-                       'class' => 'sharedresource-delete-classification');
-        $cmds .= '&nbsp;'.html_writer::link($deleteurl, $deleteicon, $attrs);
+        if (has_capability('mod/sharedresource:manageclassifications', $systemcontext)) {
+            $params = array('what' => 'delete', 'id' => $classif->id);
+            $deleteurl = new moodle_url('/mod/sharedresource/classifications.php', $params);
+            $attrs = array('alt' => get_string('delete', 'sharedresource'),
+                           'title' => get_string('delete', 'sharedresource'),
+                           'class' => 'sharedresource-delete-classification');
+            $cmds .= '&nbsp;'.html_writer::link($deleteurl, $deleteicon, $attrs);
+        }
 
-        $params = array('id' => $classif->id);
-        $editvaluesurl = new moodle_url('/mod/sharedresource/classificationvalues.php', $params);
-        $attrs = array('alt' => get_string('editclassificationtable', 'sharedresource'),
-                       'title' => get_string('editclassificationtable', 'sharedresource'));
-        $cmds .= '&nbsp;'.html_writer::link($editvaluesurl, $editvaluesicon, $attrs);
-
-        if (mod_sharedresource_supports_feature('taxonomy/fineselect')) {
+        if (has_capability('mod/sharedresource:manageclassificationtokens', $systemcontext)) {
             $params = array('id' => $classif->id);
-            $selecttaxonsurl = new moodle_url('/mod/sharedresource/pro/classificationtaxonselect.php', $params);
-            $attrs = array('alt' => get_string('selecttaxons', 'sharedresource'),
-                           'title' => get_string('selecttaxons', 'sharedresource'));
-            $cmds .= '&nbsp;'.html_writer::link($selecttaxonsurl, $filteredicon, $attrs);
+            $editvaluesurl = new moodle_url('/mod/sharedresource/classificationvalues.php', $params);
+            $attrs = array('alt' => get_string('editclassificationtable', 'sharedresource'),
+                           'title' => get_string('editclassificationtable', 'sharedresource'));
+            $cmds .= '&nbsp;'.html_writer::link($editvaluesurl, $editvaluesicon, $attrs);
+
+            if (mod_sharedresource_supports_feature('taxonomy/fineselect')) {
+                $params = array('id' => $classif->id);
+                $selecttaxonsurl = new moodle_url('/mod/sharedresource/pro/classificationtaxonselect.php', $params);
+                $attrs = array('alt' => get_string('selecttaxons', 'sharedresource'),
+                               'title' => get_string('selecttaxons', 'sharedresource'));
+                $cmds .= '&nbsp;'.html_writer::link($selecttaxonsurl, $filteredicon, $attrs);
+            }
         }
 
         if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {

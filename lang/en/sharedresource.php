@@ -28,6 +28,8 @@ $string['privacy:metadata'] = "The Sharedresources module do not manipulate any 
 // Capabilities.
 $string['sharedresource:addinstance'] = 'Can add an instance';
 $string['sharedresource:manageblocks'] = 'Manage blocks in the library';
+$string['sharedresource:manageclassifications'] = 'Manage classifications';
+$string['sharedresource:manageclassificationtokens'] = 'Manage classification tokens';
 
 $string['accessuserfield'] = 'Access user field';
 $string['accessuserfieldvalues'] = 'Acceptance values';
