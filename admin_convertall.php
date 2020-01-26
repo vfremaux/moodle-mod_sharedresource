@@ -35,11 +35,11 @@ $courseid = optional_param('course', SITEID, PARAM_INT);
 $url = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
 
 if ($courseid > SITEID) {
-    if (!$course = $DB->get_record('course', array('id'=> "$courseid"))) {
+    if (!$course = $DB->get_record('course', array('id' => "$courseid"))) {
         print_error('coursemisconf');
     }
 
-// Security.
+    // Security.
 
     $context = context_course::instance($courseid);
     require_login($course);
@@ -128,7 +128,7 @@ if (empty($courseid)) {
             }
         }
         $reskeys = preg_grep("/ucnv_/" , array_keys(get_object_vars($data)));
-        if (!empty($reskeys)){
+        if (!empty($reskeys)) {
             foreach ($reskeys as $reskey) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {

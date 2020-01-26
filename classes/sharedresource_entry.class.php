@@ -112,9 +112,9 @@ class entry {
      * @return shrentryrec object
      */
     static public function read($identifier) {
-        global $CFG, $DB;
+        global $DB;
 
-        if (! $shrentryrec = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+        if (!$DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
             return false;
         }
 
@@ -132,7 +132,8 @@ class entry {
      */
     static public function read_by_id($entryid) {
         global  $DB;
-        if (! $shrentryrec =  $DB->get_record('sharedresource_entry', array('id'=> $entryid))) {
+
+        if (!$DB->get_record('sharedresource_entry', array('id'=> $entryid))) {
             return false;
         }
 
@@ -271,7 +272,6 @@ class entry {
      * @return bool, returns true.
      */
     public function before_save() {
-        global $CFG;
 
         // Get the plugins.
         $plugins = sharedresource_get_plugins($this->id);
@@ -361,8 +361,6 @@ class entry {
      * @param namespace string, namespace of metadata element only
      */
     public function add_element($element, $value, $namespace = '') {
-        global $SHAREDRESOURCE_CORE_ELEMENTS;
-
         $this->update_element($element, $value, $namespace);
     }
 
@@ -374,9 +372,9 @@ class entry {
      * @return string, value of attribute or metadata element
      */
     public function element($element, $namespace = '') {
-        global $SHAREDRESOURCE_CORE_ELEMENTS;
+        global $SHR_CORE_ELEMENTS;
 
-        if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && isset($this->$element)) {
+        if (in_array($element, $SHR_CORE_ELEMENTS) && empty($namespace) && isset($this->$element)) {
             return $this->$element;
         } else {
             if (!empty($this->metadataelements)) {
@@ -399,10 +397,10 @@ class entry {
      * @param namespace string, namespace of metadata element only
      */
     public function update_element($element, $value, $namespace = '') {
-        global $SHAREDRESOURCE_CORE_ELEMENTS;
+        global $SHR_CORE_ELEMENTS;
 
         // add the core ones to the main table entry - everything else goes in the metadata table.
-        if (in_array($element, $SHAREDRESOURCE_CORE_ELEMENTS) && empty($namespace) && !empty($value)) {
+        if (in_array($element, $SHR_CORE_ELEMENTS) && empty($namespace) && !empty($value)) {
             $this->$element = $value;
         } else {
             if (!array_key_exists($element, $this->metadataelements)) {
@@ -590,7 +588,7 @@ class entry {
      * @return bool, true = success
      */
     public function update_instance() {
-        global $CFG, $DB;
+        global $DB;
 
         $this->timemodified = time();
 
@@ -658,7 +656,7 @@ class entry {
             $filerec->itemid = $this->id;
             $filerec->path = '/';
 
-            $definitive = $fs->create_file_from_storedfile($filerec, $this->thumbnail);
+            $fs->create_file_from_storedfile($filerec, $this->thumbnail);
         }
 
         // Trigger the after save plugins.
@@ -734,6 +732,9 @@ class entry {
      * @return the next sharedresource id in the version daisy chain.
      */
     public function fetch_ahead($fullchain = false) {
+
+        $config = get_config('sharedresource');
+
          $mtdstandard = sharedresource_get_plugin($config->schema, $this->shrentryrec->id);
 
         if (is_null($mtdstandard->getVersionSupportElement())) {
@@ -767,7 +768,7 @@ class entry {
      * @see local/sharedresources/lib.php get_local_resources()§137
      */
     public function has_access() {
-        global $DB, $USER;
+        global $DB;
         static $userdatacache;
 
         if (!isset($userdatacache)) {
@@ -813,7 +814,6 @@ class entry {
 
         $sources = \mod_sharedresource\metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
         if (!empty($sources)) {
-            $return = false;
             foreach ($sources as $source) {
                 // Find some tokenids that are attached to this source instance.
                 $idkey = \mod_sharedresource\metadata::to_instance($taxumarr['id'], $source->get_element_key()); // Normalise element key.

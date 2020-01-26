@@ -74,7 +74,7 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_context($context);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($strtitle,'addlocaltocourse.php', 'misc');
+$PAGE->navbar->add($strtitle, 'addlocaltocourse.php', 'misc');
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
@@ -128,14 +128,12 @@ if (($mode == 'ltiinstall') || ($mode == 'lticonfirm')) {
     $instance = sharedresource_deploy_lti($shrentry, $courseid, $section);
 
     $modulename = 'lti';
-}
-
-/*
- * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
- * activity. Scorm type will depend on global configuration of 
- * the content integratron section of sharedresource.
- */
-else {
+} else {
+    /*
+     * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
+     * activity. Scorm type will depend on global configuration of
+     * the content integration section of sharedresource.
+     */
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
     $instance = new \mod_sharedresource\base(0, $shrentry->identifier);

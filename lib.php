@@ -30,7 +30,7 @@ define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 
 global $SHAREDRESOURCE_WINDOW_OPTIONS;
-global $SHAREDRESOURCE_CORE_ELEMENTS;
+global $SHR_CORE_ELEMENTS;
 global $SHAREDRESOURCE_METADATA_ELEMENTS; // Must be global because it might be included from a function!
 
 $SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
@@ -43,7 +43,7 @@ $SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
                                     'width',
                                     'height');
 
-$SHAREDRESOURCE_CORE_ELEMENTS = array('id',
+$SHR_CORE_ELEMENTS = array('id',
                                     'identifier',
                                     'title',
                                     'description',

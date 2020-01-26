@@ -117,7 +117,6 @@ class metadata_renderer extends \plugin_renderer_base {
      * Creates tabs.
      */
     function tab($nodeid, $capability, &$template, $mode = 'read') {
-        global $DB;
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
@@ -156,7 +155,6 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
     function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
-        global $SESSION, $CFG, $DB, $OUTPUT;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;

@@ -82,7 +82,7 @@ if (empty($tokentree)) {
     $upicon = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl shadowed');
-    $upicondisabled = $OUTPUT->pix_icon(('t/up', '', 'core', $attrs);
+    $upicondisabled = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
 
     $attrs = array('class' => 'mod-sharedresource-classif-ctl');
     $downicon = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
