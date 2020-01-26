@@ -29,11 +29,11 @@ define('SHAREDRESOURCE_SEARCH_LIMIT', '200');
 define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 
-global $SHAREDRESOURCE_WINDOW_OPTIONS;
-global $SHAREDRESOURCE_CORE_ELEMENTS;
-global $SHAREDRESOURCE_METADATA_ELEMENTS; // Must be global because it might be included from a function!
+global $SHR_WINDOW_OPTIONS;
+global $SHR_CORE_ELEMENTS;
+global $SHR_METADATA_ELEMENTS; // Must be global because it might be included from a function!
 
-$SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
+$SHR_WINDOW_OPTIONS = array('resizable',
                                     'scrollbars',
                                     'directories',
                                     'location',
@@ -43,7 +43,7 @@ $SHAREDRESOURCE_WINDOW_OPTIONS = array('resizable',
                                     'width',
                                     'height');
 
-$SHAREDRESOURCE_CORE_ELEMENTS = array('id',
+$SHR_CORE_ELEMENTS = array('id',
                                     'identifier',
                                     'title',
                                     'description',
@@ -55,7 +55,7 @@ $SHAREDRESOURCE_CORE_ELEMENTS = array('id',
                                     'mimetype',
                                     'timemodified');
 
-$SHAREDRESOURCE_METADATA_ELEMENTS = array(array('name' => 'Contributor',
+$SHR_METADATA_ELEMENTS = array(array('name' => 'Contributor',
                                                 'datatype' => 'text'),
                                           array('name' => 'IssueDate',
                                                 'datatype' => 'lomdate'),
@@ -79,6 +79,13 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.clas
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
+
+if (!function_exists('debug_trace')) {
+    // Fake it if advancedperfs/perfdebug not installed.
+    function debug_trace() {
+        assert(1);
+    }
+}
 
 /**
  * List of features supported in Resource module

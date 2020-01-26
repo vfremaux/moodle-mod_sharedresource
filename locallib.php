@@ -31,7 +31,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
  * @param array $string
  * @param string $lang
  * @todo can be optimized for not loading unused strings elsewhere than in admin
- * setting forms. 
+ * setting forms.
  */
 function sharedresource_load_plugin_lang(&$string, $lang = '') {
     global $CFG;
@@ -53,7 +53,7 @@ function sharedresource_load_plugin_lang(&$string, $lang = '') {
  * @param array $string
  * @param string $lang
  * @todo can be optimized for not loading unused strings elsewhere than in admin
- * setting forms. 
+ * setting forms.
  */
 function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
     global $CFG;
@@ -61,7 +61,7 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
     if ($lang == '') {
         $lang = current_language();
     }
-    
+
     $plugins = get_list_of_plugins('mod/sharedresource/plugins');
     foreach ($plugins as $plugin) {
         $pluginlang = $CFG->dirroot."/mod/sharedresource/plugins/{$plugin}/lang/".$lang."/{$plugin}-min.php";
@@ -281,7 +281,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
  * Used by : provider interface (worker function)
  * retrieve the remote categorisation of resources using LOM taxonomy or any local strategy
  *
- * Get either entries that match a single metadata element value, or retrieves all values present for 
+ * Get either entries that match a single metadata element value, or retrieves all values present for
  * a single metadata element.
  *
  * @param string $element the metadata element as an m_n_o_p element identifier.
@@ -325,7 +325,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
         } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
 
             $textoption = substr($using, 0, strpos($using, ':'));
-            $using = substr($using, strpos($using,':') + 1);
+            $using = substr($using, strpos($using, ':') + 1);
             $listsearchoptions = array();
 
             if (!empty($using)) {
@@ -371,8 +371,8 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
         } else if ($mtdelement->type == 'date') {
 
-            $datestart = substr($using, 0, strpos($using,':'));
-            $dateend = substr($using, strpos($using,':') + 1);
+            $datestart = substr($using, 0, strpos($using, ':'));
+            $dateend = substr($using, strpos($using, ':') + 1);
             if ($datestart != 'Begin' && $dateend != 'End') {
                 $start = mktime(0, 0, 0, substr($datestart, 5, 2),  substr($datestart, 8, 2), substr($datestart, 0, 4));
                 $end = mktime(0, 0, 0, substr($dateend, 5, 2),  substr($dateend, 8, 2), substr($dateend, 0, 4));
@@ -393,15 +393,15 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
         } else if ($mtdelement->type == 'numeric') {
 
-            $symbol = substr($using, 0, strpos($using,':'));
-            $value = substr($using, strpos($using,':') + 1);
-            $clause = "  value $symbol $value AND element LIKE ? ";
+            $symbol = substr($using, 0, strpos($using, ':'));
+            $value = substr($using, strpos($using, ':') + 1);
+            $clause = " value $symbol $value AND element LIKE ? ";
             $params[] = '{$mtdelement->id}:%';
 
         } else if ($mtdelement->type == 'duration') {
 
-            $symbol = substr($using, 0, strpos($using,':'));
-            $value = substr($using, strpos($using,':') + 1);
+            $symbol = substr($using, 0, strpos($using, ':'));
+            $value = substr($using, strpos($using, ':') + 1);
             $clause = "  value $symbol $value AND element LIKE ? ";
             $params[] = '{$mtdelement->id}:%';
 
@@ -410,7 +410,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
             // Case selectmultiple and select.
             if (!empty($using)) {
                 $listtokens = explode(',', $using);
-                foreach($listtokens as $token) {
+                foreach ($listtokens as $token) {
                     $listsearchoptions[] = ' value = ? ';
                     $params[] = trim($token);
                 }
@@ -542,7 +542,7 @@ function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $i
     $sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
 
     // Make a new course module.
-    $module = $DB->get_record('modules', array('name'=> $modulename));
+    $module = $DB->get_record('modules', array('name' => $modulename));
     $cm = new StdClass;
     if (!empty($instance)) {
         $cm->instance = $instance->id;
@@ -678,10 +678,9 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
             break;
         }
 
-        default : {
+        default :
             // All other cases.
             $moduleinfo->packageurl = $shrentry->url;
-        }
     }
 
     $moduleinfo->width = 100;
@@ -699,7 +698,7 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
     if ($course->format == 'page') {
         require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
         require_once($CFG->dirroot.'/course/format/page/lib.php');
-        $coursepage = course_page::get_current_page($course->id);
+        $coursepage = \format\page\course_page::get_current_page($course->id);
         $coursepage->add_cm_to_page($cm->id);
     }
 
@@ -707,7 +706,7 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
 }
 
 function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
-    global $CFG, $OUTPUT, $PAGE;
+    global $CFG, $OUTPUT;
 
     // We build an LTI Tool instance.
     include_once($CFG->dirroot.'/mod/sharedresource/forms/lti_mod_form.php');
@@ -792,7 +791,7 @@ function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
  * @return completed instance record with insert id
  */
 function sharedresource_add_mplayer($shrentry, $courseid, $isremote = false) {
-    global $CFG, $OUTPUT, $PAGE;
+    global $CFG, $OUTPUT;
 
     $config = get_config('mplayer');
 

@@ -52,7 +52,7 @@ if ($confirm == 1) {
             continue;
         }
         if ($plugin->remotesubmit($shrentry)) {
-            redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex');
+            redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex'));
         } else {
             print_error('errornnoticecreation', 'sharedresource');
         }

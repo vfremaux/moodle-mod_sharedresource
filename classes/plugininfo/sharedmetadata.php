@@ -71,8 +71,6 @@ class sharedmetadata extends base {
      * @private
      */
     public function uninstall_cleanup() {
-        global $DB;
-
         parent::uninstall_cleanup();
     }
 
@@ -92,6 +90,7 @@ class sharedmetadata extends base {
      */
     public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
         global $CFG, $USER, $DB, $OUTPUT, $PAGE; // In case settings.php wants to refer to them.
+
         $ADMIN = $adminroot; // May be used in settings.php.
         $plugininfo = $this; // Also can be used inside settings.php.
 
