@@ -191,7 +191,7 @@ if (($formdata = $mform->get_data()) ||
     // Process the form contents.
     // Add form data to table object - skip the elements until we know what the identifier is.
     foreach ($formdata as $key => $value) {
-        if (in_array($key, $SHAREDRESOURCE_CORE_ELEMENTS) && !empty($value)) {
+        if (in_array($key, $SHR_CORE_ELEMENTS) && !empty($value)) {
             if ($key == 'url') {
                 $shrentry->add_element($key, clean_param($value, PARAM_URL));
             } else {

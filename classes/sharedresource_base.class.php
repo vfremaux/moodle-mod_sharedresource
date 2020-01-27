@@ -58,7 +58,7 @@ class base {
      * @param identifier   hash, alternative direct identifier for a sharedresource - not set for new sharedresources
      */
     public function __construct($cmid = 0, $identifier = false) {
-        global $CFG, $COURSE, $DB, $PAGE, $OUTPUT;
+        global $COURSE, $DB, $PAGE, $OUTPUT;
 
         $this->sharedresource = new StdClass();
         $this->sharedresource->type = 'file'; // Cannot be anything else.
@@ -92,11 +92,10 @@ class base {
                 $url = new moodle_url('/mod/sharedresource/view.php');
                 $PAGE->set_url($url);
                 $PAGE->set_title($SITE->fullname);
-                $PAGE->set_heading($SITE->fullname);
+                $PAGE->set_heading($pagetitle);
                 $PAGE->navbar->add('view sharedresource info', 'view.php', 'misc');
                 $PAGE->set_focuscontrol('');
                 $PAGE->set_cacheable(false);
-                $PAGE->set_button('');
 
                 echo $OUTPUT->header();
 
@@ -105,7 +104,7 @@ class base {
                 echo $OUTPUT->footer();
                 die;
             }
-        } elseif ($identifier) {
+        } else if ($identifier) {
             // This may be a new instance so not course module yet.
             if (! $this->sharedresourceentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
                 print_error('errorinvalididentifier', 'sharedresource', new moodle_url('/course/view.php', array('id' => $COURSE->id)), $identifier);
@@ -134,9 +133,9 @@ class base {
      * form post process for preparing layout parameters properly
      */
     public function _postprocess() {
-        global $SHAREDRESOURCE_WINDOW_OPTIONS;
+        global $SHR_WINDOW_OPTIONS;
 
-        $alloptions = $SHAREDRESOURCE_WINDOW_OPTIONS;
+        $alloptions = $SHR_WINDOW_OPTIONS;
 
         $resource = $this->sharedresource;
 
@@ -665,7 +664,7 @@ class base {
      * @uses $CFG   global object
      */
     public function set_parameters() {
-        global $USER, $CFG, $PAGE, $OUTPUT, $SITE, $DB;
+        global $USER, $CFG, $DB;
 
         $site = get_site();
         $littlecfg = new stdClass();
@@ -753,7 +752,7 @@ class base {
      * @param mform   object, reference to Moodle Forms object
      */
     public function setup_elements(&$mform) {
-        global $CFG, $USER, $SHAREDRESOURCE_WINDOW_OPTIONS, $DB, $OUTPUT;
+        global $SHR_WINDOW_OPTIONS, $DB;
 
         $config = get_config('sharedresource');
 
@@ -849,7 +848,7 @@ class base {
         $mform->disabledIf('framepage', 'forcedownload', 'checked');
         $mform->setAdvanced('framepage');
 
-        foreach ($SHAREDRESOURCE_WINDOW_OPTIONS as $option) {
+        foreach ($SHR_WINDOW_OPTIONS as $option) {
             if ($option == 'height' or $option == 'width') {
                 $mform->addElement('text', $option, get_string('new'.$option, 'sharedresource'), array('size'=>'4'));
                 $mform->setType($option, PARAM_TEXT);
