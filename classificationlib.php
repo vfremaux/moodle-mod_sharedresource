@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php')
 
 /*
  * This php script contains all the stuff to use classifications
- * This is used in the metadata form of a sharedresource and 
+ * This is used in the metadata form of a sharedresource and
  * in the search engine of a sharedresource.
  */
 
@@ -45,19 +45,19 @@ function metadata_create_classification($classtable, $classifarray, $classificat
     $i = 0;
     foreach ($classtable as $key => $taxon) {
         if ($taxon->$classifarray[$classification]['parent'] == '' ||
-                $taxon->$classifarray[$classification]['parent'] == 0) {
-            if (($taxon->$classifarray[$classification]['ordering'] != '') &&
-                    ($taxon->$classifarray[$classification]['ordering'] != 0)) {
-                $ordering = $taxon->$classifarray[$classification]['ordering'];
-                $newclassif[$classification]['childs'][$ordering] = $taxon->$classifarray[$classification]['id'];
+                $taxon->{$classifarray[$classification]['parent']} == 0) {
+            if (($taxon->{$classifarray[$classification]['ordering']} != '') &&
+                    ($taxon->{$classifarray[$classification]['ordering']} != 0)) {
+                $ordering = $taxon->{$classifarray[$classification]['ordering']};
+                $newclassif[$classification]['childs'][$ordering] = $taxon->{$classifarray[$classification]['id']};
             } else {
-                $newclassif[$classification]['childs']['none'.$i] = $taxon->$classifarray[$classification]['id'];
+                $newclassif[$classification]['childs']['none'.$i] = $taxon->{$classifarray[$classification]['id']};
                 $i++;
             }
-            $classifkey = $taxon->$classifarray[$classification]['id'];
+            $classifkey = $taxon->{$classifarray[$classification]['id']};
             $newclassif[$classifkey] = array(
-                'label' => $taxon->$classifarray[$classification]['label'],
-                'ordering' => $taxon->$classifarray[$classification]['ordering'],
+                'label' => $taxon->{$classifarray[$classification]['label']},
+                'ordering' => $taxon->{$classifarray[$classification]['ordering']},
                 'childs' => array()
             );
             unset($tempclassif[$key]);
@@ -92,8 +92,8 @@ function metadata_create_classification_rec($tempclassif, $newclassif, $classifa
                     }
                     $classifid = $classif->$classifarray[$classification]['id'];
                     $newclassif[$classifid] = array(
-                        'label' => $classif->$classifarray[$classification]['label'], 
-                        'ordering' => $classif->$classifarray[$classification]['ordering'], 
+                        'label' => $classif->$classifarray[$classification]['label'],
+                        'ordering' => $classif->$classifarray[$classification]['ordering'],
                         'childs' => array()
                     );
                     unset($tempclassif[$id]);
@@ -194,7 +194,7 @@ function metadata_get_classification_option_rec($name, $finalclassif, $id, $path
     $str = '';
 
     foreach ($finalclassif[$id]['childs'] as $ordering => $taxonid) {
-        if (in_array($taxonid,$classifarray[$name]['taxonselect'])) {
+        if (in_array($taxonid, $classifarray[$name]['taxonselect'])) {
             $temppath = $path.'/'.$finalclassif[$taxonid]['label'];
             if ($name.':'.$taxonid == substr($selectedlabel, 0, strripos($selectedlabel, ':'))) {
                 $str .= '<option selected="selected" value="'.$name.':'.$taxonid.':'.$temppath.'">'.$temppath.'</option>';
@@ -291,7 +291,7 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
     $classifarray = unserialize($config->classifarray);
 
     // If we are searching for taxons just after choosing a classification (taxons without parents).
-    if (array_key_exists($name,$classifarray)) {
+    if (array_key_exists($name, $classifarray)) {
         if ($classifarray[$name]['restriction'] == '') {
             $classtable = $DB->get_records($name);
         } else {
@@ -300,26 +300,26 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
         $finalclassif = metadata_create_classification($classtable, $classifarray, $name);
         $restriction = $classifarray[$name]['taxonselect'];
         if (!empty($finalclassif[$name]['childs'])) {
-            $str .= '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num+1).',';
+            $str .= '<select name=classif:'.$num.' onChange="javascript:classif(\''.$CFG->wwwroot.'\', this.options[selectedIndex].text,'.($num + 1).',';
             if ($key != '') {
                  $str .= '\''.$key.'/\'+this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
             } else {
                 $str .= 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
             }
             $str .= '<option selected value="basicvalue"> </option>';
-                foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
-                    if (in_array($id, $restriction)) {
-                        if ($key != '') {
-                            $tempkey = $key.'/'.$finalclassif[$id]['label'];
-                        } else {
-                            $tempkey = $finalclassif[$id]['label'];
-                        }
-                        $str .= '<option value="'.$id.'\\'.$tempkey.'">'.$finalclassif[$id]['label'].'</option>';
+            foreach ($finalclassif[$name]['childs'] as $ordering => $id) {
+                if (in_array($id, $restriction)) {
+                    if ($key != '') {
+                        $tempkey = $key.'/'.$finalclassif[$id]['label'];
+                    } else {
+                        $tempkey = $finalclassif[$id]['label'];
                     }
+                        $str .= '<option value="'.$id.'\\'.$tempkey.'">'.$finalclassif[$id]['label'].'</option>';
                 }
+            }
             $str .= '</select>';
         }
-    // If we are searching the childs of a taxon.
+        // If we are searching the childs of a taxon.
     } else {
         if (!empty($classif)) {
             if ($classifarray[$classif]['restriction'] == '') {
@@ -337,16 +337,16 @@ function print_classification_childs($name, $num, $key, $classif, $value) {
                     $str .= 'this.options[selectedIndex].text,\''.$classif.'\',this.options[this.selectedIndex].value);">';
                 }
                 $str .= '<option selected value="basicvalue"> </option>';
-                    foreach ($finalclassif[substr($value, 0, strpos($value, '\\'))]['childs'] as $ordering => $label) {
-                        if (in_array($label, $restriction)) {
-                            if ($key != '') {
-                                $tempkey = $key.'/'.$finalclassif[$label]['label'];
-                            } else {
-                                $tempkey = $finalclassif[$label]['label'];
-                            }
-                            $str .= '<option value="'.$label.'\\'.$tempkey.'">'.$finalclassif[$label]['label'].'</option>';
+                foreach ($finalclassif[substr($value, 0, strpos($value, '\\'))]['childs'] as $ordering => $label) {
+                    if (in_array($label, $restriction)) {
+                        if ($key != '') {
+                            $tempkey = $key.'/'.$finalclassif[$label]['label'];
+                        } else {
+                            $tempkey = $finalclassif[$label]['label'];
                         }
+                            $str .= '<option value="'.$label.'\\'.$tempkey.'">'.$finalclassif[$label]['label'].'</option>';
                     }
+                }
                 $str .= '</select>';
             }
         }

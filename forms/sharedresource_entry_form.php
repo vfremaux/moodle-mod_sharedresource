@@ -21,8 +21,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->libdir.'/formslib.php';
-require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
+require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 class mod_sharedresource_entry_form extends moodleform {
 
@@ -37,7 +37,7 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     public function definition() {
-        global $CFG, $USER, $DB;
+        global $CFG;
 
         $config = get_config('sharedresource');
 
@@ -57,7 +57,7 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addElement('header', 'resourceheader', get_string('resource'));
 
         // Master identity of the resource against the end user.
-        $mform->addElement('text', 'title', get_string('name'), array('size'=>'48'));
+        $mform->addElement('text', 'title', get_string('name'), array('size' => '48'));
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('title', PARAM_TEXT);
@@ -108,7 +108,7 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('static', 'filename', get_string('file').': ', '');
         } else {
             $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
-            $mform->setType('url', PARAM_URL); 
+            $mform->setType('url', PARAM_URL);
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
 
@@ -120,7 +120,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
         if (mod_sharedresource_supports_feature('entry/customicon')) {
             $group = array();
-            $options = array('accepted_types' => array('.jpg','.gif','.png'));
+            $options = array('accepted_types' => array('.jpg', '.gif', '.png'));
             $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
             $group[] = $mform->createElement('checkbox', 'clearthumbnail', '', get_string('clearthumbnail', 'sharedresource'));
             $mform->addGroup($group, 'thumbnailgroup', get_string('thumbnail', 'sharedresource'), '', array(''), false);
@@ -129,25 +129,25 @@ class mod_sharedresource_entry_form extends moodleform {
         $btext = get_string('gometadataform', 'sharedresource');
 
         $mform->addElement('hidden', 'course', $course);
-        $mform->setType('course', PARAM_INT); 
+        $mform->setType('course', PARAM_INT);
 
         $mform->addElement('hidden', 'add', $add);
-        $mform->setType('add', PARAM_ALPHA); 
+        $mform->setType('add', PARAM_ALPHA);
 
         $mform->addElement('hidden', 'return', $return);
-        $mform->setType('return', PARAM_BOOL); 
+        $mform->setType('return', PARAM_BOOL);
 
         $mform->addElement('hidden', 'section', $section);
         $mform->setType('section', PARAM_INT);
 
         $mform->addElement('hidden', 'mode', $mode);
-        $mform->setType('mode', PARAM_ALPHA); 
+        $mform->setType('mode', PARAM_ALPHA);
 
         $mform->addElement('hidden', 'catid', $catid);
-        $mform->setType('catid', PARAM_INT); 
+        $mform->setType('catid', PARAM_INT);
 
         $mform->addElement('hidden', 'catpath', $catpath);
-        $mform->setType('catpath', PARAM_TEXT); 
+        $mform->setType('catpath', PARAM_TEXT);
 
         $mform->addElement('hidden', 'entryid', $this->entryid);
         $mform->setType('entryid', PARAM_INT);
@@ -156,7 +156,7 @@ class mod_sharedresource_entry_form extends moodleform {
     }
 
     public function validation($data, $files) {
-        global $DB, $USER;
+        global $USER;
 
         $errors = parent::validation($data, $files);
 

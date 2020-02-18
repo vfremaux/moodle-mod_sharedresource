@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
 
 $logs = array(
-    array('module'=>'sharedresource', 'action'=>'add', 'mtable'=>'sharedresource', 'field'=>'name'),
-    array('module'=>'sharedresource', 'action'=>'update', 'mtable'=>'sharedresource', 'field'=>'name'),
-    array('module'=>'sharedresource', 'action'=>'view', 'mtable'=>'sharedresource', 'field'=>'name'),
+    array('module' => 'sharedresource', 'action' => 'add', 'mtable' => 'sharedresource', 'field' => 'name'),
+    array('module' => 'sharedresource', 'action' => 'update', 'mtable' => 'sharedresource', 'field' => 'name'),
+    array('module' => 'sharedresource', 'action' => 'view', 'mtable' => 'sharedresource', 'field' => 'name'),
 );

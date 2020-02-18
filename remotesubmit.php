@@ -42,17 +42,17 @@ $identifier = required_param('resid', PARAM_RAW);
 $repos = optional_param('repos', '', PARAM_TEXT);
 
 if ($confirm == 1) {
-    $shrentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
+    $shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         $pluginclass = get_class($plugin);
-        preg_match('/sharedresource_plugin_(.*)/', $pluginclass, $matches); 
+        preg_match('/sharedresource_plugin_(.*)/', $pluginclass, $matches);
         $pluginname = $matches[1];
         if (!empty($repos) && !preg_match("/\\b$pluginname\\b/", $repos)) {
             continue;
         }
         if ($plugin->remotesubmit($shrentry)) {
-            redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex'));
+            redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex')));
         } else {
             print_error('errornnoticecreation', 'sharedresource');
         }

@@ -51,7 +51,6 @@ class SharedresourceSearchDocument extends SearchDocument {
      * Context may be system, or category context if resource is category limited
      */
     public function __construct(&$sharedresourceentry, $contextid) {
-        global $DB;
 
         // Generic information; required.
         $doc = new StdClass;
@@ -95,7 +94,6 @@ class sharedresource_document_wrapper extends document_wrapper {
      *
      */
     public static function get_iterator() {
-        global $DB;
 
         return array(true);
     }
@@ -189,7 +187,6 @@ class sharedresource_document_wrapper extends document_wrapper {
      * @return true if access is allowed, false elsewhere
      */
     public static function check_text_access($path, $itemtype, $thisid, $user, $groupidunused, $contextidunused) {
-        global $CFG, $DB;
 
         // TODO : apply access check rules on documents to current user.
 

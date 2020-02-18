@@ -1,4 +1,6 @@
 <?php
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data ScoLomfr does not directly store any personal data about any user.';
 
 $string['pluginname'] = 'Learning Object Model. Education Nationale (ScoLOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
@@ -206,7 +208,7 @@ It concern the whole educative community :<br/>
 - publishers, companies <br/><br/>
 <center>More informations here : <a href="https://www.reseau-canope.fr/scolomfr/se-documenter.html">Page of the lomfr profile</a></center>';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';

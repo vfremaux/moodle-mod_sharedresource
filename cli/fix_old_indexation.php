@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This script fixes the old scalar indexation references in sharedresource_metadata, to use 
+ * This script fixes the old scalar indexation references in sharedresource_metadata, to use
  * new pathid taxon references.
  *
  * @package    mod_sharedresource
@@ -24,6 +24,8 @@
  * @copyright   Valery fremaux (http://www.mylearningfactory.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 global $CLI_VMOODLE_PRECHECK;
 
@@ -74,7 +76,7 @@ Examples:
 \$ /usr/bin/php mod/sharedresource/cli/fix_old_indexation.php
 
 \$ /usr/bin/php mod/sharedresource/cli/fix_old_indexation.php --host=http://myvmoodle.moodlearray.com
-"; //TODO: localize - to be translated later when everything is finished
+"; // TODO: localize - to be translated later when everything is finished
 
     echo $help;
     exit(0);
@@ -113,7 +115,7 @@ foreach ($plugins as $nmaespace => $plugin) {
             foreach ($metadata as $mtd) {
                 // If value is scalar.
                 if (is_numeric($mtd->value)) {
-                    
+                    assert(1)
                 }
             }
         }

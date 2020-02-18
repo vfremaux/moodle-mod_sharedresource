@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function sharedresource_rss_feeds() {
-    global $CFG, $DB;
+    global $CFG;
 
     include_once("$CFG->libdir/rsslib.php");
 
@@ -51,7 +51,7 @@ function sharedresource_rss_feeds() {
     return false;
     }
     // Get the first and put it back
-    $lastrecord = array_shift($sharedresources); 
+    $lastrecord = array_shift($sharedresources);
     array_unshift($sharedresources, $lastrecord);
     $lastrecord->id = 1;
     $xmlname = 'lastsharedres';
@@ -90,5 +90,5 @@ function sharedresource_rss_feeds() {
         }
     }
     return $status;
-*/
+    */
 }

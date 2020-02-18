@@ -41,7 +41,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      *
      * @return bool True
      */
-    public function metadata_xml_parser_lom() {
+    public function __construct() {
         return $this->initialise();
     }
 
@@ -57,7 +57,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
 
         xml_set_element_handler($this->parser, "start_element", "end_element");
         xml_set_character_data_handler($this->parser, "default_data");
-        
+
         $this->current_path = '';
         $this->start_discard = 0;
         $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
@@ -455,7 +455,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @param   array   $attrs  The tag's attributes (if any exist).
      * @return  bool            True
      */
-    function start_element($parser, $name, $attrs) {
+    public function start_element($parser, $name, $attrs) {
         if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
@@ -496,7 +496,7 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @param   string  $data   The content of the current tag (1024 byte chunk)
      * @return  bool            True
      */
-    function default_data($parser, $data) {
+    public function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {
             return true;
         }
@@ -550,8 +550,8 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
      * @param string name  The name of the tag, e.g. method_call
      * @return bool true
      */
-    function end_element($parser, $name) {
-        if (strpos($name,':') !== false) {
+    public function end_element($parser, $name) {
+        if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
 

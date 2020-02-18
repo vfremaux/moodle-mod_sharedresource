@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lom
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur Lom ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model (LOM)';
 $string['accessibilityrestrictions'] = 'Restrictions d\'accessibilité';
 $string['aggregationlevel'] = 'Niveau d\'aggrégation';
@@ -101,7 +104,7 @@ Ses objectifs sont les suivants :<br/>
 - disposer de normes à respecter pour garantir la pérennité, l\'interopérabilité, et une certaine ouverture des ressources numériques produites, en lien avec les plates-formes de distribution et de consultation de ces ressources. (extrait de la norme expérimentale).<br/><br/>
 <center>Pour plus d\'informations : <a href="http://fr.wikipedia.org/wiki/Learning_Object_Metadata">Page wikipedia de LOM</a></center>';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
@@ -227,7 +230,7 @@ $string['skilllevel'] = 'Niveau de compétences';
 $string['securitylevel'] = 'Niveau de sécurité';
 $string['competency'] = 'Compétence';
 
-// Kind 
+// Kind
 $string['ispartof'] = 'Est partie de';
 $string['haspart'] = 'A des parties';
 $string['isversionof'] = 'Est variante de';
