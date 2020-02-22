@@ -44,7 +44,7 @@ function metadata_create_classification($classtable, $classifarray, $classificat
                                     );
     $i = 0;
     foreach ($classtable as $key => $taxon) {
-        if ($taxon->{$classifarray[$classification]['parent']} == '' ||
+        if ($taxon->$classifarray[$classification]['parent'] == '' ||
                 $taxon->{$classifarray[$classification]['parent']} == 0) {
             if (($taxon->{$classifarray[$classification]['ordering']} != '') &&
                     ($taxon->{$classifarray[$classification]['ordering']} != 0)) {
@@ -90,6 +90,7 @@ function metadata_create_classification_rec($tempclassif, $newclassif, $classifa
                         $newclassif[$key]['childs']['none'.$i] = $classif->$classifarray[$classification]['id'];
                         $i++;
                     }
+                    $classifid = $classif->$classifarray[$classification]['id'];
                     $classifid = $classif->{$classifarray[$classification]['id']};
                     $newclassif[$classifid] = array(
                         'label' => $classif->{$classifarray[$classification]['label']},

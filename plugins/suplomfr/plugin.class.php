@@ -1549,7 +1549,7 @@ class plugin_suplomfr extends plugin_base {
                         <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
                         }
                     }
-                        $valid = 1;
+                    $valid = 1;
                 }
             }
         }
