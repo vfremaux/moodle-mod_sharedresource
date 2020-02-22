@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lomfr
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur Lomfr ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model. Version française (LOMFR)';
 $string['accessibilityrestrictions'] = 'Restrictions sur l\'accessibilité';
 $string['activity'] = 'Activité induite';
@@ -167,7 +170,7 @@ Il concerne  l\'ensemble de la communauté éducative :<br/>
 <center>Pour plus d\'informations : <a href="http://www.lom-fr.fr">Page du profil lomfr</a></center>
 ';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
@@ -293,7 +296,7 @@ $string['skilllevel'] = 'Niveau de compétences';
 $string['securitylevel'] = 'Niveau de sécurité';
 $string['competency'] = 'Compétence';
 
-// Kind 
+// Kind
 $string['ispartof'] = 'Est partie de';
 $string['haspart'] = 'A des parties';
 $string['isversionof'] = 'Est variante de';

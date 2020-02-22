@@ -1,4 +1,6 @@
 <?php
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data SupLomfr does not directly store any personal data about any user.';
 
 $string['pluginname'] = 'Learning Object Model. Enseignement superieur (SupLOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
@@ -207,7 +209,7 @@ It concern the whole educative community :<br/>
 - publishers, companies <br/><br/>
 <center>More informations here : <a href=\"http://www.lom-fr.fr\">Page of the lomfr profile</a></center>';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
@@ -333,7 +335,7 @@ $string['skilllevel'] = 'Skill level';
 $string['securitylevel'] = 'Security level';
 $string['competency'] = 'Competency';
 
-// Kind 
+// Kind
 $string['ispartof'] = 'is part of';
 $string['haspart'] = 'has part';
 $string['isversionof'] = 'is version of';

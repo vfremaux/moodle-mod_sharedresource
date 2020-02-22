@@ -1,4 +1,6 @@
 <?php
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur SupLomfr ne détient directement aucune donnée relative aux utilisateurs.';
 
 $string['pluginname'] = 'Learning Object Model. Enseignement supérieur (SupLOMFR)';
 $string['accessibilityrestrictions'] = 'Restrictions sur l\'accessibilité';
@@ -202,7 +204,7 @@ Il concerne  l\'ensemble de la communauté éducative :<br/>
 - éditeurs, entreprises <br/><br/>
 <center>Pour plus d\'informations : <a href=\"http://www.lom-fr.fr\">Page du profil SupLOM FR</a></center>';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
@@ -328,7 +330,7 @@ $string['skilllevel'] = 'Niveau de compétences';
 $string['securitylevel'] = 'Niveau de sécurité';
 $string['competency'] = 'Compétence';
 
-// Kind 
+// Kind
 $string['ispartof'] = 'Est partie de';
 $string['haspart'] = 'A des parties';
 $string['isversionof'] = 'Est variante de';

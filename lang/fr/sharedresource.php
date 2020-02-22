@@ -404,10 +404,10 @@ $string['addtoken'] = 'Ajouter un nouveau taxon';
 $string['goup'] = 'Remonter d\'un niveau';
 $string['notsupportedyet'] = 'Modifier des taxons dans une autre table que sharedresource_taxonomy n\'est pas encore supporté.';
 
-//************* Help Strings ******************/
+// ************* Help Strings ******************/
 
 $string['sharedresourceservice_description'] = 'Permet les échanges de service entre fournisseurs et consommateurs de ressources.
-Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs 
+Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs
 de ressources doivent publier ce service vers les sites consommateurs. La librairie des sites fournisseurs devient accessible
 aux consommateurs';
 
@@ -422,8 +422,8 @@ $string['matchedvalues_help'] = '
 
 $string['description_help'] = "
 La description est un résumé très court de ce qu'est la ressource\n\n
-Pour certaines options d'affichage d'une ressource, le résumé est affiché à côté de la ressource, 
-sinon il apparaît dans la page d'index de ressources, facilitant ainsi la recherche de 
+Pour certaines options d'affichage d'une ressource, le résumé est affiché à côté de la ressource,
+sinon il apparaît dans la page d'index de ressources, facilitant ainsi la recherche de
 ressources particulières pour les étudiants.
 ";
 
@@ -528,7 +528,7 @@ ADR;TYPE=HOME:;;42 Plantation St.;Baytown;LA;30314;United States of America\n
 LABEL;TYPE=HOME:42 Plantation St.\nBaytown, LA 30314\nUnited States of America\n
 EMAIL;TYPE=PREF,INTERNET:forrestgump@example.com\n
 REV:20080424T195243Z\n
-END:VCARD 
+END:VCARD
 ";
 
 $string['sharingcontext_help'] = "

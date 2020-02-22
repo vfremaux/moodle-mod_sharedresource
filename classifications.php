@@ -75,7 +75,7 @@ if (!empty($action)) {
 $classifications = $DB->get_records('sharedresource_classif');
 
 if (empty($classifications)) {
-    echo '<center>'.get_string('noclassification','sharedresource').'</center>';
+    echo '<center>'.get_string('noclassification', 'sharedresource').'</center>';
 } else {
 
     $table = new html_table();
@@ -186,7 +186,7 @@ $addurl = new moodle_url('/mod/sharedresource/classification.php');
 echo $OUTPUT->single_button($addurl, get_string('addclassification', 'sharedresource'));
 echo '</div>';
 
-$label = get_string('backadminpage','sharedresource');
+$label = get_string('backadminpage', 'sharedresource');
 $buttonurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
 echo $OUTPUT->single_button($buttonurl, $label);
 

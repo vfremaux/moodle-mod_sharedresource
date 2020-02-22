@@ -25,7 +25,7 @@ namespace mod_sharedresource;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Extend the base resource class for file resources.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
@@ -33,14 +33,14 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class plugin_lom extends plugin_base {
 
-    // we may setup a context in which we can decide where users 
+    // we may setup a context in which we can decide where users
     // can be assigned role regarding metadata
 
     protected $namespace;
 
     protected $context;
 
-    var $ALLSOURCES = array('lom');
+    public $ALLSOURCES = array('lom');
 
     public $DEFAULTSOURCE = 'LOMv1.0';
 
@@ -298,7 +298,8 @@ class plugin_lom extends plugin_base {
             'name' => 'Role',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert'),
+            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer',
+                        'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -676,7 +677,7 @@ class plugin_lom extends plugin_base {
         '4_7' => array(
             'name' => 'Duration',
             'source' => 'lom',
-            'type' => 'duration', /// or text TO CHECK
+            'type' => 'duration', // Or text TO CHECK.
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -854,7 +855,7 @@ class plugin_lom extends plugin_base {
         '5_9' => array(
             'name' => 'Typical Learning Time',
             'source' => 'lom',
-            'type' => 'duration', /// or text TO CHECK
+            'type' => 'duration', // Or text TO CHECK.
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1285,7 +1286,7 @@ class plugin_lom extends plugin_base {
         $this->namespace = 'lom';
     }
 
-    function search(&$fromform, &$result) {
+    public function search(&$fromform, &$result) {
         global $CFG, $DB;
 
         $fromform->title = isset($fromform->title) ? true : false;
@@ -1306,7 +1307,7 @@ class plugin_lom extends plugin_base {
         }
         // No valid search terms so lets just open it up.
         if (count($searchterms) == 0) {
-            $searchterms[]= '%';
+            $searchterms[] = '%';
         }
         $search = trim(implode(" ", $searchterms));
         // To allow case-insensitive search for postgesql.
@@ -1331,11 +1332,11 @@ class plugin_lom extends plugin_base {
                 $descriptionsearch .= ' AND ';
             }
             if (substr($searchterm, 0, 1) == '+') {
-                $searchterm          = substr($searchterm,1);
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
-            } else if (substr($searchterm,0,1) == "-") {
-                $searchterm          = substr($searchterm,1);
+            } else if (substr($searchterm, 0, 1) == "-") {
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
             } else {
@@ -1379,9 +1380,9 @@ class plugin_lom extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    function lomHeader() {
+    public function lomHeader() {
         return "
-            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\" 
+            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\"
                         xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\"
                             xmlns:scolomfr=\"http://www.lom-fr.fr/xsd/SCOLOMFR\">";
     }
@@ -1393,8 +1394,8 @@ class plugin_lom extends plugin_base {
     function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
-        $tmpname = str_replace(' ','',$value['name']);
-        $name = strtolower(substr($tmpname,0,1)).substr($tmpname,1);
+        $tmpname = str_replace(' ', '', $value['name']);
+        $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
         $namespace = @$value['source'];
         // Category/root : we have to call generate_xml on each child.
@@ -1416,7 +1417,7 @@ class plugin_lom extends plugin_base {
             for ($i = 0; $i < count($tab); $i++) {
                 $fatherstr .= $tab[$i];
             }
-        } elseif ($value['type'] == 'category') {
+        } else if ($value['type'] == 'category') {
             $tab = array();
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
@@ -1440,9 +1441,9 @@ class plugin_lom extends plugin_base {
                 $fatherstr .= "
                 </{$namespace}:{$name}>";
             }
-        } elseif (count(@$metadata[$elem]) > 0) {
+        } else if (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
-                // a "node" that contains data 
+                // a "node" that contains data
                 if (strpos($path, $pathcode) === 0) {
                     switch ($value['type']) {
                         case 'text':
@@ -1492,13 +1493,13 @@ class plugin_lom extends plugin_base {
     /**
      * Access to the sharedresource_entry object after a new object
      * is saved.
-     * 
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    function after_save(&$shrentry) {
+    public function after_save(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1514,7 +1515,7 @@ class plugin_lom extends plugin_base {
         return true;
     }
 
-    function after_update(&$shrentry) {
+    public function after_update(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1533,7 +1534,7 @@ class plugin_lom extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getTitleElement() {
+    public function getTitleElement() {
         $element = (object)$this->METADATATREE['1_2'];
         $element->node = '1_2';
         return $element;
@@ -1542,7 +1543,7 @@ class plugin_lom extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getDescriptionElement() {
+    public function getDescriptionElement() {
         $element = (object)$this->METADATATREE['1_4'];
         $element->node = '1_4';
         return $element;
@@ -1551,7 +1552,7 @@ class plugin_lom extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    function getKeywordElement() {
+    public function getKeywordElement() {
         $element = (object)$this->METADATATREE['1_5'];
         $element->node = '1_5';
         return $element;
@@ -1560,7 +1561,7 @@ class plugin_lom extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getFileFormatElement() {
+    public function getFileFormatElement() {
         $element = (object)$this->METADATATREE['4_1'];
         $element->node = '4_1';
         return $element;
@@ -1569,7 +1570,7 @@ class plugin_lom extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getSizeElement() {
+    public function getSizeElement() {
         $element = (object)$this->METADATATREE['4_2'];
         $element->node = '4_2';
         return $element;
@@ -1578,7 +1579,7 @@ class plugin_lom extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    function getLocationElement() {
+    public function getLocationElement() {
         $element = (object)$this->METADATATREE['4_3'];
         $element->node = '4_3';
         return $element;
@@ -1587,7 +1588,7 @@ class plugin_lom extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getTaxonomyPurposeElement() {
+    public function getTaxonomyPurposeElement() {
         $element = (object)$this->METADATATREE['9_1'];
         $element->node = '9_1';
         return $element;
@@ -1596,7 +1597,7 @@ class plugin_lom extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getTaxonomyValueElement() {
+    public function getTaxonomyValueElement() {
         $element = (object)$this->METADATATREE['9_2_2_1'];
         $element->node = '9_2_2_1';
         return $element;
@@ -1605,7 +1606,7 @@ class plugin_lom extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    function getKeywordValues($metadata) {
+    public function getKeywordValues($metadata) {
         $keyelm = $this->getKeywordElement();
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
@@ -1623,7 +1624,7 @@ class plugin_lom extends plugin_base {
      * The "id" points to the local id to the taxon in the taxonoy source table
      * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
-    function getTaxumpath() {
+    public function getTaxumpath() {
         $element = array();
         $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
@@ -1636,7 +1637,7 @@ class plugin_lom extends plugin_base {
     /**
      * Gets the metadata node identifier that provides classification storage capability.
      */
-    function getClassification() {
+    public function getClassification() {
         $element = "9";
         return $element;
     }
@@ -1657,7 +1658,7 @@ class plugin_lom extends plugin_base {
     /**
      * records keywords in metadata flat table
      */
-    function setKeywords($keywords) {
+    public function setKeywords($keywords) {
         global $DB;
 
         if (empty($this->entryid)) {
@@ -1685,7 +1686,7 @@ class plugin_lom extends plugin_base {
     /**
      * records title in metadata flat table from db attributes
      */
-    function setTitle($title) {
+    public function setTitle($title) {
         global $DB;
 
         if (empty($this->entryid)) {

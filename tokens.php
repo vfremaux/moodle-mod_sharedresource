@@ -65,7 +65,7 @@ $navigator = \local_sharedresources\browser\navigation($taxonomy);
 $tokentree = $navigator->get_full_tree();
 
 if (empty($tokentree)) {
-    echo '<center>'.get_string('noclassification','sharedresource').'</center>';
+    echo '<center>'.get_string('noclassification', 'sharedresource').'</center>';
 } else {
 
     $table = new html_table();
@@ -145,7 +145,7 @@ if (empty($tokentree)) {
     echo '</div>';
 }
 
-$label = get_string('backadminpage','sharedresource');
+$label = get_string('backadminpage', 'sharedresource');
 $buttonurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
 echo $OUTPUT->single_button($buttonurl, $label);
 

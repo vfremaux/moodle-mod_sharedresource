@@ -457,7 +457,7 @@ $string['configscormintegration_desc'] = 'Chooses how scorms are integrated in c
 $string['medatadaconfiguration_desc'] = 'This <a href="{$a}">additional page</a> allows the configuration of metadata form for each role,
 and to choose the search widgets.';
 
-//************* Help Strings ******************/
+// ************* Help Strings ******************/
 
 $string['profilefieldname_help'] = '
    Name is given as a prefix:fieldname value. Prefix can be "user" or "profile_field", and respectively addresses core user
@@ -470,7 +470,7 @@ $string['matchedvalues_help'] = '
 
 $string['description_help'] = "
 The description is a very short summary of the resource.\n\n
-For some resource display options, the summary is printed along side 
+For some resource display options, the summary is printed along side
 the resource itself, otherwise it appears on the resource index page
 making it easier for students searching for particular resources.
 ";
@@ -487,7 +487,7 @@ The configuration of each classification added is then necessary by clicking on 
 ";
 
 $string['addsharedresource_help'] = "
-Resources are content: information the teacher wants to bring into the course.  These can be prepared files uploaded to the course 
+Resources are content: information the teacher wants to bring into the course.  These can be prepared files uploaded to the course
 server; pages edited directly in Moodle; or external web pages made to appear part of this course.\n\n
 Shared Resources are course independent, and are created in advance before being attached to a Course.\n\n
 Resources are either URLs, or a locally uploaded file. Specify your resource, along with the appropriate metadata, to add it to the searchable index.

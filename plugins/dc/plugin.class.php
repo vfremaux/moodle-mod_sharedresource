@@ -24,7 +24,7 @@ namespace mod_sharedresource;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Extend the base resource class for file resources.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
@@ -41,7 +41,7 @@ class plugin_dc extends plugin_base {
 
     protected $context;
 
-    var $ALLSOURCES = array('dc');
+    public $ALLSOURCES = array('dc');
 
     public $DEFAULTSOURCE = 'DCMESv1.1';
 
@@ -945,7 +945,7 @@ class plugin_dc extends plugin_base {
         $this->namespace = 'dc';
     }
 
-    function search(&$fromform, &$result) {
+    public function search(&$fromform, &$result) {
         global $CFG, $DB;
 
         $fromform->title = isset($fromform->title) ? true : false;
@@ -966,7 +966,7 @@ class plugin_dc extends plugin_base {
         }
         // No valid search terms so lets just open it up.
         if (count($searchterms) == 0) {
-            $searchterms[]= '%';
+            $searchterms[] = '%';
         }
         $search = trim(implode(" ", $searchterms));
         // To allow case-insensitive search for postgesql.
@@ -991,11 +991,11 @@ class plugin_dc extends plugin_base {
                 $descriptionsearch .= ' AND ';
             }
             if (substr($searchterm, 0, 1) == '+') {
-                $searchterm          = substr($searchterm,1);
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
-            } else if (substr($searchterm,0,1) == "-") {
-                $searchterm          = substr($searchterm,1);
+            } else if (substr($searchterm, 0, 1) == "-") {
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
             } else {
@@ -1039,7 +1039,7 @@ class plugin_dc extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    function dcHeader() {
+    public function dcHeader() {
         return '<dcds:descriptionSet  xml:base="http://purl.org/dc/terms/"  xmlns:dcds="http://purl.org/dc/xmlns/2008/09/01/dc-ds-xml/">';
     }
 
@@ -1047,11 +1047,11 @@ class plugin_dc extends plugin_base {
      * Generates metadata element as XML
      *
      */
-    function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+    public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
-        $tmpname = str_replace(' ','',$value['name']);
-        $name = strtolower(substr($tmpname,0,1)).substr($tmpname,1);
+        $tmpname = str_replace(' ', '', $value['name']);
+        $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
         $namespace = @$value['source'];
         // Category/root : we have to call generate_xml on each child.
@@ -1099,7 +1099,7 @@ class plugin_dc extends plugin_base {
             }
         } else if (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
-                // a "node" that contains data 
+                // A "node" that contains data.
                 if (strpos($path, $pathcode) === 0) {
                     switch ($value['type']) {
                         case 'text':
@@ -1148,14 +1148,14 @@ class plugin_dc extends plugin_base {
 
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved. 
-     * 
+     * is saved.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    function after_save(&$shrentry) {
+    public function after_save(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1171,7 +1171,7 @@ class plugin_dc extends plugin_base {
         return true;
     }
 
-    function after_update(&$shrentry) {
+    public function after_update(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1190,7 +1190,7 @@ class plugin_dc extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getTitleElement() {
+    public function getTitleElement() {
         $element = (object)$this->METADATATREE['1_1'];
         $element->node = '1_1';
         return $element;
@@ -1199,7 +1199,7 @@ class plugin_dc extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    function getDescriptionElement() {
+    public function getDescriptionElement() {
         $element = (object)$this->METADATATREE['4_1'];
         $element->node = '4_1';
         return $element;
@@ -1208,14 +1208,14 @@ class plugin_dc extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    function getKeywordElement() {
+    public function getKeywordElement() {
         return null;
     }
 
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getFileFormatElement() {
+    public function getFileFormatElement() {
         $element = (object)$this->METADATATREE['9_1'];
         $element->node = '9_1';
         return $element;
@@ -1224,7 +1224,7 @@ class plugin_dc extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    function getSizeElement() {
+    public function getSizeElement() {
         $element = (object)$this->METADATATREE['9_2'];
         $element->node = '9_2';
         return $element;
@@ -1233,7 +1233,7 @@ class plugin_dc extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    function getLocationElement() {
+    public function getLocationElement() {
         $element = (object)$this->METADATATREE['11_1'];
         $element->node = '11_1';
         return $element;
@@ -1243,41 +1243,41 @@ class plugin_dc extends plugin_base {
      * purpose must expose the values, so a function to find the purpose field is usefull
      * Dublin Core do not provide any taxonomy capability.
      */
-    function getTaxonomyPurposeElement() {
+    public function getTaxonomyPurposeElement() {
         return null;
     }
 
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    function getKeywordValues($metadata) {
+    public function getKeywordValues($metadata) {
         return '';
     }
 
     /**
      * Allow to get the taxumpath category and other information about its children node.
      */
-    function getTaxumpath() {
+    public function getTaxumpath() {
         return null;
     }
 
     /**
      * Allow to get the taxumpath category and other information about its children node.
      */
-    function getClassification() {
+    public function getClassification() {
         return null;
     }
 
     /**
      * records keywords in metadata flat table
      */
-    function setKeywords($keywords) {
+    public function setKeywords($keywords) {
     }
 
     /**
-    * records title in metadata flat table from db attributes
-    */
-    function setTitle($title) {
+     * records title in metadata flat table from db attributes
+     */
+    public function setTitle($title) {
         global $DB;
 
         if (empty($this->entryid)) {

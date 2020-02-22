@@ -73,7 +73,7 @@ if ($identifier) {
             sharedresource_not_found(SITEID, 'Code 01');
         }
 
-        if (!$sharedresource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
+        if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
             sharedresource_not_found($cm->course, 'Code 02');
         }
 
@@ -92,7 +92,7 @@ if ($identifier) {
         sharedresource_not_found(SITEID, 'code 05');
     }
 
-    if (!$course =  $DB->get_record('course', array('id' => $cm->course))) {
+    if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
         print_error('badcourseid', 'sharedresource');
     }
 

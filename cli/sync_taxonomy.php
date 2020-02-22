@@ -111,7 +111,7 @@ if (!empty($options['classifids'])) {
 }
 
 if (empty($classifs)) {
-    die "No taxonomies to process. ";
+    die ("No taxonomies to process. ");
 }
 
 foreach ($classifs as $classif) {

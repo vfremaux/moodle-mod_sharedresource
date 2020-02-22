@@ -22,14 +22,14 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu
 
 /**
- * This file is a clone from main lti client form used by sharedresource to easily 
+ * This file is a clone from main lti client form used by sharedresource to easily
  * make a new client instance in a course from a tool definition stored in sharedresource
  * library
  *
  * The client takes most of its configuration data from the sharedresource informations, such as
- * name, description and tool end point url. 
+ * name, description and tool end point url.
  *
- * At the moment, there is not yet provision to store some LTI secret key in that record, as 
+ * At the moment, there is not yet provision to store some LTI secret key in that record, as
  * we lack of secure fields recoding in sharedresource metadata, and those fields would not be
  * LOM compliant. So we still need the secret be known by the user that deployes the LTI tool
  * from the library.
@@ -55,7 +55,7 @@ require_once($CFG->dirroot.'/mod/lti/locallib.php');
 class lti_mod_form extends moodleform {
 
     public function definition() {
-        global $DB, $PAGE, $OUTPUT, $USER, $COURSE;
+        global $PAGE, $OUTPUT, $USER, $COURSE;
 
         $this->typeid = 0;
 
@@ -80,7 +80,6 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'provider');
         $mform->setType('provider', PARAM_TEXT);
 
-
         $mform->addElement('hidden', 'mode');
         $mform->setType('mode', PARAM_TEXT);
 
@@ -92,7 +91,7 @@ class lti_mod_form extends moodleform {
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // Adding the standard "name" field.
 
-        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size'=>'64'));
+        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size' => '64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
@@ -157,12 +156,12 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'instructorcustomparameters');
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
 
-        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size'=>'64'));
+        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size' => '64'));
         $mform->setType('icon', PARAM_TEXT);
         $mform->setAdvanced('icon');
         $mform->addHelpButton('icon', 'icon_url', 'lti');
 
-        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size'=>'64'));
+        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size' => '64'));
         $mform->setType('secureicon', PARAM_TEXT);
         $mform->setAdvanced('secureicon');
         $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
@@ -244,7 +243,7 @@ class lti_mod_form extends moodleform {
     public function definition_after_data() {
         parent::definition_after_data();
 
-        //$mform =& $this->_form;
+        // $mform =& $this->_form;
     }
 
     /**
