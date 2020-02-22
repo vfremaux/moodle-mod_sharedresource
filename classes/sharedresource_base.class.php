@@ -556,7 +556,7 @@ class base {
                 echo '<!--<![endif]-->';
                 echo '</object>';
                 echo '</div>';
-            }  else if ($resourcetype == 'flash') {
+            } else if ($resourcetype == 'flash') {
                 echo '<div class="resourcecontent resourceswf">';
                 echo '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">';
                 echo "<param name=\"movie\" value=\"$fullurl\" />";

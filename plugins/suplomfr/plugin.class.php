@@ -658,7 +658,8 @@ class plugin_suplomfr extends plugin_base {
             'name' => 'Name',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
+            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer',
+                            'opera', 'amaya', 'firefox', 'safari'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1547,7 +1548,7 @@ class plugin_suplomfr extends plugin_base {
                             $fatherstr .= "
                         <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
                         }
-                        }
+                    }
                         $valid = 1;
                 }
             }

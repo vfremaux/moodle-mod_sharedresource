@@ -1391,7 +1391,7 @@ class plugin_lom extends plugin_base {
      * Generates metadata element as XML
      *
      */
-    function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+    public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
         $tmpname = str_replace(' ', '', $value['name']);

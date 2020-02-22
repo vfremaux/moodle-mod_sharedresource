@@ -44,7 +44,7 @@ function metadata_create_classification($classtable, $classifarray, $classificat
                                     );
     $i = 0;
     foreach ($classtable as $key => $taxon) {
-        if ($taxon->$classifarray[$classification]['parent'] == '' ||
+        if ($taxon->{$classifarray[$classification]['parent']} == '' ||
                 $taxon->{$classifarray[$classification]['parent']} == 0) {
             if (($taxon->{$classifarray[$classification]['ordering']} != '') &&
                     ($taxon->{$classifarray[$classification]['ordering']} != 0)) {

@@ -154,7 +154,7 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param string $capability tells if the field is visible or not depending of the role of the user regarding metadata
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
-    function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
+    public function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -460,7 +460,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 }
                 $template->mtdvalue .= $OUTPUT->help_icon('vcard', 'sharedresource', $vcard);
             }
-            }
+        }
     }
 
     public function metadata_edit_form($capability) {
