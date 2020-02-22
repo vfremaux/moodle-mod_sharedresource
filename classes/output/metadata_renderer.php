@@ -460,7 +460,7 @@ class metadata_renderer extends \plugin_renderer_base {
                 }
                 $template->mtdvalue .= $OUTPUT->help_icon('vcard', 'sharedresource', $vcard);
             }
-            }
+        }
     }
 
     public function metadata_edit_form($capability) {
