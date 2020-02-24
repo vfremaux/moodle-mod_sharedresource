@@ -80,8 +80,8 @@ if (array_key_exists('cancel', $metadataentries)) {
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
-$system_context = context_system::instance();
-$PAGE->set_context($system_context);
+$systemcontext = context_system::instance();
+$PAGE->set_context($systemcontext);
 $url = new moodle_url('/mod/sharedresource/metadatarep.php');
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
