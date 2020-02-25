@@ -72,7 +72,7 @@
 
 /* Label */
 .path-mod-sharedresource-forms label {
-    background: #dcdcdc;
+    background: #ddd;
     display: block;
     float: left;
     font-size: 1.1em;
@@ -87,7 +87,7 @@
 }
 
 .path-mod-sharedresource-forms label .error {
-    background-color: #ff0000;
+    background-color: #f00;
 }
 
 .path-mod-sharedresource-forms .form_label_nostyle {
@@ -149,12 +149,12 @@
 }
 
 .mtd-form input[type="submit"]:hover {
-    background-color: #66cc33;
+    background-color: #6c3;
     cursor: pointer;
 }
 
 .path-mod-sharedresource-forms input[type="reset"] {
-    border: #ddeeff 1px solid;
+    border: #def 1px solid;
     width: 27%;
 }
 
@@ -168,10 +168,10 @@
     -moz-border-radius-bottomright: 6px;
     -moz-border-radius-topleft: 6px;
     -moz-border-radius-topright: 6px;
-    border-bottom: thin #dcdcdc solid;
-    border-left: thin #dcdcdc solid; 
-    border-right: thin #dcdcdc solid;
-    border-top: thin #dcdcdc solid;
+    border-bottom: thin #ddd solid;
+    border-left: thin #ddd solid; 
+    border-right: thin #ddd solid;
+    border-top: thin #ddd solid;
     clear: both;
     padding-bottom: 1em;
     padding-left: 1em;
@@ -235,7 +235,7 @@
 
 .ds_head {
     background-color: #585858;
-    color: #ffffff;
+    color: #fff;
     font-size: 13px;
     font-weight: bold;
     letter-spacing: 2px;
@@ -243,8 +243,8 @@
 }
 
 .ds_subhead {
-    background-color: #cccccc;
-    color: #000000;
+    background-color: #ccc;
+    color: #000;
     font-size: 12px;
     font-weight: bold;
     text-align: center;
@@ -252,8 +252,8 @@
 }
 
 .ds_cell {
-    background-color: #eeeeee;
-    color: #000000;
+    background-color: #eee;
+    color: #000;
     cursor: pointer;
     font-size: 13px;
     text-align: center;
@@ -275,7 +275,7 @@
 }
 
 td.mtd-field {
-    background-color: #eeeeee;
+    background-color: #eee;
     border: 2px solid white;
     color: black;
     font-weight: bolder;
@@ -287,9 +287,9 @@ td.mtd-field {
 }
 
 td.mtd-num {
-    background-color: #eeeeee;
+    background-color: #eee;
     border: 2px solid white;
-    color: #666666;
+    color: #666;
     min-height: 24px;
     padding: 4px;
     text-align: left;
@@ -375,7 +375,7 @@ fieldset > legend {
 }
 
 #sharedresource-add-instance > div {
-    border: 1px solid #aaaaaa;
+    border: 1px solid #aaa;
     border-radius: 8px;
     display: table-cell;
     padding: 20px;
@@ -395,8 +395,8 @@ fieldset > legend {
 .path-mod-sharedresource-forms select[readonly],
 .path-mod-sharedresource-forms textarea[disabled],
 .path-mod-sharedresource-forms textarea[readonly] {
+    background-color: #eee;
     cursor: not-allowed;
-    background-color: #eeeeee;
 }
 
 .path-mod-sharedresource-forms .mtd-form-element.is-empty.is-mandatory input,
@@ -413,10 +413,10 @@ fieldset > legend {
 
 a.sharedresource-actionlink {
     background-color: #cccccc;
+    border-radius: 4px;
     color: #ffffff;
     margin-bottom: 20px;
     padding: 3px 10px;
-    border-radius: 4px;
 }
 
 #sharedresources-link-to-search input[type=button], #sharedresources-link-to-browser input[type=button] {
