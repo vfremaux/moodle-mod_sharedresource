@@ -111,7 +111,7 @@ class base {
             }
             $this->sharedresource->identifier = $identifier;
         } else {
-            assert(1)
+            assert(1);
             // Empty sharedresource
         }
 
@@ -134,9 +134,9 @@ class base {
      * form post process for preparing layout parameters properly
      */
     public function _postprocess() {
-        global $SHR_WINDOW_OPTIONS;
+        global $shr_window_options;
 
-        $alloptions = $SHR_WINDOW_OPTIONS;
+        $alloptions = $shr_window_options;
 
         $resource = $this->sharedresource;
 
@@ -753,7 +753,7 @@ class base {
      * @param mform   object, reference to Moodle Forms object
      */
     public function setup_elements(&$mform) {
-        global $SHR_WINDOW_OPTIONS, $DB;
+        global $shr_window_options, $DB;
 
         $config = get_config('sharedresource');
 
@@ -849,7 +849,7 @@ class base {
         $mform->disabledIf('framepage', 'forcedownload', 'checked');
         $mform->setAdvanced('framepage');
 
-        foreach ($SHR_WINDOW_OPTIONS as $option) {
+        foreach ($shr_window_options as $option) {
             if ($option == 'height' or $option == 'width') {
                 $mform->addElement('text', $option, get_string('new'.$option, 'sharedresource'), array('size' => '4'));
                 $mform->setType($option, PARAM_TEXT);

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>cli</location>
+    <name>Server Cli scripts</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>3=GPL V3</licenseversion>
+  </library>
+  <library>
+    <location>extlib</location>
+    <name>Non moodle libraries and scripts</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>3=GPL V3</licenseversion>
+  </library>
+</libraries>

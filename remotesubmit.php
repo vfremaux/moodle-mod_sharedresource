@@ -59,7 +59,7 @@ if ($confirm == 1) {
     }
 } else {
     if ($confirm === 0) {
-        redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex');
+        redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex'));
     } else {
         $options['id'] = $id;
         $options['resid'] = $identifier;

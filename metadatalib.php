@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  * in case of validation.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/encoding.php');
+require_once($CFG->dirroot.'/mod/sharedresource/extlib/encoding.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 // Ensure thr adequate sharedresource_entry class is pre loaded.

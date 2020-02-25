@@ -971,15 +971,15 @@ class plugin_dc extends plugin_base {
         $search = trim(implode(" ", $searchterms));
         // To allow case-insensitive search for postgesql.
         if ($CFG->dbfamily == 'postgres') {
-            $LIKE = 'ILIKE';
-            $NOTLIKE = 'NOT ILIKE'; // Case-insensitive.
-            $REGEXP = '~*';
-            $NOTREGEXP = '!~*';
+            $like = 'ILIKE';
+            $notlike = 'NOT ILIKE'; // Case-insensitive.
+            $regexp = '~*';
+            $notregexp = '!~*';
         } else {
-            $LIKE = 'LIKE';
-            $NOTLIKE = 'NOT LIKE';
-            $REGEXP = 'REGEXP';
-            $NOTREGEXP = 'NOT REGEXP';
+            $like = 'LIKE';
+            $notlike = 'NOT LIKE';
+            $regexp = 'REGEXP';
+            $notregexp = 'NOT REGEXP';
         }
         $titlesearch = '';
         $descriptionsearch = '';
@@ -992,15 +992,15 @@ class plugin_dc extends plugin_base {
             }
             if (substr($searchterm, 0, 1) == '+') {
                 $searchterm          = substr($searchterm, 1);
-                $titlesearch        .= " title $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
-                $descriptionsearch  .= " description $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
+                $titlesearch        .= " title $regexp '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
+                $descriptionsearch  .= " description $regexp '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
             } else if (substr($searchterm, 0, 1) == "-") {
                 $searchterm          = substr($searchterm, 1);
-                $titlesearch        .= " title $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
-                $descriptionsearch  .= " description $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
+                $titlesearch        .= " title $notregexp '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
+                $descriptionsearch  .= " description $notregexp '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
             } else {
-                $titlesearch        .= ' title '.       $LIKE .' \'%'. $searchterm .'%\' ';
-                $descriptionsearch  .= ' description '. $LIKE .' \'%'. $searchterm .'%\' ';
+                $titlesearch        .= ' title '.       $like .' \'%'. $searchterm .'%\' ';
+                $descriptionsearch  .= ' description '. $like .' \'%'. $searchterm .'%\' ';
             }
         }
         $selectsql  = '';

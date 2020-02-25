@@ -29,11 +29,11 @@ define('SHAREDRESOURCE_SEARCH_LIMIT', '200');
 define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 
-global $SHR_WINDOW_OPTIONS;
-global $SHR_CORE_ELEMENTS;
-global $SHR_METADATA_ELEMENTS; // Must be global because it might be included from a function!
+global $shr_window_options;
+global $shr_core_elements;
+global $shr_metadata_elements; // Must be global because it might be included from a function!
 
-$SHR_WINDOW_OPTIONS = array('resizable',
+$shr_window_options = array('resizable',
                                     'scrollbars',
                                     'directories',
                                     'location',
@@ -43,7 +43,7 @@ $SHR_WINDOW_OPTIONS = array('resizable',
                                     'width',
                                     'height');
 
-$SHR_CORE_ELEMENTS = array('id',
+$shr_core_elements = array('id',
                                     'identifier',
                                     'title',
                                     'description',
@@ -55,7 +55,7 @@ $SHR_CORE_ELEMENTS = array('id',
                                     'mimetype',
                                     'timemodified');
 
-$SHR_METADATA_ELEMENTS = array(array('name' => 'Contributor',
+$shr_metadata_elements = array(array('name' => 'Contributor',
                                                 'datatype' => 'text'),
                                           array('name' => 'IssueDate',
                                                 'datatype' => 'lomdate'),
@@ -602,7 +602,7 @@ function sharedresource_get_extra_capabilities() {
  * @return string, formated URL.
  */
 function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $options = null) {
-    global $CFG, $HTTPSPAGEREQUIRED;
+    global $CFG;
 
     $fs = get_file_storage();
     $file = $fs->get_file_by_id($sharedresourceentry->file);

@@ -1006,7 +1006,7 @@ abstract class plugin_base {
 
         if ($sources) {
             foreach ($matchingsources as $source) {
-                assert(1)
+                assert(1);
                 /*
                  * Say a source instance id is f.e. 9_2_1:0_3_0,
                  * the taxon id and entry would be : 9_2_2_1:0_3_0_0 and 9_2_2_2:0_3_0_0

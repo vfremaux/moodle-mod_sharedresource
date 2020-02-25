@@ -11,12 +11,12 @@
 }
 
 #mtd-form-tabs.tabtree {
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
 }
 
 #mtd-form-menu.tabrow0 {
     line-height: initial;
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
 }
 
 #mtd-form-menu.tabrow0 li {
@@ -24,7 +24,7 @@
     border-collapse: separate;
     position: relative;
     top: -1px;
-    z-index:100;
+    z-index: 100;
 }
 
 #mtd-form-menu.tabrow0 li.here {
@@ -37,7 +37,7 @@
 }
 
 #mtd-form-menu.tabrow0 li.is-empty a span {
-    background-color:#ffd0d0;
+    background-color: #ffd0d0;
     color: #000;
 }
 
@@ -86,7 +86,7 @@
     font-weight: bold;
 }
 
-.path-mod-sharedresource-forms label .error{
+.path-mod-sharedresource-forms label .error {
     background-color: #ff0000;
 }
 
@@ -132,34 +132,34 @@
     width: 6%;
 }
 
-.mtd-form .addbutton{
+.mtd-form .addbutton {
     margin-bottom: 10px;
     text-align: center;
     width: 40%;
 }
 
 #mtd-edit-form-submits {
-    margin-top:20px;
+    margin-top: 20px;
 }
 
 /* button submit */
 .mtd-form input[type="submit"] {
-    border: #DDEEFF 1px solid;
+    border: #ddeeff 1px solid;
     width: 27%;
 }
 
 .mtd-form input[type="submit"]:hover {
-    background-color: #66CC33;
+    background-color: #66cc33;
     cursor: pointer;
 }
 
 .path-mod-sharedresource-forms input[type="reset"] {
-    border: #DDEEFF 1px solid;
+    border: #ddeeff 1px solid;
     width: 27%;
 }
 
 .path-mod-sharedresource-forms input[type="reset"]:hover {
-    background-color: #E6484D;
+    background-color: #e6484d;
     cursor: pointer;
 }
 
@@ -189,7 +189,7 @@
 }
 
 .mtd-tab-hidden {
-    display: none !important;
+    display: none;
 }
 
 .mtd-tab-visible {
@@ -216,7 +216,7 @@
     display: none;
 }
 
-#mtd-form-container .addbutton{
+#mtd-form-container .addbutton {
     margin-bottom: 10px;
     text-align: center;
     width: 40%;
@@ -235,7 +235,7 @@
 
 .ds_head {
     background-color: #585858;
-    color: #FFF;
+    color: #ffffff;
     font-size: 13px;
     font-weight: bold;
     letter-spacing: 2px;
@@ -243,8 +243,8 @@
 }
 
 .ds_subhead {
-    background-color: #ccc;
-    color: #000;
+    background-color: #cccccc;
+    color: #000000;
     font-size: 12px;
     font-weight: bold;
     text-align: center;
@@ -252,8 +252,8 @@
 }
 
 .ds_cell {
-    background-color: #EEE;
-    color: #000;
+    background-color: #eeeeee;
+    color: #000000;
     cursor: pointer;
     font-size: 13px;
     text-align: center;
@@ -261,21 +261,21 @@
 }
 
 .ds_cell:hover {
-    background-color: #F3F3F3;
+    background-color: #f3f3f3;
 } /* This hover code won't work for IE */
 
 /** Styling for library GUI **/
 
-#libsearch input{
+#libsearch input {
     font-size: 0.9em;
 }
 
-#libsearch select{
+#libsearch select {
     font-size: 0.9em;
 }
 
 td.mtd-field {
-    background-color: #eee;
+    background-color: #eeeeee;
     border: 2px solid white;
     color: black;
     font-weight: bolder;
@@ -287,9 +287,9 @@ td.mtd-field {
 }
 
 td.mtd-num {
-    background-color: #eee;
+    background-color: #eeeeee;
     border: 2px solid white;
-    color: #666;
+    color: #666666;
     min-height: 24px;
     padding: 4px;
     text-align: left;
@@ -308,7 +308,7 @@ td.mtd-value {
 }
 
 .mtd-date-element select {
-    width: 6em !important;
+    width: 6em;
 }
 
 .mtd-form-element {
@@ -319,12 +319,12 @@ td.mtd-value {
     margin-left: 1%;
 }
 
-fieldset.subbranch{
+fieldset.subbranch {
     margin-left: 5px;
 }
 
-fieldset > legend{
-    color: #54549E;
+fieldset > legend {
+    color: #54549e;
     font-weight: bolder;
     padding: 5px;
 }
@@ -336,13 +336,13 @@ fieldset > legend{
 
 /** Tableless search engine **/
 
-#sharedresource-search{
+#sharedresource-search {
     float: left;
     width: 200px;
 }
 
-.widget .header{
-    background-color: #6B6486;
+.widget .header {
+    background-color: #6b6486;
     color: #f0f0f0;
     font-weight: bold;
     padding: 2px;
@@ -375,7 +375,7 @@ fieldset > legend{
 }
 
 #sharedresource-add-instance > div {
-    border: 1px solid #aaa;
+    border: 1px solid #aaaaaa;
     border-radius: 8px;
     display: table-cell;
     padding: 20px;
@@ -396,7 +396,7 @@ fieldset > legend{
 .path-mod-sharedresource-forms textarea[disabled],
 .path-mod-sharedresource-forms textarea[readonly] {
     cursor: not-allowed;
-    background-color: #eee;
+    background-color: #eeeeee;
 }
 
 .path-mod-sharedresource-forms .mtd-form-element.is-empty.is-mandatory input,
@@ -412,48 +412,48 @@ fieldset > legend{
 }
 
 a.sharedresource-actionlink {
-    background-color: #ccc;
-    color: #fff;
+    background-color: #cccccc;
+    color: #ffffff;
     margin-bottom: 20px;
     padding: 3px 10px;
     border-radius: 4px;
 }
 
 #sharedresources-link-to-search input[type=button], #sharedresources-link-to-browser input[type=button] {
-    color: #fff;
-    background-color: #ccc;
+    color: #ffffff;
+    background-color: #cccccc;
     border-radius: 3px;
     padding: .375rem .75rem;
 }
 
 .sharedresources-pager a {
     margin-right: 20px;
-    background-color: #ccc;
-    color: #fff; 
+    background-color: #cccccc;
+    color: #ffffff;
     border-radius: 4px;
     padding-left: 10px;
     padding-right: 10px;
 }
 
 .path-mod-sharedresource .tabrow0 .here a span {
-    background-color: #ccc;
-    background-image: none!important;
+    background-color: #cccccc;
+    background-image: none;
     color: white;
 }
 
-#page-mod-sharedresource-metadatanotice #ecform_content{
+#page-mod-sharedresource-metadatanotice #ecform_content {
     padding: 0;
 }
 
 #notice-menu li {
-    background-color: #A7A3BA;
+    background-color: #a7a3ba;
     color: #f0f0f0;
     font-weight: bolder;
     padding: 4px;
 }
 
-#notice-menu .active{
-    background-color: #4D4860;
+#notice-menu .active {
+    background-color: #4d4860;
     color: #f0f0f0;
 }
 
@@ -464,7 +464,7 @@ a.sharedresource-actionlink {
 
 #page-mod-sharedresource-metadatanotice h2 {
     background-color: #e6e6e6;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
     border-radius: 8px;
     padding: 10px;
 }

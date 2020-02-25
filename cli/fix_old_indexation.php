@@ -115,7 +115,7 @@ foreach ($plugins as $nmaespace => $plugin) {
             foreach ($metadata as $mtd) {
                 // If value is scalar.
                 if (is_numeric($mtd->value)) {
-                    assert(1)
+                    assert(1);
                 }
             }
         }

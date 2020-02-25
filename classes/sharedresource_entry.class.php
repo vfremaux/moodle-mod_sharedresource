@@ -372,9 +372,9 @@ class entry {
      * @return string, value of attribute or metadata element
      */
     public function element($element, $namespace = '') {
-        global $SHR_CORE_ELEMENTS;
+        global $shr_core_elements;
 
-        if (in_array($element, $SHR_CORE_ELEMENTS) && empty($namespace) && isset($this->$element)) {
+        if (in_array($element, $shr_core_elements) && empty($namespace) && isset($this->$element)) {
             return $this->$element;
         } else {
             if (!empty($this->metadataelements)) {
@@ -397,10 +397,10 @@ class entry {
      * @param namespace string, namespace of metadata element only
      */
     public function update_element($element, $value, $namespace = '') {
-        global $SHR_CORE_ELEMENTS;
+        global $shr_core_elements;
 
         // add the core ones to the main table entry - everything else goes in the metadata table.
-        if (in_array($element, $SHR_CORE_ELEMENTS) && empty($namespace) && !empty($value)) {
+        if (in_array($element, $shr_core_elements) && empty($namespace) && !empty($value)) {
             $this->$element = $value;
         } else {
             if (!array_key_exists($element, $this->metadataelements)) {

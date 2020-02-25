@@ -16,5 +16,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../encoding.php');
+require_once('../extlib/encoding.php');
  print(  Encoding::fixUTF8("ensemble de données"));
