@@ -32,7 +32,7 @@
 }
 
 #mtd-form-menu.tabrow0 li.is-empty.here a span {
-    background-color:red;
+    background-color: red;
     color: white;
 }
 
@@ -169,14 +169,14 @@
     -moz-border-radius-topleft: 6px;
     -moz-border-radius-topright: 6px;
     border-bottom: thin #ddd solid;
-    border-left: thin #ddd solid; 
+    border-left: thin #ddd solid;
     border-right: thin #ddd solid;
     border-top: thin #ddd solid;
     clear: both;
     padding-bottom: 1em;
     padding-left: 1em;
     padding-right: 1em;
-    overflow-x : hidden;
+    overflow-x: hidden;
 }
 
 .mtd-form-element textarea.mtd-form-input {
@@ -419,7 +419,8 @@ a.sharedresource-actionlink {
     padding: 3px 10px;
 }
 
-#sharedresources-link-to-search input[type=button], #sharedresources-link-to-browser input[type=button] {
+#sharedresources-link-to-search input[type=button],
+#sharedresources-link-to-browser input[type=button] {
     color: #ffffff;
     background-color: #cccccc;
     border-radius: 3px;
