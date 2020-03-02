@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2019062000;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2019112200;       // Requires this Moodle version.
+$plugin->requires  = 2019111200;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '3.8.0 (Build 2019062000)';
