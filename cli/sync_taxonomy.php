@@ -34,7 +34,7 @@ list($options, $unrecognized) = cli_get_params(
     ),
     array(
         'h' => 'help',
-        'd' => 'debug'
+        'd' => 'debug',
         'C' => 'classifids'
     )
 );

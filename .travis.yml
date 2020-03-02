@@ -22,7 +22,8 @@ php:
 
 env:
   global:
-    - MOODLE_BRANCH=MOODLE_37_STABLE
+    - MOODLE_BRANCH=MOODLE_38_STABLE
+    - PLUGINS_BRANCH=MOODLE_38_WORKING
   matrix:
     - DB=mariadb
     - DB=pgsql
@@ -36,8 +37,9 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-repository_sharedresources
-  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-local_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-repository_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-local_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-block_sharedresources
   - moodle-plugin-ci install
 
 script:
