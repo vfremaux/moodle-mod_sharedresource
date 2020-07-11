@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lomfr
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data Lomfr does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Learning Object Model. Version française (LOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
 $string['activity'] = 'Activity';

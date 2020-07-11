@@ -22,7 +22,7 @@
  * @category   mod
  *
  * Important design note about namespace processing:
- * 
+ *
  * Namespace designate both field source namespace and actual Moodle active namespace.
  * field namespace must be used when querying or processing metadata values from the mdl_sharedresource_metadata table,
  * while Moodle enabled namespace should be used for getting translations for printing to screen field names. Lang files
@@ -33,7 +33,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /*
- * Detects a change in the metadata model used et display a message to a inform the user of the loss of the old metadata 
+ * Detects a change in the metadata model used et display a message to a inform the user of the loss of the old metadata
  * in case of validation.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -141,7 +141,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                     $value = '';
                 }
             } else if (substr($htmlkey, -8) == 'dateyear') {
-            // if the key is a duration, we have to process this key
+                // If the key is a duration, we have to process this key.
                 $yearkey = $htmlkey;
                 $htmlkey = substr($htmlkey, 0, -9);
                 $monthkey = $htmlkey.'_datemonth';
@@ -149,7 +149,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 if ($metadataentries->$monthkey != '-month-') {
                     $value .= '-'.$metadataentries->$monthkey;
                     if ($metadataentries->$daykey != '-day-') {
-                        // if date is invalid (fe 30 feb)
+                        // If date is invalid (fe 30 feb).
                         if (!checkdate($metadataentries->$monthkey, $metadataentries->$daykey, $metadataentries->$yearkey)) {
                             $errortemp = get_string('incorrectdate', 'sharedresource');
                             $value .= '-'.$metadataentries->$daykey;
@@ -162,11 +162,11 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 } else {
                     $value .= '-01-01';
                 }
-                $value =  mktime(0, 0, 0, substr($value, 5, 2),  substr($value, 8, 2), substr($value, 0, 4));
+                $value = mktime(0, 0, 0, substr($value, 5, 2), substr($value, 8, 2), substr($value, 0, 4));
             }
 
             /*
-             * At this point any suffixed htmlkey should be decoded and cleaned. It is safe to 
+             * At this point any suffixed htmlkey should be decoded and cleaned. It is safe to
              * convert to strorage keys.
              */
             $elementkey = \mod_sharedresource\metadata::html_to_storage($htmlkey);
@@ -290,7 +290,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
     $config = get_config('sharedresource');
     $namespace = $config->schema;
 
-    // Initialise metadata elements from core : description and title
+    // Initialise metadata elements from core : description and title.
     $descriptionelement = $mtdstandard->getDescriptionElement();
 
     $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $namespace);
@@ -298,7 +298,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
 
     $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $namespace);
 
-    // If we have a file, find the size element and update value from known size
+    // If we have a file, find the size element and update value from known size.
     $usercontext = context_user::instance($USER->id);
     $filerecid = $shrentry->file;
     if (!empty($filerecid)) {
@@ -309,7 +309,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
         }
     }
 
-    // If we have a file, find the format element and update value from known mimetype as technical format
+    // If we have a file, find the format element and update value from known mimetype as technical format.
     if (!empty($filerecid)) {
         if (method_exists($mtdstandard, 'getFileFormatElement')) {
             $mimetype = $DB->get_field('files', 'mimetype', array('id' => $filerecid));
@@ -318,7 +318,7 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
         }
     }
 
-    // If we have a file, find the location element and update value from known access url as location
+    // If we have a file, find the location element and update value from known access url as location.
     $identifier = $shrentry->identifier;
     if ($identifier) {
         if (method_exists($mtdstandard, 'getLocationElement')) {
@@ -337,7 +337,6 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
 }
 
 function metadata_get_user_capability() {
-    global $USER;
 
     if (has_capability('repository/sharedresources:systemmetadata', context_system::instance())) {
         $capability = 'system';

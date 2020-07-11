@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lom
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur Lom ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model (LOM)';
 $string['accessibilityrestrictions'] = 'Restrictions d\'accessibilité';
 $string['aggregationlevel'] = 'Niveau d\'aggrégation';

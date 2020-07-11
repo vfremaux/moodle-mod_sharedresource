@@ -1,5 +1,8 @@
 <?php
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur ScoLomfr ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model. Education Nationale (ScoLOMFR)';
 $string['accessibilityrestrictions'] = 'Restrictions sur l\'accessibilité';
 $string['apourapercu'] = 'A pour aperçu';

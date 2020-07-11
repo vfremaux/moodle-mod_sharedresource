@@ -42,7 +42,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry_fac
  * A remote resource is one that has a fully qualified URI that does not rely
  * on this local Moodle instance to serve the physical data eg. PDF, PNG etc.
  *
- * mod/sharedresource uses the presence of a $shrentryrec->file attribute 
+ * mod/sharedresource uses the presence of a $shrentryrec->file attribute
  * to determine if this resource is hosted locally (the physical file must
  * also exist in the course independent repository).
  *
@@ -97,7 +97,7 @@ class entry {
         // Process each plugins search function - there is a default called local.
         foreach ($plugins as $plugin) {
             /*
-             * If we get a positive return then we don't use any more plugins 
+             * If we get a positive return then we don't use any more plugins
              * $results is passed by reference so plugins can doctor the incremental results
              */
             $plugin->search($criteria, $results);
@@ -133,7 +133,7 @@ class entry {
     static public function read_by_id($entryid) {
         global  $DB;
 
-        if (!$DB->get_record('sharedresource_entry', array('id'=> $entryid))) {
+        if (!$DB->get_record('sharedresource_entry', array('id' => $entryid))) {
             return false;
         }
 
@@ -149,17 +149,17 @@ class entry {
      * @return shrentryrec object
      */
     static public function get_by_id($entryid) {
-        return entry::read_by_id($entryid);
+        return self::read_buy_id($entryid);
     }
 
     /**
      * Same as read(). Hydrate a shrentryrec object reading by identifier
-     * 
+     *
      * @param identifier   hash, sha1 hash identifier
      * @return shrentryrec object
      */
     static public function get_by_identifier($identifier) {
-        return $shrentryrec = entry::read($identifier);
+        return $shrentryrec = self::read($identifier);
     }
 
     /**
@@ -199,7 +199,7 @@ class entry {
         $this->metadataelements = array();
 
         if ($this->id) {
-            if ($elements =  $DB->get_records('sharedresource_metadata', array('entryid' => $this->id))) {
+            if ($elements = $DB->get_records('sharedresource_metadata', array('entryid' => $this->id))) {
                 foreach ($elements as $element) {
                     $this->add_element($element->element, $element->value, $element->namespace);
                 }
@@ -268,7 +268,7 @@ class entry {
     /**
      * Internal method that processes the plugins for the before save
      * interface.
-     * 
+     *
      * @return bool, returns true.
      */
     public function before_save() {
@@ -308,7 +308,7 @@ class entry {
         }
         return true;
     }
-    
+
     /**
      * Internal method that processes the plugins for the before update
      * interface.
@@ -522,13 +522,13 @@ class entry {
             } catch (Exception $ex) {
                 if (debugging()) {
                     mtrace($ex->getMessage());
-                    print_object($this->shrentryrec);
+                    // print_object($this->shrentryrec);
                 }
             }
         }
 
         /*
-         * now we know the itemid for this resource, if it has a real file 
+         * now we know the itemid for this resource, if it has a real file
          * $this->file still holds the draft area file record at this time
          */
         $fs = get_file_storage();
@@ -668,7 +668,7 @@ class entry {
     /**
      * delete the current Shared resource from the database, and
      * any locally attached files.
-     * 
+     *
      * @return bool, true = success
      */
     public function delete_instance() {
@@ -762,7 +762,7 @@ class entry {
      * if the user has access to a sharedresource publication in a course.
      * The resource may be multivaluated, depending on wether the access check is allowed to register
      * multiple values or not. this is set up in global settings.
-     * 
+     *
      * @param object $resourceentry
      * @return boolean value (has access or not).
      * @see local/sharedresources/lib.php get_local_resources()§137
@@ -807,10 +807,10 @@ class entry {
          $mtdstandard = sharedresource_get_plugin($config->schema);
          $taxumarr = $mtdstandard->getTaxumpath();
 
-         if (empty($taxumarr)) {
+        if (empty($taxumarr)) {
             // No need to care about taxonomy access control as there is no taxonomy in the standard.
             return true;
-         }
+        }
 
         $sources = \mod_sharedresource\metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
         if (!empty($sources)) {
@@ -822,15 +822,15 @@ class entry {
                     continue;
                 }
                 /*
-                 * Pass if 
+                 * Pass if
                  * - one source at least has no access control.
                  * - one source at least has access allowed for user.
                  */
                  $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $source->get_value()));
                  $classif = new \local_sharedresource\browser\navigator($taxonomy);
-                 if ($classif->can_use()) {
+                if ($classif->can_use()) {
                     return true;
-                 }
+                }
             }
             // No taxonomy match.
             return false;

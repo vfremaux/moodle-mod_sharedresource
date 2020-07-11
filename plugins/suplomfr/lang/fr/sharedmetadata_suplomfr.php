@@ -1,5 +1,8 @@
 <?php
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur SupLomfr ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model. Enseignement supérieur (SupLOMFR)';
 $string['accessibilityrestrictions'] = 'Restrictions sur l\'accessibilité';
 $string['activity'] = 'Activité induite';

@@ -25,7 +25,7 @@ require_once('../../config.php');
 
 $id = required_param( 'id', PARAM_INT ); // Course.
 
-if (!$course =  $DB->get_record('course', array('id' => $id))) {
+if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
 
@@ -119,7 +119,7 @@ foreach ($resources as $resource) {
                 format_text($resource->intro, $resource->introformat, $options));
     } else {
         // Show normal if the mod is visible.
-        $table->data[] = array($printsection, 
+        $table->data[] = array($printsection,
                 '<a '.$extra.' href="'.$resurl.'">'.format_string($resource->name, true).'</a>',
                 format_text($resource->intro, $resource->introformat, $options));
     }

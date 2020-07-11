@@ -1,5 +1,8 @@
 <?php
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data SupLomfr does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Learning Object Model. Enseignement superieur (SupLOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
 $string['activity'] = 'Activity';
