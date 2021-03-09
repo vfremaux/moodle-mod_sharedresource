@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // This is used for a build_vcard utility function.
-require_once $CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php';
+require_once($CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php');
 
 // MODRESOURCETYPE addesses LOM 5_2 node (Learning Resource Type).
 global $MODRESOURCETYPES;
@@ -63,7 +63,7 @@ $MODRESOURCETYPES = array(
     'workshop' => 'exercice,experimentation' );
 
 // Allow completing from configuration file.
-if (isset($CFG->additionalmodresourcetypes) && is_array($CFG->additionalmodresourcetypes)){
+if (isset($CFG->additionalmodresourcetypes) && is_array($CFG->additionalmodresourcetypes)) {
     $MODRESOURCETYPES = $MODRESOURCETYPES + $CFG->additionalmodresourcetypes;
 }
 
@@ -102,7 +102,7 @@ $MODINTERACTIVITYLEVELS = array(
     'workshop' => 'very high' );
 
 // Allow completing from configuration file.
-if (isset($CFG->additionalmodinteractivitylevel) && is_array($CFG->additionalmodinteractivitylevel)){
+if (isset($CFG->additionalmodinteractivitylevel) && is_array($CFG->additionalmodinteractivitylevel)) {
     $MODINTERACTIVITYLEVELS = $MODINTERACTIVITYLEVELS + $CFG->additionalmodinteractivitylevel;
 }
 
@@ -140,17 +140,17 @@ $MODSEMANTICDENSITIES = array(
     'wiki' => 'high',
     'workshop' => 'high' );
 
-// allow completing from configuration file
-if (isset($CFG->additionalmodsemanticdensity) && is_array($CFG->additionalmodsemanticdensity)){
+// Allow completing from configuration file.
+if (isset($CFG->additionalmodsemanticdensity) && is_array($CFG->additionalmodsemanticdensity)) {
     $MODSEMANTICDENSITIES = $MODSEMANTICDENSITIES + $CFG->additionalmodsemanticdensity;
 }
 
-// MODRESOURCETYPE addesses LOMFR 5_12 node (Learning Activity Type)
+// MODRESOURCETYPE addesses LOMFR 5_12 node (Learning Activity Type).
 global $MODLEARNINGACTIVITIES;
 
-// 'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'expérimenter', 
-// 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer', 
-// 's\'informer', 'se former', 'simuler', 's\'évaluer'
+// 'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'expérimenter',
+// 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer',
+// 's\'informer', 'se former', 'simuler', 's\'évaluer'.
 
 $MODLEARNINGACTIVITIES = array(
     'advmindmap' => 'collaborer,créer,organiser',
@@ -182,11 +182,11 @@ $MODLEARNINGACTIVITIES = array(
     'wiki' => 'coopérer,collaborer,publier',
     'workshop' => 'apprendre,coopérer,expérimenter' );
 
-// MODDOCUMENTTYPE addesses LOMFR 1_9 node (Type de documents)
+// MODDOCUMENTTYPE addesses LOMFR 1_9 node (Type de documents).
 global $MODDOCUMENTTYPES;
 
-// 'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe', 
-// 'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'
+// 'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe',
+// 'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'.
 
 $MODDOCUMENTTYPES = array(
     'advmindmap' => 'ressource interactive',
@@ -222,18 +222,18 @@ $MODDOCUMENTTYPES = array(
     'wiki' => 'texte',
     'workshop' => 'collection' );
 
-// MODGENERALDOCUMENTTYPE addesses ScoLOMFR 1_10 node (Type general de documents)
+// MODGENERALDOCUMENTTYPE addesses ScoLOMFR 1_10 node (Type general de documents).
 global $MODGENERALDOCUMENTTYPES;
 
-// 'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos', 
-// 'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie', 
+// 'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos',
+// 'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie',
 // 'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
 // 'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
 // 'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
 // 'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
 // 'ouvrage', 'partition musicale', 'périodique', 'photographie', 'podcast',
 // 'présentation multimédia', 'programme scolaire', 'rapport', 'référentiel de compétences',
-// 'schéma/graphique', 'site web', 'tableau (art)', 'web média'
+// 'schéma/graphique', 'site web', 'tableau (art)', 'web média'.
 
 $MODGENERALDOCUMENTTYPES = array(
     'advmindmap' => 'carte heuristique et conceptuelle',
@@ -270,7 +270,7 @@ $MODGENERALDOCUMENTTYPES = array(
     'workshop' => '');
 
 // allow completing from configuration file
-if (isset($CFG->additionalmodgeneraldocumenttype) && is_array($CFG->additionalmodgeneraldocumenttype)){
+if (isset($CFG->additionalmodgeneraldocumenttype) && is_array($CFG->additionalmodgeneraldocumenttype)) {
     $MODGENERALDOCUMENTTYPES = $MODGENERALDOCUMENTTYPES + $CFG->additionalmodgeneraldocumenttype;
 }
 
@@ -293,9 +293,9 @@ function sharedresource_append_metadata_elements(&$elements, $name, $value, $plu
 }
 
 /**
- * This fuction searches for editing teachers and add them all as co-authors. This may not be true in reality, 
+ * This fuction searches for editing teachers and add them all as co-authors. This may not be true in reality,
  * but there is no real mean to know who really did create the activity. We can just guess that in most cases,
- * the course has one author/teacher 
+ * the course has one author/teacher
  */
 function sharedresource_append_author_data(&$backupmetadataelements, $courseid = 0, $authoringdate = -1) {
     global $COURSE;

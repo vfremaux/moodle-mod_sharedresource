@@ -26,7 +26,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
-global $SHR_WINDOW_OPTIONS; // Make sure we have the pesky global.
+global $shrwindowoptions; // Make sure we have the pesky global.
 
 $hasmetadata = false;
 $hasclassification = false;
@@ -99,7 +99,7 @@ if ($ADMIN->fulltree) {
     $desc = get_string('configpopup_desc', 'sharedresource');
     $settings->add(new admin_setting_configselect($key, $label, $desc, '', $woptions));
 
-    foreach ($SHR_WINDOW_OPTIONS as $optionname) {
+    foreach ($shrwindowoptions as $optionname) {
         $popupoption = "sharedresource/popup$optionname";
         if ($popupoption == 'sharedresource_popupheight') {
             $key = 'sharedresource/popupheight';
@@ -121,7 +121,7 @@ if ($ADMIN->fulltree) {
     $label = get_string('libraryengine', 'sharedresource');
     $settings->add(new admin_setting_heading('h2', $label, ''));
 
-    // Content integration
+    // Content integration.
 
     $key = 'contentintegrationhdr';
     $label = get_string('contentintegration', 'sharedresource');
@@ -223,7 +223,7 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
     }
 
-    if (mod_sharedresource_supports_feature('emulate/community')) {
+    if (sharedresource_supports_feature('emulate/community')) {
         // This will accept any.
         $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'sharedresource'), ''));
 

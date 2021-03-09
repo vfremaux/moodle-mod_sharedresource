@@ -21,9 +21,9 @@
  * @category   mod
  */
 
-// This php script displays the 
+// This php script displays the
 // metadata form
-//-----------------------------------------------------------
+// -----------------------------------------------------------
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');

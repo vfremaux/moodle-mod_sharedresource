@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * dependent fashion
  */
 function xmldb_sharedresource_install() {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB;
 
     $result = true;
 
