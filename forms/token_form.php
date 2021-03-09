@@ -26,7 +26,7 @@ require($CFG->libdir.'/formslib.php');
 
 class token_form extends moodleform {
 
-    function definition() {
+    public function definition() {
         $mform = $this->_form;
 
         $classif = $mform->_customdata['classif'];

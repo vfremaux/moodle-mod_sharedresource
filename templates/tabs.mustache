@@ -23,10 +23,10 @@
 }}
 <!-- tabs -->
     <div id="mtd-form-tabs" class="tabtree">
-        <ul id="mtd-form-menu" class="{{tabmodel}} {{tabclass}}">
+        <ul id="mtd-form-menu" class="{{#tabmodel}}{{ul}}{{/tabmodel}} {{tabclass}}" role="tablist">
             {{#tabs}}
-                <li id="id-menu-{{i}}" class="mtd-tab {{tabclass}} {{mandatoryclass}}">
-                    <a href=""><span>{{tabname}} {{mandatorysign}}</span></a>
+                <li id="id-menu-{{i}}" class="{{#tabmodel}}{{li}}{{/tabmodel}} mtd-tab {{tabclass}} {{mandatoryclass}}" >
+                    <a href="" class="{{#tabmodel}}{{link}}{{/tabmodel}}" role="tab"><span>{{tabname}} {{mandatorysign}}</span></a>
                 </li>
             {{/tabs}}
 

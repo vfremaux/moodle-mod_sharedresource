@@ -29,33 +29,35 @@ define('SHAREDRESOURCE_SEARCH_LIMIT', '200');
 define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 
-global $SHR_WINDOW_OPTIONS;
-global $SHR_CORE_ELEMENTS;
-global $SHR_METADATA_ELEMENTS; // Must be global because it might be included from a function!
+global $shrwindowoptions;
+global $shrcoreelements;
+global $shrmetadataelements; // Must be global because it might be included from a function!
 
-$SHR_WINDOW_OPTIONS = array('resizable',
-                                    'scrollbars',
-                                    'directories',
-                                    'location',
-                                    'menubar',
-                                    'toolbar',
-                                    'status',
-                                    'width',
-                                    'height');
+$shrwindowoptions = [
+    'resizable',
+    'scrollbars',
+    'directories',
+    'location',
+    'menubar',
+    'toolbar',
+    'status',
+    'width',
+    'height'];
 
-$SHR_CORE_ELEMENTS = array('id',
-                                    'identifier',
-                                    'title',
-                                    'description',
-                                    'url',
-                                    'file',
-                                    'type',
-                                    'score',
-                                    'remoteid',
-                                    'mimetype',
-                                    'timemodified');
+$shrcoreelements = [
+    'id',
+    'identifier',
+    'title',
+    'description',
+    'url',
+    'file',
+    'type',
+    'score',
+    'remoteid',
+    'mimetype',
+    'timemodified'];
 
-$SHR_METADATA_ELEMENTS = array(array('name' => 'Contributor',
+$shrmetadataelements = array(array('name' => 'Contributor',
                                                 'datatype' => 'text'),
                                           array('name' => 'IssueDate',
                                                 'datatype' => 'lomdate'),
@@ -136,16 +138,18 @@ function sharedresource_supports($feature) {
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
-function mod_sharedresource_supports_feature($feature) {
+function sharedresource_supports_feature($feature = null, $getsupported = null) {
     global $CFG;
     static $supports;
 
-    $config = get_config('sharedresource');
+    if (!during_initial_install()) {
+        $config = get_config('sharedresource');
+    }
 
     if (!isset($supports)) {
         $supports = array(
             'pro' => array(
-                'taxonomy' => array('accessctl','fineselect'),
+                'taxonomy' => array('accessctl', 'fineselect'),
                 'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
                 'emulate' => 'community',
             ),
@@ -153,6 +157,10 @@ function mod_sharedresource_supports_feature($feature) {
             ),
         );
         $prefer = array();
+    }
+
+    if ($getsupported) {
+        return $supports;
     }
 
     // Check existance of the 'pro' dir in plugin.
@@ -167,6 +175,11 @@ function mod_sharedresource_supports_feature($feature) {
         }
     } else {
         $versionkey = 'community';
+    }
+
+    if (empty($feature)) {
+        // Just return version.
+        return $versionkey;
     }
 
     list($feat, $subfeat) = explode('/', $feature);
@@ -332,7 +345,7 @@ function sharedresource_user_outline($course, $user, $mod, $sharedresource) {
  * What does this do?
  */
 function sharedresource_user_complete($course, $user, $mod, $sharedresource) {
-    global $CFG, $DB;
+    global $DB;
 
     $select = "
         userid = ? AND
@@ -369,7 +382,7 @@ function sharedresource_get_participants($sharedresourceid) {
  * in the course module list.
  */
 function sharedresource_cm_info_dynamic(&$modinfo) {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB;
 
     $info = null;
 
@@ -478,12 +491,12 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
         if ($root == 'http://' || $root == 'https://') {
             $root = $url;
         }
-        if ( substr($root,strlen($root)-1) == '/' ) {
-            $root = substr($root, 0, -1);
+        if (substr($root, strlen($root) - 1) == '/') {
+            $root = substr($root, 0, - 1);
         }
 
         $mainroot = $root;
-        $lastslash = strrpos($mainroot,"/");
+        $lastslash = strrpos($mainroot, "/");
         while ($lastslash > 9) {
             $mainroot = substr($mainroot, 0, $lastslash);
 
@@ -513,18 +526,18 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
             }
             $finalurl = substr($tag, $start, $end - $start + $diff);
             // Here, we could have these possible values for $finalurl:
-            //     file.ext                             Add current root dir
-            //     http://(domain)                      don't care
-            //     http://(domain)/                     don't care
-            //     http://(domain)/folder               don't care
-            //     http://(domain)/folder/              don't care
-            //     http://(domain)/folder/file.ext      don't care
-            //     folder/                              Add current root dir
-            //     folder/file.ext                      Add current root dir
-            //     /folder/                             Add main root dir
-            //     /folder/file.ext                     Add main root dir
+            // file.ext                             Add current root dir
+            // http://(domain)                      don't care
+            // http://(domain)/                     don't care
+            // http://(domain)/folder               don't care
+            // http://(domain)/folder/              don't care
+            // http://(domain)/folder/file.ext      don't care
+            // folder/                              Add current root dir
+            // folder/file.ext                      Add current root dir
+            // /folder/                             Add main root dir
+            // /folder/file.ext                     Add main root dir
 
-            // Special case: If finalurl contains a ?, it won't be parsed
+            // Special case: If finalurl contains a ?, it won't be parsed.
             $valid = 1;
 
             if (strpos($finalurl, "?") == false) {
@@ -535,11 +548,11 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
                     $finalurl = $mainroot . $finalurl;
                 } else if (strtolower(substr($finalurl, 0, 7)) != 'http://' &&
                            strtolower(substr($finalurl, 0, 8)) != 'https://') {
-                     if ($finalurl[0] == '/') {
+                    if ($finalurl[0] == '/') {
                         $finalurl = $mainroot . $finalurl;
-                     } else {
+                    } else {
                         $finalurl = "$root/$finalurl";
-                     }
+                    }
                 }
 
                 $text = str_replace($tag, "$left$prefix$finalurl$right", $text);
@@ -551,9 +564,9 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
 
 /**
  * Check to see if a given URI is a URL.
- * 
+ *
  * @param $path  string, URI.
- * 
+ *
  * @return bool, true = is URL
  */
 function sharedresource_is_url($path) {
@@ -577,7 +590,7 @@ function sharedresource_get_post_actions() {
 
 /**
  * This function is used by the reset_course_userdata function in moodlelib.
- * 
+ *
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
@@ -587,9 +600,9 @@ function sharedresource_reset_userdata($data) {
 
 /**
  * Returns all other caps used in module
- * 
+ *
  * @return array, of capabilities
- */ 
+ */
 function sharedresource_get_extra_capabilities() {
     return array('moodle/site:accessallgroups');
 }
@@ -602,7 +615,7 @@ function sharedresource_get_extra_capabilities() {
  * @return string, formated URL.
  */
 function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $options = null) {
-    global $CFG, $HTTPSPAGEREQUIRED;
+    global $CFG;
 
     $fs = get_file_storage();
     $file = $fs->get_file_by_id($sharedresourceentry->file);
@@ -626,7 +639,7 @@ function sharedresource_get_file_url($sharedresource, $sharedresourceentry, $opt
 
 /**
  * return a 404 if a shared Resource is not found
- * 
+ *
  * @param courseid int, the current context course
  */
 function sharedresource_not_found($courseid = 0, $reason = '') {
@@ -642,7 +655,7 @@ function sharedresource_not_found($courseid = 0, $reason = '') {
 
 /**
  * Sends the files for sharedresources
- * @param object $course the course in context of the call. Can be null 
+ * @param object $course the course in context of the call. Can be null
  * when acceding from a system context
  * @param object $cm when call comes from a sharedresource instance. denotes the corresponding course module
  * @param object $context can be a system level context or category context level when addressed from the library, or a course module ocntext
@@ -720,9 +733,9 @@ function mod_sharedresource_pluginfile($course, $cm, $context, $filearea, $args,
     $systemcontext = context_system::instance();
     if ($sharedresourceentry->context == $systemcontext->id) {
         // System resources are naturally publically exposed unless global privacy is required.
-       if (!empty($config->privatecatalog)) {
+        if (!empty($config->privatecatalog)) {
             require_login();
-       }
+        }
     } else {
         require_login();
     }

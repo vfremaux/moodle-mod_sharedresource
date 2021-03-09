@@ -24,6 +24,9 @@
  *
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data DC does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Dublin core';
 
 $string['abstract'] = 'Abstract';

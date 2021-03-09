@@ -1,4 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
+
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data ScoLomfr does not directly store any personal data about any user.';
 
 $string['pluginname'] = 'Learning Object Model. Education Nationale (ScoLOMFR)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
@@ -206,46 +225,46 @@ It concern the whole educative community :<br/>
 - publishers, companies <br/><br/>
 <center>More informations here : <a href="https://www.reseau-canope.fr/scolomfr/se-documenter.html">Page of the lomfr profile</a></center>';
 
-//Aggregation level
+// Aggregation level.
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
 $string['4'] = '4';
 
-// Difficulty
+// Difficulty.
 $string['veryeasy'] = 'Very easy';
 $string['easy'] = 'Easy';
 $string['medium'] = 'Medium';
 $string['difficult'] = 'Difficult';
 $string['verydifficult'] = 'Very difficult';
 
-// Level
+// Level.
 $string['verylow'] = 'Very low';
 $string['low'] = 'Low';
 $string['medium'] = 'Medium';
 $string['high'] = 'High';
 $string['veryhigh'] = 'Very high';
 
-// Context
+// Context.
 $string['school'] = 'School';
 $string['highereducation'] = 'Higher education';
 $string['training'] = 'Training';
 $string['other'] = 'Other';
 
-// Structure
+// Structure.
 $string['atomic'] = 'Atomic';
 $string['collection'] = 'Collection';
 $string['networked'] = 'Networked';
 $string['hierarchical'] = 'Hierarchical';
 $string['linear'] = 'Linear';
 
-// Status
+// Status.
 $string['draft'] = 'Draft';
 $string['final'] = 'Final';
 $string['revised'] = 'Revised';
 $string['unavailable'] = 'Unavailable';
 
-// Role
+// Role.
 $string['author'] = 'Author';
 $string['publisher'] = 'Publisher';
 $string['unknown'] = 'Unknown';
@@ -262,15 +281,15 @@ $string['scriptwriter'] = 'Script writer';
 $string['instructionaldesigner'] = 'Designer instructional';
 $string['subjectmatterexpert'] = 'Subject matter expert';
 
-// Contribute role
+// Contribute role.
 $string['creator'] = 'Creator';
 $string['validator'] = 'Validator';
 
-// Environment type
+// Environment type.
 $string['operatingsystem'] = 'Operating system';
 $string['browser'] = 'Browser';
 
-// OSEnvironment
+// OSEnvironment.
 $string['pcdos'] = 'PC DOS';
 $string['mswindows'] = 'Microsoft Windows';
 $string['macos'] = 'Mac OS';
@@ -278,7 +297,7 @@ $string['unix'] = 'Unix';
 $string['multios'] = 'Multi-OS';
 $string['none'] = 'None';
 
-// BrowserEnvironment
+// BrowserEnvironment.
 $string['any'] = 'Any';
 $string['netscapecommunicator'] = 'Netscape Communicator';
 $string['msinternetexplorer'] = 'Internet Explorer';
@@ -287,12 +306,12 @@ $string['amaya'] = 'Amaya';
 $string['firefox'] = 'Firefox';
 $string['googlechrome'] = 'Google Chrome';
 
-// Type d'interactivité
+// Type d'interactivité.
 $string['active'] = 'Active';
 $string['expositive'] = 'Expositive';
 $string['mixed'] = 'Mixed';
 
-// LearningResourceType
+// LearningResourceType.
 $string['exercise'] = 'Exercice';
 $string['simulation'] = 'Simulation';
 $string['questionnaire'] = 'Questionnaire';
@@ -310,17 +329,17 @@ $string['selfassessment'] = 'Self assessment';
 $string['lecture'] = 'Lecture';
 
 
-// End User Role
+// End User Role.
 $string['teacher'] = 'Teacher';
 $string['author'] = 'Author';
 $string['learner'] = 'Learner';
 $string['manager'] = 'Manager';
 
-// yes,no
+// Yes,no.
 $string['yes'] = 'Yes';
 $string['no'] = 'No';
 
-// Purpose
+// Purpose.
 $string['discipline'] = 'Discipline';
 $string['idea'] = 'Idea';
 $string['prerequisite'] = 'Prerequisite';
@@ -332,7 +351,7 @@ $string['skilllevel'] = 'Skill level';
 $string['securitylevel'] = 'Security level';
 $string['competency'] = 'Competency';
 
-// Kind 
+// Kind.
 $string['ispartof'] = 'is part of';
 $string['haspart'] = 'has part';
 $string['isversionof'] = 'is version of';
@@ -385,7 +404,7 @@ $string['travaileninterdisciplinarite'] = 'Interdisciplinar work';
 $string['travauxdiriges'] = 'Directed studies';
 $string['travauxpratiques'] = 'Practical work';
 
-// Tools
+// Tools.
 $string['agregateurdecontenu'] = 'Content aggegator';
 $string['aidetechnique'] = 'Technical support';
 $string['appareilphotographique'] = 'Still Camera';

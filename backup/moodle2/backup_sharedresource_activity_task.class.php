@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Defines backup_sharedresource_activity_task class
  *
  * @package     mod_sharedresource
@@ -59,16 +58,16 @@ class backup_sharedresource_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot, '/');
 
         // Link to the list of sharedresources
-        $search="/(".$base."\/mod\/sharedresource\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@SHAREDRESOURCEINDEX*$2@$', $content);
+        $search = "/(".$base."\/mod\/sharedresource\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@SHAREDRESOURCEINDEX*$2@$', $content);
 
         // Link to sharedresource view by moduleid
-        $search="/(".$base."\/mod\/sharedresource\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@SHAREDRESOURCEVIEWBYID*$2@$', $content);
+        $search = "/(".$base."\/mod\/sharedresource\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@SHAREDRESOURCEVIEWBYID*$2@$', $content);
 
         // Link to sharedresource view by sharedresourceid
-        $search="/(".$base."\/mod\/sharedresource\/view.php\?s\=)([0-9]+)/";
-        $content= preg_replace($search, '$@SHAREDRESOURCEVIEWBYF*$2@$', $content);
+        $search = "/(".$base."\/mod\/sharedresource\/view.php\?s\=)([0-9]+)/";
+        $content = preg_replace($search, '$@SHAREDRESOURCEVIEWBYF*$2@$', $content);
 
         return $content;
     }

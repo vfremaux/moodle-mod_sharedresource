@@ -26,7 +26,7 @@ class entry_factory {
     public static function get_entry_class() {
         global $CFG;
 
-        if (mod_sharedresource_supports_feature('entry/extended')) {
+        if (sharedresource_supports_feature('entry/extended')) {
             include_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
             include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_entry.class.php');
             return '\\mod_sharedresource\\entry_extended';
