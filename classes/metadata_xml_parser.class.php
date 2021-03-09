@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 abstract class metadata_xml_parser {
 
-    abstract function add_identifier(&$metadata, $catalog, $identifier, $entryid);
+    public abstract function add_identifier(&$metadata, $catalog, $identifier, $entryid);
 
     public function get_metadata_value($path) {
         foreach ($this->metadata as $id => $elem) {

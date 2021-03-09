@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lom
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shared Meta Data Lom does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Learning Object Model (LOM)';
 $string['accessibilityrestrictions'] = 'Accessibility restrictions';
 $string['aggregationlevel'] = 'Aggregation level';
@@ -231,7 +234,7 @@ $string['skilllevel'] = 'Skill level';
 $string['securitylevel'] = 'Security level';
 $string['competency'] = 'Competency';
 
-// Kind 
+// Kind
 $string['ispartof'] = 'is part of';
 $string['haspart'] = 'has part';
 $string['isversionof'] = 'is version of';

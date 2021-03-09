@@ -16,8 +16,8 @@
 
 /**
  * Displays the filled fields of the metadata
- * form and save these metadata and the resource. 
- * It informs the user if there are some errors and in that 
+ * form and save these metadata and the resource.
+ * It informs the user if there are some errors and in that
  * case, the resource is not saved and the user is sent back
  * to the metadata form
  *
@@ -80,8 +80,8 @@ if (array_key_exists('cancel', $metadataentries)) {
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
-$system_context = context_system::instance();
-$PAGE->set_context($system_context);
+$systemcontext = context_system::instance();
+$PAGE->set_context($systemcontext);
 $url = new moodle_url('/mod/sharedresource/metadatarep.php');
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
@@ -91,7 +91,7 @@ $PAGE->set_heading($SITE->fullname);
 
 $linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
-$PAGE->navbar->add($strtitle,'metadatarep.php','misc');
+$PAGE->navbar->add($strtitle, 'metadatarep.php', 'misc');
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 
 $PAGE->set_focuscontrol('');
@@ -126,7 +126,7 @@ if ($result['error'] != array()) {
     $errortpl = new StdClass;
 
     foreach ($result['error'] as $field => $errortype) {
-        $fieldnum = substr($field, 0, strpos($field,':'));
+        $fieldnum = substr($field, 0, strpos($field, ':'));
         $errtpl = new StdClass;
         $errtpl->fieldnum = $fieldnum;
         $errtpl->fieldname = $mtdstandard->METADATATREE[$fieldnum]['name'];
@@ -192,7 +192,6 @@ if ($result['error'] != array()) {
         // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
             // We are coming from the library. Go back to it.
-        // We are coming from the library. Go back to it.
             if ($return == 1) {
                 $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
             } else {

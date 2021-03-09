@@ -21,6 +21,9 @@
  * @subpackage sharedresource_lomfr
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur Lomfr ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Learning Object Model. Version française (LOMFR)';
 $string['accessibilityrestrictions'] = 'Restrictions sur l\'accessibilité';
 $string['activity'] = 'Activité induite';

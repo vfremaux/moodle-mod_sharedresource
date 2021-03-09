@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-if (mod_sharedresource_supports_feature('entry/remote')) {
+if (sharedresource_supports_feature('entry/remote')) {
     include_once($CFG->dirroot.'/mod/sharedresource/pro/rpclib.php');
 }

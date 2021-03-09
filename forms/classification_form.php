@@ -26,7 +26,7 @@ require($CFG->libdir.'/formslib.php');
 
 class classification_form extends moodleform {
 
-    function definition() {
+    public function definition() {
         $mform = $this->_form;
 
         $mform->addElement('hidden', 'id');
