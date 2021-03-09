@@ -14,25 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * This file contains the mnet services for the user_mnet_host plugin
- *
- * @since 2.0
- * @package sharedresource
- * @category mnet
- * @copyright 2012 Valery Fremaux
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace sharedmetadata_lom\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-
-$publishes = array(
-);
-
-$subscribes = array(
-);
-
-if (mod_sharedresource_supports_feature('entry/remote')) {
-    include($CFG->dirroot.'/mod/sharedresource/pro/db/mnet.php');
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
 }

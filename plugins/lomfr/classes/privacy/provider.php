@@ -14,25 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_sharedresource;
+namespace sharedmetadata_lomfr\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-class entry_factory {
-
+class provider implements \core_privacy\local\metadata\null_provider {
     /**
-     * A factory class that choses the adequate class implementation to play with.
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
      */
-    public static function get_entry_class() {
-        global $CFG;
-
-        if (mod_sharedresource_supports_feature('entry/extended')) {
-            include_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
-            include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_entry.class.php');
-            return '\\mod_sharedresource\\entry_extended';
-        } else {
-            include_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
-            return '\\mod_sharedresource\\entry';
-        }
+    public static function get_reason() : string {
+        return 'privacy:metadata';
     }
 }

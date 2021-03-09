@@ -14,26 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @author  Frederic Guillou
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
- */
-namespace mod_sharedresource;
+namespace sharedmetadata_suplomfr\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-abstract class metadata_xml_parser {
-
-    abstract function add_identifier(&$metadata, $catalog, $identifier, $entryid);
-
-    public function get_metadata_value($path) {
-        foreach ($this->metadata as $id => $elem) {
-            if ($this->metadata[$id]->element == $path) {
-                return $this->metadata[$id]->value;
-            }
-        }
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
     }
-
 }

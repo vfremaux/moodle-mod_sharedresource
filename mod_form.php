@@ -53,7 +53,7 @@ class mod_sharedresource_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('name', 'sharedresource'), array('size'=>'48'));
+        $mform->addElement('text', 'name', get_string('name', 'sharedresource'), array('size' => '48'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -74,7 +74,6 @@ class mod_sharedresource_mod_form extends moodleform_mod {
             $mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
         }
 
-
         $mform->addElement('header', 'typedesc', get_string('resourcetypefile', 'sharedresource'));
 
         $this->resourceinstance->setup_elements($mform);
@@ -84,11 +83,11 @@ class mod_sharedresource_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    public function data_preprocessing(&$default_values) {
-        $this->resourceinstance->setup_preprocessing($default_values);
+    public function data_preprocessing(&$defaultvalues) {
+        $this->resourceinstance->setup_preprocessing($defaultvalues);
     }
 
-    function validation($data, $files) {
+    public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         return $errors;
     }

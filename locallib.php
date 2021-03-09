@@ -290,7 +290,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
  * @param string $using the constraint value in metadatas. Using can be a comma separated list of tokens or operator:value
  */
 function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'values', $using = '') {
-    global $CFG, $DB;
+    global $DB;
 
     // Get metadata plugin and restype element name.
     $mtdstandard = sharedresource_get_plugin($namespace);
@@ -612,7 +612,7 @@ function sharedresource_get_remote_file($url, $filename) {
  * a remote resource which file was remotely retrieved.
  */
 function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = false) {
-    global $CFG, $DB;
+    global $CFG, $DB, $USER;
 
     include_once($CFG->dirroot.'/course/modlib.php');
 
@@ -791,7 +791,7 @@ function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
  * @return completed instance record with insert id
  */
 function sharedresource_add_mplayer($shrentry, $courseid, $isremote = false) {
-    global $CFG, $OUTPUT;
+    global $CFG;
 
     $config = get_config('mplayer');
 
@@ -810,7 +810,7 @@ function sharedresource_add_mplayer($shrentry, $courseid, $isremote = false) {
     $instance->type = 'url'; // Common to both technologies, jwplayer and flowplayer.
     $instance->external = $shrentry->url;
 
-    // Determine best fit technology
+    // Determine best fit technology.
     $instance->technology = $config->default_player;
     if ($isremote) {
         // JW player external url does'nt work well with foreign urls.

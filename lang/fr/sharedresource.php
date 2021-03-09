@@ -167,8 +167,6 @@ $string['durationsearch'] = 'Recherche d\'une durée';
 $string['edit'] = 'Modifier';
 $string['editclassificationtable'] = 'Modifier les entrées de classification';
 $string['educational'] = 'Aspects éducatifs';
-$string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['enabled'] = 'Actif';
 $string['entry'] = 'Entrée';
 $string['erroraclmisconf'] = 'ERREUR : ID de taxonomie ou ID de ressource manquant.';
@@ -286,7 +284,6 @@ $string['parameter'] = 'Paramètre';
 $string['parameters'] = 'Paramètres';
 $string['parentname'] = 'Nom du champ parent';
 $string['pluginadministration'] = 'Administration du plugins';
-$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Ressource mutualisée';
 $string['predatanotprovided'] = '<- Non encore fourni ->';
 $string['preview'] = 'Prévisualiser';
@@ -404,10 +401,10 @@ $string['addtoken'] = 'Ajouter un nouveau taxon';
 $string['goup'] = 'Remonter d\'un niveau';
 $string['notsupportedyet'] = 'Modifier des taxons dans une autre table que sharedresource_taxonomy n\'est pas encore supporté.';
 
-//************* Help Strings ******************/
+// ************* Help Strings ******************/
 
 $string['sharedresourceservice_description'] = 'Permet les échanges de service entre fournisseurs et consommateurs de ressources.
-Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs 
+Les sites consommateurs de ressources doivent souscrire à ce service provenant d\'un fournisseur. Les sites fournisseurs
 de ressources doivent publier ce service vers les sites consommateurs. La librairie des sites fournisseurs devient accessible
 aux consommateurs';
 
@@ -422,8 +419,8 @@ $string['matchedvalues_help'] = '
 
 $string['description_help'] = "
 La description est un résumé très court de ce qu'est la ressource\n\n
-Pour certaines options d'affichage d'une ressource, le résumé est affiché à côté de la ressource, 
-sinon il apparaît dans la page d'index de ressources, facilitant ainsi la recherche de 
+Pour certaines options d'affichage d'une ressource, le résumé est affiché à côté de la ressource,
+sinon il apparaît dans la page d'index de ressources, facilitant ainsi la recherche de
 ressources particulières pour les étudiants.
 ";
 
@@ -528,7 +525,7 @@ ADR;TYPE=HOME:;;42 Plantation St.;Baytown;LA;30314;United States of America\n
 LABEL;TYPE=HOME:42 Plantation St.\nBaytown, LA 30314\nUnited States of America\n
 EMAIL;TYPE=PREF,INTERNET:forrestgump@example.com\n
 REV:20080424T195243Z\n
-END:VCARD 
+END:VCARD
 ";
 
 $string['sharingcontext_help'] = "
@@ -544,14 +541,6 @@ $string['userfieldvaluesmultiple'] = 'Multiple values access field';
 $string['userfieldvaluesmultiple_help'] = 'Choisissez une ou plusieurs valeurs ouvrant l\'accès à la ressource (OU). Si aucune valeur n\'est sélectionnée,
 alors la ressource est librement accessible.';
 
-$string['plugindist_desc'] = '
-<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
-sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
-<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
-
 $string['addinstance_search_desc'] = '
     Recherchez une ressource mutualisée dans la librarie et publiez-là dans le cours.
 ';
@@ -559,3 +548,14 @@ $string['addinstance_search_desc'] = '
 $string['addinstance_create_desc'] = '
     Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
 ';
+
+/*Section pro*/
+
+$string['emulatecommunity'] = "Emuler la version communautaire";
+$string['emulatecommunity_desc'] = "Si elle est activée, cette option force le composant à fonctionner en version communautaire. Le fonctionnement sera plus compatible avec d'autres installations, mais certaines fonctionnalités ne seront plus disponibles.";
+$string['licenseprovider'] = "Fournisseur version Pro";
+$string['licenseprovider_desc'] = "Entrez la clef de votre fournisseur.";
+$string['licensekey'] = "Clef de license pro";
+$string['licensekey_desc'] = "Entrez ici la clef de produit que vous avez reçu de votre distributeur.";
+
+include(__DIR__.'/pro_additional_strings.php');

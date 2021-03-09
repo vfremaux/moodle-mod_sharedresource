@@ -52,7 +52,7 @@ $id = optional_param('id', 0, PARAM_INT);
 $identifier = optional_param('identifier', 0, PARAM_TEXT);
 
 if ($identifier) {
-    if (!$shrentry =  $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+    if (!$shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
         sharedresource_not_found();
     }
 } else {
@@ -60,13 +60,13 @@ if ($identifier) {
         if (! $cm = get_coursemodule_from_id('sharedresource', $id)) {
             sharedresource_not_found();
         }
-        if (!$resource =  $DB->get_record('sharedresource', array('id'=> $cm->instance))) {
+        if (!$resource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
             sharedresource_not_found($cm->course);
         }
-        if (!$shrentry_rec =  $DB->get_record('sharedresource_entry', array('identifier'=> $resource->identifier))) {
+        if (!$shrentry_rec = $DB->get_record('sharedresource_entry', array('identifier' => $resource->identifier))) {
             sharedresource_not_found($cm->course);
         }
-        if (!$course =  $DB->get_record('course',array('id'=> $cm->course))) {
+        if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
             print_error('badcourseid', 'sharedresource');
         }
     } else {

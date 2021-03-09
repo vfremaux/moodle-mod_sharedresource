@@ -27,10 +27,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 $courseid       = required_param('course', PARAM_INT);
 $add            = optional_param('add', 0, PARAM_ALPHA);
-$return         = optional_param('return', 0, PARAM_BOOL); //return to course/view.php if false or local/sharedresources/index.php if true
+$return         = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or local/sharedresources/index.php if true.
 $type           = optional_param('type', 'file', PARAM_ALPHANUM);
 $section        = optional_param('section', 0, PARAM_ALPHANUM);
-$id             = optional_param('id', false, PARAM_INT); // the originating course id
+$id             = optional_param('id', false, PARAM_INT); // The originating course id.
 $page           = optional_param('page', false, PARAM_INT);
 
 // Query string parameters to ignore.
@@ -64,7 +64,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
+$PAGE->navbar->add($strtitle, 'metadataconfigure.php', 'misc');
 $linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id, 'section' => $section));
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add(get_string('searchsharedresource', 'sharedresource'));
