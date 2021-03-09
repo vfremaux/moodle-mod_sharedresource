@@ -150,7 +150,7 @@ if (empty($classifications)) {
                            'title' => get_string('editclassificationtable', 'sharedresource'));
             $cmds .= '&nbsp;'.html_writer::link($editvaluesurl, $editvaluesicon, $attrs);
 
-            if (mod_sharedresource_supports_feature('taxonomy/fineselect')) {
+            if (sharedresource_supports_feature('taxonomy/fineselect')) {
                 $params = array('id' => $classif->id);
                 $selecttaxonsurl = new moodle_url('/mod/sharedresource/pro/classificationtaxonselect.php', $params);
                 $attrs = array('alt' => get_string('selecttaxons', 'sharedresource'),
@@ -159,7 +159,7 @@ if (empty($classifications)) {
             }
         }
 
-        if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
+        if (sharedresource_supports_feature('taxonomy/accessctl')) {
             $params = array('classificationid' => $classif->id);
             $label = get_string('classificationacls', 'sharedresource');
             $aclurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);

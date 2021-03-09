@@ -221,46 +221,53 @@ Il concerne  l\'ensemble de la communauté éducative :<br/>
 - éditeurs, entreprises <br/><br/>
 <center>Pour plus d\'informations : <a href=\"http://www.lom-fr.fr\">Page du profil SupLOM FR</a></center>';
 
-// Aggregation level
+// Aggregation level.
+
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
 $string['4'] = '4';
 
-// Difficulty
+// Difficulty.
+
 $string['veryeasy'] = 'Très facile';
 $string['easy'] = 'Facile';
 $string['medium'] = 'Medium';
 $string['difficult'] = 'Difficile';
 $string['verydifficult'] = 'Très difficile';
 
-// Level
+// Level.
+
 $string['verylow'] = 'Trés faible';
 $string['low'] = 'Faible';
 $string['medium'] = 'Medium';
 $string['high'] = 'Haut(e)';
 $string['veryhigh'] = 'Très haut(e)';
 
-// Context
+// Context.
+
 $string['school'] = 'Système scolaire';
 $string['highereducation'] = 'Enseignement supérieur';
 $string['training'] = 'Formation continue';
 $string['other'] = 'Autres';
 
-// Structure
+// Structure.
+
 $string['atomic'] = 'Atomique';
 $string['collection'] = 'Collection';
 $string['networked'] = 'Graphe';
 $string['hierarchical'] = 'Hiérarchique';
 $string['linear'] = 'Linéaire';
 
-// Status
+// Status.
+
 $string['draft'] = 'Brouillon';
 $string['final'] = 'Finalisé';
 $string['revised'] = 'Révisé';
 $string['unavailable'] = 'Non disponible';
 
-// Role
+// Role.
+
 $string['author'] = 'Auteur';
 $string['publisher'] = 'Publicateur';
 $string['unknown'] = 'Inconnu';
@@ -277,15 +284,18 @@ $string['scriptwriter'] = 'Scénariste';
 $string['instructionaldesigner'] = 'Concepteur pédagogique';
 $string['subjectmatterexpert'] = 'Expert thématique';
 
-// Contribute role
+// Contribute role.
+
 $string['creator'] = 'Créateur';
 $string['validator'] = 'Validateur';
 
-// Environment type
+// Environment type.
+
 $string['operatingsystem'] = 'Système d\'exploitation';
 $string['browser'] = 'Navigateur';
 
-// OSEnvironment
+// OSEnvironment.
+
 $string['pcdos'] = 'PC DOS';
 $string['mswindows'] = 'Microsoft Windows';
 $string['macos'] = 'Mac OS';
@@ -293,7 +303,8 @@ $string['unix'] = 'Unix';
 $string['multios'] = 'Multi-OS';
 $string['none'] = 'Aucun';
 
-// BrowserEnvironment
+// BrowserEnvironment.
+
 $string['any'] = 'Tous les navigateurs';
 $string['netscapecommunicator'] = 'Netscape Communicator';
 $string['msinternetexplorer'] = 'Internet Explorer';
@@ -302,12 +313,14 @@ $string['amaya'] = 'Amaya';
 $string['firefox'] = 'Firefox';
 $string['googlechrome'] = 'Google Chrome';
 
-// Type d'interactivité
+// Type d'interactivité.
+
 $string['active'] = 'Interactif';
 $string['expositive'] = 'Expositif';
 $string['mixed'] = 'Mixte';
 
-// LearningResourceType
+// LearningResourceType.
+
 $string['exercise'] = 'Exercices';
 $string['simulation'] = 'Simulation';
 $string['questionnaire'] = 'Questionnaire';
@@ -324,18 +337,20 @@ $string['problemstatement'] = 'Résolution de problèmes';
 $string['selfassessment'] = 'Auto-évaluation';
 $string['lecture'] = 'Cours';
 
+// End User Role.
 
-// End User Role
 $string['teacher'] = 'Enseignant/Formateur';
 $string['author'] = 'Auteur';
 $string['learner'] = 'Apprenant/Etudiant';
 $string['manager'] = 'Gestionnaire';
 
-// yes,no
+// Yes,no.
+
 $string['yes'] = 'Oui';
 $string['no'] = 'Non';
 
-// Purpose
+// Purpose.
+
 $string['discipline'] = 'Discipline';
 $string['idea'] = 'Idée';
 $string['prerequisite'] = 'Prérequis';
@@ -347,7 +362,8 @@ $string['skilllevel'] = 'Niveau de compétences';
 $string['securitylevel'] = 'Niveau de sécurité';
 $string['competency'] = 'Compétence';
 
-// Kind
+// Kind.
+
 $string['ispartof'] = 'Est partie de';
 $string['haspart'] = 'A des parties';
 $string['isversionof'] = 'Est variante de';

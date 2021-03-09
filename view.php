@@ -23,7 +23,7 @@
  */
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 
 $id = optional_param('id', 0, PARAM_INT);    // Course Module ID.
 $identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier.
@@ -36,13 +36,14 @@ $strtitle = get_string('sharedresourcedetails', 'sharedresource');
 
 $url = new moodle_url('/mod/sharedresource/view.php', array('id' => $id, 'identifier' => $identifier));
 $PAGE->set_url($url);
+$PAGE->set_context($systemcontext);
 
 // echo $OUTPUT->header(); // will be done by sharedresource::display();
 
 if ($identifier) {
     $resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
 
-    $resourceentry = new sharedresource_entry($resource);
+    $resourceentry = new \mod_sharedresource\entry($resource);
 
     $originresource = $resourceentry;
     $resourceentry = $resourceentry->fetch_ahead();

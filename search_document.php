@@ -28,10 +28,11 @@
  */
 namespace local_search;
 
-use \StdClass;
-use \context_course;
-use \context_module;
-use \moodle_url;
+use StdClass;
+use context_course;
+use context_module;
+use context_system;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -94,7 +95,6 @@ class sharedresource_document_wrapper extends document_wrapper {
      *
      */
     public static function get_iterator() {
-
         return array(true);
     }
 
@@ -112,13 +112,19 @@ class sharedresource_document_wrapper extends document_wrapper {
 
             if ($sharedresource->context) {
                 $context = $DB->get_record('context', array('id' => $sharedresource->context));
-            } else {
+                if (!$context) {
+                    mtrace("Failed finding shr context {$sharedresource->context}. Indexing at system level.");
+                }
+            }
+
+            if (!$context) {
                 $context = context_system::instance();
             }
 
             $sharedresource->authors = '';
             $sharedresourcearr = get_object_vars($sharedresource);
             $documents[] = new SharedresourceSearchDocument($sharedresourcearr, $context->id);
+            mtrace("finished sharedresouce entry {$sharedresource->id}");
         }
         return $documents;
     }

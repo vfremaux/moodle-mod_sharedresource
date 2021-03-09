@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 global $CLI_VMOODLE_PRECHECK;
 
 define('CLI_SCRIPT', true);
@@ -90,8 +88,10 @@ if (!empty($options['host'])) {
 
 // Replay full config whenever. If vmoodle switch is armed, will switch now config.
 
-require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php'); // Global moodle config file.
-echo 'Config check : playing for '.$CFG->wwwroot."\n";
+if (!defined('MOODLE_INTERNAL')) {
+    require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php'); // Global moodle config file.
+    echo 'Config check : playing for '.$CFG->wwwroot."\n";
+}
 
 if (!empty($options['debug'])) {
     $CFG->debug = E_ALL;

@@ -151,8 +151,6 @@ $string['durationdescr'] = 'Duration format description';
 $string['durationsearch'] = 'Research on duration field';
 $string['edit'] = 'Edit';
 $string['editclassificationtable'] = 'Edit classification table';
-$string['emulatecommunity'] = 'Emulate the community version.';
-$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['enabled'] = 'Enabled';
 $string['entry'] = 'Entry';
 $string['erroraclmisconf'] = 'ERROR : Access control error : no taxonomy nor resource id is given.';
@@ -284,7 +282,6 @@ $string['parameter'] = 'Parameter';
 $string['parameters'] = 'Parameters';
 $string['parentname'] = 'Name of the parent field';
 $string['pluginadministration'] = 'Plugin Administration';
-$string['plugindist'] = 'Plugin distribution';
 $string['pluginname'] = 'Shared resource';
 $string['predatanotprovided'] = '<- Not provided yet ->';
 $string['preview'] = 'Preview';
@@ -588,14 +585,6 @@ $string['userfieldvaluesmultiple'] = 'Multiple values access field';
 $string['userfieldvaluesmultiple_help'] = 'You can choose a set of values, one of which opens access to the resource (OR). If left empty set, the
 resource will have no access restriction at all.';
 
-$string['plugindist_desc'] = '
-<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
-core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
-and improvement effort.</p>
-<p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
-<p>Please contact one of our distributors to get "Pro" version support.</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
-
 $string['addinstance_search_desc'] = '
     Search in the library a shared resource and publish it in the course.
 ';
@@ -603,3 +592,5 @@ $string['addinstance_search_desc'] = '
 $string['addinstance_create_desc'] = '
     Upload a new resource within the shared library and finally publish it in the course.
 ';
+
+include(__DIR__.'/pro_additional_strings.php');

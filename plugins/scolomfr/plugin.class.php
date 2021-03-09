@@ -25,7 +25,7 @@ namespace mod_sharedresource;
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
+/**
  * Extend the base resource class for file resources.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
@@ -33,8 +33,8 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class plugin_scolomfr extends plugin_base {
 
-    // We may setup a context in which we can decide where users.
-    // Can be assigned role regarding metadata.
+    // we may setup a context in which we can decide where users 
+    // can be assigned role regarding metadata
 
     protected $namespace;
 
@@ -67,7 +67,7 @@ class plugin_scolomfr extends plugin_base {
             'en installation sportive', 'en laboratoire', 'en laboratoire de langues', 'en milieu familial',
             'en milieu professionnel', 'en entreprise', 'non précisé', 'en salle informatique',
             'en salle multimédia', // Scolomfr-voc-17
-        'à distance', 'en alternance', 'en autonomie', 'en classe entière', 'en collaboration', 'en milieu professionnel',
+        'à distance','en alternance', 'en autonomie', 'en classe entière', 'en collaboration','en milieu professionnel',
             'en groupe', 'en groupe de compétences', 'en ligne', 'en tutorat', 'modalité mixte', 'séjour pédagogique',
             'sortie pédagogique', 'travail de recherche', 'travail en interdisciplinarité', 'travaux dirigés',
             'travaux pratiques', // Scolomfr-voc-018
@@ -314,15 +314,15 @@ class plugin_scolomfr extends plugin_base {
             'name' => 'Type general de documents',
             'source' => 'scolomfr',
             'type' => 'sortedselect',
-            'values' => array('annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos',
-    'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie',
-    'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
-    'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
-    'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
-    'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
-    'ouvrage', 'partition musicale', 'périodique', 'photographie', 'podcast',
-    'présentation multimédia', 'programme scolaire', 'rapport', 'référentiel de compétences',
-    'schéma/graphique', 'site web', 'tableau (art)', 'web média'),
+            'values' => array('annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos', 
+'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie', 
+'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
+'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
+'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
+'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
+'ouvrage', 'partition musicale', 'périodique', 'photographie', 'podcast',
+'présentation multimédia', 'programme scolaire', 'rapport', 'référentiel de compétences',
+'schéma/graphique', 'site web', 'tableau (art)', 'web média'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -402,8 +402,7 @@ class plugin_scolomfr extends plugin_base {
             'name' => 'Role',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider',
-                            'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert', 'contributor'),
+            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert', 'contributor'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -711,8 +710,7 @@ class plugin_scolomfr extends plugin_base {
             'name' => 'Name',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer', 'opera',
-                            'amaya', 'firefox', 'safari'),
+            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1081,7 +1079,7 @@ class plugin_scolomfr extends plugin_base {
             'widget' => 'freetext',
         ),
         '5_14' => array(
-            'name' => 'Lieux', // Rajouter fichier langue.
+            'name' => 'Lieux', //rajouter fichier langue
             'source' => 'scolomfr',
             'type' => 'sortedselect',
             'values' => array(
@@ -1118,7 +1116,7 @@ class plugin_scolomfr extends plugin_base {
             'widget' => 'selectmultiple',
         ),
         '5_15' => array(
-            'name' => 'Modalité pédagogique', // Rajouter fichier langue.
+            'name' => 'Modalité pédagogique', //rajouter fichier langue
             'source' => 'scolomfr',
             'type' => 'select',
             'values' => array(
@@ -1150,7 +1148,7 @@ class plugin_scolomfr extends plugin_base {
             'widget' => 'selectmultiple',
         ),
         '5_16' => array(
-            'name' => 'Outils',
+            'name' => 'Outils', 
             'source' => 'scolomfr',
             'type' => 'select',
             'values' => array(
@@ -1662,9 +1660,9 @@ class plugin_scolomfr extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    public function lomHeader() {
+    function lomHeader() {
         return "
-            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\"
+            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\" 
                         xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\"
                             xmlns:scolomfr=\"http://www.lom-fr.fr/xsd/SCOLOMFR\">";
     }
@@ -1673,11 +1671,11 @@ class plugin_scolomfr extends plugin_base {
      * Generates metadata element as XML
      *
      */
-    public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+    function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
-        $tmpname = str_replace(' ', '', $value['name']);
-        $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
+        $tmpname = str_replace(' ','',$value['name']);
+        $name = strtolower(substr($tmpname,0,1)).substr($tmpname,1);
         $valid = 0;
         $namespace = @$value['source'];
         // Category/root : we have to call generate_xml on each child.
@@ -1699,7 +1697,7 @@ class plugin_scolomfr extends plugin_base {
             for ($i = 0; $i < count($tab); $i++) {
                 $fatherstr .= $tab[$i];
             }
-        } else if ($value['type'] == 'category') {
+        } elseif ($value['type'] == 'category') {
             $tab = array();
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
@@ -1723,9 +1721,9 @@ class plugin_scolomfr extends plugin_base {
                 $fatherstr .= "
                 </{$namespace}:{$name}>";
             }
-        } else if (count(@$metadata[$elem]) > 0) {
+        } elseif (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
-                // a "node" that contains data
+                // a "node" that contains data 
                 if (strpos($path, $pathcode) === 0) {
                     switch ($value['type']) {
                         case 'text':
@@ -1776,14 +1774,14 @@ class plugin_scolomfr extends plugin_base {
 
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved.
-     *
+     * is saved. 
+     * 
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    public function after_save(&$shrentry) {
+    function after_save(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1799,7 +1797,7 @@ class plugin_scolomfr extends plugin_base {
         return true;
     }
 
-    public function after_update(&$shrentry) {
+    function after_update(&$shrentry) {
         if (!empty($shrentry->keywords)) {
             $this->setKeywords($shrentry->keywords);
         }
@@ -1818,7 +1816,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getTitleElement() {
+    function getTitleElement() {
         $element = (object)$this->METADATATREE['1_2'];
         $element->node = '1_2';
         return $element;
@@ -1827,7 +1825,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getDescriptionElement() {
+    function getDescriptionElement() {
         $element = (object)$this->METADATATREE['1_4'];
         $element->node = '1_4';
         return $element;
@@ -1836,7 +1834,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    public function getKeywordElement() {
+    function getKeywordElement() {
         $element = (object)$this->METADATATREE['1_5'];
         $element->node = '1_5';
         return $element;
@@ -1845,7 +1843,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getFileFormatElement() {
+    function getFileFormatElement() {
         $element = (object)$this->METADATATREE['4_1'];
         $element->node = '4_1';
         return $element;
@@ -1854,7 +1852,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getSizeElement() {
+    function getSizeElement() {
         $element = (object)$this->METADATATREE['4_2'];
         $element->node = '4_2';
         return $element;
@@ -1863,7 +1861,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    public function getLocationElement() {
+    function getLocationElement() {
         $element = (object)$this->METADATATREE['4_3'];
         $element->node = '4_3';
         return $element;
@@ -1872,7 +1870,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyPurposeElement() {
+    function getTaxonomyPurposeElement() {
         $element = (object)$this->METADATATREE['9_1'];
         $element->node = '9_1';
         return $element;
@@ -1881,7 +1879,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyValueElement() {
+    function getTaxonomyValueElement() {
         $element = (object)$this->METADATATREE['9_2_2_1'];
         $element->node = '9_2_2_1';
         return $element;
@@ -1890,7 +1888,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    public function getKeywordValues($metadata) {
+    function getKeywordValues($metadata) {
         $keyelm = $this->getKeywordElement();
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = array();
@@ -1908,7 +1906,7 @@ class plugin_scolomfr extends plugin_base {
      * The "id" points to the local id to the taxon in the taxonoy source table
      * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
-    public function getTaxumpath() {
+    function getTaxumpath() {
         $element = array();
         $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
@@ -1921,7 +1919,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * Gets the metadata node identifier that provides classification storage capability.
      */
-    public function getClassification() {
+    function getClassification() {
         $element = "9";
         return $element;
     }
@@ -1942,7 +1940,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * records keywords in metadata flat table
      */
-    public function setKeywords($keywords) {
+    function setKeywords($keywords) {
         global $DB;
 
         if (empty($this->entryid)) {
@@ -1970,7 +1968,7 @@ class plugin_scolomfr extends plugin_base {
     /**
      * records title in metadata flat table from db attributes
      */
-    public function setTitle($title) {
+    function setTitle($title) {
         global $DB;
 
         if (empty($this->entryid)) {

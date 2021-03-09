@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-function sharedresource_set_instance(&$block) {
+function sharedresource_set_instance($block) {
     global $DB, $COURSE, $PAGE;
 
     $modinfo = get_fast_modinfo($block->course);

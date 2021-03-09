@@ -101,7 +101,7 @@ class metadata {
         }
 
         if (!preg_match('/[^:]+:[^:]+/', $element)) {
-            throw new moodle_exception("Invalid element structure $element");
+            throw new moodle_exception("Invalid element structure \"$element\"");
         }
 
         $this->entryid = $entryid;

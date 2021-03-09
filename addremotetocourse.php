@@ -196,7 +196,7 @@ if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))
 
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource = $DB->get_record('resource', array( 'id' => $resourceid));
+            $resource = $DB->get_record('resource', array('id' => $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }

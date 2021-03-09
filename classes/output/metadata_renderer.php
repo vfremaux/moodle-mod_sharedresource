@@ -261,37 +261,25 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->iscontainer = true;
 
                 $template->hascontent = false;
-                /*
-                // Get all subs.
-                $listresult = $elminstance->get_childs($nodeid, $capability, 'read', true);
-                if (!empty($listresult)) {
-                    // We verify if all children subbranchs of this category have been filled.
-                    $template->hascontent = $elminstance->childs_have_content($capability, 'read');
-                }
 
-                if (!empty($template->hascontent)) {
-                */
-                    // It's ok and we display the category, then display children recursively.
-                    $template->fieldnum = $nodeid;
+                // It's ok and we display the category, then display children recursively.
+                $template->fieldnum = $nodeid;
 
                 if ($numoccur > 0) {
-                        $template->occur = $numoccur + 1;
+                    $template->occur = $numoccur + 1;
                 }
 
-                    $standardelmchilds = $mtdstandard->getElementChilds($nodeid);
+                $standardelmchilds = $mtdstandard->getElementChilds($nodeid);
                 if (!empty($standardelmchilds)) {
-                        $template->hascontent = true;
+                    $template->hascontent = true;
                 }
-                    $nbrchilds = count($standardelmchilds);
-                    $parenttemplate->childs[] = $template;
+                $nbrchilds = count($standardelmchilds);
+                $parenttemplate->childs[] = $template;
                 foreach ($standardelmchilds as $childnodeid => $islist) {
-                        $childkey = metadata::to_instance($childnodeid);
-                        $this->part_view($template, $shrentry, $childkey, $capability, 0);
-                        $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
+                    $childkey = metadata::to_instance($childnodeid);
+                    $this->part_view($template, $shrentry, $childkey, $capability, 0);
+                    $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
                 }
-                /*
-                }
-                */
 
                 $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
                 if (!empty($siblings)) {
@@ -1197,10 +1185,17 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $faketabs = $this->coreoutput->render_tabtree($tabtree);
 
+        $tabmodel = new StdClass;
+
         if (preg_match('/nav-tabs/', $faketabs)) {
-            return 'nav nav-tabs';
+            $tabmodel->ul = 'nav nav-tabs';
+            $tabmodel->li = 'nav-item';
+            $tabmodel->link = 'nav-link';
         } else {
-            return 'tabrow0';
+            $tabmodel->ul = 'tabrow0';
+            $tabmodel->li = '';
+            $tabmodel->link = '';
         }
+        return $tabmodel;
     }
 }

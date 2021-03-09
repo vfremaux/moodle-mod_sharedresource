@@ -192,7 +192,6 @@ if ($result['error'] != array()) {
         // If everything was saved correctly, go back to the search page or to the library.
         if ($return) {
             // We are coming from the library. Go back to it.
-            // We are coming from the library. Go back to it.
             if ($return == 1) {
                 $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
             } else {

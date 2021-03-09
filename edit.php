@@ -191,14 +191,14 @@ if (($formdata = $mform->get_data()) ||
     // Process the form contents.
     // Add form data to table object - skip the elements until we know what the identifier is.
     foreach ($formdata as $key => $value) {
-        if (in_array($key, $shr_core_elements) && !empty($value)) {
+        if (in_array($key, $shrcoreelements) && !empty($value)) {
             if ($key == 'url') {
-                $shrentry->add_element($key, clean_param($value, PARAM_URL));
+                $shrentry->add_element($key, clean_param($value, PARAM_URL), $config->schema);
             } else {
                 if (is_array($value)) {
-                    $shrentry->add_element($key, clean_param_array($value, PARAM_CLEANHTML));
+                    $shrentry->add_element($key, clean_param_array($value, PARAM_CLEANHTML), $config->schema);
                 } else {
-                    $shrentry->add_element($key, clean_param($value, PARAM_CLEANHTML));
+                    $shrentry->add_element($key, clean_param($value, PARAM_CLEANHTML), $config->schema);
                 }
             }
         }

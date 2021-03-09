@@ -29,33 +29,35 @@ define('SHAREDRESOURCE_SEARCH_LIMIT', '200');
 define('SHAREDRESOURCE_RESULTS_PER_PAGE', '20');
 
 
-global $shr_window_options;
-global $shr_core_elements;
-global $shr_metadata_elements; // Must be global because it might be included from a function!
+global $shrwindowoptions;
+global $shrcoreelements;
+global $shrmetadataelements; // Must be global because it might be included from a function!
 
-$shr_window_options = array('resizable',
-                                    'scrollbars',
-                                    'directories',
-                                    'location',
-                                    'menubar',
-                                    'toolbar',
-                                    'status',
-                                    'width',
-                                    'height');
+$shrwindowoptions = [
+    'resizable',
+    'scrollbars',
+    'directories',
+    'location',
+    'menubar',
+    'toolbar',
+    'status',
+    'width',
+    'height'];
 
-$shr_core_elements = array('id',
-                                    'identifier',
-                                    'title',
-                                    'description',
-                                    'url',
-                                    'file',
-                                    'type',
-                                    'score',
-                                    'remoteid',
-                                    'mimetype',
-                                    'timemodified');
+$shrcoreelements = [
+    'id',
+    'identifier',
+    'title',
+    'description',
+    'url',
+    'file',
+    'type',
+    'score',
+    'remoteid',
+    'mimetype',
+    'timemodified'];
 
-$shr_metadata_elements = array(array('name' => 'Contributor',
+$shrmetadataelements = array(array('name' => 'Contributor',
                                                 'datatype' => 'text'),
                                           array('name' => 'IssueDate',
                                                 'datatype' => 'lomdate'),
@@ -136,11 +138,13 @@ function sharedresource_supports($feature) {
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
-function mod_sharedresource_supports_feature($feature) {
+function sharedresource_supports_feature($feature = null, $getsupported = null) {
     global $CFG;
     static $supports;
 
-    $config = get_config('sharedresource');
+    if (!during_initial_install()) {
+        $config = get_config('sharedresource');
+    }
 
     if (!isset($supports)) {
         $supports = array(
@@ -155,6 +159,10 @@ function mod_sharedresource_supports_feature($feature) {
         $prefer = array();
     }
 
+    if ($getsupported) {
+        return $supports;
+    }
+
     // Check existance of the 'pro' dir in plugin.
     if (is_dir(__DIR__.'/pro')) {
         if ($feature == 'emulate/community') {
@@ -167,6 +175,11 @@ function mod_sharedresource_supports_feature($feature) {
         }
     } else {
         $versionkey = 'community';
+    }
+
+    if (empty($feature)) {
+        // Just return version.
+        return $versionkey;
     }
 
     list($feat, $subfeat) = explode('/', $feature);

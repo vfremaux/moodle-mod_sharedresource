@@ -1,19 +1,4 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Custom XML parser for XML Metadata (LOMFR)
  *
@@ -24,8 +9,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php');
-require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
+require_once $CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php';
+require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php';
 
 /**
  * Custom XML parser class for XML Metadata
@@ -38,7 +23,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      *
      * @return bool True
      */
-    public function __construct() {
+    function __construct() {
         parent::__construct();
         return $this->initialise();
     }
@@ -48,7 +33,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      *
      * @return bool True
      */
-    public function initialise() {
+    function initialise() {
 
         $this->parser = xml_parser_create();
         xml_set_object($this->parser, $this);
@@ -408,7 +393,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      *
      * @return bool True on success - false on failure
      */
-    public function parse($data) {
+    function parse($data) {
         $p = xml_parse($this->parser, $data);
         return (bool)$p;
     }
@@ -416,14 +401,14 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
     /**
      * Destroy the parser and free up any related resource.
      */
-    public function free_resource() {
+    function free_resource() {
         $free = xml_parser_free($this->parser);
     }
 
     /**
      * Reset child nodes iteration
      */
-    public function reset_childs($path) {
+    function reset_childs($path) {
         foreach ($this->nodes_tree as $key => $value) {
             if (strpos($key, $path.'/') === 0) {
                 $this->nodes_tree[$key]['iteration'] = -1;
@@ -434,7 +419,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
     /**
      * Get Element path (ie 0_0_1)
      */
-    public function get_elempath($path) {
+    function get_elempath($path) {
         $elempath = '';
         $depth = substr_count($path, '/');
         $tmppath = $path;
@@ -464,7 +449,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      * @param   array   $attrs  The tag's attributes (if any exist).
      * @return  bool            True
      */
-    public function start_element($parser, $name, $attrs) {
+    function start_element($parser, $name, $attrs) {
         if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
@@ -505,9 +490,9 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      * @param string $data The content of the current tag (1024 byte chunk)
      * @return bool true
      */
-    public function default_data($parser, $data) {
+    function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {
-            return true;
+            return true; 
         }
         if ($this->current_path == $this->title_node) {
             if (empty($this->title)) {
@@ -555,7 +540,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
      * @param string $name The name of the tag, e.g. method_call
      * @return bool true
      */
-    public function end_element($parser, $name) {
+    function end_element($parser, $name) {
         if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
@@ -585,7 +570,7 @@ class metadata_xml_parser_lomfr extends metadata_xml_parser{
     }
 
     // Other utility functions to deal and change metadata.
-    public function add_identifier(&$metadata, $catalog, $identifier, $entryid) {
+    function add_identifier(&$metadata, $catalog, $identifier, $entryid) {
 
         // Add identifier record.
         $identifiernodeid = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];

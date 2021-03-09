@@ -723,11 +723,11 @@ abstract class plugin_base {
             namespace = :namespace
         ";
         $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $config->schema);
-        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $params);
+        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $select, $params);
         if ($versionelementid) {
             $resourceelementid = metadata::to_instance('7_2_1_2', $versionelementid);
             $params = array('entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $config->schema);
-            $resourceid = $DB->get_record('sharedresource_metadata', 'value', $params);
+            $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
             return $resourceid;
         }
 

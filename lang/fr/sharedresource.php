@@ -167,8 +167,6 @@ $string['durationsearch'] = 'Recherche d\'une durée';
 $string['edit'] = 'Modifier';
 $string['editclassificationtable'] = 'Modifier les entrées de classification';
 $string['educational'] = 'Aspects éducatifs';
-$string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['enabled'] = 'Actif';
 $string['entry'] = 'Entrée';
 $string['erroraclmisconf'] = 'ERREUR : ID de taxonomie ou ID de ressource manquant.';
@@ -286,7 +284,6 @@ $string['parameter'] = 'Paramètre';
 $string['parameters'] = 'Paramètres';
 $string['parentname'] = 'Nom du champ parent';
 $string['pluginadministration'] = 'Administration du plugins';
-$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Ressource mutualisée';
 $string['predatanotprovided'] = '<- Non encore fourni ->';
 $string['preview'] = 'Prévisualiser';
@@ -544,14 +541,6 @@ $string['userfieldvaluesmultiple'] = 'Multiple values access field';
 $string['userfieldvaluesmultiple_help'] = 'Choisissez une ou plusieurs valeurs ouvrant l\'accès à la ressource (OU). Si aucune valeur n\'est sélectionnée,
 alors la ressource est librement accessible.';
 
-$string['plugindist_desc'] = '
-<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
-sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
-<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
-
 $string['addinstance_search_desc'] = '
     Recherchez une ressource mutualisée dans la librarie et publiez-là dans le cours.
 ';
@@ -559,3 +548,5 @@ $string['addinstance_search_desc'] = '
 $string['addinstance_create_desc'] = '
     Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
 ';
+
+include(__DIR__.'/pro_additional_strings.php');

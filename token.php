@@ -44,7 +44,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
-$classif = $DB - get_record('sharedresource_classif', array('id' => $classifid));
+$classif = $DB->get_record('sharedresource_classif', array('id' => $classifid));
 
 $mform = new token_form($url, array($classif));
 

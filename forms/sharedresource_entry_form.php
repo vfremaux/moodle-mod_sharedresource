@@ -97,7 +97,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
         // Resource access :
         // TODO : try incorporate the accesscontrol form.
-        if (mod_sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
+        if (sharedresource_supports_feature('entry/accessctl') && !empty($config->accesscontrol)) {
             assert(1);
         }
 
@@ -112,13 +112,13 @@ class mod_sharedresource_entry_form extends moodleform {
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
         }
 
-        if (mod_sharedresource_supports_feature('entry/scorable')) {
+        if (sharedresource_supports_feature('entry/scorable')) {
             $mform->addElement('text', 'score', get_string('score', 'mod_sharedresource'), array('size' => '8', 'style' => 'width:8em;'));
             $mform->setType('score', PARAM_INT);
             $mform->setAdvanced('score');
         }
 
-        if (mod_sharedresource_supports_feature('entry/customicon')) {
+        if (sharedresource_supports_feature('entry/customicon')) {
             $group = array();
             $options = array('accepted_types' => array('.jpg', '.gif', '.png'));
             $group[] = $mform->createElement('filepicker', 'thumbnail', get_string('thumbnail', 'sharedresource'), $options);
