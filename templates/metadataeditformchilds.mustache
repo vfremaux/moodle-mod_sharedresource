@@ -1,0 +1,138 @@
+{{!
+    This file is part of The Sharedresource Module
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_sharedresource/metadataeditformchilds
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- metadataeditformchilds -->
+
+{{#childs}}
+
+{{#isclassification}}
+    {{#taxons}}
+    <fieldset>
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
+        {{{classificationselect}}}
+    </div>
+    </fieldset>
+    {{/taxons}}
+{{/isclassification}}
+
+{{#iscontainer}}
+{{#hascontent}}
+
+    <fieldset class="{{mandatoryclass}}">
+        <legend>{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</legend>
+
+         {{> mod_sharedresource/metadataeditformchilds }}
+
+    </fieldset>
+
+{{/hascontent}}
+{{/iscontainer}}
+
+{{#istext}}
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
+
+        <input type="text" id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" value="{{value}}" {{{readonly}}} />
+
+        {{{error}}}
+    </div>
+{{/istext}}
+
+{{#islongtext}}
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+        <textarea id="{{elmname}}" class="mtd-form-input" name="{{elmname}}" {{{readonly}}} {{{attributes}}} />{{{value}}}</textarea>
+
+        {{{error}}}
+    </div>
+{{/islongtext}}
+
+{{#isselect}}
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+        {{{select}}}
+    </div>
+{{/isselect}}
+
+{{#isdate}}
+    <div class="mtd-form-element mtd-date-element {{mandatoryclass}}">
+        <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+
+            {{{yearselect}}}
+            {{{monthselect}}}
+            {{{dayselect}}}
+
+            {{{error}}}
+    </div>
+{{/isdate}}
+
+{{#isduration}}
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label class="{{errorclass}}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
+
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Day" name="{{elmname}}_Day" value="{{valueday}}" /> {{daysstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Hou" name="{{elmname}}_Hou" value="{{valuehour}}" /> {{hoursstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Min" name="{{elmname}}_Min" value="{{valuemin}}" /> {{minutesstr}}
+        <input class="mtd-form-duration mtd-form-input" id="{{elmname}}_Sec" name="{{elmname}}_Sec" value="{{valuesec}}" /> {{secondsstr}}
+
+        {{{durationdescrhelpicon}}}
+
+        {{{error}}}
+    </div>
+{{/isduration}}
+
+{{#isvcard}}
+    <div class="mtd-form-element {{mandatoryclass}}">
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
+
+        <textarea cols="40" rows="5" id="{{elmname}}" class=" mtd-form-input" name="{{elmname}}">{{{value}}}</textarea>
+
+        {{{vcardhelpicon}}}
+    </div>
+{{/isvcard}}
+
+{{#hasaddbutton}}
+    <div id="add-zone-{{addid}}">
+    <!-- empty zone pending for new subform occurrence -->
+    </div>
+
+    <div id="add_{{nodeid}}">
+    <input type="button" id="id-add-{{addid}}"
+           name="btn-{{addid}}-{{fieldtype}}"
+           class="mtd-form-addbutton {{addclass}} {{buttonistaxonlevel}}"
+           data="{{{listdeps}}}"
+           data-occur="{{nextoccur}}"
+           value="{{addstr}} {{fieldvisiblename}}" {{{adddisabled}}} />
+    </div>
+{{/hasaddbutton}}
+
+{{#debugdata}}
+<pre>
+{{{debugdata}}}
+</pre>
+{{/debugdata}}
+
+{{/childs}}
+<!-- /metadataeditformchilds -->
