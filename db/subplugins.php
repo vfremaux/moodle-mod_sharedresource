@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * @package    mod_sharedresource
  * @category   subplugins
  * @copyright  2010 Petr Skoda (http://skodak.org)

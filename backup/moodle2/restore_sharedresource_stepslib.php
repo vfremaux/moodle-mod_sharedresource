@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -88,7 +87,7 @@ class restore_sharedresource_activity_structure_step extends restore_activity_st
             $newid = $DB->insert_record('sharedresource_metadata', $data);
         }
     }
-    
+
     public function after_execute() {
         $courseid = $this->get_courseid();
         rebuild_course_cache($courseid, true);

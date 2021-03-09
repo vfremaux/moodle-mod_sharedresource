@@ -25,7 +25,7 @@ namespace mod_sharedresource;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Extend the base resource class for file resources.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
@@ -33,8 +33,8 @@ require_once($CFG->dirroot.'/lib/accesslib.php');
 
 class plugin_suplomfr extends plugin_base {
 
-    // we may setup a context in which we can decide where users 
-    // can be assigned role regarding metadata
+    // We may setup a context in which we can decide where users.
+    // Can be assigned role regarding metadata.
 
     protected $namespace;
 
@@ -46,33 +46,34 @@ class plugin_suplomfr extends plugin_base {
 
     public $OTHERSOURCES = array(
         'LOMFRv1.0' => array(
-        'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe', 'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte',
-        'contributeur',
+        'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe', 'logiciel', 'objet physique', 'ressource interactive',
+        'service', 'son', 'texte', 'contributeur',
         'linux', 'firefox', 'safari',
         'démonstration', 'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique',
         'enseignement primaire', 'enseignement secondaire', 'licence', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise',
-        'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer', 's\'informer', 'se former', 'simuler', 's\'évaluer',
+        'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher',
+        's\'auto-former', 's\'exercer', 's\'informer', 'se former', 'simuler', 's\'évaluer',
         'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis'
         ),
         'ScoLOMFRv1.1' => array(
         'enseignement', 'public cible détaillé', 'label', 'type de diffusion', // Scolomfr-voc-028
-        'a pour vignette', 'a pour logo', 'est aperçu de', 'a pour aperçu', // Scolomfr-voc-009        
-        'annales', 'cyberquête', 'étude de cas', 'jeu éducatif', 'manuel d\'enseignement', 'méthode de langue', 
-            'production d\'élève', 'témoignage pédagogique', // Scolomfr-voc-10 
+        'a pour vignette', 'a pour logo', 'est aperçu de', 'a pour aperçu', // Scolomfr-voc-009
+        'annales', 'cyberquête', 'étude de cas', 'jeu éducatif', 'manuel d\'enseignement', 'méthode de langue',
+            'production d\'élève', 'témoignage pédagogique', // Scolomfr-voc-10
         'expérimenter', // Scolomfr-voc-19
-        'en amphithéâtre', 'en atelier', 'en atelier de pédagogie personnalisée', 'en CDI', 'en salle de classe', 
-            'en établissement', 'espace dédié à une pratique spécifique', 'en établissement socioculturel', 
-            'en bibliothèque médiathèque', 'en mobilité', 'en musée', 'hors établissement', 'en installation de loisirs', 
-            'en installation sportive', 'en laboratoire', 'en laboratoire de langues', 'en milieu familial', 
-            'en milieu professionnel', 'en entreprise', 'non précisé', 'en salle informatique', 
+        'en amphithéâtre', 'en atelier', 'en atelier de pédagogie personnalisée', 'en CDI', 'en salle de classe',
+            'en établissement', 'espace dédié à une pratique spécifique', 'en établissement socioculturel',
+            'en bibliothèque médiathèque', 'en mobilité', 'en musée', 'hors établissement', 'en installation de loisirs',
+            'en installation sportive', 'en laboratoire', 'en laboratoire de langues', 'en milieu familial',
+            'en milieu professionnel', 'en entreprise', 'non précisé', 'en salle informatique',
             'en salle multimédia', // Scolomfr-voc-17
-        'à distance','en alternance', 'en autonomie', 'en classe entière', 'en collaboration','en milieu professionnel', 
-            'en groupe', 'en groupe de compétences', 'en ligne', 'en tutorat', 'modalité mixte', 'séjour pédagogique', 
-            'sortie pédagogique', 'travail de recherche', 'travail en interdisciplinarité', 'travaux dirigés', 
+        'à distance', 'en alternance', 'en autonomie', 'en classe entière', 'en collaboration', 'en milieu professionnel',
+            'en groupe', 'en groupe de compétences', 'en ligne', 'en tutorat', 'modalité mixte', 'séjour pédagogique',
+            'sortie pédagogique', 'travail de recherche', 'travail en interdisciplinarité', 'travaux dirigés',
             'travaux pratiques', // Scolomfr-voc-018
         'diffuseur/distributeur', // Scolomfr-voc-03
-        'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos', 
-            'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie', 
+        'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos',
+            'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie',
             'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
             'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
             'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
@@ -84,7 +85,7 @@ class plugin_suplomfr extends plugin_base {
         'SupLOMFRv1.0' => array(
                 'étude de cas', 'liste de références', 'jeu de données', 'autres', // 5.2
                  'bac+2', 'bac+3', 'bac+4', 'bac+5', // 5.6
-           
+
         ),
     );
 
@@ -342,7 +343,8 @@ class plugin_suplomfr extends plugin_base {
             'name' => 'Role',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert', 'contributor'),
+            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer', 'technical implementer',
+                        'content provider', 'technical validator', 'educational validator', 'script writer', 'instructional designer', 'subject matter expert', 'contributor'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -400,7 +402,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             )
         ),
-/*
+    /*
         '3_1' => array(
             'name' => 'Identifier',
             'source' => 'lom',
@@ -446,7 +448,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'freetext',
         ),
-*/
+    */
         '3_2' => array(
             'name' => 'Contribute',
             'source' => 'lom',
@@ -480,7 +482,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'select',
         ),
-/*
+    /*
         '3_2_2' => array(
             'name' => 'Entity',
             'source' => 'lom',
@@ -509,7 +511,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'date',
         ),
-*/
+    */
         '3_3' => array(
             'name' => 'Metadata Schema',
             'source' => 'lom',
@@ -523,7 +525,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             )
         ),
-/*
+    /*
         '3_4' => array(
             'name' => 'Language',
             'source' => 'lom',
@@ -537,7 +539,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             )
         ),
-*/
+    */
         '4' => array(
             'name' => 'Technical',
             'source' => 'lom',
@@ -656,7 +658,8 @@ class plugin_suplomfr extends plugin_base {
             'name' => 'Name',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
+            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator', 'ms-internet explorer',
+                            'opera', 'amaya', 'firefox', 'safari'),
             'checked' => array(
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -943,7 +946,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'duration',
         ),
-/*
+    /*
         '5_10' => array(
             'name' => 'Description',
             'source' => 'lom',
@@ -1021,7 +1024,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'freetext',
         ),
-*/
+    */
         '6' => array(
             'name' => 'Rights',
             'source' => 'lom',
@@ -1156,7 +1159,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             )
         ),
-/*
+    /*
         '7_2_1' => array(
             'name' => 'Identifier',
             'source' => 'lom',
@@ -1216,7 +1219,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'freetext',
         ),
-*/
+    */
         '8' => array(
             'name' => 'Annotation',
             'source' => 'lom',
@@ -1249,7 +1252,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'freetext',
         ),
-/*
+    /*
         '8_2' => array(
             'name' => 'Date',
             'source' => 'lom',
@@ -1278,7 +1281,7 @@ class plugin_suplomfr extends plugin_base {
             ),
             'widget' => 'freetext',
         ),
-*/
+    */
         '9' => array(
             'name' => 'Classification',
             'source' => 'lom',
@@ -1397,7 +1400,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             ),
         ),
-/*
+    /*
         '9_3' => array(
             'name' => 'Description',
             'source' => 'lom',
@@ -1424,7 +1427,7 @@ class plugin_suplomfr extends plugin_base {
                 'author_read'  => 0,
             )
         )
-*/
+    */
     );
 
     public function __construct($entryid = 0) {
@@ -1439,7 +1442,7 @@ class plugin_suplomfr extends plugin_base {
      */
     public function lomHeader() {
         return "
-            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\" 
+            <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\"
                         xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\"
                             xmlns:scolomfr=\"http://www.lom-fr.fr/xsd/SUPLOMFR\">";
     }
@@ -1451,8 +1454,8 @@ class plugin_suplomfr extends plugin_base {
     public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
         $value = $this->METADATATREE[$elem];
-        $tmpname = str_replace(' ','',$value['name']);
-        $name = strtolower(substr($tmpname,0,1)).substr($tmpname,1);
+        $tmpname = str_replace(' ', '', $value['name']);
+        $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
         $namespace = @$value['source'];
         // Category/root : we have to call generate_xml on each child.
@@ -1500,7 +1503,7 @@ class plugin_suplomfr extends plugin_base {
             }
         } else if (count(@$metadata[$elem]) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
-                // a "node" that contains data 
+                // a "node" that contains data
                 if (strpos($path, $pathcode) === 0) {
                     switch ($value['type']) {
                         case 'text':
@@ -1546,7 +1549,7 @@ class plugin_suplomfr extends plugin_base {
                         <{$namespace}:{$name}>".$metadata[$elem][$path]."</{$namespace}:{$name}>";
                         }
                     }
-                    $valid = 1;
+                        $valid = 1;
                 }
             }
         }
@@ -1556,7 +1559,7 @@ class plugin_suplomfr extends plugin_base {
     /**
      * Access to the sharedresource_entry object after a new object
      * is saved.
-     * 
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler

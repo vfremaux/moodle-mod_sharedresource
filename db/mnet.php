@@ -33,6 +33,6 @@ $publishes = array(
 $subscribes = array(
 );
 
-if (mod_sharedresource_supports_feature('entry/remote')) {
+if (sharedresource_supports_feature('entry/remote')) {
     include($CFG->dirroot.'/mod/sharedresource/pro/db/mnet.php');
 }

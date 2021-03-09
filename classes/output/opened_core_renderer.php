@@ -20,7 +20,7 @@
  * @package    mod_sharedresource
  * @category   mod
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
  */
 namespace mod_sharedresource\output;
 
