@@ -496,7 +496,7 @@ function sharedresource_redirect_tags($text, $url, $tagtoparse, $keytoparse, $pr
         }
 
         $mainroot = $root;
-        $lastslash = strrpos($mainroot, "/");
+        $lastslash = strrpos($mainroot,"/");
         while ($lastslash > 9) {
             $mainroot = substr($mainroot, 0, $lastslash);
 

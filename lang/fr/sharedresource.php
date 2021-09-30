@@ -549,13 +549,4 @@ $string['addinstance_create_desc'] = '
     Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
 ';
 
-/*Section pro*/
-
-$string['emulatecommunity'] = "Emuler la version communautaire";
-$string['emulatecommunity_desc'] = "Si elle est activée, cette option force le composant à fonctionner en version communautaire. Le fonctionnement sera plus compatible avec d'autres installations, mais certaines fonctionnalités ne seront plus disponibles.";
-$string['licenseprovider'] = "Fournisseur version Pro";
-$string['licenseprovider_desc'] = "Entrez la clef de votre fournisseur.";
-$string['licensekey'] = "Clef de license pro";
-$string['licensekey_desc'] = "Entrez ici la clef de produit que vous avez reçu de votre distributeur.";
-
 include(__DIR__.'/pro_additional_strings.php');
