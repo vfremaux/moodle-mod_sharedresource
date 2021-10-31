@@ -21,7 +21,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         component: 'mod_sharedresource',
         shortcomponent: 'mod_sharedresource',
-        componentpath: '/mod/sharedresource',
+        componentpath: 'mod/sharedresource',
 
         init: function() {
 
