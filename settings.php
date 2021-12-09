@@ -223,7 +223,7 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
     }
 
-    if (local_courseindex_supports_feature('emulate/community') == 'pro') {
+    if (sharedresource_supports_feature('emulate/community') == 'pro') {
         include_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
         $promanager = mod_sharedresource\pro_manager::instance();
         $promanager->add_settings($ADMIN, $settings);
