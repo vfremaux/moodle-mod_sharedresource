@@ -19,7 +19,7 @@
  *
  * @package    mod_sharedresource
  * @category   mod
- * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -32,11 +32,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 $courseid = optional_param('course', SITEID, PARAM_INT);
 
 if ($courseid > SITEID) {
-    if (!$course = $DB->get_record('course', array('id'=> "$courseid"))) {
+    if (!$course = $DB->get_record('course', array('id' => "$courseid"))) {
         print_error('coursemisconf');
     }
 
-// Security.
+    // Security.
 
     $context = context_course::instance($courseid);
     require_login($course);
@@ -69,7 +69,7 @@ if (empty($courseid)) {
     echo $OUTPUT->footer();
     exit();
 } else {
-    $sharedresources = $DB->get_records('sharedresource', array('course'=> $courseid), 'name');
+    $sharedresources = $DB->get_records('sharedresource', array('course' => $courseid), 'name');
     if (empty($sharedresources)) {
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);

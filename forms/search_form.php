@@ -27,7 +27,6 @@ require_once($CFG->libdir.'/formslib.php');
 class mod_sharedresource_search_form extends moodleform {
 
     public function definition() {
-        global $CFG, $DB;
 
         $mform =& $this->_form;
 
@@ -62,7 +61,7 @@ class mod_sharedresource_search_form extends moodleform {
         $this->add_action_buttons(false, get_string('addsharedresource', 'sharedresource'));
     }
 
-    function validation($data, $files) {
+    public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         return $errors;
     }

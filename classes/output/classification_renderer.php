@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@club-internet.fr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
  * @package    mod_sharedresource
  * @category   mod
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
  */
 namespace mod_sharedresource\output;
 
@@ -58,9 +58,9 @@ class classification_renderer extends \plugin_renderer_base {
 
         $template = new StdClass;
 
-        $label = get_string('backadminpage','sharedresource');
+        $label = get_string('backadminpage', 'sharedresource');
         $hrefurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
-        $template->backbutton = $OUTPUT->continue_button($hrefurl, $label);
+        $template->backbutton = $this->output->continue_button($hrefurl, $label);
 
         return $this->output->render_from_template('mod_sharedresource/backadminpage', $template);
     }

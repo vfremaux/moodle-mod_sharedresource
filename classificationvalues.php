@@ -173,7 +173,7 @@ if ($classification->tablename != 'sharedresource_taxonomy') {
     echo '</div>';
 }
 
-$label = get_string('backtoclassifications','sharedresource');
+$label = get_string('backtoclassifications', 'sharedresource');
 $buttonurl = new moodle_url('/mod/sharedresource/classifications.php');
 echo $OUTPUT->single_button($buttonurl, $label);
 

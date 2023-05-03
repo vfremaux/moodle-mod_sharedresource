@@ -19,7 +19,7 @@
  *
  * @package    mod_sharedresource
  * @category   mod
- * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -33,7 +33,7 @@ class sharedresource_choosecourse_form extends moodleform {
         $this->courses = $courses;
         parent::__construct();
     }
- 
+
     public function definition() {
         $mform = & $this->_form;
 
@@ -66,7 +66,7 @@ class sharedresource_selectresources_form extends moodleform {
             foreach ($this->_customdata['resources'] as $r) {
                 $name = format_string($r->name);
                 $label = get_string('resource').':';
-                $mform->addElement('advcheckbox', 'rcnv_'.$r->id, $label, $name, array('group' => 1), array(0,1));
+                $mform->addElement('advcheckbox', 'rcnv_'.$r->id, $label, $name, array('group' => 1), array(0, 1));
                 $mform->setDefault('rcnv_'.$r->id, 1);
                 $mform->addElement('static', 'lbl_'.$r->id, '', format_string($r->intro, $r->introformat));
             }
@@ -80,7 +80,7 @@ class sharedresource_selectresources_form extends moodleform {
 
             foreach ($this->_customdata['urls'] as $u) {
                 $label = get_string('url').':';
-                $mform->addElement('advcheckbox', 'ucnv_'.$u->id, $label, $u->externalurl, array('group' => 1), array(0,1));
+                $mform->addElement('advcheckbox', 'ucnv_'.$u->id, $label, $u->externalurl, array('group' => 1), array(0, 1));
                 $mform->setDefault('ucnv_'.$u->id, 1);
                 $mform->addElement('static', 'lbl_'.$u->id, get_string('description').':', @$u->intro);
             }
