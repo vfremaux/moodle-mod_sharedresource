@@ -24,6 +24,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-if (mod_sharedresource_supports_feature('entry/remote')) {
+if (sharedresource_supports_feature('entry/remote')) {
     include_once($CFG->dirroot.'/mod/sharedresource/pro/externallib.php');
 }

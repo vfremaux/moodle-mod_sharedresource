@@ -45,7 +45,7 @@ if (!empty($token)) {
     $url .= '&token='.$token;
 }
 
-$course =  $DB->get_record('course', array('id' => "$courseid"));
+$course = $DB->get_record('course', array('id' => "$courseid"));
 if (empty($course)) {
     print_error('coursemisconf');
 }
@@ -71,7 +71,7 @@ if (!$section) {
 
 $config = get_config('sharedresource');
 
-// check wether the deployment mode needs the remote file to be localized here.
+// Check wether the deployment mode needs the remote file to be localized here.
 $needsfileinlocalfs = ($mode == 'deploy') ||
             ($mode == 'file') ||
                     (($mode == 'scorm') && $config->scormintegration == SCORM_TYPE_LOCAL);
@@ -196,7 +196,7 @@ if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))
 
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource = $DB->get_record('resource',array( 'id' => $resourceid));
+            $resource = $DB->get_record('resource', array('id' => $resourceid));
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
@@ -229,7 +229,7 @@ if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->
 if ($course->format == 'page') {
     require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
     require_once($CFG->dirroot.'/course/format/page/lib.php');
-    $coursepage = course_page::get_current_page($course->id);
+    $coursepage = \format\page\course_page::get_current_page($course->id);
     $coursepage->add_cm_to_page($cm->id);
 }
 

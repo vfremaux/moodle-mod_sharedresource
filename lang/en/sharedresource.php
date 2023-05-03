@@ -151,8 +151,6 @@ $string['durationdescr'] = 'Duration format description';
 $string['durationsearch'] = 'Research on duration field';
 $string['edit'] = 'Edit';
 $string['editclassificationtable'] = 'Edit classification table';
-$string['emulatecommunity'] = 'Emulate the community version.';
-$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['enabled'] = 'Enabled';
 $string['entry'] = 'Entry';
 $string['erroraclmisconf'] = 'ERROR : Access control error : no taxonomy nor resource id is given.';
@@ -284,7 +282,6 @@ $string['parameter'] = 'Parameter';
 $string['parameters'] = 'Parameters';
 $string['parentname'] = 'Name of the parent field';
 $string['pluginadministration'] = 'Plugin Administration';
-$string['plugindist'] = 'Plugin distribution';
 $string['pluginname'] = 'Shared resource';
 $string['predatanotprovided'] = '<- Not provided yet ->';
 $string['preview'] = 'Preview';
@@ -457,7 +454,7 @@ $string['configscormintegration_desc'] = 'Chooses how scorms are integrated in c
 $string['medatadaconfiguration_desc'] = 'This <a href="{$a}">additional page</a> allows the configuration of metadata form for each role,
 and to choose the search widgets.';
 
-//************* Help Strings ******************/
+// ************* Help Strings ******************/
 
 $string['profilefieldname_help'] = '
    Name is given as a prefix:fieldname value. Prefix can be "user" or "profile_field", and respectively addresses core user
@@ -470,7 +467,7 @@ $string['matchedvalues_help'] = '
 
 $string['description_help'] = "
 The description is a very short summary of the resource.\n\n
-For some resource display options, the summary is printed along side 
+For some resource display options, the summary is printed along side
 the resource itself, otherwise it appears on the resource index page
 making it easier for students searching for particular resources.
 ";
@@ -487,7 +484,7 @@ The configuration of each classification added is then necessary by clicking on 
 ";
 
 $string['addsharedresource_help'] = "
-Resources are content: information the teacher wants to bring into the course.  These can be prepared files uploaded to the course 
+Resources are content: information the teacher wants to bring into the course.  These can be prepared files uploaded to the course
 server; pages edited directly in Moodle; or external web pages made to appear part of this course.\n\n
 Shared Resources are course independent, and are created in advance before being attached to a Course.\n\n
 Resources are either URLs, or a locally uploaded file. Specify your resource, along with the appropriate metadata, to add it to the searchable index.
@@ -588,14 +585,6 @@ $string['userfieldvaluesmultiple'] = 'Multiple values access field';
 $string['userfieldvaluesmultiple_help'] = 'You can choose a set of values, one of which opens access to the resource (OR). If left empty set, the
 resource will have no access restriction at all.';
 
-$string['plugindist_desc'] = '
-<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
-core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
-and improvement effort.</p>
-<p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
-<p>Please contact one of our distributors to get "Pro" version support.</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
-
 $string['addinstance_search_desc'] = '
     Search in the library a shared resource and publish it in the course.
 ';
@@ -603,3 +592,14 @@ $string['addinstance_search_desc'] = '
 $string['addinstance_create_desc'] = '
     Upload a new resource within the shared library and finally publish it in the course.
 ';
+
+/*Pro section*/
+
+$string['emulatecommunity'] = "Emulate the community version.";
+$string['emulatecommunity_desc'] = "If enabled, the plugin will behave as the public community version. This will increase compatibility with other implementations but will loose features !";
+$string['licenseprovider'] = "Pro License provider";
+$string['licenseprovider_desc'] = "Input here your provider key";
+$string['licensekey'] = "Pro license key";
+$string['licensekey_desc'] = "Input here the product license key you got from your provider ";
+
+include(__DIR__.'/pro_additional_strings.php');

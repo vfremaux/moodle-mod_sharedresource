@@ -28,10 +28,11 @@
  */
 namespace local_search;
 
-use \StdClass;
-use \context_course;
-use \context_module;
-use \moodle_url;
+use StdClass;
+use context_course;
+use context_module;
+use context_system;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -51,7 +52,6 @@ class SharedresourceSearchDocument extends SearchDocument {
      * Context may be system, or category context if resource is category limited
      */
     public function __construct(&$sharedresourceentry, $contextid) {
-        global $DB;
 
         // Generic information; required.
         $doc = new StdClass;
@@ -95,8 +95,6 @@ class sharedresource_document_wrapper extends document_wrapper {
      *
      */
     public static function get_iterator() {
-        global $DB;
-
         return array(true);
     }
 
@@ -114,13 +112,19 @@ class sharedresource_document_wrapper extends document_wrapper {
 
             if ($sharedresource->context) {
                 $context = $DB->get_record('context', array('id' => $sharedresource->context));
-            } else {
+                if (!$context) {
+                    mtrace("Failed finding shr context {$sharedresource->context}. Indexing at system level.");
+                }
+            }
+
+            if (!$context) {
                 $context = context_system::instance();
             }
 
             $sharedresource->authors = '';
             $sharedresourcearr = get_object_vars($sharedresource);
             $documents[] = new SharedresourceSearchDocument($sharedresourcearr, $context->id);
+            mtrace("finished sharedresouce entry {$sharedresource->id}");
         }
         return $documents;
     }
@@ -189,7 +193,8 @@ class sharedresource_document_wrapper extends document_wrapper {
      * @return true if access is allowed, false elsewhere
      */
     public static function check_text_access($path, $itemtype, $thisid, $user, $groupidunused, $contextidunused) {
-        global $CFG, $DB;
+
+        // TODO : apply access check rules on documents to current user.
 
         // TODO : apply access check rules on documents to current user.
 

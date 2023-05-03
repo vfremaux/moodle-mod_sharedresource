@@ -20,7 +20,7 @@
  * @package    mod_sharedresource
  * @category   mod
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
  */
 namespace mod_sharedresource\output;
 
@@ -54,7 +54,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
             $template->defaultselectstr = get_string('defaultselect', 'sharedresource');
             $template->updatemetadatastr = get_string('updatemetadata', 'sharedresource');
-            $template->backadminpagestr = get_string('backadminpage','sharedresource');
+            $template->backadminpagestr = get_string('backadminpage', 'sharedresource');
             $template->backadminpageurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
         } else {
             $template->noplugin = $this->output->notification(get_string('nometadataplugin', 'sharedresource'));
@@ -81,10 +81,10 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->schema = get_string('pluginname', 'sharedmetadata_'.$template->namespace);
         $template->hidemetadatadesc = get_config('sharedresource', 'hidemetadatadesc');
 
-        $template->dmusedstr = get_string('dmused','sharedresource');
+        $template->dmusedstr = get_string('dmused', 'sharedresource');
 
-        $template->dmusestr = get_string('dmuse','sharedresource');
-        $template->dmdescription = get_string('dmdescription','sharedresource');
+        $template->dmusestr = get_string('dmuse', 'sharedresource');
+        $template->dmdescription = get_string('dmdescription', 'sharedresource');
 
         $tabmodel = $this->detect_tab_model();
         $template->tabmodel = $tabmodel;
@@ -116,8 +116,7 @@ class metadata_renderer extends \plugin_renderer_base {
     /**
      * Creates tabs.
      */
-    function tab($nodeid, $capability, &$template, $mode = 'read') {
-        global $DB;
+    public function tab($nodeid, $capability, &$template, $mode = 'read') {
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
@@ -155,8 +154,7 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param string $capability tells if the field is visible or not depending of the role of the user regarding metadata
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
-    function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
-        global $SESSION, $CFG, $DB, $OUTPUT;
+    public function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -195,7 +193,7 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->isvcard = false;
 
         // Check how many occurrences of ourself we have in database.
-        $lastoccur =  $elminstance->get_max_occurrence();
+        $lastoccur = $elminstance->get_max_occurrence();
         if ($lastoccur < 1) {
             // Do not display occurence index if we have only one possible.
             unset($template->numoccur);
@@ -218,7 +216,7 @@ class metadata_renderer extends \plugin_renderer_base {
         echo "<br/>";
         */
 
-        $template->keyid =  $elementkey;
+        $template->keyid = $elementkey;
         $listresult = array();
         if ($standardelm->type == 'category') {
 
@@ -263,37 +261,25 @@ class metadata_renderer extends \plugin_renderer_base {
                 $template->iscontainer = true;
 
                 $template->hascontent = false;
-                /*
-                // Get all subs.
-                $listresult = $elminstance->get_childs($nodeid, $capability, 'read', true);
-                if (!empty($listresult)) {
-                    // We verify if all children subbranchs of this category have been filled.
-                    $template->hascontent = $elminstance->childs_have_content($capability, 'read');
+
+                // It's ok and we display the category, then display children recursively.
+                $template->fieldnum = $nodeid;
+
+                if ($numoccur > 0) {
+                    $template->occur = $numoccur + 1;
                 }
 
-                if (!empty($template->hascontent)) {
-                */
-                    // It's ok and we display the category, then display children recursively.
-                    $template->fieldnum = $nodeid;
-
-                    if ($numoccur > 0) {
-                        $template->occur = $numoccur + 1;
-                    }
-
-                    $standardelmchilds = $mtdstandard->getElementChilds($nodeid);
-                    if (!empty($standardelmchilds)) {
-                        $template->hascontent = true;
-                    }
-                    $nbrchilds = count($standardelmchilds);
-                    $parenttemplate->childs[] = $template;
-                    foreach ($standardelmchilds as $childnodeid => $islist) {
-                        $childkey = metadata::to_instance($childnodeid);
-                        $this->part_view($template, $shrentry, $childkey, $capability, 0);
-                        $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
-                    }
-                /*
+                $standardelmchilds = $mtdstandard->getElementChilds($nodeid);
+                if (!empty($standardelmchilds)) {
+                    $template->hascontent = true;
                 }
-                */
+                $nbrchilds = count($standardelmchilds);
+                $parenttemplate->childs[] = $template;
+                foreach ($standardelmchilds as $childnodeid => $islist) {
+                    $childkey = metadata::to_instance($childnodeid);
+                    $this->part_view($template, $shrentry, $childkey, $capability, 0);
+                    $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
+                }
 
                 $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
                 if (!empty($siblings)) {
@@ -520,7 +506,7 @@ class metadata_renderer extends \plugin_renderer_base {
     /*
      * This function creates content of tabs.
      */
-    function edit_panels($capability, &$mtdstandard, &$template) {
+    public function edit_panels($capability, &$mtdstandard, &$template) {
 
         $mode = required_param('mode', PARAM_ALPHA);
 
@@ -573,10 +559,10 @@ class metadata_renderer extends \plugin_renderer_base {
      *
      * @param string $elementkey the standard element id m_n_o:x_y_z
      * @param string $capability tells if the field is visible or not depending of the category of the user
-     * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not 
+     * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not
      * appear anymore on the metadata form. Realoccur is the visible occurrence the user should see for the part.
      */
-    function part_form(&$parenttemplate, $elementkey, $capability, $realoccur = 0, $ispanel = false) {
+    public function part_form(&$parenttemplate, $elementkey, $capability, $realoccur = 0, $ispanel = false) {
         global $SESSION, $CFG, $DB;
         static $taxumarray;
         static $classifsiblingsdone = false;
@@ -713,6 +699,7 @@ class metadata_renderer extends \plugin_renderer_base {
                             $sourceelmid = $sourceelm->id;
                         } else {
                             // echo "// No classification source \n";
+                            assert(1);
                         }
                     } else {
                         // echo "// Take parent source \n";
@@ -918,7 +905,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
-        // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
+            // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
             debug_trace($elminstance);
             debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root);
             $template->debugdata .= "Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root;
@@ -1131,7 +1118,7 @@ class metadata_renderer extends \plugin_renderer_base {
             }
 
             $options = array();
-            $options['-year-'] = get_string('year','sharedresource');
+            $options['-year-'] = get_string('year', 'sharedresource');
 
             for ($i = date('Y'); $i >= 1970; $i--) {
                 $options[$i] = $i;
@@ -1139,9 +1126,8 @@ class metadata_renderer extends \plugin_renderer_base {
             $attrs = array('id' => $template->elmname.'_dateyear', 'class' => 'mtd-form-date-select');
             $template->yearselect = html_writer::select($options, $template->elmname.'_dateyear', $fillyear, '', array(), $attrs);
 
-
             $options = array();
-            $options['-month-'] = get_string('month','sharedresource');
+            $options['-month-'] = get_string('month', 'sharedresource');
 
             for ($i = 1; $i <= 12; $i++) {
                 $month = sprintf('%02d', $i);
@@ -1151,7 +1137,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $template->monthselect = html_writer::select($options, $template->elmname.'_datemonth', $fillmonth, '', array(), $attrs);
 
             $options = array();
-            $options['-day-'] = get_string('day','sharedresource');
+            $options['-day-'] = get_string('day', 'sharedresource');
 
             for ($i = 1; $i <= 31; $i++) {
                 $day = sprintf('%02d', $i);
@@ -1189,7 +1175,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
     /**
      * Several themes have different way to render and layout tabs in moodle.
-     * We sometime need to build our own tab tree, but coping with the overal 
+     * We sometime need to build our own tab tree, but coping with the overal
      * theme way of doing.
      */
     protected function detect_tab_model() {
@@ -1199,10 +1185,17 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $faketabs = $this->coreoutput->render_tabtree($tabtree);
 
+        $tabmodel = new StdClass;
+
         if (preg_match('/nav-tabs/', $faketabs)) {
-            return 'nav nav-tabs';
+            $tabmodel->ul = 'nav nav-tabs';
+            $tabmodel->li = 'nav-item';
+            $tabmodel->link = 'nav-link';
         } else {
-            return 'tabrow0';
+            $tabmodel->ul = 'tabrow0';
+            $tabmodel->li = '';
+            $tabmodel->link = '';
         }
+        return $tabmodel;
     }
 }

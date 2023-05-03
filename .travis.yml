@@ -9,32 +9,37 @@ addons:
     packages:
       - openjdk-8-jre-headless
 
+services:
+  - mysql
+
 cache:
   directories:
     - $HOME/.composer/cache
     - $HOME/.npm
 
 php:
- - 7.2
+ - 7.3
 
 env:
   global:
-    - MOODLE_BRANCH=MOODLE_37_STABLE
+    - MOODLE_BRANCH=MOODLE_39_STABLE
+    - PLUGINS_BRANCH=MOODLE_39_WORKING
   matrix:
-    - DB=mysqli
+    - DB=mariadb
     - DB=pgsql
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - nvm install 8.9
-  - nvm use 8.9
+  - nvm install 14.0
+  - nvm use 14.0
   - cd ../..
-  - composer create-project -n --no-dev moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-repository_sharedresources
-  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-local_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-repository_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-local_sharedresources
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-block_sharedresources
   - moodle-plugin-ci install
 
 script:
