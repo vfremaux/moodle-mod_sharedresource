@@ -196,8 +196,6 @@ class sharedresource_document_wrapper extends document_wrapper {
 
         // TODO : apply access check rules on documents to current user.
 
-        // TODO : apply access check rules on documents to current user.
-
         $config = get_config('local_sharedresources');
 
         if (!isloggedin() && $config->privatecatalog) {

@@ -32,6 +32,7 @@ $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used 
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '3.9.0 (Build 2021102100)';
 $plugin->dependencies = array('local_sharedresources' => 201801180);
+$plugin->supported = [38, 311];
 
 // Non Moodle attributes.
 $plugin->codeincrement = '3.9.0011';

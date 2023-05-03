@@ -92,6 +92,7 @@ $string['configclassification'] = 'Configure';
 $string['configdefaulturl'] = 'Default URL';
 $string['configdefaultuserfield'] = 'Default value for shared resource access controlled.';
 $string['configenablerssfeeds'] = 'Enable RSS resource exposition feeds';
+$string['configenablerssfeedsdesc'] = 'If this setting is enabled, an RSS output will list any new entry in the library, with basic metadata.';
 $string['configfilterexternalpages'] = 'Enabling this setting will allow the filtering of external resources (web pages, HTML files deposited) by the filters defined in the site (such as links in glossaries). When this setting is active, the display of your pages will be slowed significantly. Use with caution.';
 $string['configforeignurlscheme'] = 'URL to access resources';
 $string['configframesize'] = 'Frame size';

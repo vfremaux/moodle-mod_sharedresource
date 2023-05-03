@@ -149,12 +149,6 @@ class mod_sharedresource_entry_form extends moodleform {
         $mform->addElement('hidden', 'catpath', $catpath);
         $mform->setType('catpath', PARAM_TEXT);
 
-        $mform->addElement('hidden', 'catid', $catid);
-        $mform->setType('catid', PARAM_INT); 
-
-        $mform->addElement('hidden', 'catpath', $catpath);
-        $mform->setType('catpath', PARAM_TEXT); 
-
         $mform->addElement('hidden', 'entryid', $this->entryid);
         $mform->setType('entryid', PARAM_INT);
 

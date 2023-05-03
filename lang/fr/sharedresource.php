@@ -94,6 +94,7 @@ $string['configdefaulturl'] = 'URL par défaut';
 $string['configdefaulturl_desc'] = 'Cette valeur est utilisée pour préremplir l\'URL lors de la création d\'une nouvelle ressource pointée par URL.';
 $string['configdefaultuserfield'] = 'Champ de profil utilisateur par défaut pour le contrôle d\'accès.';
 $string['configenablerssfeeds'] = 'Activer les flux RSS d\'exposition des ressources';
+$string['configenablerssfeedsdesc'] = 'Si ce réglage est activé, un flux RSS peut être obtenu qui donnera la liste des ressources récentes ajoutées à la librairie';
 $string['configfilterexternalpages'] = 'L\'activation de ce réglage permettra le filtrage des ressources externes (pages web, fichiers HTML déposés) par les filtres définis dans le site (comme les liens des glossaires). Lorsque ce réglage est actif, l\'affichage de vos pages sera ralenti de façon sensible. À utiliser avec précaution.';
 $string['configforeignurlscheme'] = 'URL d\'accès aux ressources';
 $string['configforeignurlsheme_desc'] = 'Forme générale de l\'Url. Utiliser \'&lt;%%%%ID%%%%&gt;\' comme emplacement de l\'Identifiant Unique de Ressource';
