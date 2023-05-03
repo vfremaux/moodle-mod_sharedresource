@@ -101,7 +101,7 @@ class metadata {
         }
 
         if (!preg_match('/[^:]+:[^:]+/', $element)) {
-            throw new moodle_exception("Invalid element structure $element");
+            throw new moodle_exception("Invalid element structure \"$element\"");
         }
 
         $this->entryid = $entryid;
@@ -392,7 +392,6 @@ class metadata {
         }
 
         $namespace = get_config('sharedresource', 'schema');
-        $mtdstandard = sharedresource_get_plugin($namespace);
 
         $parentnodeid = implode('_', $this->nodepath);
         $parentinstanceid = implode('_', $this->instancepath);
@@ -422,6 +421,7 @@ class metadata {
             $subnodes = $this->get_all_subnodes(true);
             if (!empty($subnodes)) {
                 foreach ($subnodes as $node) {
+                    // ??? Should record $node ? Is this code used ?
                     $ancestor = $this->get_level_instance(1);
                     if (!array_key_exists($ancestor->element, $rootsarr)) {
                         $rootsarr[$ancestor->element] = $ancestor;
@@ -499,6 +499,7 @@ class metadata {
             $subnodes = $this->get_all_subnodes(true);
             if (!empty($subnodes)) {
                 foreach ($subnodes as $node) {
+                    // ??? Should record $node ? Is this code used ?
                     $ancestor = $this->get_level_instance($this->level);
                     if (!array_key_exists($ancestor->element, $childsarr)) {
                         $childsarr[$ancestor->element] = $ancestor;
@@ -563,9 +564,9 @@ class metadata {
     }
 
     /**
-     * Get all elements that are on same tree level and branch. These are mainly 
+     * Get all elements that are on same tree level and branch. These are mainly
      * direct children of our parent having the same subbranch.
-     * @param int $level 
+     * @param int $level
      */
     public function get_siblings($level = 0) {
         global $DB;
@@ -656,13 +657,13 @@ class metadata {
         }
 
         // Merge all results.
-        return $results = array_merge($instancesofme, $instancesofmychilds);
+        return array_merge($instancesofme, $instancesofmychilds);
     }
 
     /**
      * Get the highest sibling element in the current node level.
      * The max occurence may be implicit f.e for categories that only are
-     * containers. there will be no direct records for the category in the metadata table, 
+     * containers. there will be no direct records for the category in the metadata table,
      * but some child that holds effective data.
      * the function will track all the node childs of the current node, and will scan for the highest index
      * representing its own level.
@@ -703,7 +704,8 @@ class metadata {
         if (!empty($allnodes)) {
             $lastoccur = 0;
             foreach ($allnodes as $node) {
-                list($nodeid, $instanceid) = explode(':', $node->element);
+                $parts = explode(':', $node->element);
+                $instanceid = $parts[1];
 
                 $instancearr = explode('_', $instanceid);
                 if ($instancearr[$this->level - 1] > $lastoccur) {
@@ -720,7 +722,7 @@ class metadata {
     /**
      * Get the highest sibling element in the current node level.
      * The max occurence may be implicit f.e for categories that only are
-     * containers. there will be no direct records for the category in the metadata table, 
+     * containers. there will be no direct records for the category in the metadata table,
      * but some child that holds effective data.
      * the function will track all the node childs of the current node, and will scan for the highest index
      * representing its own level.
@@ -738,8 +740,11 @@ class metadata {
         $maxoccurrence = 0;
 
         // Decode.
-        foreach ($subnodes as $fooid => $elementid) {
-            list($nodeid, $instanceid) = explode(':', $elementid);
+        foreach (array_values($subnodes) as $elementid) {
+
+            $parts = explode(':', $elementid);
+            $instanceid = $parts[1];
+
             $parts = explode('_', $instanceid);
             if ($parts[$this->level - 1] > $maxoccurrence) {
                 $maxoccurrence = $parts[$this->level - 1];
@@ -786,7 +791,7 @@ class metadata {
      * @param text $capability a sharedresource related user profile (system, indexer or author)
      * @param text $rw read or write mode
      */
-    function node_has_capability($capability, $rw = 'read') {
+    public function node_has_capability($capability, $rw = 'read') {
         global $DB;
 
         /*
@@ -803,7 +808,7 @@ class metadata {
     /**
      * Checks for mandatory status of the node.
      */
-    function node_is_mandatory() {
+    public function node_is_mandatory() {
         global $DB;
 
         /*
@@ -826,7 +831,7 @@ class metadata {
      * Get the ancestor metadata instance in the branch at some level. this element may not have
      * database storage.
      */
-    function get_level_instance($level) {
+    public function get_level_instance($level) {
 
         $namespace = get_config('sharedresource', 'schema');
 
@@ -934,7 +939,7 @@ class metadata {
 
         $mtdarray = array();
 
-        foreach ($mtds as $mtdid => $elementid) {
+        foreach (array_values($mtds) as $elementid) {
 
             list($nodeid, $instanceid) = explode(':', $elementid);
 
@@ -958,9 +963,8 @@ class metadata {
      * Finds all the elementkey replacements to do to normalize a metadata tree with regular instance
      * index numbering from 0.
      * @param objectref $shrentry
-     * @param boolean $processroot If true (default), will process also the root
      */
-    public static function normalize_storage($shrentryid, $processroot = true) {
+    public static function normalize_storage($shrentryid) {
         global $DB;
 
         // TEMPORARY till we agree with the normalize algorithm.
@@ -1018,7 +1022,6 @@ class metadata {
      * Processes recursively the subtree to search for index replacements.
      */
     private static function normalize_storage_rec($nodearr, &$replacementsarr, &$nodepath, &$frominstancepath, &$toinstancepath, $replacing) {
-        global $DB;
         static $level = 0;
 
         $level++;
@@ -1055,7 +1058,7 @@ class metadata {
      * checks if a entry is an integer
      */
     public static function is_integer ($x) {
-        return (is_numeric($x)? intval($x) == $x : false);
+        return (is_numeric($x) ? intval($x) == $x : false);
     }
 
     /*
@@ -1092,9 +1095,9 @@ class metadata {
     }
 
     /**
-     * checks that children of a category have been filled 
+     * checks that children of a category have been filled
      * (in case of a suppression of a classification, because there can be empty categories).
-     * maybe not used... 
+     * maybe not used...
      */
     public static function check_subcats_filled($listresult, $numoccur, &$shrentry) {
 

@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Custom XML parser for XML Metadata (LOMFR)
  *
@@ -11,8 +26,8 @@ use \StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php';
-require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php';
+require_once($CFG->dirroot.'/mod/sharedresource/classes/metadata_xml_parser.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 /**
  * Custom XML parser class for XML Metadata
@@ -25,18 +40,18 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      *
      * @return bool True
      */
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         return $this->initialise();
     }
-    
+
     /**
      * Set default element handlers and initialise properties to empty.
      *
      * @return bool True
      */
-    function initialise() {
-        
+    public function initialise() {
+
         $this->parser = xml_parser_create();
         xml_set_object($this->parser, $this);
 
@@ -47,23 +62,23 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
         $this->start_discard = 0;
         $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
         $this->duration_nodes = array('DURATION', 'TYPICALLEARNINGTIME');
-        
+
         $this->current_meta = null;
         $this->metadata = array();
-        
+
         $this->title_node = '/GENERAL/TITLE';
         $this->url_node = '/TECHNICAL/LOCATION';
         $this->description_node = '/GENERAL/DESCRIPTION';
         $this->language_node = '/GENERAL/LANGUAGE';
-        
+
         $this->title = '';
         $this->url = '';
         $this->description = '';
         $this->url_index = 0;
         $this->language = '';
-        
+
         $this->plugin = 'scolomfr';
-        
+
         $this->nodes_tree = array(
             '/GENERAL' => array(
                 'item' => '1',
@@ -411,7 +426,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      *
      * @return  bool            True on success - false on failure
      */
-    function parse($data) {
+    public function parse($data) {
         $p = xml_parse($this->parser, $data);
         return (bool)$p;
     }
@@ -419,14 +434,14 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Destroy the parser and free up any related resource.
      */
-    function free_resource() {
+    public function free_resource() {
         $free = xml_parser_free($this->parser);
     }
 
     /**
      * Reset child nodes iteration
      */
-    function reset_childs($path) {
+    public function reset_childs($path) {
         foreach ($this->nodes_tree as $key => $value) {
             if (strpos($key, $path.'/') === 0) {
                 $this->nodes_tree[$key]['iteration'] = -1;
@@ -437,7 +452,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     /**
      * Get Element path (ie 0_0_1)
      */
-    function get_elempath($path) {
+    public function get_elempath($path) {
         $elempath = '';
         $depth = substr_count($path, '/');
         $tmppath = $path;
@@ -467,12 +482,12 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      * @param   array   $attrs  The tag's attributes (if any exist).
      * @return  bool            True
      */
-    function start_element($parser, $name, $attrs) {
-        if(strpos($name, ':') !== false){
+    public function start_element($parser, $name, $attrs) {
+        if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
-        
-        if(in_array($name, $this->ignored_nodes)) {
+
+        if (in_array($name, $this->ignored_nodes)) {
             return true;
         }
 
@@ -508,9 +523,9 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      * @param   string  $data   The content of the current tag (1024 byte chunk)
      * @return  bool            True
      */
-    function default_data($parser, $data) {
+    public function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {
-            return true; 
+            return true;
         }
         if ($this->current_path == $this->title_node) {
             if (empty($this->title)) {
@@ -558,7 +573,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
      * @param   string  $name   The name of the tag, e.g. method_call
      * @return  bool            True
      */
-    function end_element($parser, $name) {
+    public function end_element($parser, $name) {
         if (strpos($name, ':') !== false) {
             $name = substr($name, strpos($name, ':') + 1);
         }
@@ -569,7 +584,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
 
         // We need to distinguish the node 4_7 of the duration tag.
         if ($name == 'DURATION' &&
-                strpos($this->current_path,'/DURATION') === false) {
+                strpos($this->current_path, '/DURATION') === false) {
             return true;
         }
 
@@ -588,7 +603,7 @@ class metadata_xml_parser_scolomfr extends metadata_xml_parser{
     }
 
     // Other utility functions to deal and change metadata.
-    function add_identifier(&$metadata, $catalog, $identifier, $entryid) {
+    public function add_identifier(&$metadata, $catalog, $identifier, $entryid) {
 
         // Add identifier record.
         $identifiernodeid = $this->nodes_tree['/GENERAL/IDENTIFIER']['iteration'];

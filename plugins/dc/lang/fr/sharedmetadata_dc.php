@@ -23,6 +23,10 @@
  * @subpackage sharedmetadata_dc
  *
  */
+
+// Privacy.
+$string['privacy:metadata'] = 'L\'opérateur DC ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Dublin core';
 
 $string['abstract'] = 'Résumé';

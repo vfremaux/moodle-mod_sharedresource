@@ -97,8 +97,8 @@ abstract class plugin_base {
 
     /**
      * Access to the sharedresource_entry object after a new object
-     * is saved. 
-     * 
+     * is saved.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
@@ -110,8 +110,8 @@ abstract class plugin_base {
 
     /**
      * Access to the sharedresource_entry object before an existing object
-     * is updated. 
-     * 
+     * is updated.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
@@ -123,8 +123,8 @@ abstract class plugin_base {
 
     /**
      * Access to the sharedresource_entry object after an existing object
-     * is updated. 
-     * 
+     * is updated.
+     *
      * @param sharedresource_entry   object, reference to sharedresource_entry object
      *        including metadata
      * @return bool, return true to continue to the next handler
@@ -139,17 +139,17 @@ abstract class plugin_base {
         return true;
     }
 
-    function getNamespace() {
+    public function getNamespace() {
         return $this->namespace;
     }
 
-    function getElementNamespace($nodeid) {
+    public function getElementNamespace($nodeid) {
         return $this->getElement($nodeid)->source;
     }
 
     /**
-    * Form handler for scalar value (regular case)
-    */
+     * Form handler for scalar value (regular case)
+     */
     public function sharedresource_entry_definition_scalar(&$mform, &$element) {
 
         if (empty($this->namespace)) {
@@ -169,7 +169,7 @@ abstract class plugin_base {
     }
 
     public function sharedresource_entry_definition(&$mform) {
-        global $CFG, $DB;
+        global $DB;
 
         $config = get_config('sharedresource_'.$this->namespace);
 
@@ -177,7 +177,7 @@ abstract class plugin_base {
         foreach (array_keys($this->METADATATREE['0']['childs']) as $fieldid) {
             if (has_capability('mod/sharedresource:systemmetadata', $this->context)) {
                 $metadataswitch = "config_lom_system_";
-            } elseif (has_capability('mod/sharedresource:indexermetadata', $this->context)) {
+            } else if (has_capability('mod/sharedresource:indexermetadata', $this->context)) {
                 $metadataswitch = "config_lom_indexer_";
             } else {
                 $metadataswitch = "config_lom_author_";
@@ -189,7 +189,8 @@ abstract class plugin_base {
                 $generic = $this->METADATATREE[$fieldid]['name'];
                 if ($fieldtype == 'list') {
                     list($mtdsql, $mtdparams) = $DB->get_in_or_equal($this->ALLSOURCES);
-                    if ($instances = $DB->get_records_select('sharedresource_metadata', " entryid = ? AND namespace $mtdsql AND name LIKE '$generic:%' ", array_merge(array($this->entryid), $mtdparams))) {
+                    if ($instances = $DB->get_records_select('sharedresource_metadata', " entryid = ? AND namespace $mtdsql AND name LIKE '$generic:%' ",
+                        array_merge(array($this->entryid), $mtdparams))) {
                         $iterators[] = 0;
                         foreach ($instances as $instance) {
                             $this->sharedresource_entry_definition_rec($mform, $fieldid, $iterators);
@@ -206,7 +207,7 @@ abstract class plugin_base {
     }
 
     public function sharedresource_entry_definition_rec(&$mform, $nodeid, &$iterators) {
-        global $CFG, $DB;
+        global $DB;
 
         if (!array_key_exists($nodeid, $this->METADATATREE)) {
             print_error('metadatastructureerror', 'sharedresource');
@@ -217,7 +218,8 @@ abstract class plugin_base {
         // Special trap : Classification taxon,is made of two fields.
         if ($this->METADATATREE[$nodeid]['name'] == 'TaxonPath') {
             $source = $this->METADATATREE['9_2_1'];
-            if (!empty($source['internalref']) && preg_match("/table=(.*?)&idfield=(.*?)&entryfield=(.*?)&treefield=(.*?)&treestart=(.*?)(?:&context\{(.*?)\})?/", $source['internalref'], $matches)) {
+            if (!empty($source['internalref']) && preg_match("/table=(.*?)&idfield=(.*?)&entryfield=(.*?)&treefield=(.*?)&treestart=(.*?)(?:&context\{(.*?)\})?/",
+                $source['internalref'], $matches)) {
                 $table = $matches[1];
                 $idfield = $matches[2];
                 $entryfield = $matches[3];
@@ -306,7 +308,6 @@ abstract class plugin_base {
      * @return an object representing a child.
      */
     public function print_configure_rec($fieldid, $parentnode = '0') {
-        global $OUTPUT;
         static $indent = 0;
         static $activewidgets = null;
 
@@ -502,7 +503,7 @@ abstract class plugin_base {
         }
         // No valid search terms so lets just open it up.
         if (count($searchterms) == 0) {
-            $searchterms[]= '%';
+            $searchterms[] = '%';
         }
         $search = trim(implode(" ", $searchterms));
         // To allow case-insensitive search for postgesql.
@@ -527,11 +528,11 @@ abstract class plugin_base {
                 $descriptionsearch .= ' AND ';
             }
             if (substr($searchterm, 0, 1) == '+') {
-                $searchterm          = substr($searchterm,1);
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $REGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
-            } else if (substr($searchterm,0,1) == "-") {
-                $searchterm          = substr($searchterm,1);
+            } else if (substr($searchterm, 0, 1) == "-") {
+                $searchterm          = substr($searchterm, 1);
                 $titlesearch        .= " title $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
                 $descriptionsearch  .= " description $NOTREGEXP '(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)' ";
             } else {
@@ -577,7 +578,7 @@ abstract class plugin_base {
      * generates a full XML metadata document attached to the resource entry
      */
     public function get_metadata(&$shrentry, $namespace = null) {
-        global $SITE, $DB;
+        global $DB;
 
         $schema = get_config('sharedresource', 'schema');
 
@@ -600,11 +601,11 @@ abstract class plugin_base {
         $this->get_cardinality('0', $fields, $cardinality);
 
         foreach ($fields as $field) {
-            $parts = explode(':',$field->element);
+            $parts = explode(':', $field->element);
             $element = $parts[0];
             $path = @$parts[1];
             if (!isset($metadata[$element])) {
-                 $metadata[$element] =  array();
+                 $metadata[$element] = array();
             }
             $metadata[$element][$path] = $field->value;
             if ($element == '3_4') {
@@ -617,7 +618,7 @@ abstract class plugin_base {
         $tmpstr = '';
 
         if ($this->generate_xml('0', $metadata, $languageattr, $tmpstr, $cardinality, '')) {
-           $lom .= $tmpstr;
+            $lom .= $tmpstr;
         }
         $lom .= "
             </lom:lom>
@@ -722,11 +723,11 @@ abstract class plugin_base {
             namespace = :namespace
         ";
         $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $config->schema);
-        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $params);
+        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $select, $params);
         if ($versionelementid) {
             $resourceelementid = metadata::to_instance('7_2_1_2', $versionelementid);
             $params = array('entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $config->schema);
-            $resourceid = $DB->get_record('sharedresource_metadata', 'value', $params);
+            $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
             return $resourceid;
         }
 
@@ -742,6 +743,7 @@ abstract class plugin_base {
     }
 
     protected function setRelation($sharedresourceentry, $kind) {
+        global $DB;
 
         $config = get_config('sharedresource');
 
@@ -872,7 +874,7 @@ abstract class plugin_base {
         $mtdrec->namespace = $this->namespace;
         $mtdrec->value = $value;
 
-        if ($oldrec = $DB->get_record('sharedresource_metadata', array('entryid' => $this->entryid, 'element' => $mtdrec->element, 'namespace' => $mtdrec->namespace))){
+        if ($oldrec = $DB->get_record('sharedresource_metadata', array('entryid' => $this->entryid, 'element' => $mtdrec->element, 'namespace' => $mtdrec->namespace))) {
             $mtdrec->id = $oldrec->id;
             $DB->update_record('sharedresource_metadata', $mtdrec);
         } else {
@@ -1004,12 +1006,12 @@ abstract class plugin_base {
 
         if ($sources) {
             foreach ($matchingsources as $source) {
-
+                assert(1);
                 /*
                  * Say a source instance id is f.e. 9_2_1:0_3_0,
                  * the taxon id and entry would be : 9_2_2_1:0_3_0_0 and 9_2_2_2:0_3_0_0
                  */
-                 // Find master node ID of the taxon from the source id, same with instance indexes : 
+                 // Find master node ID of the taxon from the source id, same with instance indexes :
             }
         }
     }
@@ -1072,9 +1074,9 @@ abstract class plugin_base {
 
     /**
      * loads an externally defined default values for the schema
-     * the provided default tree must provide additional default keys 
-     * for relevant nodes : 
-     * 
+     * the provided default tree must provide additional default keys
+     * for relevant nodes :
+     *
      * $METADATATREE_DEFAULT = array (
      *       'lomfr' => array(
      *          '1_1_1' => array('default' => 'MyCatalog'

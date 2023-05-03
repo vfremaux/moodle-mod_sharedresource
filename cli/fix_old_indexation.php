@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This script fixes the old scalar indexation references in sharedresource_metadata, to use 
+ * This script fixes the old scalar indexation references in sharedresource_metadata, to use
  * new pathid taxon references.
  *
  * @package    mod_sharedresource
@@ -74,7 +74,7 @@ Examples:
 \$ /usr/bin/php mod/sharedresource/cli/fix_old_indexation.php
 
 \$ /usr/bin/php mod/sharedresource/cli/fix_old_indexation.php --host=http://myvmoodle.moodlearray.com
-"; //TODO: localize - to be translated later when everything is finished
+"; // TODO: localize - to be translated later when everything is finished
 
     echo $help;
     exit(0);
@@ -88,8 +88,10 @@ if (!empty($options['host'])) {
 
 // Replay full config whenever. If vmoodle switch is armed, will switch now config.
 
-require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php'); // Global moodle config file.
-echo 'Config check : playing for '.$CFG->wwwroot."\n";
+if (!defined('MOODLE_INTERNAL')) {
+    require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php'); // Global moodle config file.
+    echo 'Config check : playing for '.$CFG->wwwroot."\n";
+}
 
 if (!empty($options['debug'])) {
     $CFG->debug = E_ALL;
@@ -113,7 +115,7 @@ foreach ($plugins as $nmaespace => $plugin) {
             foreach ($metadata as $mtd) {
                 // If value is scalar.
                 if (is_numeric($mtd->value)) {
-                    
+                    assert(1);
                 }
             }
         }

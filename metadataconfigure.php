@@ -20,7 +20,7 @@
  * @package    mod_sharedresource
  * @category   mod
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource. 
+ * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
  */
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -45,18 +45,18 @@ require_login();
 $systemcontext = context_system::instance();
 require_capability('repository/sharedresources:manage', $systemcontext);
 
-$action = optional_param('action', null ,PARAM_ALPHA);
+$action = optional_param('action', null, PARAM_ALPHA);
 $strtitle = get_string('metadata_configure', 'sharedresource');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($strtitle,'metadataconfigure.php','misc');
+$PAGE->navbar->add($strtitle, 'metadataconfigure.php', 'misc');
 $PAGE->requires->js_call_amd('mod_sharedresource/metadataform', 'init', array($config->schema));
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
-if (empty($config->schema)){
+if (empty($config->schema)) {
     set_config('schema', 'lom', 'sharedresource');
     $config->schema = 'lom';
     purge_all_caches();
@@ -116,7 +116,7 @@ if ($data = data_submitted()) {
             $pluginname = $matches[1];
             set_config($key, $value, 'sharedmetadata_'.$pluginname);
         } else if (preg_match('/widget_(\w+?)_()/', $key, $matches)) {
-            $idwidget = substr($key, strlen($matches[0])); 
+            $idwidget = substr($key, strlen($matches[0]));
             $wtype = $plugin->METADATATREE[$idwidget]['widget'];
             $classname = '\\local_sharedresources\\search\\'.$wtype.'_widget';
             $widget = new $classname($idwidget, $plugin->METADATATREE[$idwidget]['name'], $wtype);

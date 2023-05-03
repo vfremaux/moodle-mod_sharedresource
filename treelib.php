@@ -44,7 +44,7 @@ function sharedresource_tree_delete($id, $table, $istree = 1) {
  * @return an array of deleted ids
  */
 function sharedresource_tree_delete_rec($id, $table, $istree, $predeletecallback = '', $postdeletecallback = '') {
-    global $CFG, $DB;
+    global $DB;
 
     $deleted = array();
     if (empty($id)) {
@@ -86,7 +86,7 @@ function sharedresource_tree_delete_rec($id, $table, $istree, $predeletecallback
  * @return void
  */
 function sharedresource_tree_up($id, $classif) {
-    global $CFG, $DB;
+    global $DB;
 
     $res = $DB->get_record('sharedresource_taxonomy', array('id' => $id));
     if (!$res) {
