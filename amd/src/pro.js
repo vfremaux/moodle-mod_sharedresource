@@ -20,12 +20,12 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
     var sharedresourcepro = {
 
         component: 'mod_sharedresource',
-        shortcomponent: 'mod_sharedresource',
-        componentpath: '/mod/sharedresource',
+        shortcomponent: 'sharedresource',
+        componentpath: 'mod/sharedresource',
 
         init: function() {
 
-            var licensekeyid = '#id_s_' + sharedresourcepro.component + '_licensekey';
+            var licensekeyid = '#id_s_' + sharedresourcepro.shortcomponent + '_licensekey';
             $(licensekeyid).bind('change', this.check_product_key);
             $(licensekeyid).trigger('change');
             log.debug('AMD Pro js initialized for ' + sharedresourcepro.component + ' system');
@@ -33,7 +33,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         check_product_key: function() {
 
-            var licensekeyid = '#id_s_' + sharedresourcepro.component + '_licensekey';
+            var licensekeyid = '#id_s_' + sharedresourcepro.shortcomponent + '_licensekey';
 
             var that = $(this);
 
@@ -47,21 +47,20 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             var cautionicon = ' <img src="' + cfg.wwwroot + '/pix/i/warning.png' + '">';
             var invalidicon = ' <img src="' + cfg.wwwroot + '/pix/i/invalid.png' + '">';
             var waiticon = ' <img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif' + '">';
-            var found;
 
             if (crc === calculated) {
                 var url = cfg.wwwroot + '/' + sharedresourcepro.componentpath + '/pro/ajax/services.php?';
                 url += 'what=license';
                 url += '&service=check';
                 url += '&customerkey=' + that.val();
-                url += '&provider=' + $('#id_s_' + sharedresourcepro.component + '_licenseprovider').val();
+                url += '&provider=' + $('#id_s_' + sharedresourcepro.shortcomponent + '_licenseprovider').val();
 
                 $(licensekeyid + ' + img').remove();
                 $(licensekeyid).after(waiticon);
 
                 $.get(url, function(data) {
                     if (data.match(/SET OK/)) {
-                        if (found = data.match(/-\d+.*$/)) {
+                        if (data.match(/-\d+.*$/)) {
                             $(licensekeyid + ' + img').remove();
                             $(licensekeyid).after(cautionicon);
                         } else {

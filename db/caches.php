@@ -15,21 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
- *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
+ * @package   mod_sharedresource
+ * @category  mod
+ * @copyright 2006 Valery Fremaux
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_sharedresource\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-class opened_core_renderer extends \core_renderer {
-
-    public function render_tabtree(\tabtree $tabs) {
-        return parent::render_tabtree($tabs);
-    }
-
-}
+$definitions = array(
+    'pro' => array(
+        'mode' => cache_store::MODE_APPLICATION
+    )
+);

@@ -24,7 +24,7 @@
  *
  * @package    mod_sharedresource
  * @category   mod
- * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -86,9 +86,12 @@ if ($class == '\mod_sharedresource\entry_extended') {
     $shrentry = entry::read($identifier);
 }
 
+/*
+// Obsolete.
+
 if ($mode == 'file') {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('add'.$mode, 'sharedresource'));
+    echo $OUTPUT->heading(get_string('addfile', 'sharedresource'));
     // This is the simple "file" mode that gets back the resource file into course file scope.
     print_string('fileadvice', 'sharedresource');
     $return = new moodle_url('/files/index.php', array('id' => $courseid));
@@ -96,6 +99,7 @@ if ($mode == 'file') {
     echo $OUTPUT->footer($course);
     die;
 }
+*/
 
 /*
  * The sharedresource has been recognized as a deployable backup.
@@ -116,6 +120,11 @@ if ($mode == 'deploy') {
 // Scorm package case.
 
 if ($mode == 'scorm') {
+    /*
+     * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
+     * activity. Scorm type will depend on global configuration of
+     * the content integration section of sharedresource.
+     */
     list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section);
     // TODO : Terminate procedure and return to course silently.
     redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
@@ -129,11 +138,6 @@ if (($mode == 'ltiinstall') || ($mode == 'lticonfirm')) {
 
     $modulename = 'lti';
 } else {
-    /*
-     * Sharedresource has been recognized as a scorm package, we deploy it as a scorm
-     * activity. Scorm type will depend on global configuration of
-     * the content integration section of sharedresource.
-     */
     // Elsewhere add a sharedresource instance.
     // Make a shared resource on the sharedresource_entry.
     $instance = new \mod_sharedresource\base(0, $shrentry->identifier);
@@ -181,7 +185,7 @@ if ($course->format == 'page') {
 
 $report = '';
 // Finally if localization was asked, transform the sharedresource in real resource.
-if (empty($modulename)) {
+if ($modulename == 'sharedresource') {
     if ($mode == 'local') {
         // We make a standard resource from the sharedresource.
         $instance->id = sharedresource_convertfrom($instance, $report);

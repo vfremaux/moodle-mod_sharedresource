@@ -88,7 +88,7 @@ if ($course->id > 1) {
 
 // Compute returnurl.
 if ($return == 1) {
-    $returnurl = new moodle_url('/local/sharedresource/index.php', array('id' => $course->id));
+    $returnurl = new moodle_url('/local/sharedresources/index.php', array('id' => $course->id));
 } else {
     if ($course->id > SITEID) {
         $returnurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));

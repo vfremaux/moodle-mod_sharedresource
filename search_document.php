@@ -20,7 +20,7 @@
  * @package mod_sharedresource
  * @category mod
  * @subpackage document_wrappers
- * @author Valery Fremaux [valery.fremaux@club-internet.fr] > 1.8
+ * @author Valery Fremaux [valery.fremaux@gmail.com] > 1.8
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  *
  * document handling for the mplayer page module
@@ -193,8 +193,6 @@ class sharedresource_document_wrapper extends document_wrapper {
      * @return true if access is allowed, false elsewhere
      */
     public static function check_text_access($path, $itemtype, $thisid, $user, $groupidunused, $contextidunused) {
-
-        // TODO : apply access check rules on documents to current user.
 
         // TODO : apply access check rules on documents to current user.
 

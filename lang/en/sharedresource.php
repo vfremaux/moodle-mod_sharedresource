@@ -92,6 +92,7 @@ $string['configclassification'] = 'Configure';
 $string['configdefaulturl'] = 'Default URL';
 $string['configdefaultuserfield'] = 'Default value for shared resource access controlled.';
 $string['configenablerssfeeds'] = 'Enable RSS resource exposition feeds';
+$string['configenablerssfeedsdesc'] = 'If this setting is enabled, an RSS output will list any new entry in the library, with basic metadata.';
 $string['configfilterexternalpages'] = 'Enabling this setting will allow the filtering of external resources (web pages, HTML files deposited) by the filters defined in the site (such as links in glossaries). When this setting is active, the display of your pages will be slowed significantly. Use with caution.';
 $string['configforeignurlscheme'] = 'URL to access resources';
 $string['configframesize'] = 'Frame size';
@@ -592,14 +593,5 @@ $string['addinstance_search_desc'] = '
 $string['addinstance_create_desc'] = '
     Upload a new resource within the shared library and finally publish it in the course.
 ';
-
-/*Pro section*/
-
-$string['emulatecommunity'] = "Emulate the community version.";
-$string['emulatecommunity_desc'] = "If enabled, the plugin will behave as the public community version. This will increase compatibility with other implementations but will loose features !";
-$string['licenseprovider'] = "Pro License provider";
-$string['licenseprovider_desc'] = "Input here your provider key";
-$string['licensekey'] = "Pro license key";
-$string['licensekey_desc'] = "Input here the product license key you got from your provider ";
 
 include(__DIR__.'/pro_additional_strings.php');
