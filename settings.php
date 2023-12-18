@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/scorm/lib.php');
+
 if (sharedresource_supports_feature('emulate/community') == 'pro') {
     require_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
     $promanager = \mod_sharedresource\pro_manager::instance();
@@ -81,7 +82,7 @@ if ($ADMIN->fulltree) {
     $key = 'sharedresource/defaulturl';
     $label = get_string('configdefaulturl', 'sharedresource');
     $desc = get_string('configdefaulturl_desc', 'sharedresource');
-    $settings->add(new admin_setting_configtext($key, $label, $desc , 'http://'));
+    $settings->add(new admin_setting_configtext($key, $label, $desc , 'https://'));
 
     if (sharedresource_supports_feature('entry/foreignurl')) {
         if ($promanager->require_pro('entry/foreignurl', true)) {

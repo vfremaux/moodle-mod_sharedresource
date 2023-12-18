@@ -15,25 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
  *
- * @package mod_sharedresource
- * @category mod
- * @author  Piers Harding  piers@catalyst.net.nz
  * @author  Valery Fremaux  valery.fremaux@gmail.com
+ * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
+ * @package mod_sharedresource
+ * @subpackage plugin
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021102103;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022112801;       // Requires this Moodle version.
-$plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '4.1.0 (Build 2021102103)';
-$plugin->dependencies = array('local_sharedresources' => 201801180);
-$plugin->supported = [401, 402];
-
-// Non Moodle attributes.
-$plugin->codeincrement = '4.1.0011';
-$plugin->privacy = 'dualrelease';
+$plugin->version   = 2015072700;       // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2012062500;       // Requires this Moodle version
+$plugin->component  = 'sharedmetadata_cafoc';       // Requires this Moodle version
+$plugin->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
+$plugin->release = '2.7.0 (Build 2014022800)';     // Full name of the plugin (used for diagnostics)

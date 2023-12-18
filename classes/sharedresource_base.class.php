@@ -722,8 +722,6 @@ class base {
                                            'value'   => fullname($USER)),
                 'useremail'       => array('langstr' => get_string('email'),
                                            'value'   => $USER->email),
-                'usericq'         => array('langstr' => get_string('icqnumber'),
-                                           'value'   => $USER->icq),
                 'userphone1'      => array('langstr' => get_string('phone').' 1',
                                            'value'   => $USER->phone1),
                 'userphone2'      => array('langstr' => get_string('phone2').' 2',
@@ -738,8 +736,6 @@ class base {
                                            'value'   => $USER->city),
                 'usertimezone'    => array('langstr' => get_string('timezone'),
                                            'value'   => 0),
-                'userurl'         => array('langstr' => get_string('webpage'),
-                                           'value'   => $USER->url)
              );
              $this->parameters = $userparameters + $this->parameters;
         }
@@ -829,13 +825,13 @@ class base {
                                   'onclick' => " window.location.href ='".$searchurl."'; return false;");
         $searchbutton->updateAttributes($buttonattributes);
 
-        $mform->addElement('header', 'displaysettings', get_string('display', 'sharedresource'));
+        $mform->addElement('header', 'displaysettings', get_string('displayoptions', 'sharedresource'));
 
         $mform->addElement('checkbox', 'forcedownload', get_string('forcedownload', 'sharedresource'));
         $mform->disabledIf('forcedownload', 'windowpopup', 'eq', 1);
 
         $woptions = array(0 => get_string('pagewindow', 'sharedresource'), 1 => get_string('newwindow', 'sharedresource'));
-        $mform->addElement('select', 'windowpopup', get_string('display', 'sharedresource'), $woptions);
+        $mform->addElement('select', 'windowpopup', get_string('displayoptions', 'sharedresource'), $woptions);
         $mform->setType('windowpopup', PARAM_INT);
         $mform->setDefault('windowpopup', (empty($config->popup) ? 1 : 0));
         $mform->disabledIf('windowpopup', 'forcedownload', 'checked');

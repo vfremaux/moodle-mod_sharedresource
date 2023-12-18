@@ -71,7 +71,7 @@ $mtdstandard = sharedresource_get_plugin($config->schema);
 
 // Receive input from form.
 $metadataentries = data_submitted();
-if (array_key_exists('cancel', $metadataentries)) {
+if (property_exists($metadataentries, 'cancel')) {
     $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);

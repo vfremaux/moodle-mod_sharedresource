@@ -268,7 +268,7 @@ function clean_string_key($value) {
     $value = str_replace('-', '', $value);
     $value = str_replace('\'', '', $value);
     $value = str_replace('/', '', $value);
-    $value = str_replace("'", '', $value);
+    $value = mb_ereg_replace("'", '', $value);
     $value = str_replace('é', 'e', $value);
     $value = str_replace('ê', 'e', $value);
     $value = str_replace('è', 'e', $value);

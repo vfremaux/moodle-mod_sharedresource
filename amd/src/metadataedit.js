@@ -164,9 +164,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             var tabid = 'id-tab-' + matches[1];
 
             $('.mtd-tab').removeClass('here');
-            $('.mtd-tab').removeClass('current');
+            $('.mtd-tab').removeClass('active');
             $('#' + menuid).addClass('here');
-            $('#' + menuid).addClass('current');
+            $('#' + menuid).addClass('active');
 
             $('.mtd-content').removeClass('active');
             $('.mtd-content').removeClass('on');

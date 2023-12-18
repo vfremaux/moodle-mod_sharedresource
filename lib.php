@@ -135,6 +135,11 @@ function sharedresource_supports($feature) {
             return true;
         }
 
+        // 4.0
+        case FEATURE_MOD_PURPOSE: {
+            return MOD_PURPOSE_CONTENT;
+        }
+
         default:
             return null;
     }
@@ -158,7 +163,7 @@ function sharedresource_supports_feature($feature = null, $getsupported = null) 
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl', 'fineselect'),
-                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable', 'foreignurl'),
                 'emulate' => 'community',
                 'export/rss',
             ),
