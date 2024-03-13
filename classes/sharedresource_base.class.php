@@ -26,7 +26,7 @@ namespace mod_sharedresource;
 use \StdClass;
 use \moodle_url;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead.");
 
 /**
  * \mod_sharedresource\base is the base class for sharedresource types

@@ -110,7 +110,7 @@ if ($ADMIN->fulltree) {
 
     foreach ($shrwindowoptions as $optionname) {
         $popupoption = "sharedresource/popup$optionname";
-        if ($popupoption == 'sharedresource_popupheight') {
+        if ($popupoption == 'sharedresource/popupheight') {
             $key = 'sharedresource/popupheight';
             $label = get_string('configpopupheight', 'sharedresource');
             $desc = get_string('configpopupheight_desc', 'sharedresource');

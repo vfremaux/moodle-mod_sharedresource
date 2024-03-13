@@ -11,7 +11,7 @@
 }
 
 #mtd-form-tabs.tabtree {
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 #mtd-form-menu.tabrow0 {
@@ -472,4 +472,16 @@ a.sharedresource-actionlink {
 
 #mtd-form-schema {
     padding: 10px;
+}
+
+#page-mod-sharedresource-metadatanotice .nav-link,
+#page-mod-sharedresource-metadatanotice .nav-link a {
+    color: #ffffff;
+}
+
+/* fixes search block width */
+@media screen and (min-width: 1200px) {
+  #page-local-sharedresources-explore [data-region="blocks-column"] {
+    width: calc(300px - 30px);
+  }
 }

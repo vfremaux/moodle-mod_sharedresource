@@ -24,10 +24,8 @@
 namespace mod_sharedresource;
 
 use \StdClass;
-use \moodle_exception;
-use \coding_exception;
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead.");
 
 /**
  * \mod_sharedresource\metadata defines a sharedresource_metadata element
@@ -40,68 +38,72 @@ class metadata {
     /**
      * the element id as a m_n_o:x_y_z node identifier
      */
-    public $element;
+    public $element; // string
 
     /**
      * the currently used namespace. Proxies from sharedresource configuration
      */
-    public $namespace;
+    public $namespace; // string
 
     /**
      * The stored value
      */
-    protected $value;
+    protected $value; // scalar
 
     /**
      * Boolean marker if the element has a database stored record.
      */
-    public $isstored;
+    public $isstored; // scalar
 
     /**
      * The sharedresource entry id this instance serves a value for
      */
-    public $entryid;
+    public $entryid; // foreing ref.
 
     /**
      * The element identity as m_n_o_p nodeid.
      */
-    protected $nodeid;
+    protected $nodeid; // scalar
 
     /**
      * // The tree occurrence identity as w_x_y_z
      */
-    protected $instanceid;
+    protected $instanceid; // scalar
 
     /**
      * An array form of the nodeid.
      */
-    protected $nodepath;
+    protected $nodepath; // scalar
 
     /**
      * An array form of the intanceid.
      */
-    protected $instancepath;
+    protected $instancepath; // scalar array
 
     /**
      * The tree level.
      */
-    protected $level;
+    protected $level; // int
 
     /**
-     * Constructor for the sharedresource_metadata class
+     * Constructor for the sharedresource_metadata class.
+     * @param int $entryid
+     * @param string $element
+     * @param string $value
+     * @param string $namespace
      */
     public function __construct($entryid, $element, $value, $namespace = '') {
 
         if (empty($namespace)) {
-            throw new moodle_exception("Undefined namespace");
+            throw new exception("Undefined namespace");
         }
 
         if (empty($element)) {
-            throw new moodle_exception("Empty element");
+            throw new exception("Empty element");
         }
 
         if (!preg_match('/[^:]+:[^:]+/', $element)) {
-            throw new moodle_exception("Invalid element structure \"$element\"");
+            throw new exception("Invalid element structure \"$element\"");
         }
 
         $this->entryid = $entryid;
@@ -124,7 +126,7 @@ class metadata {
 
         $intancerec = $DB->get_record('sharedresource_metadata', array('id' => $mtdid));
         if (!$instancerec) {
-            throw new \coding_exception('No such metadata in database');
+            throw new coding_exception('No such metadata in database');
         }
         $instance = new metadata($intancerec->entryid, $instancerec->element, $instancerec->value, $instancerec->namespace);
         $instance->isstored = true;
@@ -149,8 +151,8 @@ class metadata {
             $record = $DB->get_record('sharedresource_metadata', $params);
         }
 
-        if ($mustexist && !$record) {
-            throw new moodle_exception("Metadata instance $element do not exist in database");
+        if ($mustexist && is_null($record)) {
+            throw new exception("Metadata instance $element does not exist in database");
         }
 
         $isstored = true;
@@ -300,8 +302,8 @@ class metadata {
         $data = new StdClass;
         $data->element = $this->element;
         $data->namespace = $this->namespace;
-        $data->value = ''.$this->value; // Unnulify if empty.
-        if (!empty($data->value)) {
+        $value = $data->value = ''.$this->value; // Unnulify if empty.
+        if (!empty($value)) {
             $data->entryid = $this->entryid;
             return $DB->insert_record('sharedresource_metadata', $data);
         } else {
@@ -343,6 +345,14 @@ class metadata {
 
     public function set_value($value) {
         $this->value = $value;
+    }
+
+    /**
+     * Used when cloning sharedresource entry object.
+     * @param int $entryid the entry id in DB.
+     */
+    public function set_entryid($entryid) {
+        $this->entryid = $entryid;
     }
 
     /**
@@ -579,10 +589,12 @@ class metadata {
                 $siblings = $this->get_roots($this->get_node_index());
             } else {
                 $parentnode = $this->get_parent(false);
-                debug_trace("My parent for ".$this->element.' at '.$this->level);
-                debug_trace($parentnode);
+                if (function_exists('debug_trace')) {
+                    debug_trace("My parent for ".$this->element.' at '.$this->level);
+                    debug_trace($parentnode);
+                    debug_trace("Getting parent other childs than me My node index ".$this->get_node_index());
+                }
                 $siblings = $parentnode->get_childs($this->get_node_index());
-                debug_trace("Getting parent other childs than me My node index ".$this->get_node_index());
             }
         }
 
@@ -604,7 +616,7 @@ class metadata {
                 namespace = ?
             ";
 
-            $params = array($this->entryid, $sqlmask, $namespace);
+            $params = [$this->entryid, $sqlmask, $namespace];
             $extendedsiblings = $DB->get_records_select('sharedresource_metadata', $select, $params);
             if ($extendedsiblings) {
                 foreach ($extendedsiblings as $extsib) {
@@ -621,7 +633,9 @@ class metadata {
         if (array_key_exists($this->element, $siblings)) {
             unset($siblings[$this->element]); // Remove myself from siblings..
         }
-        debug_trace($siblings);
+        if (function_exists('debug_trace')) {
+            debug_trace($siblings);
+        }
         return $siblings;
     }
 
@@ -685,12 +699,11 @@ class metadata {
             $instanceid = '%';
         }
 
-        $params = array($this->entryid, $mynode.':'.$instanceid, $this->namespace);
+        $params = [$this->entryid, $mynode.':'.$instanceid, $this->namespace];
         $subs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
-        $params = array($this->entryid, $mynode.'_%:'.$instanceid, $this->namespace);
+        $params = [$this->entryid, $mynode.'_%:'.$instanceid, $this->namespace];
         $subsubs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'element', 'id,element');
 
-        // echo "Getting for {$this->nodeid} with $mynode.':'.$instanceid";
         if ($subs) {
             $allnodes = $subs;
         } else {
@@ -713,8 +726,6 @@ class metadata {
                 }
             }
         }
-
-        // echo "Last occurrence for $this->nodeid : $lastoccur<br/>";
 
         return $lastoccur;
     }
@@ -781,7 +792,7 @@ class metadata {
         $capabilitykey = "config_{$namespace}_{$capability}_{$rw}_".$this->get_node_id();
         $elementmask = $this->get_node_id().'_%:'.$this->get_instance_id().'_%';
 
-        $params = array($capabilitykey, $this->entryid, $namespace, $elementmask);
+        $params = [$capabilitykey, $this->entryid, $namespace, $elementmask];
         return $DB->record_exists_sql($sql, $params);
     }
 
@@ -801,7 +812,7 @@ class metadata {
         $namespace = get_config('sharedresource', 'schema');
 
         $configkey = "config_{$namespace}_{$capability}_{$rw}_".$this->get_node_id();
-        $params = array($configkey);
+        $params = [$configkey];
         return $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
     }
 
@@ -821,7 +832,7 @@ class metadata {
         $configstate = get_config('sharedresource', $configkey);
 
         // Also check in tree scan in DB.
-        $params = array($configkey);
+        $params = [$configkey];
         $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
 
         return $configstate || $dbstate;
@@ -839,8 +850,8 @@ class metadata {
             throw new coding_exception('Cannot get ancestor lower or at same then the element level');
         }
 
-        $nodepathtmp = array();
-        $instancepathtmp = array();
+        $nodepathtmp = [];
+        $instancepathtmp = [];
 
         for ($i = 0; $i < $level; $i++) {
             $nodepathtmp[] = $this->nodepath[$i];
@@ -934,10 +945,10 @@ class metadata {
         $mtds = $DB->get_records_menu('sharedresource_metadata', array('namespace' => $namespace, 'entryid' => $shrentryid), 'element', 'id,element');
 
         if (!$mtds) {
-            return array();
+            return [];
         }
 
-        $mtdarray = array();
+        $mtdarray = [];
 
         foreach (array_values($mtds) as $elementid) {
 
@@ -976,11 +987,11 @@ class metadata {
             return;
         }
 
-        $nodepath = array();
-        $frominstancepath = array();
-        $toinstancepath = array();
+        $nodepath = [];
+        $frominstancepath = [];
+        $toinstancepath = [];
 
-        $replacementsarr = array();
+        $replacementsarr = [];
 
         foreach ($storagearr as $nodeindex => $nodearray) {
             $j = 0;
@@ -1012,7 +1023,7 @@ class metadata {
         if (!empty($replacementsarr)) {
             $transaction = $DB->start_delegated_transaction();
             foreach ($replacementsarr as $from => $to) {
-                $DB->set_field('sharedresource_metadata', 'element', $to, array('element' => $from, 'entryid' => $shrentryid));
+                $DB->set_field('sharedresource_metadata', 'element', $to, ['element' => $from, 'entryid' => $shrentryid]);
             }
             $transaction->allow_commit();
         }
@@ -1130,13 +1141,13 @@ class metadata {
             plugin = ?
         ";
 
-        $params = array("config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedmetadata_{$namespace}");
+        $params = ["config_{$namespace}_{$capability}_{$rw}_{$nodeid}_%", "sharedmetadata_{$namespace}"];
         $hasuse = $DB->record_exists_select('config_plugins', $select, $params);
         if ($hasuse) {
             return true;
         }
 
-        $params = array("config_{$namespace}_{$capability}_{$nodeid}_%", "sharedmetadata_{$namespace}");
+        $params = ["config_{$namespace}_{$capability}_{$nodeid}_%", "sharedmetadata_{$namespace}"];
         $legacy = $DB->record_exists_select('config_plugins', $select, $params);
 
         return $legacy;
@@ -1155,7 +1166,7 @@ class metadata {
         $namespace = get_config('sharedresource', 'schema');
 
         $configkey = "config_{$namespace}_mandatory_".$branchid.'%';
-        $params = array($configkey);
+        $params = [$configkey];
         $dbstate = $DB->record_exists_select('config_plugins', "name LIKE ? ", $params);
         return $dbstate;
     }
@@ -1172,7 +1183,7 @@ class metadata {
         }
         $branchelms = explode(';', $branch);
 
-        $brancharr = array();
+        $brancharr = [];
         foreach ($branchelms as $elmpair) {
             list($elementid, $value) = explode(':', $elmpair);
             $brancharr[self::html_to_storage($elementid)] = $value;
@@ -1186,7 +1197,8 @@ class metadata {
      */
     public static function find($what, $ids) {
 
-        $result = array();
+        $result = [];
+
         if (!empty($ids)) {
             foreach ($ids as $id) {
                 if (strpos($id, $what) === 0) {

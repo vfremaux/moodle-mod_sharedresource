@@ -25,9 +25,7 @@ require_once('../../config.php');
 
 $id = required_param( 'id', PARAM_INT ); // Course.
 
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('coursemisconf');
-}
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 // Security.
 
@@ -64,7 +62,7 @@ $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'));
 
 echo $OUTPUT->header();
 
-$courseurl = new moodle_url('../../course/view.php', array('id' => $course->id));
+$courseurl = new moodle_url('../../course/view.php', ['id' => $course->id]);
 if (!$resources = get_all_instances_in_course('sharedresource', $course)) {
     echo $OUTPUT->notification(get_string('thereareno', 'moodle', $strresources), 'notifyproblem', $courseurl);
     echo $OUTPUT->footer();
@@ -75,14 +73,14 @@ $table = new html_table();
 $table->size = array('20%', '40%', '40%');
 
 if ($course->format == 'weeks') {
-    $table->head  = array ($strweek, $strname, $strsummary);
-    $table->align = array ('center', 'left', 'left');
+    $table->head  = [$strweek, $strname, $strsummary];
+    $table->align = ['center', 'left', 'left'];
 } else if ($course->format == 'topics') {
-    $table->head  = array ($strtopic, $strname, $strsummary);
-    $table->align = array ('center', 'left', 'left');
+    $table->head  = [$strtopic, $strname, $strsummary];
+    $table->align = ['center', 'left', 'left'];
 } else {
-    $table->head  = array ($strlastmodified, $strname, $strsummary);
-    $table->align = array ('left', 'left', 'left');
+    $table->head  = [$strlastmodified, $strname, $strsummary];
+    $table->align = ['left', 'left', 'left'];
 }
 
 $currentsection = '';
@@ -111,7 +109,7 @@ foreach ($resources as $resource) {
         $extra = '';
     }
 
-    $resurl = new moodle_url('/mod/sharedresource/view.php', array('id' => $resource->coursemodule));
+    $resurl = new moodle_url('/mod/sharedresource/view.php', ['id' => $resource->coursemodule]);
     if (!$resource->visible) {
         // Show dimmed if the mod is hidden.
         $table->data[] = array($printsection,

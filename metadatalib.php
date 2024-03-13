@@ -261,6 +261,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
 }
 
 function clean_string_key($value) {
+    $value = strtolower($value);
     $value = str_replace('(', '', $value);
     $value = str_replace(')', '', $value);
     $value = str_replace(' ', '', $value);

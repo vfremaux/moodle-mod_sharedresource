@@ -16,7 +16,7 @@
 
 namespace mod_sharedresource;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead.");
 
 class entry_factory {
 

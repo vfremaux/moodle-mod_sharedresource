@@ -38,19 +38,18 @@ require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plug
 
 // Receive params.
 
-$mode = required_param('mode', PARAM_ALPHA);
+$mode = required_param('mode', PARAM_ALPHA); // 'add' or 'update' sequence.
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $cancel = optional_param('cancel', 0, PARAM_BOOL);
-$return = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or mod/modname/view.php if true.
+$return = optional_param('return', '', PARAM_ALPHA); // tels where to return.
 $section = optional_param('section', 0, PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
 $catpath = optional_param('catpath', '', PARAM_TEXT);
 $course = required_param('course', PARAM_INT);
-$type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $course))) {
-    print_error('badcourseid', 'sharedresource');
+    throw new moodle_exception(get_string('badcourseid', 'sharedresource'));
 }
 
 // Security.
@@ -60,20 +59,18 @@ $context = context_course::instance($course->id);
 require_capability('repository/sharedresources:create', $context);
 
 if ($cancel) {
-    if ($return) {
-        // We are coming from the library. Go back to it.
-        if ($return == 1) {
-            $cancelurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
-        } else {
-            $cancelurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
-        }
+    // We are coming from the library. Go back to it.
+    if ($return != 'course') {
+        $params = ['course' => $course->id, 'section' => $section, 'return' => $return, 'catid' => $catid, 'catpath' => $catpath];
+        $cancelurl = new moodle_url('/local/sharedresources/index.php', $params);
     } else {
-        $params = array('course' => $course->id,
-                        'section' => $section,
-                        'add' => 'sharedresource',
-                        'return' => $return,
-                        'catid' => $catid,
-                        'catpath' => $catpath);
+        // We are coming from a course, more specially from a sharedresource instance modedit form.
+        $params = [
+            'course' => $course->id,
+            'sr' => $section,
+            'add' => 'sharedresource',
+            'return' => 0
+        ];
         $cancelurl = new moodle_url('/course/modedit.php', $params);
     }
     redirect($cancelurl);
@@ -93,9 +90,7 @@ if ($confirm) {
     */
 
     // These two lines in comment can be used if you want to show the user values of saved fields.
-    if (!$shrentry->update_instance()) {
-        print_error('failadd', 'mod_sharedresource');
-    }
+    $shrentry->update_instance();
 
     // If everything was saved correctly, go back to the search page or to the library.
     if ($return) {

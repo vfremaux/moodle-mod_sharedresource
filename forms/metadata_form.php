@@ -27,14 +27,14 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
-$add           = optional_param('add', 0, PARAM_ALPHA);
-$update        = optional_param('update', 0, PARAM_INT);
-$return        = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
+$return        = optional_param('return', '', PARAM_TEXT); // Return to course/view.php if false or mod/modname/view.php if true.
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
+$type          = required_param('type', PARAM_ALPHA);
 $catid         = optional_param('catid', 0, PARAM_INT);
 $catpath       = optional_param('catpath', '', PARAM_TEXT);
 $courseid      = required_param('course', PARAM_INT);
@@ -42,23 +42,14 @@ $sharingcontext = required_param('context', PARAM_INT);
 
 // Working context check.
 
-if (! $course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('coursemisconf');
-}
+$course = $DB->get_record('course', ['id' => $courseid],'*', MUST_EXIST);
 
 $systemcontext = context_system::instance();
 $context = context_course::instance($course->id);
 $config = get_config('sharedresource');
 
 // Security.
-
-if ($courseid > SITEID) {
-    require_course_login($course, true);
-    $pagecontext = $context;
-} else {
-    require_login();
-    $pagecontext = $systemcontext;
-}
+$pagecontext = sharedresource_check_access($course);
 
 // Check incoming resource.
 
@@ -89,19 +80,26 @@ $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'))
 $PAGE->requires->js_call_amd('mod_sharedresource/metadata', 'init', array($config->schema));
 $PAGE->requires->js_call_amd('mod_sharedresource/metadataedit', 'init', array($config->schema));
 
-$params = array('add' => $add,
-                'update' => $update,
-                'return' => $return,
+$params = ['return' => $return,
                 'section' => $section,
                 'mode' => $mode,
                 'catid' => $catid,
                 'catpath' => $catpath,
                 'course' => $courseid,
-                'context' => $sharingcontext);
+                'context' => $sharingcontext];
 $url = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
 $PAGE->set_url($url);
 
 echo $OUTPUT->header();
+
+/*
+echo $OUTPUT->notification('Must clone to '.$SESSION->sr_must_clone_to);
+echo $OUTPUT->notification('No change '.$SESSION->sr_no_identifier_change);
+echo $OUTPUT->notification('Original identifier '.$shrentry->identifier);
+echo $OUTPUT->notification('Mode '.$mode);
+echo $OUTPUT->notification('Type '.$type);
+echo $OUTPUT->notification('Return '.$return);
+*/
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 

@@ -24,11 +24,11 @@
  */
 namespace mod_sharedresource;
 
-use \StdClass;
+use StdClass;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not directly loadable. Use __autoload.php instead.");
 
-require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata_exception.class.php');
+include_once(dirname(__FILE__).'/sharedresource_metadata_exception.class.php');
 
 /**
  * sharedresource_plugin_base is the base class for sharedresource plugins
@@ -51,9 +51,9 @@ abstract class plugin_base {
 
     protected $entryid; // The sharedresource entry id.
 
-    public $pluginname;
+    public $pluginname; // string
 
-    protected $namespace;
+    protected $namespace; // string
 
     /**
      * Entry point to validate the sharedresource_entry_form form.
@@ -722,11 +722,11 @@ abstract class plugin_base {
             value = :value AND
             namespace = :namespace
         ";
-        $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $config->schema);
+        $params = ['entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $this->namespace];
         $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $select, $params);
         if ($versionelementid) {
             $resourceelementid = metadata::to_instance('7_2_1_2', $versionelementid);
-            $params = array('entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $config->schema);
+            $params = ['entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $this->namespace];
             $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
             return $resourceid;
         }
@@ -742,6 +742,11 @@ abstract class plugin_base {
         $this->setRelation($sharedresourceentry, 'isversionof');
     }
 
+    /**
+     * Adds a relationship between resources based on metadata.
+     * @param object $sharedresourceentry
+     * @param string $kind
+     */
     protected function setRelation($sharedresourceentry, $kind) {
         global $DB;
 
@@ -757,30 +762,34 @@ abstract class plugin_base {
             value = :value AND
             namespace = :namespace
         ";
-        $params = array('entryid' => $this->entryid, 'element' => '7_1:%', 'value' => $kind, 'namespace' => $config->schema);
-        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $params);
+        $params = ['entryid' => $this->entryid, 'element' => '7_1:%', 'value' => $kind, 'namespace' => $this->namespace];
+        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $select, $params);
 
         if ($versionelementid) {
             // We have already.
-            throw new MoodleException('New version already registered.');
+            throw new exception($kind.' relation already registered for resource '.$this->entryid.'.');
         }
 
         // We do not have this and must register a new Relation.
 
         $versionsupport = $this->getVersionSupportElement();
         $mainnodeid = $versionsupport['main'];
-        $mainnode = metadata::instance($this->entryid, $mainnodeid.':0', $config->schema, false);
+        $mainnode = metadata::instance($this->entryid, $mainnodeid.':0', $this->namespace, false);
         $maxoccurrence = $mainnode->get_max_occurrence();
+        if (!is_numeric($maxoccurrence)) {
+            $maxoccurrence = 0;
+        }
 
         $entrynodeid = $versionsupport['entry'];
         $kindnodeid = $versionsupport['kind'];
 
         // Register the relation kind.
-        $kindnode = new metadata($this->entryid, $kindnodeid.':'.$maxoccurrence.'_0', $kind, $config->namespace);
+        $kindnode = new metadata($this->entryid, $kindnodeid.':'.$maxoccurrence.'_0', $kind, $this->namespace);
+        // debug_trace("{$this->entryid} recording $kindnodeid.':'.$maxoccurrence.'_0', $kind as {$sharedresourceentry->id}");
         $kindnode->add_instance();
 
         // Register the linked sharedresource.
-        $kindnode = new metadata($this->entryid, $entrynodeid.':'.$maxoccurrence.'_0_0_0', $sharedresourceentry->id, $config->namespace);
+        $kindnode = new metadata($this->entryid, $entrynodeid.':'.$maxoccurrence.'_0_0_0', $sharedresourceentry->id, $this->namespace);
         $kindnode->add_instance();
 
     }
@@ -960,6 +969,14 @@ abstract class plugin_base {
         $mtdrec->value = $location;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);
+    }
+
+    /** 
+    * Tells if the value can be interpretated as an entry id, so that a sharedresource
+    * reference or link can be built for rendering.
+    */
+    public function isResourceIndex($nodeid) {
+        return false;
     }
 
     /**

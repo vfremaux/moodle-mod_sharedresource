@@ -37,35 +37,17 @@ $config = get_config('sharedresource');
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 
 $mode = required_param('mode', PARAM_ALPHA);
-$add = optional_param('add', 0, PARAM_ALPHA);
-$update = optional_param('update', 0, PARAM_INT);
-$return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
+$return = required_param('return', PARAM_ALPHA); // Return to course, browse or explore
 $section = optional_param('section', 0, PARAM_INT);
 $courseid = required_param('course', PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
 $catpath = optional_param('catpath', '', PARAM_TEXT);
-$type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('badcourseid', 'sharedresource');
-}
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
 // Security.
-$systemcontext = context_system::instance();
-$context = context_course::instance($course->id);
-if ($course->id > 1) {
-    require_login($course);
-    require_capability('moodle/course:manageactivities', $context);
-} else {
-    require_login();
-    $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
-    if (!has_any_capability($caps, context_system::instance())) {
-        if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-            print_error('noaccess');
-        }
-    }
-}
+$pagecontext = sharedresource_check_access($course);
 
 $mtdstandard = sharedresource_get_plugin($config->schema);
 
@@ -81,7 +63,7 @@ $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
 $systemcontext = context_system::instance();
-$PAGE->set_context($systemcontext);
+$PAGE->set_context($pagecontext);
 $url = new moodle_url('/mod/sharedresource/metadatarep.php');
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
@@ -153,62 +135,65 @@ if ($result['error'] != array()) {
     echo '</center>';
 
     echo $OUTPUT->footer();
+    die;
+}
 
-} else {
-    // No errors in metadata.
-    // These two lines in comment can be used if you want to show the user values of saved fields.
-    if ($mode == 'add' && $shrentry->exists()) {
+// No errors in metadata.
+// These two lines in comment can be used if you want to show the user values of saved fields.
+if ($mode == 'add' && $shrentry->exists()) {
 
-        // Save updated state in session.
-        $srentry = serialize($shrentry);
-        $SESSION->sr_entry = $srentry;
+    // Save updated state in session.
+    $srentry = serialize($shrentry);
+    $SESSION->sr_entry = $srentry;
 
-        // We are coming from the library. Go back to it.
-        $params = array('course' => $course->id,
-                        'mode' => 'add',
-                        'add' => 1,
-                        'catid' => $catid,
-                        'catpath' => $catpath,
-                        'return' => $return,
-                        'section' => $section,
-                        'context' => $sharingcontext);
-        $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
-        redirect($fullurl);
+    // We are coming from the library. Go back to it.
+    $params = ['course' => $course->id,
+               'mode' => 'add',
+               'add' => 1,
+               'catid' => $catid,
+               'catpath' => $catpath,
+               'return' => $return,
+               'section' => $section,
+               'context' => $sharingcontext];
+    $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
+    redirect($fullurl);
 
-    } else if ($mode == 'update') {
-        if (!$shrentry->update_instance()) {
-            print_error('failupdate', 'sharedresource');
-        }
-        if ($return == 1) {
-            $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
-        } else {
-            $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
-        }
+} else if ($mode == 'add') {
+
+    // Add a real new instance.
+    if (!$shrentry->add_instance()) {
+        print_error('failadd', 'sharedresource');
+    }
+    // If everything was saved correctly, go back to the search page or to the library.
+    if ($return != 'course') {
+        // We are coming from the library. Go back to it using index.php router.
+        $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'return' => $return];
+        $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
-        if (!$shrentry->add_instance()) {
-            print_error('failadd', 'sharedresource');
-        }
-        // If everything was saved correctly, go back to the search page or to the library.
-        if ($return) {
-            // We are coming from the library. Go back to it.
-            if ($return == 1) {
-                $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
-            } else {
-                $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
-            }
-            redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
-        } else {
-            // We are coming from a new sharedresource instance call.
-            $params = array('course' => $course->id,
-                            'section' => $section,
-                            'type' => $type,
-                            'add' => 'sharedresource',
-                            'return' => $return,
-                            'entryid' => $shrentry->id);
-            $fullurl = new moodle_url('/course/modedit.php', $params);
-            redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
-        }
-        die;
+        // We are coming from a new sharedresource instance call.
+        $params = [
+            'course' => $course->id,
+            'section' => $section,
+            'type' => $type,
+            'add' => 'sharedresource',
+            'return' => $return,
+            'entryid' => $shrentry->id];
+        $fullurl = new moodle_url('/course/modedit.php', $params);
+        redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
+} else if ($mode == 'update') {
+
+    // Here we need update the instance. Update will react to any identifier alteration, by building
+    // a complete new entry linked to the current unaltered entry by metadata chain. 
+    if (!$shrentry->update_instance()) {
+        unset($SESSION->sr_must_clone_to);
+        throw new moodle_exception(get_string('failupdate', 'sharedresource'));
+    }
+
+    // We are coming necessarily from the library. Go back to it using index.php router.
+    $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'return' => $return];
+    $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
+
+    redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
 }

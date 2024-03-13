@@ -26,16 +26,6 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 class mod_sharedresource_entry_form extends moodleform {
 
-    protected $entryid;
-
-    protected $sharedresourceentrymode;
-
-    public function __construct($mode) {
-        $this->sharedresourceentrymode = $mode;
-        $this->entryid = optional_param('entryid', 0, PARAM_INT);
-        parent::__construct();
-    }
-
     public function definition() {
         global $CFG;
 
@@ -43,9 +33,8 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $mform =& $this->_form;
 
-        $add           = optional_param('add', 0, PARAM_ALPHA);
-        $update        = optional_param('update', 0, PARAM_INT);
         // Return to course/view.php if false or mod/modname/view.php if true.
+        /*
         $return        = optional_param('return', 0, PARAM_INT);
         $catid         = optional_param('catid', 0, PARAM_INT);
         $catpath       = optional_param('catpath', '', PARAM_TEXT);
@@ -53,6 +42,7 @@ class mod_sharedresource_entry_form extends moodleform {
         $section       = optional_param('section', 0, PARAM_INT);
         $mode          = required_param('mode', PARAM_ALPHA);
         $course        = required_param('course', PARAM_INT);
+        */
 
         $mform->addElement('header', 'resourceheader', get_string('resource'));
 
@@ -102,11 +92,16 @@ class mod_sharedresource_entry_form extends moodleform {
         }
 
         // Url or file.
-        // On update as soon as a sharedresource exists, it cannot be muted any more.
-        if ($this->sharedresourceentrymode == 'update') {
-            $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
-            $mform->addElement('static', 'filename', get_string('file').': ', '');
+        // On update as soon as a sharedresource exists, you cannot mutate the resource type betwwen file and url.
+        if ($this->_customdata['mode'] == 'update') {
+            if ($this->_customdata['entry']->type == 'url') {
+                $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
+            } else {
+                $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
+                $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
+            }
         } else {
+            // Add.
             $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
             $mform->setType('url', PARAM_URL);
             $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
@@ -128,30 +123,6 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $btext = get_string('gometadataform', 'sharedresource');
 
-        $mform->addElement('hidden', 'course', $course);
-        $mform->setType('course', PARAM_INT);
-
-        $mform->addElement('hidden', 'add', $add);
-        $mform->setType('add', PARAM_ALPHA);
-
-        $mform->addElement('hidden', 'return', $return);
-        $mform->setType('return', PARAM_BOOL);
-
-        $mform->addElement('hidden', 'section', $section);
-        $mform->setType('section', PARAM_INT);
-
-        $mform->addElement('hidden', 'mode', $mode);
-        $mform->setType('mode', PARAM_ALPHA);
-
-        $mform->addElement('hidden', 'catid', $catid);
-        $mform->setType('catid', PARAM_INT);
-
-        $mform->addElement('hidden', 'catpath', $catpath);
-        $mform->setType('catpath', PARAM_TEXT);
-
-        $mform->addElement('hidden', 'entryid', $this->entryid);
-        $mform->setType('entryid', PARAM_INT);
-
         $this->add_action_buttons(true, $btext);
     }
 
@@ -162,7 +133,7 @@ class mod_sharedresource_entry_form extends moodleform {
 
         $fs = get_file_storage();
 
-        if ($this->sharedresourceentrymode == 'add') {
+        if ($this->_customdata['mode'] == 'add') {
             // Make sure that either the file or the URL are supplied.
             $usercontext = context_user::instance($USER->id);
             $nofile = $fs->is_area_empty($usercontext->id, 'user', 'draft', $data['sharedresourcefile'], true);
@@ -199,13 +170,22 @@ class mod_sharedresource_entry_form extends moodleform {
 
         // Thumbnail.
         $draftitemid = file_get_submitted_draft_itemid('thumbnail');
-        $maxbytes = 35 * 1024;
+        $maxbytes = 35 * 1024 * 1024;
+        $maxfiles = 1;
+        $fileoptions = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
+        $entryid = $this->_customdata['entry']->id;
+        file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource',
+                                'thumbnail', $entryid, $fileoptions);
+        $groupname = 'thumbnailgroup';
+        $defaultvalues->$groupname = array('thumbnail' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('sharedresourcefile');
+        $maxbytes = 35 * 1024 * 1024;
         $maxfiles = 1;
         $fileoptions = array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => $maxfiles);
         file_prepare_draft_area($draftitemid, context_system::instance()->id, 'mod_sharedresource',
-                                'thumbnail', $this->entryid, $fileoptions);
-        $groupname = 'thumbnailgroup';
-        $defaultvalues->$groupname = array('thumbnail' => $draftitemid);
+                                'sharedresource', $entryid, $fileoptions);
+        $defaultvalues->sharedresourcefile = $draftitemid;
 
         // Resource description.
         $description = @$defaultvalues->description;

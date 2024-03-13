@@ -28,6 +28,7 @@ use \StdClass;
 use \moodle_url;
 use \html_writer;
 use \mod_sharedresource\metadata;
+use \mod_sharedresource\entry;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -105,7 +106,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $this->part_view($paneltpl, $shrentry, $elementkey, $capability, 0);
             if ($paneltpl->hascontent) {
                 $template->panels[] = $paneltpl;
-                $template->tabs[] = $this->tab($nodeid, $capability, $template, 'read');
+                $template->tabs[] = $this->tab($i, $nodeid, $capability, $template, 'read');
             }
             $i++;
         }
@@ -116,13 +117,13 @@ class metadata_renderer extends \plugin_renderer_base {
     /**
      * Creates tabs.
      */
-    public function tab($nodeid, $capability, &$template, $mode = 'read') {
+    public function tab($i, $nodeid, $capability, &$template, $mode = 'read') {
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
 
         $tabtpl = new StdClass;
-        $tabtpl->i = $nodeid;
+        $tabtpl->i = $i;
 
         if ($mode != 'read') {
             if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
@@ -155,12 +156,16 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
     public function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
+        static $mtdstandard;
+        global $CFG;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
 
-        // This is the complete representation of the metadata standard.
-        $mtdstandard = sharedresource_get_plugin($namespace);
+        // This is the complete representation of the metadata standard. Load once.
+        if (is_null($mtdstandard)) {
+            $mtdstandard = sharedresource_get_plugin($namespace);
+        }
 
         list($nodeid, $instanceid) = explode(':', $elementkey);
         $htmlname = metadata::storage_to_html($elementkey);
@@ -209,12 +214,16 @@ class metadata_renderer extends \plugin_renderer_base {
 
         // print_object($standardelm);
 
-        /*
-        echo "NodeID : $nodeid <br/>";
-        echo "elementType : {$standardelm->type} <br/>";
-        echo "elementIsList : {$standardelm->islist} <br/>";
-        echo "<br/>";
-        */
+        if (optional_param('debug', false, PARAM_BOOL) && ($CFG->debug >= DEBUG_NORMAL)) {
+            echo "NodeID : $nodeid <br/>";
+            echo "elementName : {$standardelm->name} <br/>";
+            echo "elementValue : {$elminstance->get_value()} <br/>";
+            echo "elementType : {$standardelm->type} <br/>";
+            echo "elementIsList : {$standardelm->islist} <br/>";
+            echo "occur : {$numoccur}/{$lastoccur} <br/>";
+            echo "Resource index : ".$mtdstandard->isResourceIndex($nodeid)."<br/>";
+            echo "<br/>";
+        }
 
         $template->keyid = $elementkey;
         $listresult = array();
@@ -308,12 +317,26 @@ class metadata_renderer extends \plugin_renderer_base {
                  */
                 $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
                 if (!empty($siblings)) {
-                    $values = array($elminstance->get_value());
+                    $values = [$elminstance->get_value()];
                     // All siblings will have a numoccur > 0.
                     foreach ($siblings as $sib) {
                         $values[] = $sib->get_value();
                     }
+                    if ($mtdstandard->isResourceIndex($nodeid)) {
+                        echo "converting to resources ";
+                        $values = $this->to_resources($values);
+                    }
                     $elminstance->set_value($values);
+                } else {
+                    if ($mtdstandard->isResourceIndex($nodeid)) {
+                        echo "converting to resources II ";
+                        $elminstance->set_value($this->to_resources($elminstance->get_value()));
+                    }
+                }
+            } else {
+                if ($mtdstandard->isResourceIndex($nodeid)) {
+                    echo "converting to resources III ";
+                    $elminstance->set_value($this->to_resources($elminstance->get_value()));
                 }
             }
             $template->hascontent = true;
@@ -451,14 +474,35 @@ class metadata_renderer extends \plugin_renderer_base {
         }
     }
 
+    /**
+     * Given an array of supposed resource ids, transform values to resource links.
+     * First implementation will return notice links.
+     * @param mixed $values a single scalar resource id or an array of resources ids.
+     */
+    public function to_resources($values) {
+        if (is_array($values)) {
+            if (!empty($values)) {
+                foreach ($values as &$v) {
+                    $shrentry = entry::read_by_id($v);
+                    $url = $shrentry->get_notice_link();
+                    $v = '<a href="'.$url.'">'.$shrentry->title.'</a>';
+                }
+            }
+            return $values;
+        } else {
+            // $values is a scalar id. Process it as scalar.
+            $shrentry = entry::read_by_id($values);
+            $url = $shrentry->get_notice_link();
+            return '<a href="'.$url.'">'.$shrentry->title.'</a>';
+        }
+    }
+
     public function metadata_edit_form($capability) {
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
 
         // Get context params in.
-        $add = optional_param('add', 0, PARAM_ALPHA);
-        $update = optional_param('update', 0, PARAM_INT);
         $return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
         $section = optional_param('section', 0, PARAM_INT);
         $catid = optional_param('catid', 0, PARAM_INT);
@@ -479,7 +523,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->course = $courseid;
         $template->section = $section;
         $template->sharingcontext = $sharingcontext;
-        $template->add = $add;
         $template->return = $return;
         $template->nodestr = get_string('node', 'sharedresource');
         $template->completeformstr = get_string('completeform', 'sharedresource');
@@ -630,7 +673,7 @@ class metadata_renderer extends \plugin_renderer_base {
         $debug .= "InstanceID : $instanceid \n";
         $debug .= "numoccur $numoccur\n";
         $debug .= "lastoccur $lastoccur\n";
-        debug_trace($debug, TRACE_DEBUG);
+        // debug_trace($debug, TRACE_DEBUG_FINE);
         // debug_trace($elminstance);
         // debug_trace($standardelm);
 
@@ -853,7 +896,7 @@ class metadata_renderer extends \plugin_renderer_base {
             if (( ((integer) $numoccur) === 0)) {
                 $siblings = $elminstance->get_siblings(0);
 
-                debug_trace("START Element siblings for ".$elminstance->get_element_key(), TRACE_DEBUG);
+                debug_trace("START Element siblings for ".$elminstance->get_element_key(), TRACE_DEBUG_FINE);
                 if (!empty($siblings)) {
                     // All siblings will have a numoccur > 0.
                     $i = 1;
@@ -866,15 +909,15 @@ class metadata_renderer extends \plugin_renderer_base {
                     // Reajust maxoccur on last numoccur
                     $lastoccur = $i;
                 }
-                debug_trace("END Element siblings", TRACE_DEBUG);
+                debug_trace("END Element siblings", TRACE_DEBUG_FINE);
             }
         }
 
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
             // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-            debug_trace($elminstance, TRACE_DATA);
-            debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root, TRACE_DEBUG_FINE);
+            // debug_trace($elminstance, TRACE_DATA);
+            // debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root, TRACE_DEBUG_FINE);
             $template->debugdata .= "Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root;
 
             $printaddbutton = false;
@@ -893,7 +936,7 @@ class metadata_renderer extends \plugin_renderer_base {
             }
 
             if ($printaddbutton) {
-                debug_trace("PrintAddButton", TRACE_DEBUG);
+                debug_trace("PrintAddButton", TRACE_DEBUG_FINE);
                 $template->debugdata .= " Print Add Button ";
 
                 /*
@@ -1014,7 +1057,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $firstelmkey = metadata::to_instance($nodeid);
             if ($nodeid == $mtdstandard->getTitleElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
-                    // Lock only the first instance.
+                    // Lock only the first instance, as it is given by first form.
                     $template->value = $shrentry->title;
                     $template->readonly = 'readonly="readonly"';
                     if (!empty($template->mandatoryclass)) {
@@ -1025,7 +1068,7 @@ class metadata_renderer extends \plugin_renderer_base {
             } else if ($nodeid == $mtdstandard->getDescriptionElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
                     $template->value = $shrentry->description;
-                    // Lock only the first instance.
+                    // Lock only the first instance, as it is given by first form.
                     $template->readonly = 'readonly="readonly"';
                     if (!empty($template->mandatoryclass)) {
                         // Remove the is-empty potential initial state.
