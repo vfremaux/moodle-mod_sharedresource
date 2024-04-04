@@ -74,11 +74,11 @@ if ($identifier) {
             sharedresource_not_found(SITEID, 'Code 01');
         }
 
-        if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
+        if (!$sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance])) {
             sharedresource_not_found($cm->course, 'Code 02');
         }
 
-        if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
+        if (!$resource = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier])) {
             sharedresource_not_found($cm->course, 'Code 03');
         }
 
@@ -93,7 +93,7 @@ if ($identifier) {
         sharedresource_not_found(SITEID, 'code 05');
     }
 
-    $course = $DB->get_record('course', array('id' => $cm->course], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
     $coursecontext = context_course::instance($course->id);
     $PAGE->set_context($coursecontext);

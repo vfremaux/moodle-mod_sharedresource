@@ -741,16 +741,67 @@ abstract class plugin_base {
             value = :value AND
             namespace = :namespace
         ";
-        $params = ['entryid' => $this->entryid, 'element' => '7_1:%', 'value' => 'hasversion', 'namespace' => $this->namespace];
-        $versionelementid = $DB->get_field_select('sharedresource_metadata', 'element', $select, $params);
-        if ($versionelementid) {
-            $resourceelementid = metadata::to_instance('7_2_1_2', $versionelementid);
-            $params = ['entryid' => $this->entryid, 'element' => $resourceelementid, 'namespace' => $this->namespace];
-            $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
-            return $resourceid;
+        $params = [
+            'entryid' => $this->entryid,
+            'element' => '7_1:%',
+            'value' => 'hasversion',
+            'namespace' => $this->namespace
+        ];
+        $versionelement = $DB->get_record_select('sharedresource_metadata', $select, $params);
+        if (!$versionelement) {
+            return $this->entryid;
+        }
+        $versionmetadata = new metadata($this->entryid, $versionelement->element, $versionelement->value, $this->namespace);
+        $resourceelementid = metadata::to_instance('7_2_1_2', $versionmetadata->get_instance_id());
+        $params = [
+            'entryid' => $this->entryid,
+            'element' => $resourceelementid,
+            'namespace' => $this->namespace
+        ];
+        $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
+        return $resourceid;
+    }
+
+    /**
+     * Get the next entry reference using Relation metadata record. We should use only one
+     * hasversion <-> isversionof chaining between resources at the moment.
+     * @return the internal id of the next sharedresource entry in the version chaining, or our
+     * self resource id if nothing is next.
+     */
+    public function getPrevious() {
+        global $DB;
+
+        $config = get_config('sharedresource');
+
+        if (is_null($this->getVersionSupportElement())) {
+            return $this->entryid;
         }
 
-        return $this->entryid;
+        $select = "
+            entryid = :entryid AND
+            element LIKE :element AND
+            value = :value AND
+            namespace = :namespace
+        ";
+        $params = [
+            'entryid' => $this->entryid, 
+            'element' => '7_1:%', 
+            'value' => 'isversionof', 
+            'namespace' => $this->namespace
+        ];
+        $versionelement = $DB->get_record_select('sharedresource_metadata', $select, $params);
+        if (!$versionelement) {
+            return $this->entryid;
+        }
+        $versionmetadata = new metadata($this->entryid, $versionelement->element, $versionelement->value, $this->namespace);
+        $resourceelementid = metadata::to_instance('7_2_1_2', $versionmetadata->get_instance_id());
+        $params = [
+            'entryid' => $this->entryid,
+            'element' => $resourceelementid,
+            'namespace' => $this->namespace
+        ];
+        $resourceid = $DB->get_field('sharedresource_metadata', 'value', $params);
+        return $resourceid;
     }
 
     public function setNext($sharedresourceentry) {

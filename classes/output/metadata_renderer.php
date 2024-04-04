@@ -702,7 +702,9 @@ class metadata_renderer extends \plugin_renderer_base {
         if ($standardelm->type == 'category') {
             if (!is_null($taxumarray) && ($nodeid == $taxumarray['main'])) {
 
-                debug_trace('Processing taxonomy element', TRACE_DEBUG);
+                if (function_exists('debug_trace')) {
+                    debug_trace('Processing taxonomy element', TRACE_DEBUG);
+                }
 
                 // echo "// $elementkey isclassification \n";
                 // If the field concerns classification :
@@ -727,7 +729,9 @@ class metadata_renderer extends \plugin_renderer_base {
                 $sourcevalue = $sourceelm->get_value();
                 if (empty($sourcevalue)) {
                     // initial value : Undefined \n";
-                    debug_trace(" Taxon Source initial value is undefined", TRACE_ERRORS);
+                    if (function_exists('debug_trace')) {
+                        debug_trace(" Taxon Source initial value is undefined", TRACE_ERRORS);
+                    }
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
                     $instanceindex = $elminstance->get_instance_index();
@@ -737,7 +741,9 @@ class metadata_renderer extends \plugin_renderer_base {
                          * If we are the first unvalued element, take the first classification available
                          * as it will be loaded in the upper "source" select chooser
                          */
-                        debug_trace(" Taxon Source initial : Take first one", TRACE_DEBUG);
+                        if (function_exists('debug_trace')) {
+                            debug_trace(" Taxon Source initial : Take first one", TRACE_DEBUG);
+                        }
                         if ($firsts = $DB->get_records('sharedresource_classif', $params, 'name', '*', 0, 1)) {
                             // Should take the active classification of the upper node that is: 9nx_2ny_1n0
                             $sourceelm = array_pop($firsts);
@@ -897,20 +903,28 @@ class metadata_renderer extends \plugin_renderer_base {
             if (( ((integer) $numoccur) === 0)) {
                 $siblings = $elminstance->get_siblings(0);
 
-                debug_trace("START Element siblings for ".$elminstance->get_element_key(), TRACE_DEBUG_FINE);
+                if (function_exists('debug_trace')) {
+                    debug_trace("START Element siblings for ".$elminstance->get_element_key(), TRACE_DEBUG_FINE);
+                }
                 if (!empty($siblings)) {
                     // All siblings will have a numoccur > 0.
                     $i = 1;
                     foreach ($siblings as $sib) {
-                        debug_trace("Calling form for element sibling ".$sib->get_element_key(), TRACE_DEBUG_FINE);
+                        if (function_exists('debug_trace')) {
+                            debug_trace("Calling form for element sibling ".$sib->get_element_key(), TRACE_DEBUG_FINE);
+                        }
                         $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
-                        debug_trace("Call out", TRACE_DEBUG_FINE);
+                        if (function_exists('debug_trace')) {
+                            debug_trace("Call out", TRACE_DEBUG_FINE);
+                        }
                         $i++;
                     }
                     // Reajust maxoccur on last numoccur
                     $lastoccur = $i;
                 }
-                debug_trace("END Element siblings", TRACE_DEBUG_FINE);
+                if (function_exists('debug_trace')) {
+                    debug_trace("END Element siblings", TRACE_DEBUG_FINE);
+                }
             }
         }
 
@@ -937,7 +951,9 @@ class metadata_renderer extends \plugin_renderer_base {
             }
 
             if ($printaddbutton) {
-                debug_trace("PrintAddButton", TRACE_DEBUG_FINE);
+                if (function_exists('debug_trace')) {
+                    debug_trace("PrintAddButton", TRACE_DEBUG_FINE);
+                }
                 $template->debugdata .= " Print Add Button ";
 
                 /*
@@ -1010,7 +1026,9 @@ class metadata_renderer extends \plugin_renderer_base {
             }
         }
 
-        debug_trace("<<<<\n");
+        if (function_exists('debug_trace')) {
+            debug_trace("<<<<\n");
+        }
         $traceindentlevel--;
         $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
         return $template;

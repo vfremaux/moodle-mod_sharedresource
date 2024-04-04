@@ -87,10 +87,10 @@ class metadata {
 
     /**
      * Constructor for the sharedresource_metadata class.
-     * @param int $entryid
-     * @param string $element
-     * @param string $value
-     * @param string $namespace
+     * @param int $entryid the sharedresource entry this metadata value belongs to
+     * @param string $element the elementid as nodeid:instanceid
+     * @param string $value the metadata node's value
+     * @param string $namespace the related namespace
      */
     public function __construct($entryid, $element, $value, $namespace = '') {
 

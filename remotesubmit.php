@@ -52,14 +52,14 @@ if ($confirm == 1) {
             continue;
         }
         if ($plugin->remotesubmit($shrentry)) {
-            redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex')));
+            redirect(new moodle_url('/course/view.php', ['id' => $id, 'action' => 'remoteindex']));
         } else {
-            print_error('errornnoticecreation', 'sharedresource');
+            throw new moodle_exception(get_string('errornnoticecreation', 'sharedresource'));
         }
     }
 } else {
     if ($confirm === 0) {
-        redirect(new moodle_url('/course/view.php', array('id' => $id, 'action' => 'remoteindex'));
+        redirect(new moodle_url('/course/view.php', ['id' => $id, 'action' => 'remoteindex']));
     } else {
         $options['id'] = $id;
         $options['resid'] = $identifier;
