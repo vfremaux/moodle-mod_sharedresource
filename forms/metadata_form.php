@@ -93,12 +93,13 @@ $PAGE->set_url($url);
 echo $OUTPUT->header();
 
 /*
-echo $OUTPUT->notification('Must clone to '.$SESSION->sr_must_clone_to);
-echo $OUTPUT->notification('No change '.$SESSION->sr_no_identifier_change);
-echo $OUTPUT->notification('Original identifier '.$shrentry->identifier);
-echo $OUTPUT->notification('Mode '.$mode);
-echo $OUTPUT->notification('Type '.$type);
-echo $OUTPUT->notification('Return '.$return);
+if ($mode == 'update') {
+    echo $OUTPUT->notification('DEBUG : Must clone to '.($SESSION->sr_must_clone_to ?? ''));
+    echo $OUTPUT->notification('DEBUG : No change '.($SESSION->sr_no_identifier_change ?? ''));
+    echo $OUTPUT->notification('DEBUG : Original identifier '.$shrentry->identifier);
+    echo $OUTPUT->notification('DEBUG : Type '.$type);
+    echo $OUTPUT->notification('DEBUG : Return '.$return);
+}
 */
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');

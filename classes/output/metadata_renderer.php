@@ -323,19 +323,16 @@ class metadata_renderer extends \plugin_renderer_base {
                         $values[] = $sib->get_value();
                     }
                     if ($mtdstandard->isResourceIndex($nodeid)) {
-                        echo "converting to resources ";
                         $values = $this->to_resources($values);
                     }
                     $elminstance->set_value($values);
                 } else {
                     if ($mtdstandard->isResourceIndex($nodeid)) {
-                        echo "converting to resources II ";
                         $elminstance->set_value($this->to_resources($elminstance->get_value()));
                     }
                 }
             } else {
                 if ($mtdstandard->isResourceIndex($nodeid)) {
-                    echo "converting to resources III ";
                     $elminstance->set_value($this->to_resources($elminstance->get_value()));
                 }
             }
@@ -491,6 +488,9 @@ class metadata_renderer extends \plugin_renderer_base {
             return $values;
         } else {
             // $values is a scalar id. Process it as scalar.
+            if (empty($values)) {
+                return;
+            }
             $shrentry = entry::read_by_id($values);
             $url = $shrentry->get_notice_link();
             return '<a href="'.$url.'">'.$shrentry->title.'</a>';
@@ -590,7 +590,8 @@ class metadata_renderer extends \plugin_renderer_base {
             $panelchildtpl->tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$template->namespace);
 
             $template->panels[] = $panelchildtpl;
-            $template->tabs[] = $this->tab($rootid, $capability, $template, 'write');
+            $mode = 'write';
+            $template->tabs[] = $this->tab($rootid, $rootid, $capability, $template, $mode);
 
             $template->hascontent = true;
             $i++;

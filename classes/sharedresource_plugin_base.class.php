@@ -55,6 +55,8 @@ abstract class plugin_base {
 
     protected $namespace; // string
 
+    public $METADATATREE = [];
+
     /**
      * Entry point to validate the sharedresource_entry_form form.
      * Add your errors to the $errors array, and use $mode to determine
@@ -699,6 +701,23 @@ abstract class plugin_base {
      */
     public function getVersionSupportElement() {
         return null;
+    }
+
+    /**
+     * Get the list of fields that can be searched by a simple search.
+     * As a default, any 'text' type field can be used to find a resource.
+     */
+    public function getSimpleSearchElements() {
+
+        $simpleelmeents = [];
+
+        foreach ($this->METADATATREE as $index => $element) {
+            if ($element['type'] == 'text') {
+                $simpleelements[] = $index;
+            }
+        }
+
+        return $simpleelements;
     }
 
     /**
