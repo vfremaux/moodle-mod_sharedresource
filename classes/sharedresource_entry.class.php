@@ -770,8 +770,17 @@ class entry {
     }
 
     /**
+     * Tells if the current entry has a next version.
+     * @return the next sharedresource id and the current resource id if end of chain.
+     */
+    public function has_next() {
+        $nextid = $this->mtdstandard->getNext();
+        return (!empty($nextid) && ($nextid != $this->id));
+    }
+
+    /**
      * Defines the given sharedresouce as next version of the current resource.
-     * @param object $sharedresourceentry
+     * @return the next sharedresource id and the current resource id if end of chain.
      */
     public function get_next() {
         return $this->mtdstandard->getNext();
