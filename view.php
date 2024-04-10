@@ -41,7 +41,7 @@ $PAGE->set_context($systemcontext);
 // echo $OUTPUT->header(); // will be done by sharedresource::display();
 
 if ($identifier) {
-    $resource = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
+    $resource = $DB->get_record('sharedresource_entry', ['identifier' => $identifier]);
 
     $resourceentry = new \mod_sharedresource\entry($resource);
 
@@ -67,18 +67,22 @@ if ($identifier) {
 
     $cmid = 0;
     $course = new StdClass();
-    $course = $DB->get_record('course', array('id' => SITEID));
+    $course = $DB->get_record('course', ['id' => SITEID], '*', MUST_EXIST);
 } else {
     if ($id) {
         if (!$cm = get_coursemodule_from_id('sharedresource', $id)) {
             sharedresource_not_found(SITEID, 'Code 01');
         }
 
+<<<<<<< HEAD
         if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
+=======
+        if (!$sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance])) {
+>>>>>>> MOODLE_401_STABLE
             sharedresource_not_found($cm->course, 'Code 02');
         }
 
-        if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
+        if (!$resource = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier])) {
             sharedresource_not_found($cm->course, 'Code 03');
         }
 
@@ -93,9 +97,13 @@ if ($identifier) {
         sharedresource_not_found(SITEID, 'code 05');
     }
 
+<<<<<<< HEAD
     if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
         print_error('badcourseid', 'sharedresource');
     }
+=======
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+>>>>>>> MOODLE_401_STABLE
 
     $coursecontext = context_course::instance($course->id);
     $PAGE->set_context($coursecontext);

@@ -94,6 +94,7 @@ $string['configdefaulturl'] = 'URL par défaut';
 $string['configdefaulturl_desc'] = 'Cette valeur est utilisée pour préremplir l\'URL lors de la création d\'une nouvelle ressource pointée par URL.';
 $string['configdefaultuserfield'] = 'Champ de profil utilisateur par défaut pour le contrôle d\'accès.';
 $string['configenablerssfeeds'] = 'Activer les flux RSS d\'exposition des ressources';
+$string['configenablerssfeedsdesc'] = 'Si ce réglage est activé, un flux RSS peut être obtenu qui donnera la liste des ressources récentes ajoutées à la librairie';
 $string['configfilterexternalpages'] = 'L\'activation de ce réglage permettra le filtrage des ressources externes (pages web, fichiers HTML déposés) par les filtres définis dans le site (comme les liens des glossaires). Lorsque ce réglage est actif, l\'affichage de vos pages sera ralenti de façon sensible. À utiliser avec précaution.';
 $string['configforeignurlscheme'] = 'URL d\'accès aux ressources';
 $string['configforeignurlsheme_desc'] = 'Forme générale de l\'Url. Utiliser \'&lt;%%%%ID%%%%&gt;\' comme emplacement de l\'Identifiant Unique de Ressource';
@@ -158,6 +159,7 @@ $string['directlink'] = 'Lien direct vers ce fichier';
 $string['disabled'] = 'Désactivé';
 $string['disablednode'] = 'Le noeud {$a} est désactivé dans ce schéma d\'application';
 $string['discouragednode'] = 'Champ déconseillé (compatibilité)';
+$string['displayoptions'] = 'Options d\'affichage';
 $string['dmdescription'] = 'Description du modèle de métadonnées';
 $string['dmuse'] = 'Utilisation du modèle de métadonnées';
 $string['dmused'] = 'Modèle utilisé';
@@ -257,6 +259,13 @@ $string['mtdfieldname'] = 'Nom du champ';
 $string['mtdvalue'] = 'Valeur';
 $string['name'] = 'Nom';
 $string['newwindow'] = 'Nouvelle fenêtre';
+$string['newresizable'] = 'Redimensionable';
+$string['newlocation'] = 'Position';
+$string['newmenubar'] = 'Avec barre de menu';
+$string['newtoolbar'] = 'Avec barre d\'outil';
+$string['newstatus'] = 'Avec ligne d\'état';
+$string['newwidth'] = 'Largeur';
+$string['newheight'] = 'Hauteur';
 $string['newscrollbars'] = 'Autoriser le défilement';
 $string['newdirectories'] = 'Afficher les liens de répertoires';
 $string['noaccessform'] = 'Votre catégorie d\'utilisateur n\'a pas accès à ce formulaire';
@@ -549,6 +558,7 @@ $string['addinstance_create_desc'] = '
     Apportez une nouvelle ressource mutualisée dans la librairie et publiez-la dans le cours.
 ';
 
+<<<<<<< HEAD
 /*Section pro*/
 
 $string['emulatecommunity'] = "Emuler la version communautaire";
@@ -558,4 +568,6 @@ $string['licenseprovider_desc'] = "Entrez la clef de votre fournisseur.";
 $string['licensekey'] = "Clef de license pro";
 $string['licensekey_desc'] = "Entrez ici la clef de produit que vous avez reçu de votre distributeur.";
 
+=======
+>>>>>>> MOODLE_401_STABLE
 include(__DIR__.'/pro_additional_strings.php');

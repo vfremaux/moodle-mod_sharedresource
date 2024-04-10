@@ -71,18 +71,30 @@ if ($course->id > 1) {
 }
 
 if ($cancel) {
-    if ($return) {
+
+    if (isset($SESSION->sr_must_clone_to)) {
+        unset($SESSION->sr_must_clone_to);
+    }
+
+    if ($return != 'course') {
         // We are coming from the library. Go back to it.
-        if ($return == 1) {
-            $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
-        } else {
-            $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
-        }
+        $params = [
+            'course' => $course->id,
+            'catid' => $catid,
+            'catpath' => $catpath,
+            'return' => $return
+        ];
+        $fullurl = new moodle_url('/local/sharedresources/browse.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
 
     // We are coming from a course sharedresource selection operation.
-    $params = array('course' => $course->id, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
+    $params = [
+        'course' => $course->id,
+        'sr' => $section,
+        'add' => 'sharedresource',
+        'return' => 0
+    ];
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);
 }

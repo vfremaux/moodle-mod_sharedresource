@@ -103,9 +103,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             log.debug('AMD Mod sharedresource metadata edition form initialized');
 
             $('.mtd-tab').removeClass('here');
-            $('.mtd-tab').removeClass('current');
+            $('.mtd-tab .nav-link').removeClass('active');
             $('#id-menu-1').addClass('here');
-            $('#id-menu-1').addClass('current');
+            $('#id-menu-1 .nav-link').addClass('active');
 
             $('.mtd-content').removeClass('active');
             $('.mtd-content').removeClass('on');
@@ -164,9 +164,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             var tabid = 'id-tab-' + matches[1];
 
             $('.mtd-tab').removeClass('here');
-            $('.mtd-tab').removeClass('current');
+            $('.mtd-tab .nav-link').removeClass('active');
             $('#' + menuid).addClass('here');
-            $('#' + menuid).addClass('current');
+            $('#' + menuid + ' .nav-link').addClass('active');
 
             $('.mtd-content').removeClass('active');
             $('.mtd-content').removeClass('on');

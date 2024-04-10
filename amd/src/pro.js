@@ -20,12 +20,21 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
     var sharedresourcepro = {
 
         component: 'mod_sharedresource',
+<<<<<<< HEAD
         shortcomponent: 'mod_sharedresource',
         componentpath: '/mod/sharedresource',
 
         init: function() {
 
             var licensekeyid = '#id_s_' + sharedresourcepro.component + '_licensekey';
+=======
+        shortcomponent: 'sharedresource',
+        componentpath: 'mod/sharedresource',
+
+        init: function() {
+
+            var licensekeyid = '#id_s_' + sharedresourcepro.shortcomponent + '_licensekey';
+>>>>>>> MOODLE_401_STABLE
             $(licensekeyid).bind('change', this.check_product_key);
             $(licensekeyid).trigger('change');
             log.debug('AMD Pro js initialized for ' + sharedresourcepro.component + ' system');
@@ -33,7 +42,11 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         check_product_key: function() {
 
+<<<<<<< HEAD
             var licensekeyid = '#id_s_' + sharedresourcepro.component + '_licensekey';
+=======
+            var licensekeyid = '#id_s_' + sharedresourcepro.shortcomponent + '_licensekey';
+>>>>>>> MOODLE_401_STABLE
 
             var that = $(this);
 
@@ -47,21 +60,33 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             var cautionicon = ' <img src="' + cfg.wwwroot + '/pix/i/warning.png' + '">';
             var invalidicon = ' <img src="' + cfg.wwwroot + '/pix/i/invalid.png' + '">';
             var waiticon = ' <img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif' + '">';
+<<<<<<< HEAD
             var found;
+=======
+>>>>>>> MOODLE_401_STABLE
 
             if (crc === calculated) {
                 var url = cfg.wwwroot + '/' + sharedresourcepro.componentpath + '/pro/ajax/services.php?';
                 url += 'what=license';
                 url += '&service=check';
                 url += '&customerkey=' + that.val();
+<<<<<<< HEAD
                 url += '&provider=' + $('#id_s_' + sharedresourcepro.component + '_licenseprovider').val();
+=======
+                url += '&provider=' + $('#id_s_' + sharedresourcepro.shortcomponent + '_licenseprovider').val();
+>>>>>>> MOODLE_401_STABLE
 
                 $(licensekeyid + ' + img').remove();
                 $(licensekeyid).after(waiticon);
 
                 $.get(url, function(data) {
+<<<<<<< HEAD
                     if (data.match(/SET OK/)) {
                         if (found = data.match(/-\d+.*$/)) {
+=======
+                    if (data.match(/(SET|CHECK) OK/)) {
+                        if (data.match(/-\d+.*$/)) {
+>>>>>>> MOODLE_401_STABLE
                             $(licensekeyid + ' + img').remove();
                             $(licensekeyid).after(cautionicon);
                         } else {

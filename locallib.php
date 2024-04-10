@@ -70,6 +70,30 @@ function sharedresource_load_pluginsmin_lang(&$string, $lang = '') {
 }
 
 /**
+ * Checks access and user's capability
+ * @param object $course the course.
+ * @return a context instance for the page.
+ */
+function sharedresource_check_access($course) {
+    $systemcontext = context_system::instance();
+    $coursecontext = context_course::instance($course->id);
+    if ($course->id != SITEID) {
+        require_login($course);
+        require_capability('moodle/course:manageactivities', $coursecontext);
+        return $coursecontext;
+    } else {
+        require_login();
+        $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
+        if (!has_any_capability($caps, context_system::instance())) {
+            if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+                throw new moodle_exception(get_string('noaccess'));
+            }
+        }
+        return $systemcontext;
+    }
+}
+
+/**
  * converts a given resource into sharedresource, activating required indexing plugins
  * @param object $resource
  * @param string $type a resource module type, can be 'resource' or 'url'

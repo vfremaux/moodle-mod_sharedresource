@@ -20,7 +20,7 @@
  *
  * @package    mod_sharedresource
  * @category   mod
- * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -32,31 +32,14 @@ require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
-$url = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
+$url = new moodle_url('/mod/sharedresource/admin_convertall.php', ['course' => $courseid]);
 
-if ($courseid > SITEID) {
-    if (!$course = $DB->get_record('course', array('id' => "$courseid"))) {
-        print_error('coursemisconf');
-    }
-
-    // Security.
-
-    $context = context_course::instance($courseid);
-    require_login($course);
-    if (!has_any_capability(array('repository/sharedresources:manage', 'repository/sharedresources:create'), $context)) {
-        print_error('noaccessform', 'sharedresource');
-    }
-    $PAGE->set_context($context);
-} else {
-    $systemcontext = context_system::instance();
-    require_login();
-    require_capability('repository/sharedresources:manage', $systemcontext);
-    $PAGE->set_context($systemcontext);
-}
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+sharedresource_check_access($course);
 
 $PAGE->set_title(get_string('resourceconversion', 'sharedresource'));
 $PAGE->set_heading(get_string('resourceconversion', 'sharedresource'));
-$PAGE->set_url('/mod/sharedresource/admin_convertall.php', array('course' => $courseid));
+$PAGE->set_url('/mod/sharedresource/admin_convertall.php', ['course' => $courseid]);
 $PAGE->set_pagelayout('standard');
 
 // Navigation.
@@ -67,24 +50,25 @@ $PAGE->navbar->add(get_string('resourcetorepository', 'sharedresource'));
 
 if (empty($courseid)) {
     // If no course choosen (comming from general sections) make the choice of one.
-    $allcourses = $DB->get_records_menu('course', null, 'shortname', 'id,fullname');
+    $allcourses = $DB->get_records_menu('course', null, 'shortname', 'id, fullname');
     $form = new sharedresource_choosecourse_form($allcourses);
 
     if ($form->is_cancelled()) {
-        redirect(new moodle_url('/resources/index.php'));
+        redirect(new moodle_url('/local/sharedresources/index.php'));
     }
 
     echo $OUTPUT->header();
     $form->display();
     echo $OUTPUT->footer();
     die;
-
 } else {
+
+    $course = $DB->get_record('course', ['id' => "$courseid"], '*', MUST_EXIST);
 
     // Back to library if cancelled.
     $form = new sharedresource_choosecourse_form(null);
     if ($form->is_cancelled()) {
-        redirect(new moodle_url('/resources/index.php'));
+        redirect(new moodle_url('/local/sharedresources/index.php'));
     }
 
     $resources = $DB->get_records('resource', array('course' => $courseid), 'name');
@@ -119,7 +103,7 @@ if (empty($courseid)) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
-                    $resource = $DB->get_record('resource', array('id' => $resid));
+                    $resource = $DB->get_record('resource', ['id' => $resid], '*', MUST_EXIST);
                     if (debugging()) {
                         $report .= "converting resource {$resource->id} : {$resource->name}\n";
                     }
@@ -133,7 +117,7 @@ if (empty($courseid)) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('ucnv_', '', $reskey);
-                    $url = $DB->get_record('url', array('id' => $resid));
+                    $url = $DB->get_record('url', ['id' => $resid]);
                     if (debugging()) {
                         $report .= "converting url $url->id : $url->name \n";
                     }
@@ -145,7 +129,7 @@ if (empty($courseid)) {
     } else {
         // Print form.
         echo $OUTPUT->header();
-        $form2->set_data(array('course' => $course->id));
+        $form2->set_data(['course' => $course->id]);
         $form2->display();
         echo $OUTPUT->footer();
         die;
@@ -161,5 +145,6 @@ if (!empty($report)) {
     echo '</pre>';
 }
 
-echo $OUTPUT->continue_button($CFG->wwwroot."/course/view.php?id=$courseid");
+$courseurl = new moodle_url('/course/view.php', ['id' => $courseid]);
+echo $OUTPUT->continue_button($courseurl);
 echo $OUTPUT->footer();

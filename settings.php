@@ -26,6 +26,14 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
+<<<<<<< HEAD
+=======
+if (sharedresource_supports_feature('emulate/community') == 'pro') {
+    require_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
+    $promanager = \mod_sharedresource\pro_manager::instance();
+}
+
+>>>>>>> MOODLE_401_STABLE
 global $shrwindowoptions; // Make sure we have the pesky global.
 
 $hasmetadata = false;
@@ -77,12 +85,16 @@ if ($ADMIN->fulltree) {
     $key = 'sharedresource/defaulturl';
     $label = get_string('configdefaulturl', 'sharedresource');
     $desc = get_string('configdefaulturl_desc', 'sharedresource');
-    $settings->add(new admin_setting_configtext($key, $label, $desc , 'http://'));
+    $settings->add(new admin_setting_configtext($key, $label, $desc , 'https://'));
 
-    $key = 'sharedresource/foreignurl';
-    $label = get_string('configforeignurlscheme', 'sharedresource');
-    $desc = get_string('configforeignurlsheme_desc', 'sharedresource');
-    $settings->add(new admin_setting_configtext($key, $label, $desc, ''), PARAM_RAW, 80);
+    if (sharedresource_supports_feature('entry/foreignurl')) {
+        if ($promanager->require_pro('entry/foreignurl', true)) {
+            $key = 'sharedresource/foreignurl';
+            $label = get_string('configforeignurlscheme', 'sharedresource');
+            $desc = get_string('configforeignurlsheme_desc', 'sharedresource');
+            $settings->add(new admin_setting_configtext($key, $label, $desc, ''), PARAM_RAW, 80);
+        }
+    }
 
     $label = get_string('layout', 'sharedresource');
     $settings->add(new admin_setting_heading('layouthdr', $label, ''));
@@ -101,7 +113,7 @@ if ($ADMIN->fulltree) {
 
     foreach ($shrwindowoptions as $optionname) {
         $popupoption = "sharedresource/popup$optionname";
-        if ($popupoption == 'sharedresource_popupheight') {
+        if ($popupoption == 'sharedresource/popupheight') {
             $key = 'sharedresource/popupheight';
             $label = get_string('configpopupheight', 'sharedresource');
             $desc = get_string('configpopupheight_desc', 'sharedresource');
@@ -167,10 +179,14 @@ if ($ADMIN->fulltree) {
     $item = new admin_setting_configselect($key, $label, $desc, '', $pluginsoptions);
     $settings->add($item);
 
-    $key = 'sharedresource/accesscontrol';
-    $label = get_string('configaccesscontrol', 'sharedresource');
-    $desc = get_string('configaccesscontrol_desc', 'sharedresource');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
+    if (sharedresource_supports_feature('entry/accessctl')) {
+        if ($promanager->require_pro('entry/accessctl', true)) {
+            $key = 'sharedresource/accesscontrol';
+            $label = get_string('configaccesscontrol', 'sharedresource');
+            $desc = get_string('configaccesscontrol_desc', 'sharedresource');
+            $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
+        }
+    }
 
     /*
     $disabledarr = array('' => get_string('disabled', 'sharedresource'));
@@ -208,21 +224,26 @@ if ($ADMIN->fulltree) {
         }
     }
 
-    if (empty($CFG->enablerssfeeds)) {
-        $label = get_string('rss', 'sharedresource');
-        $settings->add(new admin_setting_heading('h10', $label, ''));
+    if (sharedresource_supports_feature('export/rss')) {
+        if ($promanager->require_pro('export/rss', true)) {
+            if (empty($CFG->enablerssfeeds)) {
+                $label = get_string('rss', 'sharedresource');
+                $settings->add(new admin_setting_heading('h10', $label, ''));
 
-        $key = 'sharedresource/enablerssfeeds';
-        $label = get_string('configenablerssfeeds', 'admin');
-        $desc = 0;
-        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
+                $key = 'sharedresource/enablerssfeeds';
+                $label = get_string('configenablerssfeeds', 'sharedresource');
+                $desc = get_string('configenablerssfeedsdesc', 'sharedresource');
+                $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
 
-        $key = 'sharedresource/article_quantity';
-        $label = get_string('configarticlequantity', 'sharedresource');
-        $desc = get_string('configarticlequantity_desc', 'sharedresource');
-        $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
+                $key = 'sharedresource/article_quantity';
+                $label = get_string('configarticlequantity', 'sharedresource');
+                $desc = get_string('configarticlequantity_desc', 'sharedresource');
+                $settings->add(new admin_setting_configtext($key, $label, $desc, 10, PARAM_INT));
+            }
+        }
     }
 
+<<<<<<< HEAD
     if (sharedresource_supports_feature('emulate/community')) {
         // This will accept any.
         $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'sharedresource'), ''));
@@ -231,6 +252,12 @@ if ($ADMIN->fulltree) {
         $label = get_string('emulatecommunity', 'sharedresource');
         $desc = get_string('emulatecommunity_desc', 'sharedresource');
         $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
+=======
+    if (sharedresource_supports_feature('emulate/community') == 'pro') {
+        include_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
+        $promanager = mod_sharedresource\pro_manager::instance();
+        $promanager->add_settings($ADMIN, $settings);
+>>>>>>> MOODLE_401_STABLE
     } else {
         $label = get_string('plugindist', 'sharedresource');
         $desc = get_string('plugindist_desc', 'sharedresource');

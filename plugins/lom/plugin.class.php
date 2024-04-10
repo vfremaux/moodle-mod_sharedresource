@@ -1643,6 +1643,13 @@ class plugin_lom extends plugin_base {
     }
 
     /**
+     * Tells if the node's value is assimilable to a sharedresource entry.
+     */
+    public function isResourceIndex($nodeid) {
+        return $nodeid == '7_2_1_2';
+    }
+
+    /**
      * versionned sharedresources entry must use Relation elements to link each other.
      */
     public function getVersionSupportElement() {

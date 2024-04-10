@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@club-internet.fr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
  * @package    mod_sharedresource
  * @category   mod
@@ -28,6 +28,7 @@ use \StdClass;
 use \moodle_url;
 use \html_writer;
 use \mod_sharedresource\metadata;
+use \mod_sharedresource\entry;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -105,7 +106,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $this->part_view($paneltpl, $shrentry, $elementkey, $capability, 0);
             if ($paneltpl->hascontent) {
                 $template->panels[] = $paneltpl;
-                $template->tabs[] = $this->tab($nodeid, $capability, $template, 'read');
+                $template->tabs[] = $this->tab($i, $nodeid, $capability, $template, 'read');
             }
             $i++;
         }
@@ -116,13 +117,17 @@ class metadata_renderer extends \plugin_renderer_base {
     /**
      * Creates tabs.
      */
+<<<<<<< HEAD
     public function tab($nodeid, $capability, &$template, $mode = 'read') {
+=======
+    public function tab($i, $nodeid, $capability, &$template, $mode = 'read') {
+>>>>>>> MOODLE_401_STABLE
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
 
         $tabtpl = new StdClass;
-        $tabtpl->i = $nodeid;
+        $tabtpl->i = $i;
 
         if ($mode != 'read') {
             if (\mod_sharedresource\metadata::has_mandatories($nodeid)) {
@@ -155,12 +160,19 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
     public function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
+<<<<<<< HEAD
+=======
+        static $mtdstandard;
+        global $CFG;
+>>>>>>> MOODLE_401_STABLE
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
 
-        // This is the complete representation of the metadata standard.
-        $mtdstandard = sharedresource_get_plugin($namespace);
+        // This is the complete representation of the metadata standard. Load once.
+        if (is_null($mtdstandard)) {
+            $mtdstandard = sharedresource_get_plugin($namespace);
+        }
 
         list($nodeid, $instanceid) = explode(':', $elementkey);
         $htmlname = metadata::storage_to_html($elementkey);
@@ -209,12 +221,16 @@ class metadata_renderer extends \plugin_renderer_base {
 
         // print_object($standardelm);
 
-        /*
-        echo "NodeID : $nodeid <br/>";
-        echo "elementType : {$standardelm->type} <br/>";
-        echo "elementIsList : {$standardelm->islist} <br/>";
-        echo "<br/>";
-        */
+        if (optional_param('debug', false, PARAM_BOOL) && ($CFG->debug >= DEBUG_NORMAL)) {
+            echo "NodeID : $nodeid <br/>";
+            echo "elementName : {$standardelm->name} <br/>";
+            echo "elementValue : {$elminstance->get_value()} <br/>";
+            echo "elementType : {$standardelm->type} <br/>";
+            echo "elementIsList : {$standardelm->islist} <br/>";
+            echo "occur : {$numoccur}/{$lastoccur} <br/>";
+            echo "Resource index : ".$mtdstandard->isResourceIndex($nodeid)."<br/>";
+            echo "<br/>";
+        }
 
         $template->keyid = $elementkey;
         $listresult = array();
@@ -308,12 +324,23 @@ class metadata_renderer extends \plugin_renderer_base {
                  */
                 $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
                 if (!empty($siblings)) {
-                    $values = array($elminstance->get_value());
+                    $values = [$elminstance->get_value()];
                     // All siblings will have a numoccur > 0.
                     foreach ($siblings as $sib) {
                         $values[] = $sib->get_value();
                     }
+                    if ($mtdstandard->isResourceIndex($nodeid)) {
+                        $values = $this->to_resources($values);
+                    }
                     $elminstance->set_value($values);
+                } else {
+                    if ($mtdstandard->isResourceIndex($nodeid)) {
+                        $elminstance->set_value($this->to_resources($elminstance->get_value()));
+                    }
+                }
+            } else {
+                if ($mtdstandard->isResourceIndex($nodeid)) {
+                    $elminstance->set_value($this->to_resources($elminstance->get_value()));
                 }
             }
             $template->hascontent = true;
@@ -451,14 +478,38 @@ class metadata_renderer extends \plugin_renderer_base {
         }
     }
 
+    /**
+     * Given an array of supposed resource ids, transform values to resource links.
+     * First implementation will return notice links.
+     * @param mixed $values a single scalar resource id or an array of resources ids.
+     */
+    public function to_resources($values) {
+        if (is_array($values)) {
+            if (!empty($values)) {
+                foreach ($values as &$v) {
+                    $shrentry = entry::read_by_id($v);
+                    $url = $shrentry->get_notice_link();
+                    $v = '<a href="'.$url.'">'.$shrentry->title.'</a>';
+                }
+            }
+            return $values;
+        } else {
+            // $values is a scalar id. Process it as scalar.
+            if (empty($values)) {
+                return;
+            }
+            $shrentry = entry::read_by_id($values);
+            $url = $shrentry->get_notice_link();
+            return '<a href="'.$url.'">'.$shrentry->title.'</a>';
+        }
+    }
+
     public function metadata_edit_form($capability) {
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
 
         // Get context params in.
-        $add = optional_param('add', 0, PARAM_ALPHA);
-        $update = optional_param('update', 0, PARAM_INT);
         $return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
         $section = optional_param('section', 0, PARAM_INT);
         $catid = optional_param('catid', 0, PARAM_INT);
@@ -479,7 +530,6 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->course = $courseid;
         $template->section = $section;
         $template->sharingcontext = $sharingcontext;
-        $template->add = $add;
         $template->return = $return;
         $template->nodestr = get_string('node', 'sharedresource');
         $template->completeformstr = get_string('completeform', 'sharedresource');
@@ -547,7 +597,8 @@ class metadata_renderer extends \plugin_renderer_base {
             $panelchildtpl->tabname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$template->namespace);
 
             $template->panels[] = $panelchildtpl;
-            $template->tabs[] = $this->tab($rootid, $capability, $template, 'write');
+            $mode = 'write';
+            $template->tabs[] = $this->tab($rootid, $rootid, $capability, $template, $mode);
 
             $template->hascontent = true;
             $i++;
@@ -588,7 +639,7 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $template = new Stdclass;
         $template->debugdata = '';
-        $template->childs = array(); // Stop the uplooking recursion.
+        $template->childs = []; // Stop the uplooking recursion.
         $template->hascontent = false;
         $template->islist = $standardelm->islist;
 
@@ -625,11 +676,12 @@ class metadata_renderer extends \plugin_renderer_base {
             $lastoccur = $numoccur;
         }
 
-        $debug = ">>>>\nNodeID : $nodeid\n<br>";
-        $debug .= "InstanceID : $instanceid \n<br>";
-        $debug .= "numoccur $numoccur\n<br>";
-        $debug .= "lastoccur $lastoccur\n<br>";
-        debug_trace($debug);
+        $debug = ">>>>\nNodeID : $nodeid\n";
+        $debug .= "Namespace : $namespace \n";
+        $debug .= "InstanceID : $instanceid \n";
+        $debug .= "numoccur $numoccur\n";
+        $debug .= "lastoccur $lastoccur\n";
+        // debug_trace($debug, TRACE_DEBUG_FINE);
         // debug_trace($elminstance);
         // debug_trace($standardelm);
 
@@ -657,7 +709,9 @@ class metadata_renderer extends \plugin_renderer_base {
         if ($standardelm->type == 'category') {
             if (!is_null($taxumarray) && ($nodeid == $taxumarray['main'])) {
 
-                debug_trace('Processing taxonomy element');
+                if (function_exists('debug_trace')) {
+                    debug_trace('Processing taxonomy element', TRACE_DEBUG);
+                }
 
                 // echo "// $elementkey isclassification \n";
                 // If the field concerns classification :
@@ -682,7 +736,9 @@ class metadata_renderer extends \plugin_renderer_base {
                 $sourcevalue = $sourceelm->get_value();
                 if (empty($sourcevalue)) {
                     // initial value : Undefined \n";
-                    debug_trace(" Taxon Source initial value is undefined");
+                    if (function_exists('debug_trace')) {
+                        debug_trace(" Taxon Source initial value is undefined", TRACE_ERRORS);
+                    }
                     // Not yet any value, take the first active available.
                     $params = array('enabled' => 1);
                     $instanceindex = $elminstance->get_instance_index();
@@ -692,7 +748,9 @@ class metadata_renderer extends \plugin_renderer_base {
                          * If we are the first unvalued element, take the first classification available
                          * as it will be loaded in the upper "source" select chooser
                          */
-                        debug_trace(" Taxon Source initial : Take first one");
+                        if (function_exists('debug_trace')) {
+                            debug_trace(" Taxon Source initial : Take first one", TRACE_DEBUG);
+                        }
                         if ($firsts = $DB->get_records('sharedresource_classif', $params, 'name', '*', 0, 1)) {
                             // Should take the active classification of the upper node that is: 9nx_2ny_1n0
                             $sourceelm = array_pop($firsts);
@@ -792,40 +850,6 @@ class metadata_renderer extends \plugin_renderer_base {
                             $realoccur++;
                             $i++;
                         }
-
-                        // Fetch the level-1 siblings only for the first source.
-                        // OBSOLETE since repair of the get_siblings()
-                        /*
-                        if ($realoccur == 0 && !$classifsiblingsdone) {
-                            $classifsiblingsdone = true;
-                            $siblingcollector = new StdClass;
-                            /*
-                             * this is a relative guess of higher level siblings. We need explore the "source" childs of the element as parent
-                             * does not explictely exist in metadata, thus breaking the standard case form recursion.
-                             */
-                             /*
-                            // $classifsets = metadata::instances_by_node($shrentry->id, $namespace, $elminstance->get_parent(false)->get_node_id().'_1', null, false);
-                            // $classifsets = metadata::instances_by_element($shrentry->id, $namespace, $taxumarray['source'], null, false);
-                            $rootbranch = $sourceelm->get_instance_path(0);
-                            $sourcepattern = "{$taxumarray['source']}:{$rootbranch}_%_%";
-                            $classifsets = metadata::instances_by_element($shrentry->id, $namespace, $sourcepattern, null, false);
-                            if (!empty($classifsets)) {
-                                $i = 1;
-                                foreach ($classifsets as $clf) {
-                                    $thisinstancekey = metadata::to_instance($taxumarray['source']);
-                                    if ($clf->get_element_key() == $thisinstancekey) {
-                                        // Avoid looping on self.
-                                        continue;
-                                    }
-                                    // echo "Realoccur : $realoccur Requiring form for ".$clf->get_parent(false)->get_element_key();
-                                    debug_trace("Calling form for source siblings");
-                                    $this->part_form($siblingcollector, $clf->get_parent(false)->get_element_key(), $capability, $i);
-                                    debug_trace("Call out");
-                                    $i++;
-                                }
-                            }
-                        }
-                        */
                     }
                 }
             } else {
@@ -886,28 +910,41 @@ class metadata_renderer extends \plugin_renderer_base {
             if (( ((integer) $numoccur) === 0)) {
                 $siblings = $elminstance->get_siblings(0);
 
-                debug_trace("START Element siblings for ".$elminstance->get_element_key());
+                if (function_exists('debug_trace')) {
+                    debug_trace("START Element siblings for ".$elminstance->get_element_key(), TRACE_DEBUG_FINE);
+                }
                 if (!empty($siblings)) {
                     // All siblings will have a numoccur > 0.
                     $i = 1;
                     foreach ($siblings as $sib) {
-                        debug_trace("Calling form for element sibling ".$sib->get_element_key());
+                        if (function_exists('debug_trace')) {
+                            debug_trace("Calling form for element sibling ".$sib->get_element_key(), TRACE_DEBUG_FINE);
+                        }
                         $this->part_form($siblingcollector, $sib->get_element_key(), $capability, $i);
-                        debug_trace("Call out");
+                        if (function_exists('debug_trace')) {
+                            debug_trace("Call out", TRACE_DEBUG_FINE);
+                        }
                         $i++;
                     }
                     // Reajust maxoccur on last numoccur
                     $lastoccur = $i;
                 }
-                debug_trace("END Element siblings");
+                if (function_exists('debug_trace')) {
+                    debug_trace("END Element siblings", TRACE_DEBUG_FINE);
+                }
             }
         }
 
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
             // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
+<<<<<<< HEAD
             debug_trace($elminstance);
             debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root);
+=======
+            // debug_trace($elminstance, TRACE_DATA);
+            // debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root, TRACE_DEBUG_FINE);
+>>>>>>> MOODLE_401_STABLE
             $template->debugdata .= "Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root;
 
             $printaddbutton = false;
@@ -926,7 +963,9 @@ class metadata_renderer extends \plugin_renderer_base {
             }
 
             if ($printaddbutton) {
-                debug_trace("PrintAddButton");
+                if (function_exists('debug_trace')) {
+                    debug_trace("PrintAddButton", TRACE_DEBUG_FINE);
+                }
                 $template->debugdata .= " Print Add Button ";
 
                 /*
@@ -999,7 +1038,9 @@ class metadata_renderer extends \plugin_renderer_base {
             }
         }
 
-        debug_trace("<<<<\n");
+        if (function_exists('debug_trace')) {
+            debug_trace("<<<<\n");
+        }
         $traceindentlevel--;
         $CFG->traceindent = str_pad(' ', $traceindentlevel * 4);
         return $template;
@@ -1047,7 +1088,7 @@ class metadata_renderer extends \plugin_renderer_base {
             $firstelmkey = metadata::to_instance($nodeid);
             if ($nodeid == $mtdstandard->getTitleElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
-                    // Lock only the first instance.
+                    // Lock only the first instance, as it is given by first form.
                     $template->value = $shrentry->title;
                     $template->readonly = 'readonly="readonly"';
                     if (!empty($template->mandatoryclass)) {
@@ -1058,7 +1099,7 @@ class metadata_renderer extends \plugin_renderer_base {
             } else if ($nodeid == $mtdstandard->getDescriptionElement()->node) {
                 if ($elminstance->get_element_key() == $firstelmkey) {
                     $template->value = $shrentry->description;
-                    // Lock only the first instance.
+                    // Lock only the first instance, as it is given by first form.
                     $template->readonly = 'readonly="readonly"';
                     if (!empty($template->mandatoryclass)) {
                         // Remove the is-empty potential initial state.
@@ -1086,7 +1127,7 @@ class metadata_renderer extends \plugin_renderer_base {
                         $options[$value] = $value;
                     } else {
                         $value = \Encoding::fixUTF8($value);
-                        $str = get_string(clean_string_key($value), 'sharedmetadata_'.$namespace);
+                        $str = get_string(clean_string_key(strtolower($value)), 'sharedmetadata_'.$namespace);
                         $options[$value] = $str;
                     }
                 }

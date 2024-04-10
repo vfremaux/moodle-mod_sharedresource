@@ -8,6 +8,12 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
 
+<<<<<<< HEAD
+=======
+// Caches.
+$string['cachedef_pro'] = 'Stocke des données spécifiques de la zone "pro"';
+
+>>>>>>> MOODLE_401_STABLE
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php'); // to get xx_supports_feature();
 if ('pro' == sharedresource_supports_feature('emulate/community')) {
     include($CFG->dirroot.'/mod/sharedresource/pro/lang/fr/pro.php');

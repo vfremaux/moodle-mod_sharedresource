@@ -83,9 +83,17 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.cla
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
 if (!function_exists('debug_trace')) {
-    // Fake it if advancedperfs/perfdebug not installed.
-    function debug_trace() {
-        assert(1);
+    @include_once($CFG->dirroot.'/local/advancedperfs/debugtools.php');
+    if (!function_exists('debug_trace')) {
+        function debug_trace($msg, $tracelevel = 0, $label = '', $backtracelevel = 1) {
+            // Fake this function if not existing in the target moodle environment.
+            assert(1);
+        }
+        define('TRACE_ERRORS', 1); // Errors should be always traced when trace is on.
+        define('TRACE_NOTICE', 3); // Notices are important notices in normal execution.
+        define('TRACE_DEBUG', 5); // Debug are debug time notices that should be burried in debug_fine level when debug is ok.
+        define('TRACE_DATA', 8); // Data level is when requiring to see data structures content.
+        define('TRACE_DEBUG_FINE', 10); // Debug fine are control points we want to keep when code is refactored and debug needs to be reactivated.
     }
 }
 
@@ -127,6 +135,11 @@ function sharedresource_supports($feature) {
             return true;
         }
 
+        // 4.0
+        case FEATURE_MOD_PURPOSE: {
+            return MOD_PURPOSE_CONTENT;
+        }
+
         default:
             return null;
     }
@@ -150,8 +163,13 @@ function sharedresource_supports_feature($feature = null, $getsupported = null) 
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl', 'fineselect'),
+<<<<<<< HEAD
                 'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
+=======
+                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable', 'foreignurl'),
+>>>>>>> MOODLE_401_STABLE
                 'emulate' => 'community',
+                'export/rss',
             ),
             'community' => array(
             ),

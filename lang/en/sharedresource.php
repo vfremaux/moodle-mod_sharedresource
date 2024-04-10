@@ -92,6 +92,7 @@ $string['configclassification'] = 'Configure';
 $string['configdefaulturl'] = 'Default URL';
 $string['configdefaultuserfield'] = 'Default value for shared resource access controlled.';
 $string['configenablerssfeeds'] = 'Enable RSS resource exposition feeds';
+$string['configenablerssfeedsdesc'] = 'If this setting is enabled, an RSS output will list any new entry in the library, with basic metadata.';
 $string['configfilterexternalpages'] = 'Enabling this setting will allow the filtering of external resources (web pages, HTML files deposited) by the filters defined in the site (such as links in glossaries). When this setting is active, the display of your pages will be slowed significantly. Use with caution.';
 $string['configforeignurlscheme'] = 'URL to access resources';
 $string['configframesize'] = 'Frame size';
@@ -143,6 +144,7 @@ $string['disabled'] = 'Disabled';
 $string['disablednode'] = 'Node {$a} is disabled in this schema application';
 $string['discipline'] = 'Discipline';
 $string['discouragednode'] = 'Discouraged node';
+$string['displayoptions'] = 'Display options';
 $string['dmdescription'] = 'Description of the metadata model :';
 $string['dmuse'] = 'Use of the metadata model :';
 $string['dmused'] = 'Model used';
@@ -255,6 +257,13 @@ $string['name'] = 'Name';
 $string['configpopupdirectories'] = 'Show the directory links';
 $string['newdirectories'] = 'Show the directory links';
 $string['newwindow'] = 'New window';
+$string['newresizable'] = 'Resizable';
+$string['newlocation'] = 'Location';
+$string['newmenubar'] = 'With menu bar';
+$string['newtoolbar'] = 'With tool bar';
+$string['newstatus'] = 'With status';
+$string['newwidth'] = 'Width';
+$string['newheight'] = 'Height';
 $string['newscrollbars'] = 'Enable scrollbars';
 $string['noaccessform'] = 'Your user category do not have access to this form';
 $string['noclassification'] = 'No classification found';
@@ -593,6 +602,7 @@ $string['addinstance_create_desc'] = '
     Upload a new resource within the shared library and finally publish it in the course.
 ';
 
+<<<<<<< HEAD
 /*Pro section*/
 
 $string['emulatecommunity'] = "Emulate the community version.";
@@ -602,4 +612,6 @@ $string['licenseprovider_desc'] = "Input here your provider key";
 $string['licensekey'] = "Pro license key";
 $string['licensekey_desc'] = "Input here the product license key you got from your provider ";
 
+=======
+>>>>>>> MOODLE_401_STABLE
 include(__DIR__.'/pro_additional_strings.php');
