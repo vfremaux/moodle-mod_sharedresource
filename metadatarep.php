@@ -63,11 +63,7 @@ $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
 $systemcontext = context_system::instance();
-<<<<<<< HEAD
-$PAGE->set_context($systemcontext);
-=======
 $PAGE->set_context($pagecontext);
->>>>>>> MOODLE_401_STABLE
 $url = new moodle_url('/mod/sharedresource/metadatarep.php');
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
@@ -175,32 +171,6 @@ if ($mode == 'add' && $shrentry->exists()) {
         $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
-<<<<<<< HEAD
-        if (!$shrentry->add_instance()) {
-            print_error('failadd', 'sharedresource');
-        }
-        // If everything was saved correctly, go back to the search page or to the library.
-        if ($return) {
-            // We are coming from the library. Go back to it.
-            if ($return == 1) {
-                $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
-            } else {
-                $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
-            }
-            redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
-        } else {
-            // We are coming from a new sharedresource instance call.
-            $params = array('course' => $course->id,
-                            'section' => $section,
-                            'type' => $type,
-                            'add' => 'sharedresource',
-                            'return' => $return,
-                            'entryid' => $shrentry->id);
-            $fullurl = new moodle_url('/course/modedit.php', $params);
-            redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
-        }
-        die;
-=======
         // We are coming from a new sharedresource instance call.
         $params = [
             'course' => $course->id,
@@ -211,7 +181,6 @@ if ($mode == 'add' && $shrentry->exists()) {
             'entryid' => $shrentry->id];
         $fullurl = new moodle_url('/course/modedit.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
->>>>>>> MOODLE_401_STABLE
     }
 } else if ($mode == 'update') {
 

@@ -26,17 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-<<<<<<< HEAD
-$plugin->version   = 2019062000;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020060900;       // Requires this Moodle version.
-$plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.9.0 (Build 2019062000)';
-$plugin->dependencies = array('local_sharedresources' => 201801180);
-
-// Non Moodle attributes.
-$plugin->codeincrement = '3.9.0010';
-=======
 $plugin->version   = 2021102103;       // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112801;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
@@ -47,5 +36,4 @@ $plugin->supported = [401, 402];
 
 // Non Moodle attributes.
 $plugin->codeincrement = '4.1.0011';
->>>>>>> MOODLE_401_STABLE
 $plugin->privacy = 'dualrelease';

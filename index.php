@@ -25,13 +25,7 @@ require_once('../../config.php');
 
 $id = required_param( 'id', PARAM_INT ); // Course.
 
-<<<<<<< HEAD
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('coursemisconf');
-}
-=======
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
->>>>>>> MOODLE_401_STABLE
 
 // Security.
 

@@ -604,16 +604,4 @@ $string['addinstance_create_desc'] = '
     Upload a new resource within the shared library and finally publish it in the course.
 ';
 
-<<<<<<< HEAD
-/*Pro section*/
-
-$string['emulatecommunity'] = "Emulate the community version.";
-$string['emulatecommunity_desc'] = "If enabled, the plugin will behave as the public community version. This will increase compatibility with other implementations but will loose features !";
-$string['licenseprovider'] = "Pro License provider";
-$string['licenseprovider_desc'] = "Input here your provider key";
-$string['licensekey'] = "Pro license key";
-$string['licensekey_desc'] = "Input here the product license key you got from your provider ";
-
-=======
->>>>>>> MOODLE_401_STABLE
 include(__DIR__.'/pro_additional_strings.php');

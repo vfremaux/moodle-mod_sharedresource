@@ -162,19 +162,11 @@ class Encoding {
             $max = strlen($text);
             $buf = "";
             for ($i = 0; $i < $max; $i++) {
-<<<<<<< HEAD
-                $c1 = $text{$i};
-                if ($c1 >= "\xc0") { // Should be converted to UTF8, if it's not UTF8 already.
-                    $c2 = $i + 1 >= $max ? "\x00" : $text{$i + 1};
-                    $c3 = $i + 2 >= $max ? "\x00" : $text{$i + 2};
-                    $c4 = $i + 3 >= $max ? "\x00" : $text{$i + 3};
-=======
                 $c1 = substr($text, $i, 1);
                 if ($c1 >= "\xc0") { // Should be converted to UTF8, if it's not UTF8 already.
                     $c2 = $i + 1 >= $max ? "\x00" : substr($text, $i + 1, 1);
                     $c3 = $i + 2 >= $max ? "\x00" : substr($text, $i + 2, 1);
                     $c4 = $i + 3 >= $max ? "\x00" : substr($text, $i + 3, 1);
->>>>>>> MOODLE_401_STABLE
                     if ($c1 >= "\xc0" & $c1 <= "\xdf") {
                         // Looks like 2 bytes UTF8.
                         if ($c2 >= "\x80" && $c2 <= "\xbf") {

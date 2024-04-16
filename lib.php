@@ -163,11 +163,7 @@ function sharedresource_supports_feature($feature = null, $getsupported = null) 
         $supports = array(
             'pro' => array(
                 'taxonomy' => array('accessctl', 'fineselect'),
-<<<<<<< HEAD
-                'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable'),
-=======
                 'entry' => array('extended', 'accessctl', 'remote', 'customicon', 'scorable', 'foreignurl'),
->>>>>>> MOODLE_401_STABLE
                 'emulate' => 'community',
                 'export/rss',
             ),

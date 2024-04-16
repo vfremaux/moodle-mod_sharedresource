@@ -26,14 +26,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/scorm/lib.php');
 
-<<<<<<< HEAD
-=======
 if (sharedresource_supports_feature('emulate/community') == 'pro') {
     require_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
     $promanager = \mod_sharedresource\pro_manager::instance();
 }
 
->>>>>>> MOODLE_401_STABLE
 global $shrwindowoptions; // Make sure we have the pesky global.
 
 $hasmetadata = false;
@@ -243,21 +240,10 @@ if ($ADMIN->fulltree) {
         }
     }
 
-<<<<<<< HEAD
-    if (sharedresource_supports_feature('emulate/community')) {
-        // This will accept any.
-        $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'sharedresource'), ''));
-
-        $key = 'mod_sharedresource/emulatecommunity';
-        $label = get_string('emulatecommunity', 'sharedresource');
-        $desc = get_string('emulatecommunity_desc', 'sharedresource');
-        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
-=======
     if (sharedresource_supports_feature('emulate/community') == 'pro') {
         include_once($CFG->dirroot.'/mod/sharedresource/pro/prolib.php');
         $promanager = mod_sharedresource\pro_manager::instance();
         $promanager->add_settings($ADMIN, $settings);
->>>>>>> MOODLE_401_STABLE
     } else {
         $label = get_string('plugindist', 'sharedresource');
         $desc = get_string('plugindist_desc', 'sharedresource');

@@ -117,11 +117,7 @@ class metadata_renderer extends \plugin_renderer_base {
     /**
      * Creates tabs.
      */
-<<<<<<< HEAD
-    public function tab($nodeid, $capability, &$template, $mode = 'read') {
-=======
     public function tab($i, $nodeid, $capability, &$template, $mode = 'read') {
->>>>>>> MOODLE_401_STABLE
 
         $namespace = get_config('sharedresource', 'schema');
         $mtdstandard = sharedresource_get_plugin($namespace);
@@ -160,11 +156,8 @@ class metadata_renderer extends \plugin_renderer_base {
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not appear anymore on the metadata notice.
      */
     public function part_view(&$parenttemplate, &$shrentry, $elementkey, $capability, $realoccur = 0) {
-<<<<<<< HEAD
-=======
         static $mtdstandard;
         global $CFG;
->>>>>>> MOODLE_401_STABLE
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
@@ -938,13 +931,8 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->hasaddbutton = false;
         if ($standardelm->islist) {
             // if ($standardelm->islist && (!defined('AJAX_SCRIPT') || !AJAX_SCRIPT)) {
-<<<<<<< HEAD
-            debug_trace($elminstance);
-            debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root);
-=======
             // debug_trace($elminstance, TRACE_DATA);
             // debug_trace("Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root, TRACE_DEBUG_FINE);
->>>>>>> MOODLE_401_STABLE
             $template->debugdata .= "Realoccur:{$realoccur};LastOccur:{$lastoccur};MaxOccur:".@$elminstance->maxoccur.";IsAjaxRoot:".@$parenttemplate->is_ajax_root;
 
             $printaddbutton = false;

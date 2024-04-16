@@ -169,33 +169,6 @@ if ($formdata = $mform->get_data()) {
         $formdata->sharedresourcefile = $sharedresourcefile;
     }
 
-<<<<<<< HEAD
-    // Check for hidden values.
-    if ($hidden = optional_param('sharedresource_hidden', '', PARAM_CLEANHTML)) {
-        $hidden = explode('|', $hidden);
-        foreach ($hidden as $field) {
-            $formdata->$field = sharedresource_clean_field($field);
-        }
-    }
-
-    // Process the form contents.
-    // Add form data to table object - skip the elements until we know what the identifier is.
-    foreach ($formdata as $key => $value) {
-        if (in_array($key, $shrcoreelements) && !empty($value)) {
-            if ($key == 'url') {
-                $shrentry->add_element($key, clean_param($value, PARAM_URL), $config->schema);
-            } else {
-                if (is_array($value)) {
-                    $shrentry->add_element($key, clean_param_array($value, PARAM_CLEANHTML), $config->schema);
-                } else {
-                    $shrentry->add_element($key, clean_param($value, PARAM_CLEANHTML), $config->schema);
-                }
-            }
-        }
-    }
-
-=======
->>>>>>> MOODLE_401_STABLE
     $shrentry->lang = $USER->lang;
 
     $fs = get_file_storage();
