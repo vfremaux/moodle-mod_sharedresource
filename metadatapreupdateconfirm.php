@@ -26,6 +26,10 @@
  * @package    mod_sharedresource
  * @category   mod
  */
+
+// Here we need load some classes before config and session is setup to help unserializing
+require_once(dirname(__FILE__).'/classes/__autoload.php');
+
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
@@ -35,14 +39,15 @@ require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 $config = get_config('sharedresource');
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
-
 // Receive params.
 
 $mode = required_param('mode', PARAM_ALPHA);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $cancel = optional_param('cancel', 0, PARAM_BOOL);
-$return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
+$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Return to course/view.php if false or library entry.
+// When returning to course, returns to course/view.php if false or mod/modname/view.php if true.
+// When returning to library, returns to 'browse' or 'explore'.
+$returnpage = optional_param('returnpage', 0, PARAM_TEXT);
 $section = optional_param('section', 0, PARAM_INT);
 $course = required_param('course', PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
@@ -50,9 +55,7 @@ $catpath = optional_param('catpath', '', PARAM_TEXT);
 $type = 'file';
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $course))) {
-    print_error('badcourseid', 'sharedresource');
-}
+$course = $DB->get_record('course', ['id' => $course], '*', MUST_EXIST);
 
 // Security.
 $systemcontext = context_system::instance();
@@ -62,10 +65,10 @@ if ($course->id > 1) {
     require_capability('moodle/course:manageactivities', $context);
 } else {
     require_login();
-    $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
+    $caps = ['repository/sharedresources:create', 'repository/sharedresources:manage'];
     if (!has_any_capability($caps, context_system::instance())) {
         if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-            print_error('noaccess');
+            throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
         }
     }
 }
@@ -76,15 +79,15 @@ if ($cancel) {
         unset($SESSION->sr_must_clone_to);
     }
 
-    if ($return != 'course') {
+    if ($fromlibrary) {
         // We are coming from the library. Go back to it.
         $params = [
             'course' => $course->id,
             'catid' => $catid,
             'catpath' => $catpath,
-            'return' => $return
+            'returnpage' => $returnpage
         ];
-        $fullurl = new moodle_url('/local/sharedresources/browse.php', $params);
+        $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
 
@@ -113,7 +116,8 @@ if ($confirm) {
                     'mode' => 'update',
                     'catid' => $catid,
                     'catpath' => $catpath,
-                    'return' => $return,
+                    'fromlibrary' => $fromlibrary,
+                    'returnpage' => $returnpage,
                     'entryid' => $oldshrentryid);
     $fullurl = new moodle_url('/mod/sharedresource/edit.php', $params);
     redirect($fullurl);

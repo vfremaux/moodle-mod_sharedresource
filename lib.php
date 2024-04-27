@@ -772,3 +772,13 @@ function sharedresource_dbcleaner_add_keys() {
 
     return $keys;
 }
+
+/**
+ * For viewing resources in iframe, we need do add a base tag to frametop frame links. 
+ */
+function sharedresource_before_standard_html_head() {
+    $isframetop = optional_param('frameset', '', PARAM_ALPHA);
+    if ($isframetop) {
+        return '<base target="_top" />';
+    }
+}

@@ -187,6 +187,7 @@ class entry {
         } else {
             $this->shrentryrec = new StdClass();
             $this->id = 0;
+            $this->identifier = '';
             $this->provider = 'local';
             $this->isvalid = 1;
             $this->displayed = 1;
@@ -195,7 +196,7 @@ class entry {
             $this->scorelike = 0;
         }
 
-        $this->metadataelements = array();
+        $this->metadataelements = [];
 
         if ($this->id) {
             $this->mtdstandard->setEntry($this->id); // Bind the metadata instance to us.
@@ -519,7 +520,7 @@ class entry {
         }
 
         if ($oldres = $DB->get_record('sharedresource_entry', ['identifier' => $this->identifier])) {
-            throw new moodle_exception("Shared resources cannot collide identifier on creation. The identifier exists. This case should not happen.");
+            throw new moodle_exception("Shared resources cannot collide identifier on creation. The identifier '{$this->identifier}' exists. This case should not happen.");
         } else {
             $this->id = $DB->insert_record('sharedresource_entry', $this->shrentryrec);
         }
@@ -530,7 +531,6 @@ class entry {
          */
         $fs = get_file_storage();
         if (!empty($file)) {
-
             $filerec = new StdClass();
             $systemcontext = \context_system::instance();
             $filerec->contextid = $systemcontext->id;

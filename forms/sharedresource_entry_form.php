@@ -35,7 +35,8 @@ class mod_sharedresource_entry_form extends moodleform {
 
         // Return to course/view.php if false or mod/modname/view.php if true.
         /*
-        $return        = optional_param('return', 0, PARAM_INT);
+        $return        = optional_param('return', 0, PARAM_BOOL);
+        $returnpage    = optional_param('returnpage', 0, PARAM_INT);
         $catid         = optional_param('catid', 0, PARAM_INT);
         $catpath       = optional_param('catpath', '', PARAM_TEXT);
         $type          = optional_param('type', '', PARAM_ALPHANUM);
