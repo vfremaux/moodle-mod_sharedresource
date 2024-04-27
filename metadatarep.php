@@ -26,6 +26,10 @@
  * @package    mod_sharedresource
  * @category   mod
  */
+
+// Here we need load some classes before config and session is setup to help unserializing
+require_once(dirname(__FILE__).'/classes/__autoload.php');
+
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
@@ -34,10 +38,9 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.
 
 $config = get_config('sharedresource');
 
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
-
 $mode = required_param('mode', PARAM_ALPHA);
-$return = required_param('return', PARAM_ALPHA); // Return to course, browse or explore
+$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Return to course or library
+$returnpage = required_param('returnpage', PARAM_TEXT); // Return to course or mod form, either browse or explore in library
 $section = optional_param('section', 0, PARAM_INT);
 $courseid = required_param('course', PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
@@ -54,7 +57,7 @@ $mtdstandard = sharedresource_get_plugin($config->schema);
 // Receive input from form.
 $metadataentries = data_submitted();
 if (property_exists($metadataentries, 'cancel')) {
-    $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $return);
+    $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $returnpage);
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);
 }
@@ -121,13 +124,17 @@ if ($result['error'] != array()) {
 
     $OUTPUT->render_from_template('mod_sharedresource/metadatacheckreport', $result['display']);
 
-    $params = array('course' => $course->id,
-                    'section' => $section,
-                    'add' => 'sharedresource',
-                    'return' => $return,
-                    'mode' => $mode,
-                    'context' => $sharingcontext);
-
+    $params = [
+        'course' => $course->id,
+        'section' => $section,
+        'add' => 'sharedresource',
+        'catid' => $catid,
+        'catpath' => $catpath,
+        'fromlibrary' => $fromlibrary,
+        'returnpage' => $returnpage,
+        'mode' => $mode,
+        'context' => $sharingcontext
+    ];
     $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
 
     echo '<center>';
@@ -152,7 +159,8 @@ if ($mode == 'add' && $shrentry->exists()) {
                'add' => 1,
                'catid' => $catid,
                'catpath' => $catpath,
-               'return' => $return,
+               'returnpage' => $returnpage,
+               'fromlibrary' => $fromlibrary,
                'section' => $section,
                'context' => $sharingcontext];
     $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
@@ -165,9 +173,9 @@ if ($mode == 'add' && $shrentry->exists()) {
         print_error('failadd', 'sharedresource');
     }
     // If everything was saved correctly, go back to the search page or to the library.
-    if ($return != 'course') {
+    if ($fromlibrary) {
         // We are coming from the library. Go back to it using index.php router.
-        $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'return' => $return];
+        $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'returnpage' => $returnpage];
         $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
@@ -177,7 +185,7 @@ if ($mode == 'add' && $shrentry->exists()) {
             'section' => $section,
             'type' => $type,
             'add' => 'sharedresource',
-            'return' => $return,
+            'return' => $returnpage,
             'entryid' => $shrentry->id];
         $fullurl = new moodle_url('/course/modedit.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
@@ -192,7 +200,7 @@ if ($mode == 'add' && $shrentry->exists()) {
     }
 
     // We are coming necessarily from the library. Go back to it using index.php router.
-    $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'return' => $return];
+    $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'returnpage' => $returnpage];
     $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
 
     redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);

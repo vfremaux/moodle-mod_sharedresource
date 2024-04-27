@@ -25,13 +25,17 @@
 // metadata form
 // -----------------------------------------------------------
 
+// Here we need load some classes before config and session is setup to help unserializing
+require_once(dirname(dirname(__FILE__)).'/classes/__autoload.php');
+
 require('../../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
-$return        = optional_param('return', '', PARAM_TEXT); // Return to course/view.php if false or mod/modname/view.php if true.
+$returnpage    = optional_param('returnpage', '', PARAM_TEXT); // Return to course/view.php if false or mod/modname/view.php if true.
+$fromlibrary   = optional_param('fromlibrary', '', PARAM_BOOL); // Return to course/view.php or to library
 $section       = optional_param('section', 0, PARAM_INT);
 $mode          = required_param('mode', PARAM_ALPHA);
 $type          = required_param('type', PARAM_ALPHA);
@@ -80,13 +84,16 @@ $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'))
 $PAGE->requires->js_call_amd('mod_sharedresource/metadata', 'init', array($config->schema));
 $PAGE->requires->js_call_amd('mod_sharedresource/metadataedit', 'init', array($config->schema));
 
-$params = ['return' => $return,
-                'section' => $section,
-                'mode' => $mode,
-                'catid' => $catid,
-                'catpath' => $catpath,
-                'course' => $courseid,
-                'context' => $sharingcontext];
+$params = [
+    'returnpage' => $returnpage,
+    'fromlibrary' => $fromlibrary,
+    'section' => $section,
+    'mode' => $mode,
+    'catid' => $catid,
+    'catpath' => $catpath,
+    'course' => $courseid,
+    'context' => $sharingcontext
+];
 $url = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
 $PAGE->set_url($url);
 

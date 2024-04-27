@@ -34,14 +34,14 @@ $cmid = 0;
 $systemcontext = context_system::instance();
 $strtitle = get_string('sharedresourcedetails', 'sharedresource');
 
-$url = new moodle_url('/mod/sharedresource/view.php', array('id' => $id, 'identifier' => $identifier));
+$url = new moodle_url('/mod/sharedresource/view.php', ['id' => $id, 'identifier' => $identifier]);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 
 // echo $OUTPUT->header(); // will be done by sharedresource::display();
 
 if ($identifier) {
-    $resource = $DB->get_record('sharedresource_entry', ['identifier' => $identifier]);
+    $resource = $DB->get_record('sharedresource_entry', ['identifier' => $identifier], '*', MUST_EXIST);
 
     $resourceentry = new \mod_sharedresource\entry($resource);
 
@@ -53,14 +53,10 @@ if ($identifier) {
         }
     }
 
-    if (!$resource) {
-        sharedresource_not_found(SITEID, 'Code 00');
-    }
-
-    $params = array('contenthash' => $resource->identifier,
+    $params = ['contenthash' => $resource->identifier,
                     'component' => 'mod_sharedresource',
                     'filearea' => 'sharedresource',
-                    'itemid' => $resource->id);
+                    'itemid' => $resource->id];
     if ($resource->file != '' && !$file = $DB->get_record('files', $params)) {
         sharedresource_not_found($cm->course, 'code 00-04');
     }
@@ -74,11 +70,11 @@ if ($identifier) {
             sharedresource_not_found(SITEID, 'Code 01');
         }
 
-        if (!$sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
+        if (!$sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance])) {
             sharedresource_not_found($cm->course, 'Code 02');
         }
 
-        if (!$resource = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
+        if (!$resource = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier])) {
             sharedresource_not_found($cm->course, 'Code 03');
         }
 
@@ -93,14 +89,13 @@ if ($identifier) {
         sharedresource_not_found(SITEID, 'code 05');
     }
 
-    $course = $DB->get_record('course', array('id' => $cm->course], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
     $coursecontext = context_course::instance($course->id);
     $PAGE->set_context($coursecontext);
     $PAGE->set_title($strtitle);
     $PAGE->set_pagelayout('standard');
     $PAGE->set_heading($SITE->fullname);
-    $PAGE->navbar->add($strtitle, 'view.php', 'misc');
     $PAGE->set_cacheable(false);
 
     require_course_login($course, true, $cm);

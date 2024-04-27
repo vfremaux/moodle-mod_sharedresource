@@ -131,45 +131,49 @@ class base {
     }
 
     /**
-     * form post process for preparing layout parameters properly
+     * form post process for preparing layout parameters properly for recording in database.
      */
     public function _postprocess() {
         global $shrwindowoptions;
 
-        $resource = $this->sharedresource;
+        $shr = $this->sharedresource;
 
-        if (!empty($resource->forcedownload)) {
-            $resource->popup = '';
-            $resource->options = 'forcedownload';
-        } else if (@$resource->windowpopup) {
+        if (!empty($shr->forcedownload)) {
+            $shr->popup = '';
+            $shr->options = 'forcedownload';
+        } else if (!empty($shr->windowpopup)) {
             $optionlist = array();
             foreach ($shrwindowoptions as $option) {
-                $optionlist[] = $option."=".$resource->$option;
-                unset($resource->$option);
+                if (isset($shr->$option)) {
+                    $optionlist[] = $option."=".$shr->$option;
+                    unset($shr->$option);
+                }
             }
-            $resource->popup = implode(',', $optionlist);
-            unset($resource->windowpopup);
-            $resource->options = '';
+            $shr->popup = implode(',', $optionlist);
+            unset($shr->windowpopup);
+            $shr->options = '';
         } else {
-            if (empty($resource->framepage)) {
-                $resource->options = '';
+            // We don't want to force download, but no popup, so do the best...
+            if (empty($shr->framepage)) {
+                $shr->options = '';
             } else {
-                $resource->options = 'frame';
+                $shr->options = 'frame';
             }
-            unset($resource->framepage);
-            $resource->popup = '';
+            unset($shr->framepage);
+            $shr->popup = '';
         }
-        $optionlist = array();
+
+        $optionlist = [];
         for ($i = 0; $i < $this->maxparameters; $i++) {
             $parametername = "parameter$i";
             $parsename = "parse$i";
-            if (!empty($resource->$parsename) and $resource->$parametername != "-") {
-                $optionlist[] = $resource->$parametername."=".$resource->$parsename;
+            if (!empty($shr->$parsename) and $shr->$parametername != "-") {
+                $optionlist[] = $shr->$parametername."=".$shr->$parsename;
             }
-            unset($resource->$parsename);
-            unset($resource->$parametername);
+            unset($shr->$parsename);
+            unset($shr->$parametername);
         }
-        $resource->alltext = implode(',', $optionlist);
+        $shr->alltext = implode(',', $optionlist);
     }
 
     // Magic setter.
@@ -201,16 +205,16 @@ class base {
         // Set up some shorthand variables.
         $cm = $this->cm;
         $course = $DB->get_record('course', array('id' => $this->sharedresource->course));
-        $resource = $this->sharedresource;
-        $sharedresourceentry = $this->sharedresourceentry;
-
-        $DB->set_field('sharedresource_entry', 'scoreview', $sharedresourceentry->scoreview + 1, array('id' => $sharedresourceentry->id));
+        $resource = $this->sharedresource; // The resource (coursemodule) instance in course
+        $sharedresourceentry = $this->sharedresourceentry; // The original shrentry object.
 
         // If we dont get the resource then fail.
         if (!$this->sharedresourceentry) {
             sharedresource_not_found($course->id);
         }
         $resource->reference = (!empty($sharedresourceentry->file)) ? $sharedresourceentry->file : $sharedresourceentry->url;
+
+        $DB->set_field('sharedresource_entry', 'scoreview', $sharedresourceentry->scoreview + 1, array('id' => $sharedresourceentry->id));
 
         if (isset($resource->name)) {
             $resource->title = $resource->name;
@@ -285,9 +289,7 @@ class base {
         }
 
         // Set up some variables.
-        $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
         if (sharedresource_is_url($sharedresourceentry->url) && empty($sharedresourceentry->file)) {
-
             // Shared resource is a pure URL.
             $fullurl = $sharedresourceentry->url;
             if (!empty($querystring)) {
@@ -300,10 +302,9 @@ class base {
             }
 
             if ($fullurl == $FULLME) {
-                print_error(get_string('sharedresourcelooperror', 'sharedresource'));
+                throw new moodle_exception(get_string('sharedresourcelooperror', 'sharedresource'));
             }
         } else {
-
             // Normal uploaded file.
             $forcedownloadsep = '?';
             if (isset($resource->options) && $resource->options == 'forcedownload') {
@@ -312,16 +313,24 @@ class base {
             $fullurl = sharedresource_get_file_url($this, $sharedresourceentry, $querys);
         }
 
+        $inpopup = optional_param('inpopup', 0, PARAM_BOOL); // inpopup tells we are the popup.
+
+        /*
+        echo "Inpopup : $inpopup ";
+        echo "Mustbeinpopup : {$resource->popup} ";
+        echo "Full url : $fullurl";
+        die;
+        */
+
         // Check whether this is supposed to be a popup, but was called directly.
-        if (isset($resource->popup) && $resource->popup && !$inpopup) {
+        if (!empty($resource->popup) && !$inpopup) {
             // Make a page and a pop-up window.
             $coursecontext = \context_course::instance($course->id);
             $url = new moodle_url('/mod/sharedresource/view.php');
             $PAGE->set_url($url);
-            $PAGE->set_pagelayout('popup');
+            $PAGE->set_pagelayout('incourse');
             $PAGE->set_title($pagetitle);
             $PAGE->set_heading($SITE->fullname);
-            $PAGE->navbar->add($course->fullname, 'view.php', 'misc');
 
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
@@ -343,8 +352,12 @@ class base {
             $template->popupoptions = $resource->popup;
 
             $template->title = format_string($resource->title, true);
-            $template->strpopupresource = get_string('popupresource', 'resource', $template->linkurl);
-            $template->strpopupresourcelink = get_string('popupresourcelink', 'resource', $template->linkurl);
+            if ($embedded) {
+                $template->strpopupresource = get_string('popupresource', 'sharedresource', $template->linkurl->out());
+                $template->strpopupresourcelink = get_string('popupresourcelink', 'sharedresource', $template->linkurl->out());
+            } else {
+                $template->strpopupresource = get_string('directaccess', 'sharedresource', $template->linkurl->out());
+            }
 
             echo $OUTPUT->render_from_template('mod_sharedresource/directpopup', $template);
 
@@ -353,13 +366,17 @@ class base {
         }
 
         // Now check whether we need to display a frameset.
+        // Are we the content frame ?
         $frameset = optional_param('frameset', '', PARAM_ALPHA);
+
         if (empty($frameset) &&
                 !$embedded &&
                         !$inpopup &&
                                 (isset($resource->options) &&
                                         $resource->options == "frame") &&
                                                 empty($USER->screenreader)) {
+
+            // No, then build the frameset.
             @header('Content-Type: text/html; charset=utf-8');
             echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n";
             echo '<html dir="ltr">'."\n";
@@ -375,19 +392,14 @@ class base {
             exit;
         }
 
-        // If we are in a frameset, just print the top of it
+        // Yes, we are parts of a frameset, just print the top of it
         if (!empty( $frameset ) and ($frameset == 'top') ) {
-            $navigation = build_navigation($this->navlinks, $cm);
             $PAGE->set_pagelayout('frametop');
-            $PAGE->set_context($system_context);
             $PAGE->set_title($pagetitle);
             $PAGE->set_heading($SITE->fullname);
             /* SCANMSG: may be additional work required for $navigation variable */
-            $PAGE->navbar->add($strtitle, 'view.php', 'misc');
             $PAGE->set_focuscontrol('');
             $PAGE->set_cacheable(false);
-            $PAGE->set_button(update_module_button($cm->id, $course->id, $this->strresource));
-            $PAGE->set_headingmenu(navmenu($course, $cm, 'parent'));
             $url = new moodle_url('/mod/sharedresource/view.php');
             $PAGE->set_url($url);
 
@@ -401,13 +413,17 @@ class base {
             exit;
         }
 
-        // Display the actual resource.
+        // Display the actual resource, in a frame or a popup.
         if ($embedded) {
             // Display resource embedded in page.
             $strdirectlink = get_string('directlink', 'sharedresource');
             $coursecontext = context_course::instance($course->id);
 
-            if ($inpopup) {
+            echo "Display resource $fullurl";
+            echo "Inpopup: $inpopup";
+            die;
+
+            if (!$inpopup) {
                 $PAGE->set_pagelayout('embedded');
             } else {
                 $PAGE->set_pagelayout('popup');
@@ -598,7 +614,7 @@ class base {
                 print_spacer(20, 20);
             }
         } else {
-            // Display the resource on it's own.
+            // Display the resource on it's own, f.e. in the popup.
             redirect($fullurl);
         }
     }

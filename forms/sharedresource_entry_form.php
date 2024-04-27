@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 class mod_sharedresource_entry_form extends moodleform {
 
     public function definition() {
-        global $CFG;
+        global $CFG, $OUTPUT;
 
         $config = get_config('sharedresource');
 
@@ -35,7 +35,8 @@ class mod_sharedresource_entry_form extends moodleform {
 
         // Return to course/view.php if false or mod/modname/view.php if true.
         /*
-        $return        = optional_param('return', 0, PARAM_INT);
+        $return        = optional_param('return', 0, PARAM_BOOL);
+        $returnpage    = optional_param('returnpage', 0, PARAM_INT);
         $catid         = optional_param('catid', 0, PARAM_INT);
         $catpath       = optional_param('catpath', '', PARAM_TEXT);
         $type          = optional_param('type', '', PARAM_ALPHANUM);
@@ -93,12 +94,23 @@ class mod_sharedresource_entry_form extends moodleform {
 
         // Url or file.
         // On update as soon as a sharedresource exists, you cannot mutate the resource type betwwen file and url.
+        // Additionaly if the edited entry has a next version, it cannot be mutated any more, while metadata
+        // still can be adjusted.
         if ($this->_customdata['mode'] == 'update') {
-            if ($this->_customdata['entry']->type == 'url') {
-                $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
+
+            if ($this->_customdata['entry']->has_next()) {
+                if ($this->_customdata['entry']->type == 'url') {
+                    $mform->addElement('static', 'url_frozen', '', $OUTPUT->notification(get_string('frozenurl', 'sharedresource')));
+                } else {
+                    $mform->addElement('static', 'file_frozen', '', $OUTPUT->notification(get_string('frozenfile', 'sharedresource')));
+                }
             } else {
-                $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
-                $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
+                if ($this->_customdata['entry']->type == 'url') {
+                    $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
+                } else {
+                    $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
+                    $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
+                }
             }
         } else {
             // Add.
