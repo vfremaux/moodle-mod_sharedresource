@@ -74,7 +74,7 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
     foreach ($metadataentries as $htmlkey => $value) {
 
         // Discard any non-metadata entry.
-        if (in_array($htmlkey, array('mode', 'add', 'update', 'catid', 'catpath', 'course', 'section', 'return', 'context', 'go-btn'))) {
+        if (in_array($htmlkey, array('mode', 'fromlibrary', 'catid', 'catpath', 'course', 'section', 'returnpage', 'context', 'go-btn'))) {
             continue;
         }
 

@@ -503,7 +503,8 @@ class metadata_renderer extends \plugin_renderer_base {
         $mtdstandard = sharedresource_get_plugin($namespace);
 
         // Get context params in.
-        $return = optional_param('return', 0, PARAM_INT); // Return to course/view.php if false or mod/modname/view.php if true.
+        $fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Return to course or library.
+        $returnpage = optional_param('returnpage', 0, PARAM_TEXT); // Return to course/view.php if false or mod/modname/view.php if course, 'browse' or 'explore' if library.
         $section = optional_param('section', 0, PARAM_INT);
         $catid = optional_param('catid', 0, PARAM_INT);
         $catpath = optional_param('catpath', '', PARAM_TEXT);
@@ -523,7 +524,8 @@ class metadata_renderer extends \plugin_renderer_base {
         $template->course = $courseid;
         $template->section = $section;
         $template->sharingcontext = $sharingcontext;
-        $template->return = $return;
+        $template->returnpage = $returnpage;
+        $template->fromlibrary = $fromlibrary;
         $template->nodestr = get_string('node', 'sharedresource');
         $template->completeformstr = get_string('completeform', 'sharedresource');
 

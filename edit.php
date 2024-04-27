@@ -45,11 +45,11 @@ $ignorelist = array(
     'mform_showadvanced_last',
     /* 'pagestep', */
     'MAX_FILE_SIZE',
-    'add',
-    'update',
     'return',
     'type',
     'section',
+    'fromlibrary',
+    'returnpage',
     'mode',
     'course',
     'submitbutton'
@@ -59,15 +59,16 @@ $ignorelist = array_merge($ignorelist, $mtdstandard->sharedresource_get_ignored(
 
 // Get params.
 
-$return = optional_param('return', '', PARAM_ALPHA); // Tells if we return to course or to library
-$type = optional_param('type', '', PARAM_ALPHANUM); // Feeds back the resource type
+$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Tells if we return to course (0) or to library (1)
+$returnpage = optional_param('returnpage', 0, PARAM_TEXT); // Tells where to go when return.
 $section = optional_param('section', 0, PARAM_INT); // Memorise the return course section in case we return to course in workflow
-$mode = required_param('mode', PARAM_ALPHA); // Add or update workflow.
 $entryid = optional_param('entryid', 0, PARAM_INT); // When updating, or on late workflow steps.
 $catid = optional_param('catid', 0, PARAM_INT); // Memorise the library catid, when coming from library
 $catpath = optional_param('catpath', '', PARAM_TEXT); // Memorise the full catpath when coming from library (helper)
 $courseid = required_param('course', PARAM_INT); // The origin course, or course in context of use by the library.
 $sharingcontext = optional_param('context', SITEID, PARAM_INT); // Memorize the sharing context in workflow.
+$type = optional_param('type', '', PARAM_ALPHANUM); // Feeds back the resource type
+$mode = required_param('mode', PARAM_ALPHA); // Add or update workflow.
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
@@ -75,12 +76,17 @@ $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $pagecontext = sharedresource_check_access($course);
 
 // Compute returnurl.
-if ($return == 'course') {
+if (!$fromlibrary) {
     // Origin action was adding a sharedresource instance in course.
     $returnurl = new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section));
 } else {
     // Origin is the shared resource library, in a site or course context. Preserve it.
-    $params = ['course' => $course->id, 'section' => $section, 'return' => $return, 'catid' => $catid, 'catpath' => $catpath];
+    $params = ['course' => $course->id,
+               'section' => $section,
+               'fromlibrary' => $fromlibrary,
+               'returnpage' => $returnpage,
+               'catid' => $catid,
+               'catpath' => $catpath];
     $returnurl = new moodle_url('/local/sharedresources/index.php', $params);
 }
 
@@ -96,7 +102,8 @@ $params = ['mode' => $mode,
            'section' => $section,
            'catid' => $catid,
            'catpath' => $catpath,
-           'return' => $return,
+           'returnpage' => $returnpage,
+           'fromlibrary' => $fromlibrary,
            'sharingcontext' => $sharingcontext
 ];
 $url = new moodle_url('/mod/sharedresource/edit.php', $params);
@@ -145,7 +152,7 @@ if ($mode == 'update') {
 } else {
     $mode = 'add';
     $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
-    $shrentry = new $entryclass(null, null);
+    $shrentry = new $entryclass(null);
 }
 
 $mform = false;
@@ -158,8 +165,9 @@ if ($mform->is_cancelled()) {
 }
 
 // Is this a successful POST ?
+$formdata = $mform->get_data();
 
-if ($formdata = $mform->get_data()) {
+if ($formdata) {
 
     // Fake feed formdata with directly query params when call for addition comes from other sources.
     if (empty($formdata)) {
@@ -183,28 +191,32 @@ if ($formdata = $mform->get_data()) {
         $shrentry->type = 'file';
         $hasentry = false;
 
+        $filepickeritemid = $formdata->sharedresourcefile;
+        $context = context_user::instance($USER->id);
+        $file = null;
+        if ($draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $filepickeritemid, 'id DESC', false)) {
+            if (!empty($draftfiles)) {
+                $file = reset($draftfiles);
+            }
+        }
+
         // Is this a local resource or a remote one?
-        if (empty($formdata->sharedresourcefile) && !empty($formdata->url)) {
+        if (is_null($file) && !empty($formdata->url)) {
             $shrentry->url = $formdata->url;
             $shrentry->file = '';
             $shrentry->type = 'url';
             $shrentry->identifier = sha1($shrentry->url);
             $shrentry->mimetype = mimeinfo('type', $shrentry->url);
             $hasentry = true;
-        } else if (!empty($formdata->sharedresourcefile)) {
+        } else if (!empty($file)) {
             // If resource is a real file we necessarily have one in the user's filepicker temp file area.
-            $filepickeritemid = $formdata->sharedresourcefile;
-            $context = context_user::instance($USER->id);
-            if ($draftfiles = $fs->get_area_files($context->id, 'user', 'draft', $filepickeritemid, 'id DESC', false)) {
-                $file = reset($draftfiles);
-
-                $shrentry->identifier = $file->get_contenthash();
-                $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
-                $shrentry->url = '';
-                $hasentry = true;
-            }
+            $shrentry->identifier = $file->get_contenthash();
+            $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
+            $shrentry->url = '';
+            $hasentry = true;
         } else {
-            throw new moodle_exception("Should not happen. Reinforce form control if necessary.");
+            // Nothing submitted.
+            // throw new moodle_exception("Should not happen. Reinforce form control if necessary.");
         }
     } else if ($mode == 'update') {
 
@@ -251,7 +263,8 @@ if ($formdata = $mform->get_data()) {
     } else {
         // Last edition step with metadata received.
         $params = ['course' => $course->id,
-                   'return' => $return,
+                   'fromlibrary' => $fromlibrary,
+                   'returnpage' => $returnpage,
                    'section' => $section,
                    'context' => $sharingcontext,
                    'catid' => $catid,
@@ -284,6 +297,9 @@ if ($formdata = $mform->get_data()) {
             unset($formdata->thumbnailgroup);
         }
 
+        $shrentry->title = $formdata->title;
+        $shrentry->description = $formdata->description;
+
         // Update in session till last save stage.
         $srentry = serialize($shrentry);
         $SESSION->sr_entry = $srentry;
@@ -293,8 +309,8 @@ if ($formdata = $mform->get_data()) {
         $params = ['course' => $course->id,
                    'section' => $section,
                    'type' => $type,
-                   'add' => 'sharedresource',
-                   'return' => $return,
+                   'fromlibrary' => $fromlibrary,
+                   'returnpage' => $returnpage,
                    'mode' => $mode,
                    'context' => $sharingcontext,
                    'catid' => $catid,

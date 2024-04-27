@@ -99,7 +99,7 @@ if ($ADMIN->fulltree) {
     $key = 'sharedresource/framesize';
     $label = get_string('configframesize', 'sharedresource');
     $desc = get_string('configframesize_desc', 'sharedresource');
-    $settings->add(new admin_setting_configtext($key, $label, $desc, 130, PARAM_INT));
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 230, PARAM_INT));
 
     $woptions = array('' => get_string('newwindow', 'sharedresource'),
                       'checked' => get_string('pagewindow', 'sharedresource'));
