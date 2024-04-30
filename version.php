@@ -31,7 +31,7 @@ $plugin->requires  = 2022112801;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '4.1.0 (Build 2021102103)';
-$plugin->dependencies = array('local_sharedresources' => 201801180);
+$plugin->dependencies = ['local_sharedresources' => 201801180];
 $plugin->supported = [401, 402];
 
 // Non Moodle attributes.

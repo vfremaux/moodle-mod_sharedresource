@@ -346,7 +346,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                 $params[] = $mtdelement->id.':%';
             }
 
-        } else if ($mtdelement->type == 'freetext' || $mtdelement->type == 'text') {
+        } else if (($mtdelement->widget == 'freetext') || ($mtdelement->widget == 'text')) {
 
             $textoption = substr($using, 0, strpos($using, ':'));
             $using = substr($using, strpos($using, ':') + 1);
@@ -440,7 +440,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
                 }
                 $listsearch = implode(' OR ', $listsearchoptions);
                 $clause = " ( $listsearch ) AND element LIKE ? ";
-                $params[] = '{$mtdelement->id}:%';
+                $params[] = "{$mtdelement->id}:%";
             } else {
                 $clause = '';
             }
