@@ -910,7 +910,7 @@ class plugin_anfa extends plugin_base {
                 'author_write'  => 0,
                 'author_read'  => 0,
             ],
-            'widget' => 'duration',
+            'widget' => 'select',
         ],
         '5_10' => [
             'name' => 'Objectifs pédagogiques',
