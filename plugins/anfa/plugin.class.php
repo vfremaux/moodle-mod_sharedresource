@@ -575,6 +575,29 @@ class plugin_anfa extends plugin_base {
         '4_3' => [
             'name' => 'Location',
             'source' => 'lom',
+            'type' => 'select',
+            'values' = ['ecosystemerechercharge',
+                'systemessoussystemes',
+                'electriciteelectronique',
+                'habilitations',
+                'diagnostic',
+                'parametragelogiciel',
+                'chainedetraction',
+                'entretiencourant'],
+            'checked' => [
+                'system_write'  => 1,
+                'system_read'  => 1,
+                'indexer_write' => 1,
+                'indexer_read' => 1,
+                'author_write'  => 0,
+                'author_read'  => 0,
+            ],
+            'widget' => 'select',
+        ],
+        /*
+        '4_3' => [
+            'name' => 'Location',
+            'source' => 'lom',
             'type' => 'codetext',
             'checked' => [
                 'system_write'  => 1,
@@ -586,7 +609,6 @@ class plugin_anfa extends plugin_base {
             ],
             'widget' => 'freetext',
         ],
-        /*
         '4_4' => [
             'name' => 'Requirement',
             'source' => 'lom',
@@ -910,7 +932,7 @@ class plugin_anfa extends plugin_base {
                 'author_write'  => 0,
                 'author_read'  => 0,
             ],
-            'widget' => 'duration',
+            'widget' => 'select',
         ],
         '5_10' => [
             'name' => 'Objectifs pédagogiques',

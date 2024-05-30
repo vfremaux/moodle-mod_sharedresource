@@ -26,7 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 // This is used for a build_vcard utility function.
-require_once($CFG->dirroot.'/local/sharedresources/classes/file_importer_base.php');
+if (sharedresource_supports_feature() === 'pro') {
+    require_once($CFG->dirroot.'/local/sharedresources/pro/classes/file_importer_base.php');
+}
 
 // MODRESOURCETYPE addesses LOM 5_2 node (Learning Resource Type).
 global $MODRESOURCETYPES;
@@ -317,10 +319,12 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
         $i = 0;
         foreach ($editingteachers as $et) {
 
-            $vcard = file_importer_base::build_vcard($et);
+            if (sharedresource_supports_feature() === 'pro') {
+                $vcard = file_importer_base::build_vcard($et);
+                sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $config->schema);
+            }
 
             sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $config->schema);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_2:0_{$i}_0", $vcard, $config->schema);
             sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $config->schema);
         }
     }

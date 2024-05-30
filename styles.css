@@ -474,10 +474,13 @@ a.sharedresource-actionlink {
     padding: 10px;
 }
 
+/*
+// Remove this for boost standard link styles.
 #page-mod-sharedresource-metadatanotice .nav-link,
 #page-mod-sharedresource-metadatanotice .nav-link a {
     color: #ffffff;
 }
+*/
 
 /* fixes search block width */
 @media screen and (min-width: 1200px) {

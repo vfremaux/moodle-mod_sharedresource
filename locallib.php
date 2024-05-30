@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 /**
  * loads the usable version of plugins local strings
