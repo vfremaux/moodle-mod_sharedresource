@@ -268,3 +268,13 @@ $string['unejournee'] = 'Une journée';
 $string['anglais'] = 'Anglais';
 $string['francais'] = 'Français';
 $string['autre'] = 'Autre';
+
+// Location
+$string['ecosystemerechercharge'] = 'Connaissance de l’écosystème de recharge';
+$string['systemessoussystemes'] = 'Connaissance des systèmes et sous-systèmes';
+$string['electriciteelectronique'] = 'Connaissances transversales minimales en électricité et électronique';
+$string['habilitations'] = 'Habilitations obligatoires';
+$string['diagnostic'] = 'Le diagnostic';
+$string['parametragelogiciel'] = 'Paramétrage des logiciels suite à une intervention';
+$string['chainedetraction'] = 'Démontage et remplacement des organes composant la chaine de traction';
+$string['entretiencourant'] = 'Les opérations d’entretien courant';
