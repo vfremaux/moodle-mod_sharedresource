@@ -576,7 +576,7 @@ class plugin_anfa extends plugin_base {
             'name' => 'Location',
             'source' => 'lom',
             'type' => 'select',
-            'values' = ['ecosystemerechercharge',
+            'values' => ['ecosystemerechercharge',
                 'systemessoussystemes',
                 'electriciteelectronique',
                 'habilitations',

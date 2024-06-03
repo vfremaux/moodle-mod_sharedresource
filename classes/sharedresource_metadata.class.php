@@ -579,8 +579,9 @@ class metadata {
      * @param int $level
      */
     public function get_siblings($level = 0) {
-        global $DB;
+        global $DB, $CFG;
 
+        $debug = optional_param('debug', false, PARAM_BOOL);
         $namespace = get_config('sharedresource', 'schema');
         $siblings = array();
 
@@ -593,6 +594,11 @@ class metadata {
                     debug_trace("My parent for ".$this->element.' at '.$this->level);
                     debug_trace($parentnode);
                     debug_trace("Getting parent other childs than me My node index ".$this->get_node_index());
+                }
+                if ($debug && $CFG->debug >= DEBUG_NORMAL) {
+                    echo("My parent for ".$this->element.' at '.$this->level."<br/>");
+                    echo('<pre>'.print_r($parentnode, true).'</pre>');
+                    echo("Getting parent other childs than me My node index ".$this->get_node_index()."<br/>");
                 }
                 $siblings = $parentnode->get_childs($this->get_node_index());
             }

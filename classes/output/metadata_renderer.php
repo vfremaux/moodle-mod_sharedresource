@@ -212,10 +212,9 @@ class metadata_renderer extends \plugin_renderer_base {
         // May be null on some standards. (DC)
         $taxumarray = $mtdstandard->getTaxumpath();
 
-        // print_object($standardelm);
-
         if (optional_param('debug', false, PARAM_BOOL) && ($CFG->debug >= DEBUG_NORMAL)) {
             echo "NodeID : $nodeid <br/>";
+            echo "NodeInstance : $elementkey <br/>";
             echo "elementName : {$standardelm->name} <br/>";
             echo "elementValue : {$elminstance->get_value()} <br/>";
             echo "elementType : {$standardelm->type} <br/>";
@@ -227,6 +226,14 @@ class metadata_renderer extends \plugin_renderer_base {
 
         $template->keyid = $elementkey;
         $listresult = array();
+
+        // We check if there is metadata saved for this field.
+        $sourcekey = array();
+        $sourcekey['pos'] = $taxumarray['source'];
+        $sourcekey['occ'] = metadata_get_node_occurence($elminstance->get_instance_id(), $sourcekey['pos']);
+        $sourceelementkey = $sourcekey['pos'].':'.$sourcekey['occ'];
+        $sourceelm = metadata::instance($shrentry->id, $sourceelementkey, $namespace);
+
         if ($standardelm->type == 'category') {
 
             if (!empty($taxumarray) && $nodeid == $taxumarray['main']) {
@@ -238,12 +245,6 @@ class metadata_renderer extends \plugin_renderer_base {
 
                 $template->isscalar = true;
 
-                // We check if there is metadata saved for this field.
-                $sourcekey = array();
-                $sourcekey['pos'] = $taxumarray['source'];
-                $sourcekey['occ'] = metadata_get_node_occurence($elminstance->get_instance_id(), $sourcekey['pos']);
-                $sourceelementkey = $sourcekey['pos'].':'.$sourcekey['occ'];
-                $sourceelm = metadata::instance($shrentry->id, $sourceelementkey, $namespace);
                 $sourceid = $sourceelm->get_value();
 
                 if ($sourceid) {
@@ -266,7 +267,7 @@ class metadata_renderer extends \plugin_renderer_base {
                     }
                 }
             } else {
-                // We are in a category.
+                // We are in a true category (not a classification).
                 $template->iscontainer = true;
 
                 $template->hascontent = false;
@@ -282,23 +283,34 @@ class metadata_renderer extends \plugin_renderer_base {
                 if (!empty($standardelmchilds)) {
                     $template->hascontent = true;
                 }
+
+                // Start recursing in our subelements to render our content.
                 $nbrchilds = count($standardelmchilds);
                 $parenttemplate->childs[] = $template;
                 foreach ($standardelmchilds as $childnodeid => $islist) {
-                    $childkey = metadata::to_instance($childnodeid);
+                    // echo "Realizing child element given by : $childnodeid ";
+                    $childkey = metadata::to_instance($childnodeid, $sourceelm->get_instance_id());
                     $this->part_view($template, $shrentry, $childkey, $capability, 0);
                     $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
                 }
 
-                $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
-                if (!empty($siblings)) {
-                    // All siblings will have a numoccur > 0.
-                    foreach ($siblings as $sib) {
-                        $this->part_view($parenttemplate, $shrentry, $sib->get_element_key(), $capability, 0);
+                // If we are the first category sibling of this element, then fetch the next category siblings to render.
+                // $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
+                if ($numoccur == 0 && $standardelm->islist) {
+                    $siblings = $elminstance->get_siblings(0);
+                    // echo "Siblings for {$standardelm->name}:$elementkey :";
+                    // print_object($siblings);
+                    if (!empty($siblings)) {
+                        // All siblings will have a numoccur > 0.
+                        foreach ($siblings as $sib) {
+                            $this->part_view($parenttemplate, $shrentry, $sib->get_element_key(), $capability, 0);
+                        }
                     }
                 }
             }
         } else {
+            // We are a terminal element.
+
             if (!empty($taxumarray) && $nodeid == $taxumarray['source']) {
                 // Special case : we are the source in a taxonomy. We must get the souce name indirectly.
                 // Mtdvalue contains the sharedresource_classif id. We want the name.
@@ -309,13 +321,15 @@ class metadata_renderer extends \plugin_renderer_base {
                 }
             }
 
-            if ($elminstance->get_instance_index() == 0 && $standardelm->islist) {
+            if ($numoccur == 0 && $standardelm->islist) {
                 /*
                  * If we are first element of a list of scalar values, aggregate all values of siblings in a textual
                  * list. We replace the scalar value by an array. Each type will know what to do with this array and
                  * the way to display this value set.
                  */
-                $siblings = $elminstance->get_siblings($nodeid, $capability, 'read', true);
+                $siblings = $elminstance->get_siblings(0);
+                // echo "List Siblings for {$standardelm->name}:$elementkey :";
+                // print_object($siblings);
                 if (!empty($siblings)) {
                     $values = [$elminstance->get_value()];
                     // All siblings will have a numoccur > 0.
