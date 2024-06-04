@@ -29,6 +29,8 @@ use \moodle_url;
 use \html_writer;
 use \mod_sharedresource\metadata;
 use \mod_sharedresource\entry;
+use Exception;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -352,6 +354,9 @@ class metadata_renderer extends \plugin_renderer_base {
             }
             $template->hascontent = true;
 
+            if (optional_param('debug', false, PARAM_BOOL) && ($CFG->debug >= DEBUG_NORMAL)) {
+                echo "Printing element $elementkey. </br><hr/><br/>";
+            }
             $this->print_data($standardelm, $elminstance, $template);
             $parenttemplate->hascontent = $parenttemplate->hascontent || $template->hascontent;
             // if (!empty($template->mtdvalue)) {
@@ -365,6 +370,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
     /**
      * Prints a scalar result
+     * @param objectref &$standardelm The metadata element's definition in the standard
+     * @param objectref &$elminstance The metadata effective instance with value inside
+     * @param objectref &$template The rendering template context
      */
     public function print_data(&$standardelm, &$elminstance, &$template) {
         global $OUTPUT;
@@ -374,6 +382,19 @@ class metadata_renderer extends \plugin_renderer_base {
 
         // Do not print occurrence for scalars as they are merged into a text list.
         $template->occur = '';
+
+        // Special fall-in
+
+        $sizeelement = $mtdstandard->getSizeElement();
+        if ($elminstance->get_node_id() == $sizeelement->node) {
+            // For size element, use a special formatting.
+            $value = $elminstance->get_value();
+            $template->isscalar = true;
+            $template->mtdvalue = $this->format_size($value);
+            return;
+        }
+
+        // More general cases.
 
         switch ($standardelm->type) {
 
@@ -414,7 +435,9 @@ class metadata_renderer extends \plugin_renderer_base {
                         $template->mtdvalue = implode(', ', $mtdvalues);
                     } else {
                         $cleanedkey = clean_string_key($value);
-                        $template->mtdvalue = get_string($cleanedkey, 'sharedmetadata_'.$namespace);
+                        if (!empty($cleanedkey)) {
+                            $template->mtdvalue = get_string($cleanedkey, 'sharedmetadata_'.$namespace);
+                        }
                     }
                 }
                 break;
@@ -1242,5 +1265,40 @@ class metadata_renderer extends \plugin_renderer_base {
             $tabmodel->link = '';
         }
         return $tabmodel;
+    }
+
+    /** 
+     * A special formatter that processes a physical file size :
+     * - If a unit is detected, do not change value.
+     * - If no unit is detected consider in bytes and split/format in upper dimensions.
+     */
+    public function format_size($sizevalue) {
+
+        if (empty($sizevalue)) {
+            return '';
+        }
+
+        $unitpattern = '/[^0-9]+[\\s]*$/'; // Finishing with non numeric chars ?
+        if (preg_match($unitpattern, $sizevalue)) {
+            // Leave as it is.
+            return $sizevalue;
+        }
+
+        // Reduce to highest multiplicator possible.
+        $dim = '';
+        if ($sizevalue > 1000) {
+            $dim = 'Ko';
+            $sizevalue = $sizevalue / 1000;
+        }
+        if ($sizevalue > 1000) {
+            $dim = 'Mo';
+            $sizevalue = $sizevalue / 1000;
+        }
+        if ($sizevalue > 1000) {
+            $dim = 'Go';
+            $sizevalue = $sizevalue / 1000;
+        }
+
+        return sprintf('%01.1f', $sizevalue).$dim;
     }
 }

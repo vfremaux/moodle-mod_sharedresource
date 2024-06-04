@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author     Piers Harding  piers@catalyst.net.nz
- * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package    mod_sharedresource
- * @category   mod
+ * This plugin is used to access coursefiles repository
+ *
+ * @since 2.0
+ * @package    mod_sharedresources
+ * @copyright  2023 Valery Fremaux (valery.fremaux@gmail.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 

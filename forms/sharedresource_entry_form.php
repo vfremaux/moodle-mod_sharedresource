@@ -107,6 +107,7 @@ class mod_sharedresource_entry_form extends moodleform {
             } else {
                 if ($this->_customdata['entry']->type == 'url') {
                     $mform->addElement('text', 'url', get_string('url', 'sharedresource'), array('size' => '48'));
+                    $mform->addHelpButton('url', 'urlchange', 'sharedresource');
                 } else {
                     $mform->addElement('static', 'url_display', get_string('url', 'sharedresource').': ', '');
                     $mform->addElement('filepicker', 'sharedresourcefile', get_string('file'), array('size' => '40'));
