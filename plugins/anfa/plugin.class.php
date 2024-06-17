@@ -583,7 +583,8 @@ class plugin_anfa extends plugin_base {
                 'diagnostic',
                 'parametragelogiciel',
                 'chainedetraction',
-                'entretiencourant'],
+                'entretiencourant',
+                'resourcespartagees'],
             'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1034,7 +1035,7 @@ class plugin_anfa extends plugin_base {
             'name' => 'Cost',
             'source' => 'lom',
             'type' => 'select',
-            'values' => ['yes', 'no'],
+            'values' => ['needsfee', 'needsnofee'],
             'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
