@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023121800;       // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2024061700;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2012062500;       // Requires this Moodle version
 $plugin->component  = 'sharedmetadata_anfa';       // Requires this Moodle version
 $plugin->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
