@@ -26,13 +26,13 @@
         <ul id="mtd-form-menu" class="{{#tabmodel}}{{ul}}{{/tabmodel}} {{tabclass}}" role="tablist">
             {{#tabs}}
                 <li id="id-menu-{{i}}" class="{{#tabmodel}}{{li}}{{/tabmodel}} mtd-tab {{tabclass}} {{mandatoryclass}}" >
-                    <a href="" class="{{#tabmodel}}{{link}}{{/tabmodel}}" role="tab"><span>{{tabname}} {{mandatorysign}}</span></a>
+                    <a href="" class="{{#tabmodel}}{{link}}{{/tabmodel}}" role="tab"><span>{{{tabname}}} {{mandatorysign}}</span></a>
                 </li>
             {{/tabs}}
 
             {{^hidemetadatadesc}}
             <li id="id-menu-99" class="mtd-tab first onerow here selected">
-                <a class="{{#tabmodel}}{{link}}{{/tabmodel}}"><span>{{dmusedstr}}</span></a>
+                <a class="{{#tabmodel}}{{link}}{{/tabmodel}}"><span>{{{dmusedstr}}}</span></a>
             </li>
             {{/hidemetadatadesc}}
         </ul>
