@@ -62,7 +62,7 @@ if (property_exists($metadataentries, 'cancel')) {
             'course' => $courseid,
             'returnpage' => $returnpage,
         ];
-        $cancelurl = new moodle_url('/local/sharedresource/index.php', $params);
+        $cancelurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($cancelurl);
     }
     $params = [
