@@ -210,6 +210,7 @@ $string['videosinteractives'] = 'Interactive videos';
 $string['modelisations3d'] = '3D models';
 $string['realitevirtuelle'] = 'VR immersive resources';
 $string['realiteaugmentee'] = 'Augmented reality resources';
+$string['coursmoodlembz'] = 'Moodle course (.mbz)';
 
 
 // End User Role

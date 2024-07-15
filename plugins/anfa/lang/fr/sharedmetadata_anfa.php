@@ -237,6 +237,8 @@ $string['videosinteractives'] = 'Vidéos interactives';
 $string['modelisations3d'] = 'Modélisations 3D';
 $string['realitevirtuelle'] = 'Ressources immersives pour la réalité virtuelle';
 $string['realiteaugmentee'] = 'Ressources immersives pour la réalité augmentée';
+$string['coursmoodlembz'] = 'Cours moodle (.mbz)';
+
 
 // End User Role
 $string['teacher'] = 'Enseignant/Formateur';
