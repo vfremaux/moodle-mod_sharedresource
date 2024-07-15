@@ -24,7 +24,6 @@
  * @author  Frederic GUILLOU
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package    mod_sharedresource
- * @category   mod
  */
 
 // Here we need load some classes before config and session is setup to help unserializing
@@ -57,7 +56,21 @@ $mtdstandard = sharedresource_get_plugin($config->schema);
 // Receive input from form.
 $metadataentries = data_submitted();
 if (property_exists($metadataentries, 'cancel')) {
-    $params = array('course' => $courseid, 'section' => $section, 'add' => 'sharedresource', 'return' => $returnpage);
+    if (in_array($returnpage, ['explore', 'browse']) {
+        // Edition process was comming from shared library.
+        $params = [
+            'course' => $courseid,
+            'returnpage' => $returnpage,
+        ];
+        $cancelurl = new moodle_url('/local/sharedresource/index.php', $params);
+        redirect($cancelurl);
+    }
+    $params = [
+        'course' => $courseid,
+        'section' => $section,
+        'add' => 'sharedresource',
+        'return' => $returnpage,
+    ];
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);
 }
@@ -74,7 +87,7 @@ $PAGE->set_heading($SITE->fullname);
 
 // Navigation.
 
-$linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id));
+$linkurl = new moodle_url('/mod/sharedresource/index.php', ['id' => $course->id]);
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add($strtitle, 'metadatarep.php', 'misc');
 $PAGE->navbar->add(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
@@ -98,7 +111,7 @@ $result = metadata_display_and_check($shrentry, $metadataentries);
 
 // If there are errors in fields filled in by the user.
 
-if ($result['error'] != array()) {
+if ($result['error'] != []) {
     $srentry = serialize($shrentry);
     $SESSION->sr_entry = $srentry;
     $error = serialize($result['error']);
@@ -108,11 +121,11 @@ if ($result['error'] != array()) {
 
     echo $OUTPUT->heading(get_string($mode.'sharedresourcetypefile', 'sharedresource'));
 
-    $errortpl = new StdClass;
+    $errortpl = new StdClass();
 
     foreach ($result['error'] as $field => $errortype) {
         $fieldnum = substr($field, 0, strpos($field, ':'));
-        $errtpl = new StdClass;
+        $errtpl = new StdClass();
         $errtpl->fieldnum = $fieldnum;
         $errtpl->fieldname = $mtdstandard->METADATATREE[$fieldnum]['name'];
         $errortpl->errors[] = $errtpl;
@@ -133,7 +146,7 @@ if ($result['error'] != array()) {
         'fromlibrary' => $fromlibrary,
         'returnpage' => $returnpage,
         'mode' => $mode,
-        'context' => $sharingcontext
+        'context' => $sharingcontext,
     ];
     $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
 
@@ -154,15 +167,17 @@ if ($mode == 'add' && $shrentry->exists()) {
     $SESSION->sr_entry = $srentry;
 
     // We are coming from the library. Go back to it.
-    $params = ['course' => $course->id,
-               'mode' => 'add',
-               'add' => 1,
-               'catid' => $catid,
-               'catpath' => $catpath,
-               'returnpage' => $returnpage,
-               'fromlibrary' => $fromlibrary,
-               'section' => $section,
-               'context' => $sharingcontext];
+    $params = [
+        'course' => $course->id,
+        'mode' => 'add',
+        'add' => 1,
+        'catid' => $catid,
+        'catpath' => $catpath,
+        'returnpage' => $returnpage,
+        'fromlibrary' => $fromlibrary,
+        'section' => $section,
+        'context' => $sharingcontext,
+    ];
     $fullurl = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $params);
     redirect($fullurl);
 
@@ -170,12 +185,18 @@ if ($mode == 'add' && $shrentry->exists()) {
 
     // Add a real new instance.
     if (!$shrentry->add_instance()) {
-        print_error('failadd', 'sharedresource');
+        throw new moodle_exception('failadd', 'sharedresource');
     }
     // If everything was saved correctly, go back to the search page or to the library.
     if ($fromlibrary) {
         // We are coming from the library. Go back to it using index.php router.
-        $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'returnpage' => $returnpage];
+        $params = [
+            'course' => $course->id,
+            'section' => $section,
+            'catid' => $catid,
+            'catpath' => $catpath,
+            'returnpage' => $returnpage,
+        ];
         $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     } else {
@@ -186,7 +207,8 @@ if ($mode == 'add' && $shrentry->exists()) {
             'type' => $type,
             'add' => 'sharedresource',
             'return' => $returnpage,
-            'entryid' => $shrentry->id];
+            'entryid' => $shrentry->id,
+        ];
         $fullurl = new moodle_url('/course/modedit.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
     }
@@ -200,7 +222,13 @@ if ($mode == 'add' && $shrentry->exists()) {
     }
 
     // We are coming necessarily from the library. Go back to it using index.php router.
-    $params = ['course' => $course->id, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath, 'returnpage' => $returnpage];
+    $params = [
+        'course' => $course->id,
+        'section' => $section,
+        'catid' => $catid,
+        'catpath' => $catpath,
+        'returnpage' => $returnpage,
+    ];
     $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
 
     redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);

@@ -24,20 +24,24 @@
  */
 namespace mod_sharedresource\output;
 
-use \StdClass;
-use \moodle_url;
-use \html_writer;
-use \mod_sharedresource\metadata;
-use \mod_sharedresource\entry;
+use StdClass;
+use moodle_url;
+use html_writer;
+use mod_sharedresource\metadata;
+use mod_sharedresource\entry;
 use Exception;
 use moodle_exception;
+use plugin_renderer_base;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/output/opened_core_renderer.php');
 
-class metadata_renderer extends \plugin_renderer_base {
+/**
+ * Renderer for metadata
+ */
+class metadata_renderer extends plugin_renderer_base {
 
     protected $coreoutput;
 
@@ -1287,15 +1291,15 @@ class metadata_renderer extends \plugin_renderer_base {
         // Reduce to highest multiplicator possible.
         $dim = '';
         if ($sizevalue > 1000) {
-            $dim = 'Ko';
+            $dim = ' ko';
             $sizevalue = $sizevalue / 1000;
         }
         if ($sizevalue > 1000) {
-            $dim = 'Mo';
+            $dim = ' Mo';
             $sizevalue = $sizevalue / 1000;
         }
         if ($sizevalue > 1000) {
-            $dim = 'Go';
+            $dim = ' Go';
             $sizevalue = $sizevalue / 1000;
         }
 
