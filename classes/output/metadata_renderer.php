@@ -24,20 +24,24 @@
  */
 namespace mod_sharedresource\output;
 
-use \StdClass;
-use \moodle_url;
-use \html_writer;
-use \mod_sharedresource\metadata;
-use \mod_sharedresource\entry;
+use StdClass;
+use moodle_url;
+use html_writer;
+use mod_sharedresource\metadata;
+use mod_sharedresource\entry;
 use Exception;
 use moodle_exception;
+use plugin_renderer_base;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/output/opened_core_renderer.php');
 
-class metadata_renderer extends \plugin_renderer_base {
+/**
+ * Renderer for metadata
+ */
+class metadata_renderer extends plugin_renderer_base {
 
     protected $coreoutput;
 
@@ -118,6 +122,11 @@ class metadata_renderer extends \plugin_renderer_base {
 
     /**
      * Creates tabs.
+     * @param int $i Tab index
+     * @param $nodeid the element id
+     * @param $capability the user's capability regarding sharedresource library edition
+     * @param &$template the mustache template to feed
+     * @param string $mode 'read' or 'write'
      */
     public function tab($i, $nodeid, $capability, &$template, $mode = 'read') {
 
@@ -534,6 +543,10 @@ class metadata_renderer extends \plugin_renderer_base {
         }
     }
 
+    /**
+     * Prints a form to edit metadata
+     * @param string $capability role of the user regarding to the library 
+     */
     public function metadata_edit_form($capability) {
 
         $namespace = get_config('sharedresource', 'schema');
@@ -549,7 +562,7 @@ class metadata_renderer extends \plugin_renderer_base {
         $mode = required_param('mode', PARAM_ALPHA);
         $courseid = required_param('course', PARAM_INT);
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->pluginname = $namespace;
         $template->metadatadescrstr = get_string('metadatadescr', 'sharedresource');
         $template->namespace = $namespace;
@@ -587,6 +600,9 @@ class metadata_renderer extends \plugin_renderer_base {
 
     /*
      * This function creates content of tabs.
+     * @param string $capability
+     * @param objectref &$mtdstandard
+     * @param objectref &$template
      */
     public function edit_panels($capability, &$mtdstandard, &$template) {
 
@@ -640,10 +656,12 @@ class metadata_renderer extends \plugin_renderer_base {
     /**
      * Scans the standard structure to display existing instances form and an additional form for new instances.
      *
+     * @param objectref &$parenttemplate
      * @param string $elementkey the standard element id m_n_o:x_y_z
      * @param string $capability tells if the field is visible or not depending of the category of the user
      * @param boolean $realoccur is used only in the case of classification, when a classification is deleted by an admin and does not
      * appear anymore on the metadata form. Realoccur is the visible occurrence the user should see for the part.
+     * @param bool $ispanel
      */
     public function part_form(&$parenttemplate, $elementkey, $capability, $realoccur = 0, $ispanel = false) {
         global $SESSION, $CFG, $DB;
@@ -736,7 +754,7 @@ class metadata_renderer extends \plugin_renderer_base {
         /*
          * an array storing the child element name references for JS.
          */
-        $listresult = array();
+        $listresult = [];
 
         if ($standardelm->type == 'category') {
             if (!is_null($taxumarray) && ($nodeid == $taxumarray['main'])) {
@@ -745,7 +763,6 @@ class metadata_renderer extends \plugin_renderer_base {
                     debug_trace('Processing taxonomy element', TRACE_DEBUG);
                 }
 
-                // echo "// $elementkey isclassification \n";
                 // If the field concerns classification :
                 /*
                  * we need group the id and item fields into one unique input widget.
@@ -772,7 +789,7 @@ class metadata_renderer extends \plugin_renderer_base {
                         debug_trace(" Taxon Source initial value is undefined", TRACE_ERRORS);
                     }
                     // Not yet any value, take the first active available.
-                    $params = array('enabled' => 1);
+                    $params = ['enabled' => 1];
                     $instanceindex = $elminstance->get_instance_index();
                     if ($instanceindex == 0) {
                         // echo "// Take first available source \n";
@@ -1287,15 +1304,15 @@ class metadata_renderer extends \plugin_renderer_base {
         // Reduce to highest multiplicator possible.
         $dim = '';
         if ($sizevalue > 1000) {
-            $dim = 'Ko';
+            $dim = ' ko';
             $sizevalue = $sizevalue / 1000;
         }
         if ($sizevalue > 1000) {
-            $dim = 'Mo';
+            $dim = ' Mo';
             $sizevalue = $sizevalue / 1000;
         }
         if ($sizevalue > 1000) {
-            $dim = 'Go';
+            $dim = ' Go';
             $sizevalue = $sizevalue / 1000;
         }
 

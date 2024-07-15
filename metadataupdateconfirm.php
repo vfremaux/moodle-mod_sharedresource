@@ -24,7 +24,6 @@
  * @author  Frederic GUILLOU
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package    mod_sharedresource
- * @category   mod
  */
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -48,7 +47,7 @@ $catpath = optional_param('catpath', '', PARAM_TEXT);
 $course = required_param('course', PARAM_INT);
 $sharingcontext = optional_param('context', 1, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $course))) {
+if (!$course = $DB->get_record('course', ['id' => $course])) {
     throw new moodle_exception(get_string('badcourseid', 'sharedresource'));
 }
 
@@ -61,7 +60,13 @@ require_capability('repository/sharedresources:create', $context);
 if ($cancel) {
     // We are coming from the library. Go back to it.
     if ($return != 'course') {
-        $params = ['course' => $course->id, 'section' => $section, 'return' => $return, 'catid' => $catid, 'catpath' => $catpath];
+        $params = [
+            'course' => $course->id,
+            'section' => $section,
+            'return' => $return,
+            'catid' => $catid,
+            'catpath' => $catpath,
+        ];
         $cancelurl = new moodle_url('/local/sharedresources/index.php', $params);
     } else {
         // We are coming from a course, more specially from a sharedresource instance modedit form.
@@ -69,7 +74,7 @@ if ($cancel) {
             'course' => $course->id,
             'sr' => $section,
             'add' => 'sharedresource',
-            'return' => 0
+            'return' => 0,
         ];
         $cancelurl = new moodle_url('/course/modedit.php', $params);
     }
@@ -82,13 +87,6 @@ $shrentry = unserialize($srentry);
 
 if ($confirm) {
 
-    // It's an update, metadata of the sharedresource should be deleted before adding new ones.
-    /*
-    foreach ($shrentry->metadataelements as $key => $metadata) {
-        unset($shrentry->metadataelements[$key]);
-    }
-    */
-
     // These two lines in comment can be used if you want to show the user values of saved fields.
     $shrentry->update_instance();
 
@@ -96,18 +94,21 @@ if ($confirm) {
     if ($return) {
         // We are coming from the library. Go back to it.
         if ($return == 1) {
-            $fullurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $course->id, 'catid' => $catid, 'catpath' => $catpath));
+            $params = ['course' => $course->id, 'catid' => $catid, 'catpath' => $catpath];
+            $fullurl = new moodle_url('/local/sharedresources/browse.php', $params);
         } else {
-            $fullurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $course->id));
+            $fullurl = new moodle_url('/local/sharedresources/explore.php', ['course' => $course->id]);
         }
     } else {
         // We are coming from a new sharedresource instance call.
-        $params = array('course' => $course->id,
-                        'section' => $section,
-                        'type' => $type,
-                        'add' => 'sharedresource',
-                        'return' => $return,
-                        'entryid' => $shrentry->id);
+        $params = [
+            'course' => $course->id,
+            'section' => $section,
+            'type' => $type,
+            'add' => 'sharedresource',
+            'return' => $return,
+            'entryid' => $shrentry->id,
+        ];
         $fullurl = new moodle_url('/course/modedit.php', $params);
     }
     redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
@@ -120,7 +121,7 @@ $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
 $system_context = context_system::instance();
 $PAGE->set_context($system_context);
-$urlparams = array('mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return);
+$urlparams = ['mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return];
 $url = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $urlparams);
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);

@@ -63,7 +63,7 @@ $string['documenttype'] = 'Type de document';
 $string['duration'] = 'Durée';
 $string['echanger'] = 'Echanger';
 $string['educational'] = 'Aspects éducatifs';
-$string['enduserrole'] = 'Rôle du destinataire final';
+$string['enduserrole'] = 'Role du destinataire final';
 $string['enseignementprimaire'] = 'Enseignement primaire';
 $string['enseignementsecondaire'] = 'Enseignement secondaire';
 $string['ensemblededonnees'] = 'Ensemble de données';
@@ -131,7 +131,7 @@ $string['relation'] = 'Relation';
 $string['requirement'] = 'Contraintes d\'utilisation';
 $string['resource'] = 'Ressource';
 $string['ressourceinteractive'] = 'Ressource interactive';
-$string['resourcespartagees'] = 'Ressources partagées par la communauté';
+$string['resourcespartagees'] = 'Ressources partagées par le communauté';
 $string['rights'] = 'Droits';
 $string['rightsdescription'] = 'Description des droits d\'usage';
 $string['role'] = 'Rôle';
@@ -153,7 +153,7 @@ $string['status'] = 'Etat de publication';
 $string['structure'] = 'Structure';
 $string['taxonpath'] = 'Rubrique de classification';
 $string['taxum'] = 'Entrée de classification';
-$string['technical'] = 'Aspect techniques';
+$string['technical'] = 'Aspects techniques';
 $string['texte'] = 'Texte';
 $string['title'] = 'Titre';
 $string['tutoriel'] = 'Tutoriel';
@@ -177,6 +177,7 @@ $string['bacproc'] = 'Bac pro option C : motocycles';
 $string['btsa'] = 'BTS option A: voitures particulières';
 $string['btsb'] = 'BTS option B: véhicules de transport routier';
 $string['btsc'] = 'BTS option C: motocycles';
+// diplomes also use context strings.
 
 // Context
 $string['cap'] = 'CAP';

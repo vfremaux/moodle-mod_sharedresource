@@ -248,6 +248,7 @@ class plugin_anfa extends plugin_base {
                           'Fichier exécutable',
                           'Fichier compressé',
                           'Fichier de conception',
+                          'Cours Moodle (.mbz)',
                            'Autres'],
             'checked' => [
                 'system_write'  => 1,
@@ -802,7 +803,7 @@ class plugin_anfa extends plugin_base {
             'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture', 'démonstration',
             'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique'],
             */
-            'values' => ['Cours en intégralité', 'Travaux pratiques', 'Evaluations', 'Quiz', 'Documents interactifs',
+            'values' => ['Cours théorique', 'Cours en intégralité', 'Travaux pratiques', 'Evaluations', 'Quiz', 'Documents interactifs',
                          'Vidéos interactives', 'Modélisations 3D', 'Réalité virtuelle',
                           'Réalité augmentée', 'Autres'],
             'checked' => [
@@ -1001,7 +1002,7 @@ class plugin_anfa extends plugin_base {
             'name' => 'Diplôme', // Rajouter fichier langue.
             'source' => 'anfa',
             'type' => 'sortedselect',
-            'values' => ['cap_a', 'cap_b', 'cap_c', 'bacpro_a', 'bacpro_b', 'bacpro_c', 'bts_a', 'bts_b',
+            'values' => ['cap', 'cap_a', 'cap_b', 'cap_c', 'bacpro', 'bacpro_a', 'bacpro_b', 'bacpro_c', 'bts', 'bts_a', 'bts_b',
             'bts_c', 'other'],
             'checked' => [
                 'system_write'  => 1,
