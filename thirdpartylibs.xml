@@ -8,10 +8,17 @@
     <licenseversion>3=GPL V3</licenseversion>
   </library>
   <library>
-    <location>extlib</location>
-    <name>Non moodle libraries and scripts</name>
+    <location>pro</location>
+    <name>Pro zone compiled scripts</name>
+    <license>APL</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>plugins</location>
+    <name>Metadata subplugins</name>
     <license>GPL</license>
-    <version>3.0</version>
-    <licenseversion>3=GPL V3</licenseversion>
+    <version>3</version>
+    <licenseversion>GPL V3</licenseversion>
   </library>
 </libraries>

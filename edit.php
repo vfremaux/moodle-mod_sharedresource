@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a sharedresource publication.
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package    sharedresource
- * @category   mod
+ * @package     mod_sharedresource
+ * @author      Piers Harding  piers@catalyst.net.nz
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-// Here we need load some classes before config and session is setup to help unserializing
-require_once(dirname(__FILE__).'/classes/__autoload.php');
+/*
+ * Because classes preloading (SHAREDRESOURCE_INTERNAL) perturbates config detection.
+ * phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
+ * sharedresource_check_access does the job.
+ * phpcs:disable moodle.Files.RequireLogin.Missing
+ */
 
+// Here we need load some classes before config and session is setup to help unserializing.
+require_once(dirname(__FILE__).'/classes/__autoload.php');
 
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/sharedresource_entry_form.php');
@@ -41,9 +48,8 @@ require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plug
 $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
 $mtdstandard = new $mtdclass();
 
-$ignorelist = array(
+$ignorelist = [
     'mform_showadvanced_last',
-    /* 'pagestep', */
     'MAX_FILE_SIZE',
     'return',
     'type',
@@ -52,22 +58,22 @@ $ignorelist = array(
     'returnpage',
     'mode',
     'course',
-    'submitbutton'
-);
+    'submitbutton',
+];
 
 $ignorelist = array_merge($ignorelist, $mtdstandard->sharedresource_get_ignored());
 
 // Get params.
 
-$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Tells if we return to course (0) or to library (1)
+$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Tells if we return to course (0) or to library (1).
 $returnpage = optional_param('returnpage', 0, PARAM_TEXT); // Tells where to go when return.
-$section = optional_param('section', 0, PARAM_INT); // Memorise the return course section in case we return to course in workflow
+$section = optional_param('section', 0, PARAM_INT); // Memorise the return course section in case we return to course in workflow.
 $entryid = optional_param('entryid', 0, PARAM_INT); // When updating, or on late workflow steps.
-$catid = optional_param('catid', 0, PARAM_INT); // Memorise the library catid, when coming from library
-$catpath = optional_param('catpath', '', PARAM_TEXT); // Memorise the full catpath when coming from library (helper)
+$catid = optional_param('catid', 0, PARAM_INT); // Memorise the library catid, when coming from library.
+$catpath = optional_param('catpath', '', PARAM_TEXT); // Memorise the full catpath when coming from library (helper).
 $courseid = required_param('course', PARAM_INT); // The origin course, or course in context of use by the library.
 $sharingcontext = optional_param('context', SITEID, PARAM_INT); // Memorize the sharing context in workflow.
-$type = optional_param('type', '', PARAM_ALPHANUM); // Feeds back the resource type
+$type = optional_param('type', '', PARAM_ALPHANUM); // Feeds back the resource type.
 $mode = required_param('mode', PARAM_ALPHA); // Add or update workflow.
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
@@ -78,7 +84,7 @@ $pagecontext = sharedresource_check_access($course);
 // Compute returnurl.
 if (!$fromlibrary) {
     // Origin action was adding a sharedresource instance in course.
-    $returnurl = new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section));
+    $returnurl = new moodle_url('/course/view.php', ['id' => $course->id, 'section' => $section]);
 } else {
     // Origin is the shared resource library, in a site or course context. Preserve it.
     $params = ['course' => $course->id,
@@ -104,13 +110,13 @@ $params = ['mode' => $mode,
            'catpath' => $catpath,
            'returnpage' => $returnpage,
            'fromlibrary' => $fromlibrary,
-           'sharingcontext' => $sharingcontext
+           'sharingcontext' => $sharingcontext,
 ];
 $url = new moodle_url('/mod/sharedresource/edit.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-// Review navbar construction to be more consistant 
+// Review navbar construction to be more consistant.
 if ($course->id > SITEID) {
     $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', ['id' => $course->id, 'section' => $section]));
 }
@@ -138,7 +144,8 @@ if ($mode == 'update') {
         $displayurl = new moodle_url('/mod/sharedresource/view.php', ['identifier' => $shrentry->identifier, 'inpopup' => true]);
         $jshandler = 'this.target=\'resource'.$shrentry->id.'\';';
         $jshandler .= 'return openpopup(\'/mod/sharedresource/view.php?inpopup=true&identifier={$shrentry->identifier}\', ';
-        $jshandler .= '\'resource'.$shrentry->id.'\', \'resizable=1,scrollbars=1,directories=1,location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
+        $jshandler .= '\'resource'.$shrentry->id.'\', \'resizable=1,scrollbars=1,directories=1,
+                location=0,menubar=0,toolbar=0,status=1,width=800,height=600\');\';';
         $updateformdata->url_display = '<a href="'.$displayurl.'" onclick="'.$jshandler.'">('.$strpreview.')</a>';
     } else {
         // Resource preview changes apparent domain of the resource. openpopup fails.
@@ -146,8 +153,8 @@ if ($mode == 'update') {
         $updateformdata->url_display = '<a href="'.$url.'" target="_blank">('.$strpreview.')</a>';
     }
 
-    // @TODO : this should call the file storage API
-    $updateformdata->filename = $DB->get_field('files', 'filename', array('id' => $shrentry->file));
+    // TODO : this should call the file storage API.
+    $updateformdata->filename = $DB->get_field('files', 'filename', ['id' => $shrentry->file]);
 
 } else {
     $mode = 'add';
@@ -159,7 +166,7 @@ $mform = false;
 $mform = new mod_sharedresource_entry_form($url, ['mode' => $mode, 'entry' => $shrentry]);
 
 if ($mform->is_cancelled()) {
-    // discard session image of the edited resource.
+    // Discard session image of the edited resource.
     unset($SESSION->sr_entry);
     redirect($returnurl);
 }
@@ -214,15 +221,14 @@ if ($formdata) {
             $shrentry->file = $file->get_id(); // This temp file will be post processed at the end of the storage process.
             $shrentry->url = '';
             $hasentry = true;
-        } else {
-            // Nothing submitted.
-            // throw new moodle_exception("Should not happen. Reinforce form control if necessary.");
         }
     } else if ($mode == 'update') {
 
-        // mode is update.
-        // We need to check if the new hashidentifier has changed. In this case, we need to create an complete cloned entry and link them
-        // through a version chain (Using metadata relation). then we will ask for metadata changes.
+        /*
+         * mode is update.
+         * We need to check if the new hashidentifier has changed. In this case, we need to create an complete cloned
+         * entry and link them through a version chain (Using metadata relation). then we will ask for metadata changes.
+         */
         $hasentry = true;
         if (empty($formdata->sharedresourcefile) && !empty($formdata->url)) {
             $newidentifier = sha1($formdata->url);
@@ -249,16 +255,9 @@ if ($formdata) {
                 }
                 // Refresh session.
             } else {
-                // empty submission case.
+                // Empty submission case.
                 throw new moodle_exception("Should not happen. Reinforce form control if necessary.");
             }
-        }
-
-        $shrentry->title = $formdata->title;
-        if (is_array($formdata->description)) {
-            $shrentry->description = $formdata->description['text'];
-        } else {
-            $shrentry->description = $formdata->description;
         }
     } else {
         // Last edition step with metadata received.
@@ -298,7 +297,11 @@ if ($formdata) {
         }
 
         $shrentry->title = $formdata->title;
-        $shrentry->description = $formdata->description;
+        if (is_array($formdata->description)) {
+            $shrentry->description = $formdata->description['text'];
+        } else {
+            $shrentry->description = $formdata->description;
+        }
 
         // Update in session till last save stage.
         $srentry = serialize($shrentry);
@@ -306,31 +309,21 @@ if ($formdata) {
         $error = 'no error';
         $SESSION->error = $error;
 
-        $params = ['course' => $course->id,
-                   'section' => $section,
-                   'type' => $type,
-                   'fromlibrary' => $fromlibrary,
-                   'returnpage' => $returnpage,
-                   'mode' => $mode,
-                   'context' => $sharingcontext,
-                   'catid' => $catid,
-                   'catpath' => $catpath];
+        $params = [
+            'course' => $course->id,
+            'section' => $section,
+            'type' => $type,
+            'fromlibrary' => $fromlibrary,
+            'returnpage' => $returnpage,
+            'mode' => $mode,
+            'context' => $sharingcontext,
+            'catid' => $catid,
+            'catpath' => $catpath,
+        ];
         $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
         redirect($fullurl);
     }
 }
-
-/*
-// Do we have hidden elements that we need to save.
-if ($hidden = optional_param('sharedresource_hidden', '', PARAM_CLEANHTML)) {
-    $hidden = explode('|', $hidden);
-    foreach ($hidden as $field) {
-        $value = sharedresource_clean_field($field);
-        $mform->_form->addElement('hidden', $field, $value);
-    }
-    $mform->_form->addElement('hidden', 'sharedresource_hidden', join('|', $hidden));
-}
-*/
 
 if (isset($updateformdata)) {
     $mform->set_data($updateformdata);
@@ -341,6 +334,3 @@ echo $OUTPUT->header();
 // Display form.
 $mform->display();
 echo $OUTPUT->footer($course);
-// Page local functions.
-// Grab and clean form value.
-

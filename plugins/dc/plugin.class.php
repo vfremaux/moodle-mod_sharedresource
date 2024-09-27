@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Dublin Core standard.
+ *
+ * @package sharedmetadata_dc
  * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- * @subpackage sharedmetadata_dc
+ * @copyright  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource;
 
@@ -30,27 +32,39 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
 
+use context_system;
+use StdClass;
+use coding_exception;
+
+/**
+ * Class for Dublin Core standard.
+ */
 class plugin_dc extends plugin_base {
 
-    /**
+    /*
      * we may setup a context in which we can decide where users
      * can be assigned role regarding metadata
      */
 
+    /** @var namespace */
     protected $namespace;
 
+    /** @var context */
     protected $context;
 
-    public $ALLSOURCES = array('dc');
+    /** @var list of source namespaces */
+    public $allsources = ['dc'];
 
-    public $DEFAULTSOURCE = 'DCMESv1.1';
+    /** @var default source */
+    public $defaultsource = 'DCMESv1.1';
 
-    public $METADATATREE = array(
-        '0' => array(
+    /** @var Full tree */
+    public $metadatatree = [
+        '0' => [
             'name' => 'Root',
             'source' => 'dc',
             'type' => 'root',
-            'childs' => array(
+            'childs' => [
                 '1' => 'single',
                 '2' => 'single',
                 '3' => 'single',
@@ -66,240 +80,240 @@ class plugin_dc extends plugin_base {
                 '13' => 'single',
                 '14' => 'single',
                 '15' => 'single',
-            ),
-        ),
-        '1' => array(
+            ],
+        ],
+        '1' => [
             'name' => 'Title',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '1_1' => 'single',
                 '1_2' => 'single',
-            ),
-        ),
-        '1_1' => array(
+            ],
+        ],
+        '1_1' => [
             'name' => 'title',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            )
-        ),
-        '1_2' => array(
+            ],
+        ],
+        '1_2' => [
             'name' => 'alternative',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '2' => array(
+            ],
+        ],
+        '2' => [
             'name' => 'creator',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '2_1' => 'single',
-            ),
-        ),
-        '2_1' => array(
+            ],
+        ],
+        '2_1' => [
             'name' => 'creator',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            )
-        ),
-        '3' => array(
+            ],
+        ],
+        '3' => [
             'name' => 'Subject',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '3_1' => 'single',
                 '3_2' => 'single',
-            ),
-        ),
-        '3_1' => array(
+            ],
+        ],
+        '3_1' => [
             'name' => 'subject',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            )
-        ),
-        '3_2' => array(
+            ],
+        ],
+        '3_2' => [
             'name' => 'tableOfContent',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4' => array(
+        ],
+        '4' => [
             'name' => 'description',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '4_1' => 'single',
                 '4_2' => 'single',
-            ),
-        ),
-        '4_1' => array(
+            ],
+        ],
+        '4_1' => [
             'name' => 'description',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_2' => array(
+        ],
+        '4_2' => [
             'name' => 'abstract',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '5' => array(
+        ],
+        '5' => [
             'name' => 'Publisher',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '5_1' => 'list',
-            ),
-        ),
-        '5_1' => array(
+            ],
+        ],
+        '5_1' => [
             'name' => 'Publisher',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '6' => array(
+            ],
+        ],
+        '6' => [
             'name' => 'Contributor',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '6_1' => 'list',
-            ),
-        ),
-        '6_1' => array(
+            ],
+        ],
+        '6_1' => [
             'name' => 'contributor',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '7' => array(
+            ],
+        ],
+        '7' => [
             'name' => 'Date',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '7_1' => 'single',
                 '7_2' => 'single',
                 '7_3' => 'single',
@@ -308,322 +322,322 @@ class plugin_dc extends plugin_base {
                 '7_6' => 'single',
                 '7_7' => 'single',
                 '7_8' => 'list',
-            ),
-        ),
-        '7_1' => array(
+            ],
+        ],
+        '7_1' => [
             'name' => 'Date',
             'source' => 'dc',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_2' => array(
+        ],
+        '7_2' => [
             'name' => 'available',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_3' => array(
+        ],
+        '7_3' => [
             'name' => 'created',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_4' => array(
+        ],
+        '7_4' => [
             'name' => 'dateAccepted',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_5' => array(
+        ],
+        '7_5' => [
             'name' => 'dateCopyrighted',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_6' => array(
+        ],
+        '7_6' => [
             'name' => 'dateSubmitted',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_7' => array(
+        ],
+        '7_7' => [
             'name' => 'issued',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '7_8' => array(
+        ],
+        '7_8' => [
             'name' => 'modified',
             'source' => 'dcterm',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '8' => array(
+        ],
+        '8' => [
             'name' => 'Type',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '8_1' => 'single',
-            ),
-        ),
-        '8_1' => array(
+            ],
+        ],
+        '8_1' => [
             'name' => 'Type',
             'source' => 'dcterm',
             'type' => 'select',
-            'values' => array('collection', 'dataset', 'event', 'image', 'interactiveresource', 'service', 'software', 'sound', 'text', 'physicalobject'),
-            'checked' => array(
+            'values' => ['collection', 'dataset', 'event', 'image', 'interactiveresource', 'service', 'software', 'sound', 'text', 'physicalobject'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '9' => array(
+        ],
+        '9' => [
             'name' => 'Format',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '9_1' => 'single',
                 '9_2' => 'single',
                 '9_3' => 'single',
-            ),
-        ),
-        '9_1' => array(
+            ],
+        ],
+        '9_1' => [
             'name' => 'format',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '9_2' => array(
+            ],
+        ],
+        '9_2' => [
             'name' => 'extent',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '9_3' => array(
+            ],
+        ],
+        '9_3' => [
             'name' => 'medium',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '10' => array(
+            ],
+        ],
+        '10' => [
             'name' => 'Identifier',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '10_1' => 'single',
                 '10_2' => 'list',
-            ),
-        ),
-        '10_1' => array(
+            ],
+        ],
+        '10_1' => [
             'name' => 'Identifier',
             'source' => 'dcterm',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '10_2' => array(
+            ],
+        ],
+        '10_2' => [
             'name' => 'bibliographicCitation',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '11' => array(
+            ],
+        ],
+        '11' => [
             'name' => 'Source',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '11_1' => 'list',
-            ),
-        ),
-        '11_1' => array(
+            ],
+        ],
+        '11_1' => [
             'name' => 'Source',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '12' => array(
+            ],
+        ],
+        '12' => [
             'name' => 'Language',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '12_1' => 'list',
-            ),
-        ),
-        '12_1' => array(
+            ],
+        ],
+        '12_1' => [
             'name' => 'Language',
             'source' => 'dcterm',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
-        ),
-        '13' => array(
+            ],
+        ],
+        '13' => [
             'name' => 'relation',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '13_1' => 'list',
                 '13_2' => 'list',
                 '13_3' => 'list',
@@ -638,314 +652,326 @@ class plugin_dc extends plugin_base {
                 '13_12' => 'list',
                 '13_13' => 'list',
                 '13_14' => 'list',
-            ),
-        ),
-        '13_1' => array(
+            ],
+        ],
+        '13_1' => [
             'name' => 'relation',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '13_2' => array(
+            ],
+        ],
+        '13_2' => [
             'name' => 'conformsTo',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_3' => array(
+            ],
+        ],
+        '13_3' => [
             'name' => 'hasFormat',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_4' => array(
+            ],
+        ],
+        '13_4' => [
             'name' => 'hasPart',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_5' => array(
+            ],
+        ],
+        '13_5' => [
             'name' => 'hasVersion',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_6' => array(
+            ],
+        ],
+        '13_6' => [
             'name' => 'isFormatOf',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_7' => array(
+            ],
+        ],
+        '13_7' => [
             'name' => 'isPartOf',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_8' => array(
+            ],
+        ],
+        '13_8' => [
             'name' => 'isReferencedBy',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_9' => array(
+            ],
+        ],
+        '13_9' => [
             'name' => 'isReplacedBy',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_10' => array(
+            ],
+        ],
+        '13_10' => [
             'name' => 'isRequiredBy',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_11' => array(
+            ],
+        ],
+        '13_11' => [
             'name' => 'isVersionOf',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_12' => array(
+            ],
+        ],
+        '13_12' => [
             'name' => 'references',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_13' => array(
+            ],
+        ],
+        '13_13' => [
             'name' => 'replaces',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '13_14' => array(
+            ],
+        ],
+        '13_14' => [
             'name' => 'requires',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '14' => array(
+            ],
+        ],
+        '14' => [
             'name' => 'Coverage',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '14_1' => 'list',
                 '14_2' => 'list',
                 '14_3' => 'list',
-            ),
-        ),
-        '14_1' => array(
+            ],
+        ],
+        '14_1' => [
             'name' => 'coverage',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '14_2' => array(
+            ],
+        ],
+        '14_2' => [
             'name' => 'spatial',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '14_3' => array(
+            ],
+        ],
+        '14_3' => [
             'name' => 'temporal',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '15' => array(
+            ],
+        ],
+        '15' => [
             'name' => 'rights',
             'source' => 'dc',
             'type' => 'category',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'childs' => array(
+            ],
+            'childs' => [
                 '15_1' => 'list',
                 '15_2' => 'list',
                 '15_3' => 'list',
-            ),
-        ),
-        '15_1' => array(
+            ],
+        ],
+        '15_1' => [
             'name' => 'rights',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '15_2' => array(
+            ],
+        ],
+        '15_2' => [
             'name' => 'accessRights',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '15_3' => array(
+            ],
+        ],
+        '15_3' => [
             'name' => 'license',
             'source' => 'dcterm',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-    );
+            ],
+        ],
+    ];
+    /*
+     * phpcs:enable
+     */
 
+    /**
+     * Constructor
+     * @param id $entryid
+     */
     public function __construct($entryid = 0) {
         $this->entryid = $entryid;
-        $this->context = \context_system::instance();
+        $this->context = context_system::instance();
         $this->pluginname = 'dc';
         $this->namespace = 'dc';
     }
 
-    public function search(&$fromform, &$result) {
+    /**
+     * Search in metadata
+     * @param object $fromform search options from search form
+     * @param array $result
+     */
+    public function search($fromform, & $result) {
         global $CFG, $DB;
 
         $fromform->title = isset($fromform->title) ? true : false;
@@ -1022,12 +1048,13 @@ class plugin_dc extends plugin_base {
         if ($fromform->title || $fromform->description) {
             // When given a complete wildcard, then this is browse mode.
             if ($fromform->search == '*') {
-                $resources = $DB->get_records('sharedresource_entry', array(), $sort); // A VERIFIER !!!
+                $resources = $DB->get_records('sharedresource_entry', [], $sort); // A VERIFIER !!!
             } else {
                 $sql = 'SELECT * FROM '. $selectsql .' ORDER BY '. $sort;
-                $resources = $DB->get_records_sql($sql, array(), $page, $recordsperpage); // A VERIFIER !!!
+                $resources = $DB->get_records_sql($sql, [], $page, $recordsperpage); // A VERIFIER !!!
             }
         }
+
         // Append the results.
         if (!empty($resources)) {
             foreach ($resources as $resource) {
@@ -1039,24 +1066,30 @@ class plugin_dc extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    public function dcHeader() {
-        return '<dcds:descriptionSet  xml:base="http://purl.org/dc/terms/"  xmlns:dcds="http://purl.org/dc/xmlns/2008/09/01/dc-ds-xml/">';
+    public function dc_header() {
+        return '<dcds:descriptionSet  xml:base="http://purl.org/dc/terms/"
+                    xmlns:dcds="http://purl.org/dc/xmlns/2008/09/01/dc-ds-xml/">';
     }
 
     /**
-     * Generates metadata element as XML
-     *
+     * Generates metadata element as XML (recursive)
+     * @param $elem current level element
+     * @param array $metadata
+     * @param &$languageattr
+     * @param string &$fatherstr,
+     * @param int &$cardinality
+     * @param string $pathcode
      */
-    public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
+    public function generate_xml($elem, $metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
-        $value = $this->METADATATREE[$elem];
+        $value = $this->metadatatree[$elem];
         $tmpname = str_replace(' ', '', $value['name']);
         $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
-        $namespace = @$value['source'];
+        $namespace = $value['source'] ?? $this->defaultsource;
         // Category/root : we have to call generate_xml on each child.
         if ($elem == '0') {
-            $tab = array();
+            $tab = [];
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
                 $tab[$childnum] = '';
@@ -1074,7 +1107,7 @@ class plugin_dc extends plugin_base {
                 $fatherstr .= $tab[$i];
             }
         } else if ($value['type'] == 'category') {
-            $tab = array();
+            $tab = [];
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
                 $tab[$childnum] = '';
@@ -1150,38 +1183,46 @@ class plugin_dc extends plugin_base {
      * Access to the sharedresource_entry object after a new object
      * is saved.
      *
-     * @param sharedresource_entry   object, reference to sharedresource_entry object
-     *        including metadata
+     * @param entry $shrentry   sharedresource_entry object including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    public function after_save(&$shrentry) {
+    public function after_save($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
     }
 
-    public function after_update(&$shrentry) {
+    /**
+     * Access to the sharedresource_entry object after a sharedresource is updated.
+     * Usually we need to transfer some metadata that are both stored in moodle core's model and
+     * duplicated in metadata standard.
+     *
+     * @param sharedresource_entry $shrentry object including metadata
+     * @return bool, return true to continue to the next handler
+     *        false to stop the running of any subsequent plugin handlers.
+     */
+    public function after_update($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
@@ -1190,8 +1231,8 @@ class plugin_dc extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getTitleElement() {
-        $element = (object)$this->METADATATREE['1_1'];
+    public function get_title_element() {
+        $element = (object)$this->metadatatree['1_1'];
         $element->node = '1_1';
         return $element;
     }
@@ -1199,8 +1240,8 @@ class plugin_dc extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getDescriptionElement() {
-        $element = (object)$this->METADATATREE['4_1'];
+    public function get_description_element() {
+        $element = (object)$this->metadatatree['4_1'];
         $element->node = '4_1';
         return $element;
     }
@@ -1208,15 +1249,15 @@ class plugin_dc extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    public function getKeywordElement() {
+    public function get_keyword_element() {
         return null;
     }
 
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getFileFormatElement() {
-        $element = (object)$this->METADATATREE['9_1'];
+    public function get_file_format_element() {
+        $element = (object)$this->metadatatree['9_1'];
         $element->node = '9_1';
         return $element;
     }
@@ -1224,8 +1265,8 @@ class plugin_dc extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getSizeElement() {
-        $element = (object)$this->METADATATREE['9_2'];
+    public function get_size_element() {
+        $element = (object)$this->metadatatree['9_2'];
         $element->node = '9_2';
         return $element;
     }
@@ -1233,8 +1274,8 @@ class plugin_dc extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    public function getLocationElement() {
-        $element = (object)$this->METADATATREE['11_1'];
+    public function get_location_element() {
+        $element = (object)$this->metadatatree['11_1'];
         $element->node = '11_1';
         return $element;
     }
@@ -1243,53 +1284,59 @@ class plugin_dc extends plugin_base {
      * purpose must expose the values, so a function to find the purpose field is usefull
      * Dublin Core do not provide any taxonomy capability.
      */
-    public function getTaxonomyPurposeElement() {
+    public function get_taxonomy_purpose_element() {
         return null;
     }
 
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    public function getKeywordValues($metadata) {
+    public function get_keyword_values($metadata) {
         return '';
     }
 
     /**
      * Allow to get the taxumpath category and other information about its children node.
      */
-    public function getTaxumpath() {
+    public function get_taxum_path() {
         return null;
     }
 
     /**
      * Allow to get the taxumpath category and other information about its children node.
      */
-    public function getClassification() {
+    public function get_classification() {
         return null;
     }
 
     /**
-     * records keywords in metadata flat table
+     * records keywords in metadata flat table.
+     * Null processing, but needs to be there to raise abstraction.
+     * @param string $keywords
      */
-    public function setKeywords($keywords) {
+    public function set_keywords($keywords) {
+        return null;
     }
 
     /**
      * records title in metadata flat table from db attributes
+     * @param string $title
      */
-    public function setTitle($title) {
+    public function set_title($title) {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            $msg = 'set_title() : sharedresource entry is null or empty. This should not happen. Please inform developers.';
+            throw new coding_exception($msg);
         }
 
-        $titleSource = $this->METADATATREE['1_1']['source'];
-        $DB->delete_records('sharedresource_metadata', array('entryid' => $this->entryid, 'namespace' => $titleSource, 'element' => '1_1:0_0'));
-        $mtdrec = new \StdClass;
+        $titlesource = $this->metadatatree['1_1']['source'];
+        $params = ['entryid' => $this->entryid, 'namespace' => $titlesource, 'element' => '1_1:0_0'];
+        $DB->delete_records('sharedresource_metadata', $params);
+        $mtdrec = new StdClass();
         $mtdrec->entryid = $this->entryid;
         $mtdrec->element = '1_1:0_0';
-        $mtdrec->namespace = $titleSource;
+        $mtdrec->namespace = $titlesource;
         $mtdrec->value = $title;
 
         return $DB->insert_record('sharedresource_metadata', $mtdrec);

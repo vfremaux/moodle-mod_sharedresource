@@ -15,16 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * Provides a backoffice administration page for managing classification tokens in a classification source.
  *
- * Provides a backoffice administration page for managing classification tokens
- * in a classification source.
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
@@ -41,7 +39,7 @@ require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = new moodle_url('/mod/sharedresource/tokens.php', array('id' => $id));
+$url = new moodle_url('/mod/sharedresource/tokens.php', ['id' => $id]);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);
@@ -59,7 +57,7 @@ if (!empty($action)) {
     $controller->process($action);
 }
 
-$taxonomy = $DB->get_record('sharedresource_classif', array('id' => $id));
+$taxonomy = $DB->get_record('sharedresource_classif', ['id' => $id]);
 
 $navigator = \local_sharedresources\browser\navigation($taxonomy);
 $tokentree = $navigator->get_full_tree();
@@ -73,31 +71,31 @@ if (empty($tokentree)) {
     $parentstr = get_string('parent');
     $labelstr = get_string('tablename', 'sharedresource');
 
-    $table->head = array($parentstr, $labelstr, '');
+    $table->head = [$parentstr, $labelstr, ''];
     $table->width = '100%';
-    $table->size = array('50%', '40%', '10%');
-    $table->align = array('left', 'left', 'right');
+    $table->size = ['50%', '40%', '10%'];
+    $table->align = ['left', 'left', 'right'];
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $upicon = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl shadowed');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl shadowed'];
     $upicondisabled = $OUTPUT->pix_icon('t/up', '', 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $downicon = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl shadowed');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl shadowed'];
     $downicondisabled = $OUTPUT->pix_icon('t/down', '', 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_sting('delete'), 'core', $attrs);
 
     foreach ($tokens as $token) {
-        $data = array();
+        $data = [];
         $data[] = $classif->name;
         $data[] = $classif->tablename;
         $data[] = $classif->sqlrestriction;
@@ -106,7 +104,7 @@ if (empty($tokentree)) {
 
         // Down and up have inverted semantic related to sortordering.
         if ($token->sortorder > $classification->sqlsortorderstart) {
-            $params = array('id' => $classif->id, 'what' => 'up');
+            $params = ['id' => $classif->id, 'what' => 'up'];
             $upurl = new moodle_url('/mod/sharedresource/tokens.php', $params);
             $cmds = html_writer::link($upurl, $upicon, $attrs);
         } else {
@@ -114,23 +112,23 @@ if (empty($tokentree)) {
         }
 
         if ($token->sortorder < $maxclassiforder) {
-            $params = array('id' => $classif->id, 'what' => 'down');
+            $params = ['id' => $classif->id, 'what' => 'down'];
             $downurl = new moodle_url('/mod/sharedresource/tokens.php', $params);
             $cmds = html_writer::link($downurl, $downicon, $attrs);
         } else {
             $cmds = $downicondisabled;
         }
 
-        $params = array('id' => $classif->id);
+        $params = ['id' => $classif->id];
         $editurl = new moodle_url('/mod/sharedresource/token.php', $params);
-        $attrs = array('alt' => get_string('updatetoken', 'sharedresource'),
-                       'title' => get_string('updatetoken', 'sharedresource'));
+        $attrs = ['alt' => get_string('updatetoken', 'sharedresource'),
+                       'title' => get_string('updatetoken', 'sharedresource')];
         $cmds .= '&nbsp;'.html_writer::link($editurl, $editicon, $attrs);
 
-        $params = array('what' => 'delete', 'id' => $classif->id);
+        $params = ['what' => 'delete', 'id' => $classif->id];
         $deleteurl = new moodle_url('/mod/sharedresource/tokens.php', $params);
-        $attrs = array('alt' => get_string('delete', 'sharedresource'),
-                       'title' => get_string('delete', 'sharedresource'));
+        $attrs = ['alt' => get_string('delete', 'sharedresource'),
+                       'title' => get_string('delete', 'sharedresource')];
         $cmds .= '&nbsp;'.html_writer::link($deleteurl, $deleteicon, $attrs);
 
         $data[] = $cmds;
@@ -146,7 +144,7 @@ if (empty($tokentree)) {
 }
 
 $label = get_string('backadminpage', 'sharedresource');
-$buttonurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
+$buttonurl = new moodle_url('/admin/settings.php', ['section' => 'modsettingsharedresource']);
 echo $OUTPUT->single_button($buttonurl, $label);
 
 echo $OUTPUT->footer();

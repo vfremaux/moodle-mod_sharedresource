@@ -15,11 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Learning Object Model, French adaptation (LOMFR) Standard
  *
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package sharedmetadata_lomfr
  * @subpackage sharedresource_lomfr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @copyright  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource;
 
@@ -31,37 +33,55 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/lib/accesslib.php');
 
+use context_system;
+use StdClass;
+use coding_exception;
+
+/**
+ * Class for LOMFR Standard.
+ */
 class plugin_lomfr extends plugin_base {
 
-    // We may setup a context in which we can decide where users.
-    // Can be assigned role regarding metadata.
+    /*
+     * We may setup a context in which we can decide where users.
+     * Can be assigned role regarding metadata.
+     */
 
+    /** @var namespace */
     protected $namespace;
 
+    /** @var context */
     protected $context;
 
-    public $ALLSOURCES = array('lomfr', 'lom');
+    /** @var metadata sources */
+    public $allsources = ['lomfr', 'lom'];
 
-    public $DEFAULTSOURCE = 'LOMv1.0';
+    /** @var default source */
+    public $defaultsource = 'LOMv1.0';
 
-    public $OTHERSOURCES = array(
-        'LOMFRv1.0' => array(
+    /** @var other sources elements and definitions */
+    public $othersources = [
+        'LOMFRv1.0' => [
         'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe', 'logiciel', 'objet physique',
         'ressource interactive', 'service', 'son', 'texte', 'contributeur', 'linux', 'firefox', 'safari',
         'démonstration', 'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique',
         'enseignement primaire', 'enseignement secondaire', 'licence', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise',
         'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire', 'observer', 'organiser', 'produire', 'publier',
         'rechercher', 's\'auto-former', 's\'exercer', 's\'informer', 'se former', 'simuler', 's\'évaluer',
-        'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis'
-        )
-    );
+        'est associée à', 'est la traduction de', 'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis',
+        ],
+    ];
 
-    public $METADATATREE = array(
-        '0' => array(
+    /** @var Full tree */
+    /*
+     * phpcs:disable moodle.NamingConventions.ValidVariableName.VariableNameLowerCase
+     */
+    public $metadatatree = [
+        '0' => [
             'name' => 'Root',
             'source' => 'lom',
             'type' => 'root',
-            'childs' => array(
+            'childs' => [
                 '1' => 'single',
                 '2' => 'single',
                 '3' => 'single',
@@ -70,14 +90,14 @@ class plugin_lomfr extends plugin_base {
                 '6' => 'single',
                 '7' => 'list',
                 '8' => 'list',
-                '9' => 'list'
-            )
-        ),
-        '1' => array(
+                '9' => 'list',
+            ],
+        ],
+        '1' => [
             'name' => 'General',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '1_1' => 'list',
                 '1_2' => 'single',
                 '1_3' => 'list',
@@ -86,644 +106,644 @@ class plugin_lomfr extends plugin_base {
                 '1_6' => 'list',
                 '1_7' => 'single',
                 '1_8' => 'single',
-                '1_9' => 'list'
-            ),
-            'checked' => array(
+                '1_9' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            )
-        ),
-        '1_1' => array(
+            ],
+        ],
+        '1_1' => [
             'name' => 'Identifier',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '1_1_1' => 'single',
-                '1_1_2' => 'single'
-            ),
-            'checked' => array(
+                '1_1_2' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            )
-        ),
-        '1_1_1' => array(
+            ],
+        ],
+        '1_1_1' => [
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_1_2' => array(
+        ],
+        '1_1_2' => [
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_2' => array(
+        ],
+        '1_2' => [
             'name' => 'Title',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_3' => array(
+        ],
+        '1_3' => [
             'name' => 'Language',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_4' => array(
+        ],
+        '1_4' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_5' => array(
+        ],
+        '1_5' => [
             'name' => 'Keyword',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_6' => array(
+        ],
+        '1_6' => [
             'name' => 'Coverage',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '1_7' => array(
+        ],
+        '1_7' => [
             'name' => 'Structure',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('atomic', 'collection', 'networked', 'hierarchical', 'linear'),
-            'checked' => array(
+            'values' => ['atomic', 'collection', 'networked', 'hierarchical', 'linear'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '1_8' => array(
+        ],
+        '1_8' => [
             'name' => 'Aggregation Level',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('1', '2', '3', '4'),
-            'checked' => array(
+            'values' => ['1', '2', '3', '4'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '1_9' => array(
+        ],
+        '1_9' => [
             'name' => 'Document Type',
             'source' => 'lomfr',
             'type' => 'select',
-            'values' => array('collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe',
-            'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'),
-            'checked' => array(
+            'values' => ['collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe',
+            'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '2' => array(
+        ],
+        '2' => [
             'name' => 'Life Cycle',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '2_1' => 'single',
                 '2_2' => 'single',
-                '2_3' => 'list'
-            ),
-            'checked' => array(
+                '2_3' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '2_1' => array(
+            ],
+        ],
+        '2_1' => [
             'name' => 'Version',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '2_2' => array(
+        ],
+        '2_2' => [
             'name' => 'Status',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('draft', 'final', 'revised', 'unavailable'),
-            'checked' => array(
+            'values' => ['draft', 'final', 'revised', 'unavailable'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '2_3' => array(
+        ],
+        '2_3' => [
             'name' => 'Contribute',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '2_3_1' => 'single',
                 '2_3_2' => 'list',
-                '2_3_3' => 'single'
-            ),
-            'checked' => array(
+                '2_3_3' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '2_3_1' => array(
+            ],
+        ],
+        '2_3_1' => [
             'name' => 'Role',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer',
+            'values' => ['author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 'graphical designer',
             'technical implementer', 'content provider', 'technical validator', 'educational validator', 'script writer',
-            'instructional designer', 'subject matter expert', 'contributor'),
-            'checked' => array(
+            'instructional designer', 'subject matter expert', 'contributor'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '2_3_2' => array(
+        ],
+        '2_3_2' => [
             'name' => 'Entity',
             'source' => 'lom',
             'type' => 'vcard',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '2_3_3' => array(
+        ],
+        '2_3_3' => [
             'name' => 'Date',
             'source' => 'lom',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '3' => array(
+        ],
+        '3' => [
             'name' => 'Meta-Metadata',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '3_1' => 'list',
                 '3_2' => 'list',
                 '3_3' => 'list',
-                '3_4' => 'single'
-            ),
-            'checked' => array(
+                '3_4' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '3_1' => array(
+            ],
+        ],
+        '3_1' => [
             'name' => 'Identifier',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '3_1_1' => 'single',
-                '3_1_2' => 'single'
-            ),
-            'checked' => array(
+                '3_1_2' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '3_1_1' => array(
+            ],
+        ],
+        '3_1_1' => [
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '3_1_2' => array(
+        ],
+        '3_1_2' => [
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '3_2' => array(
+        ],
+        '3_2' => [
             'name' => 'Contribute',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '3_2_1' => 'single',
                 '3_2_2' => 'list',
-                '3_2_3' => 'single'
-            ),
-            'checked' => array(
+                '3_2_3' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '3_2_1' => array(
+            ],
+        ],
+        '3_2_1' => [
             'name' => 'Role',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('creator', 'validator'),
-            'checked' => array(
+            'values' => ['creator', 'validator'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'select',
-        ),
-        '3_2_2' => array(
+        ],
+        '3_2_2' => [
             'name' => 'Entity',
             'source' => 'lom',
             'type' => 'vcard',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '3_2_3' => array(
+        ],
+        '3_2_3' => [
             'name' => 'Date',
             'source' => 'lom',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '3_3' => array(
+        ],
+        '3_3' => [
             'name' => 'Metadata Schema',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '3_4' => array(
+            ],
+        ],
+        '3_4' => [
             'name' => 'Language',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '4' => array(
+            ],
+        ],
+        '4' => [
             'name' => 'Technical',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '4_1' => 'list',
                 '4_2' => 'single',
                 '4_3' => 'list',
                 '4_4' => 'list',
                 '4_5' => 'single',
                 '4_6' => 'single',
-                '4_7' => 'single'
-            ),
-            'checked' => array(
+                '4_7' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '4_1' => array(
+            ],
+        ],
+        '4_1' => [
             'name' => 'Format',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_2' => array(
+        ],
+        '4_2' => [
             'name' => 'Size',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'numeric',
-        ),
-        '4_3' => array(
+        ],
+        '4_3' => [
             'name' => 'Location',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_4' => array(
+        ],
+        '4_4' => [
             'name' => 'Requirement',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
-                '4_4_1' => 'list'
-            ),
-            'checked' => array(
+            'childs' => [
+                '4_4_1' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '4_4_1' => array(
+            ],
+        ],
+        '4_4_1' => [
             'name' => 'OrComposite',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '4_4_1_1' => 'single',
                 '4_4_1_2' => 'single',
                 '4_4_1_3' => 'single',
-                '4_4_1_4' => 'single'
-            ),
-            'checked' => array(
+                '4_4_1_4' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '4_4_1_1' => array(
+            ],
+        ],
+        '4_4_1_1' => [
             'name' => 'Type',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('operating system', 'browser'),
-            'checked' => array(
+            'values' => ['operating system', 'browser'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'select',
-        ),
-        '4_4_1_2' => array(
+        ],
+        '4_4_1_2' => [
             'name' => 'Name',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator',
-            'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'),
-            'checked' => array(
+            'values' => ['pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none', 'linux', 'any', 'netscape communicator',
+            'ms-internet explorer', 'opera', 'amaya', 'firefox', 'safari'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '4_4_1_3' => array(
+        ],
+        '4_4_1_3' => [
             'name' => 'Minimum Version',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_4_1_4' => array(
+        ],
+        '4_4_1_4' => [
             'name' => 'Maximum Version',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_5' => array(
+        ],
+        '4_5' => [
             'name' => 'Installation Remarks',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_6' => array(
+        ],
+        '4_6' => [
             'name' => 'Other Platform Requirements',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '4_7' => array(
+        ],
+        '4_7' => [
             'name' => 'Duration',
             'source' => 'lom',
             'type' => 'duration',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'duration',
-        ),
-        '5' => array(
+        ],
+        '5' => [
             'name' => 'Educational',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '5_1' => 'single',
                 '5_2' => 'list',
                 '5_3' => 'single',
@@ -736,583 +756,590 @@ class plugin_lomfr extends plugin_base {
                 '5_10' => 'list',
                 '5_11' => 'list',
                 '5_12' => 'list',
-                '5_13' => 'list'
-            ),
-            'checked' => array(
+                '5_13' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '5_1' => array(
+            ],
+        ],
+        '5_1' => [
             'name' => 'Interactivity Type',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('active', 'expositive', 'mixed'),
-            'checked' => array(
+            'values' => ['active', 'expositive', 'mixed'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_2' => array(
+        ],
+        '5_2' => [
             'name' => 'Learning Resource Type',
             'source' => 'lom',
             'type' => 'sortedselect',
-            'values' => array('exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide',
+            'values' => ['exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 'graph', 'index', 'slide',
             'table', 'narrative text', 'exam', 'experiment', 'problem statement', 'self assessment', 'lecture', 'démonstration',
-            'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique'),
-            'checked' => array(
+            'animation', 'tutoriel', 'glossaire', 'guide', 'matériel de référence', 'méthodologie', 'outil', 'scénario pédagogique'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_3' => array(
+        ],
+        '5_3' => [
             'name' => 'Interactivity Level',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
-            'checked' => array(
+            'values' => ['very low', 'low', 'medium', 'high', 'very high' ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_4' => array(
+        ],
+        '5_4' => [
             'name' => 'Semantic Density',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('very low', 'low', 'medium', 'high', 'very high' ),
-            'checked' => array(
+            'values' => ['very low', 'low', 'medium', 'high', 'very high' ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_5' => array(
+        ],
+        '5_5' => [
             'name' => 'Intended End User Role',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('teacher', 'author', 'learner', 'manager'),
-            'checked' => array(
+            'values' => ['teacher', 'author', 'learner', 'manager'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_6' => array(
+        ],
+        '5_6' => [
             'name' => 'Context',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('school', 'higher education', 'training', 'other', 'enseignement primaire', 'enseignement secondaire',
-            'license', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise'),
-            'checked' => array(
+            'values' => ['school', 'higher education', 'training', 'other', 'enseignement primaire', 'enseignement secondaire',
+            'license', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_7' => array(
+        ],
+        '5_7' => [
             'name' => 'Typical Age Range',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '5_8' => array(
+        ],
+        '5_8' => [
             'name' => 'Difficulty',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('very easy', 'easy', 'medium', 'difficult', 'very difficult'),
-            'checked' => array(
+            'values' => ['very easy', 'easy', 'medium', 'difficult', 'very difficult'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_9' => array(
+        ],
+        '5_9' => [
             'name' => 'Typical Learning Time',
             'source' => 'lom',
             'type' => 'duration',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'duration',
-        ),
-        '5_10' => array(
+        ],
+        '5_10' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '5_11' => array(
+        ],
+        '5_11' => [
             'name' => 'Language',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '5_12' => array(
+        ],
+        '5_12' => [
             'name' => 'Activity',
             'source' => 'lomfr',
             'type' => 'sortedselect',
-            'values' => array('animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire',
+            'values' => ['animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'lire',
             'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer', 's\'informer',
-            'se former', 'simuler', 's\'évaluer'),
-            'checked' => array(
+            'se former', 'simuler', 's\'évaluer'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '5_13' => array(
+        ],
+        '5_13' => [
             'name' => 'Assessment', // Rajouter fichier langue.
             'source' => 'lomfr',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '6' => array(
+        ],
+        '6' => [
             'name' => 'Rights',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '6_1' => 'single',
                 '6_2' => 'single',
-                '6_3' => 'single'
-            ),
-            'checked' => array(
+                '6_3' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '6_1' => array(
+            ],
+        ],
+        '6_1' => [
             'name' => 'Cost',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('yes', 'no'),
-            'checked' => array(
+            'values' => ['yes', 'no'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'select',
-        ),
-        '6_2' => array(
+        ],
+        '6_2' => [
             'name' => 'Copyright And Other Restrictions',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('yes', 'no'),
-            'checked' => array(
+            'values' => ['yes', 'no'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'select',
-        ),
-        '6_3' => array(
+        ],
+        '6_3' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '7' => array(
+        ],
+        '7' => [
             'name' => 'Relation',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '7_1' => 'single',
-                '7_2' => 'single'
-            ),
-            'checked' => array(
+                '7_2' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '7_1' => array(
+            ],
+        ],
+        '7_1' => [
             'name' => 'Kind',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references',
+            'values' => ['ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 'hasformat', 'references',
             'isreferencedby', 'isbasedon', 'isbasisfor', 'requires', 'isrequiredby', 'est associée à', 'est la traduction de',
-            'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis'),
-            'checked' => array(
+            'fait l\'objet d\'une traduction', 'est prérequis de', 'a pour prérequis'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'selectmultiple',
-        ),
-        '7_2' => array(
+        ],
+        '7_2' => [
             'name' => 'Resource',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '7_2_1' => 'list',
-                '7_2_2' => 'list'
-            ),
-            'checked' => array(
+                '7_2_2' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '7_2_1' => array(
+            ],
+        ],
+        '7_2_1' => [
             'name' => 'Identifier',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '7_2_1_1' => 'single',
-                '7_2_1_2' => 'single'
-            ),
-            'checked' => array(
+                '7_2_1_2' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '7_2_1_1' => array(
+            ],
+        ],
+        '7_2_1_1' => [
             'name' => 'Catalog',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '7_2_1_2' => array(
+        ],
+        '7_2_1_2' => [
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '7_2_2' => array(
+        ],
+        '7_2_2' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '8' => array(
+        ],
+        '8' => [
             'name' => 'Annotation',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '8_1' => 'single',
                 '8_2' => 'single',
-                '8_3' => 'single'
-            ),
-            'checked' => array(
+                '8_3' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '8_1' => array(
+            ],
+        ],
+        '8_1' => [
             'name' => 'Entity',
             'source' => 'lom',
             'type' => 'vcard',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '8_2' => array(
+        ],
+        '8_2' => [
             'name' => 'Date',
             'source' => 'lom',
             'type' => 'date',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'date',
-        ),
-        '8_3' => array(
+        ],
+        '8_3' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'freetext',
-        ),
-        '9' => array(
+        ],
+        '9' => [
             'name' => 'Classification',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '9_1' => 'single',
                 '9_2' => 'list',
                 '9_3' => 'single',
-                '9_4' => 'list'
-            ),
-            'checked' => array(
+                '9_4' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '9_1' => array(
+            ],
+        ],
+        '9_1' => [
             'name' => 'Purpose',
             'source' => 'lom',
             'type' => 'select',
-            'values' => array('discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions',
-            'educational level', 'skill level', 'security level', 'competency'),
-            'checked' => array(
+            'values' => ['discipline', 'idea', 'prerequisite', 'educational objective', 'accessibility restrictions',
+            'educational level', 'skill level', 'security level', 'competency'],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '9_2' => array(
+            ],
+        ],
+        '9_2' => [
             'name' => 'Taxon Path',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '9_2_1' => 'single',
-                '9_2_2' => 'list'
-            ),
-            'checked' => array(
+                '9_2_2' => 'list',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '9_2_1' => array(
+            ],
+        ],
+        '9_2_1' => [
             'name' => 'Source',
             'source' => 'lom',
             'type' => 'select',
-            'func' => array('class' => '\local_sharedresources\browser\navigation', 'method' => 'get_taxonomies_menu'),
+            'func' => ['class' => '\local_sharedresources\browser\navigation', 'method' => 'get_taxonomies_menu'],
             'extraclass' => 'taxonomy-source',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '9_2_2' => array(
+            ],
+        ],
+        '9_2_2' => [
             'name' => 'Taxum',
             'source' => 'lom',
             'type' => 'category',
-            'childs' => array(
+            'childs' => [
                 '9_2_2_1' => 'single',
-                '9_2_2_2' => 'single'
-            ),
-            'checked' => array(
+                '9_2_2_2' => 'single',
+            ],
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        ),
-        '9_2_2_1' => array(
+            ],
+        ],
+        '9_2_2_1' => [
             'name' => 'Id',
             'source' => 'lom',
             'type' => 'codetext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
+            ],
             'widget' => 'treeselect',
-        ),
-        '9_2_2_2' => array(
+        ],
+        '9_2_2_2' => [
             'name' => 'Entry',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-        ),
-        '9_3' => array(
+            ],
+        ],
+        '9_3' => [
             'name' => 'Description',
             'source' => 'lom',
             'type' => 'longtext',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 0,
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ),
-            'widget' => 'freetext'
-        ),
-        '9_4' => array(
+            ],
+            'widget' => 'freetext',
+        ],
+        '9_4' => [
             'name' => 'Keyword',
             'source' => 'lom',
             'type' => 'text',
-            'checked' => array(
+            'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
                 'indexer_write' => 1,
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            )
-        )
-    );
+            ],
+        ],
+    ];
+    /*
+     * phpcs:enable
+     */
 
+    /**
+     * Constructor
+     * @param int $entryid
+     */
     public function __construct($entryid = 0) {
         $this->entryid = $entryid;
         $this->context = \context_system::instance();
@@ -1323,26 +1350,31 @@ class plugin_lomfr extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    public function lomHeader() {
+    public function lom_header() {
         return "
             <lom:lom xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\"
                         xmlns:lomfr=\"http://www.lom-fr.fr/xsd/LOMFR\">";
     }
 
     /**
-     * Generates metadata element as XML
-     *
+     * Generates metadata element as XML (recursive)
+     * @param $elem current level element
+     * @param array $metadata
+     * @param &$languageattr
+     * @param string &$fatherstr,
+     * @param int &$cardinality
+     * @param string $pathcode
      */
     public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
-        $value = $this->METADATATREE[$elem];
+        $value = $this->metadatatree[$elem];
         $tmpname = str_replace(' ', '', $value['name']);
         $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
-        $namespace = @$value['source'];
+        $namespace = $value['source'] ?? $this->defaultsource;
         // Category/root : we have to call generate_xml on each child.
         if ($elem == '0') {
-            $tab = array();
+            $tab = [];
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
                 $tab[$childnum] = '';
@@ -1360,7 +1392,7 @@ class plugin_lomfr extends plugin_base {
                 $fatherstr .= $tab[$i];
             }
         } else if ($value['type'] == 'category') {
-            $tab = array();
+            $tab = [];
             $childnum = 0;
             foreach ($value['childs'] as $child => $multiplicity) {
                 $tab[$childnum] = '';
@@ -1436,38 +1468,46 @@ class plugin_lomfr extends plugin_base {
      * Access to the sharedresource_entry object after a new object
      * is saved.
      *
-     * @param sharedresource_entry   object, reference to sharedresource_entry object
-     *        including metadata
+     * @param entry $shrentry sharedresource_entry object including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    public function after_save(&$shrentry) {
+    public function after_save($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
     }
 
-    public function after_update(&$shrentry) {
+    /**
+     * Access to the sharedresource_entry object after a sharedresource is updated.
+     * Usually we need to transfer some metadata that are both stored in moodle core's model and
+     * duplicated in metadata standard.
+     *
+     * @param sharedresource_entry $shrentry including metadata
+     * @return bool, return true to continue to the next handler
+     *        false to stop the running of any subsequent plugin handlers.
+     */
+    public function after_update($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
@@ -1475,11 +1515,12 @@ class plugin_lomfr extends plugin_base {
 
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
+     * @param object $metadata
      */
-    public function getKeywordValues($metadata) {
-        $keyelm = $this->getKeywordElement();
+    public function get_keyword_values($metadata) {
+        $keyelm = $this->get_keyword_element();
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
-        $kwlist = array();
+        $kwlist = [];
         foreach ($keykeys as $k) {
             $kwlist[] = $metadata[$k]->get_value();
         }
@@ -1489,8 +1530,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getTitleElement() {
-        $element = (object)$this->METADATATREE['1_2'];
+    public function get_title_element() {
+        $element = (object)$this->metadatatree['1_2'];
         $element->node = '1_2';
         return $element;
     }
@@ -1498,8 +1539,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getDescriptionElement() {
-        $element = (object)$this->METADATATREE['1_4'];
+    public function get_description_element() {
+        $element = (object)$this->metadatatree['1_4'];
         $element->node = '1_4';
         return $element;
     }
@@ -1507,8 +1548,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    public function getKeywordElement() {
-        $element = (object)$this->METADATATREE['1_5'];
+    public function get_keyword_element() {
+        $element = (object)$this->metadatatree['1_5'];
         $element->node = '1_5';
         return $element;
     }
@@ -1516,8 +1557,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getFileFormatElement() {
-        $element = (object)$this->METADATATREE['4_1'];
+    public function get_file_format_element() {
+        $element = (object)$this->metadatatree['4_1'];
         $element->node = '4_1';
         return $element;
     }
@@ -1525,8 +1566,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getSizeElement() {
-        $element = (object)$this->METADATATREE['4_2'];
+    public function get_size_element() {
+        $element = (object)$this->metadatatree['4_2'];
         $element->node = '4_2';
         return $element;
     }
@@ -1534,8 +1575,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    public function getLocationElement() {
-        $element = (object)$this->METADATATREE['4_3'];
+    public function get_location_element() {
+        $element = (object)$this->metadatatree['4_3'];
         $element->node = '4_3';
         return $element;
     }
@@ -1543,8 +1584,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyPurposeElement() {
-        $element = (object)$this->METADATATREE['9_1'];
+    public function get_taxonomy_purpose_element() {
+        $element = (object)$this->metadatatree['9_1'];
         $element->node = '9_1';
         return $element;
     }
@@ -1552,8 +1593,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyValueElement() {
-        $element = (object)$this->METADATATREE['9_2_2_1'];
+    public function get_taxonomy_value_element() {
+        $element = (object)$this->metadatatree['9_2_2_1'];
         $element->node = '9_2_2_1';
         return $element;
     }
@@ -1566,8 +1607,8 @@ class plugin_lomfr extends plugin_base {
      * The "id" points to the local id to the taxon in the taxonoy source table
      * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
-    public function getTaxumpath() {
-        $element = array();
+    public function get_taxum_path() {
+        $element = [];
         $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
         $element['main'] = "9_2_2";
@@ -1579,7 +1620,7 @@ class plugin_lomfr extends plugin_base {
     /**
      * Gets the metadata node identifier that provides classification storage capability.
      */
-    public function getClassification() {
+    public function get_classification() {
         $element = "9";
         return $element;
     }
@@ -1587,8 +1628,8 @@ class plugin_lomfr extends plugin_base {
     /**
      * versionned sharedresources entry must use Relation elements to link each other.
      */
-    public function getVersionSupportElement() {
-        $element = array();
+    public function get_version_support_element() {
+        $element = [];
         $element['mainname'] = "Relation";
         $element['main'] = "7";
         $element['kind'] = "7_1";
@@ -1600,24 +1641,25 @@ class plugin_lomfr extends plugin_base {
     /**
      * records keywords in metadata flat table
      */
-    public function setKeywords($keywords) {
+    public function set_keywords($keywords) {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            $msg = 'set_keywords() : sharedresource entry is null or empty. This should not happen. Please inform developers.';
+            throw new coding_exception($msg);
         }
 
-        $keywordSource = $this->METADATATREE['1_5']['source'];
-        $select = " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
-        $DB->delete_records_select('sharedresource_metadata', $select, array($this->entryid));
+        $keywordsource = $this->metadatatree['1_5']['source'];
+        $select = " namespace = '{$keywordsource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
+        $DB->delete_records_select('sharedresource_metadata', $select, [$this->entryid]);
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
                 $aword = trim($aword);
-                $mtdrec = new \StdClass;
+                $mtdrec = new StdClass;
                 $mtdrec->entryid = $this->entryid;
                 $mtdrec->element = '1_5:0_'.$i;
-                $mtdrec->namespace = $keywordSource;
+                $mtdrec->namespace = $keywordsource;
                 $mtdrec->value = $aword;
                 $DB->insert_record('sharedresource_metadata', $mtdrec);
                 $i++;

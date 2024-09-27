@@ -104,7 +104,7 @@ $plugins = sharedresource_get_plugins();
 $config = get_config('sharedresource');
 
 foreach ($plugins as $nmaespace => $plugin) {
-    if ($taxumarray = $plugin->getTaxumpath()) {
+    if ($taxumarray = $plugin->get_taxum_path()) {
         $idelement = $taxumarray['id'];
 
         $select = ' element LIKE ? AND namespace = ?';

@@ -18,10 +18,10 @@
  * Version details.
  *
  * @package mod_sharedresource
- * @category mod
  * @author  Piers Harding  piers@catalyst.net.nz
  * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 defined('MOODLE_INTERNAL') || die();

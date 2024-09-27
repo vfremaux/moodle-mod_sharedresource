@@ -16,16 +16,21 @@
 
 /**
  * Displays the filled fields of the metadata
+ *
+ * @package     mod_sharedresource
+ * @author      Frederic Guillou, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
  * form and save these metadata and the resource.
  * It informs the user if there are some errors and in that
  * case, the resource is not saved and the user is sent back
  * to the metadata form
- *
- * @author  Frederic GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
  */
-require_once('../../config.php');
+
+require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
@@ -37,10 +42,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plug
 
 // Receive params.
 
-$mode = required_param('mode', PARAM_ALPHA); // 'add' or 'update' sequence.
+$mode = required_param('mode', PARAM_ALPHA); // Mode 'add' or 'update' sequence.
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $cancel = optional_param('cancel', 0, PARAM_BOOL);
-$return = optional_param('return', '', PARAM_ALPHA); // tels where to return.
+$return = optional_param('return', '', PARAM_ALPHA); // Tells where to return.
 $section = optional_param('section', 0, PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
 $catpath = optional_param('catpath', '', PARAM_TEXT);
@@ -119,8 +124,8 @@ if ($confirm) {
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
-$system_context = context_system::instance();
-$PAGE->set_context($system_context);
+$systemcontext = context_system::instance();
+$PAGE->set_context($systemcontext);
 $urlparams = ['mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return];
 $url = new moodle_url('/mod/sharedresource/metadataupdateconfirm.php', $urlparams);
 $PAGE->set_url($url);

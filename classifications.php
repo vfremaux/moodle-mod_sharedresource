@@ -15,18 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Frederic GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * Display the admin part of the classification configuration.
  *
- * This php script display the admin part of the classification
- * configuration. You can add, delete or apply a restriction
+ * @package     mod_sharedresource
+ * @author      Frederic GUILLOU, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
+ * You can add, delete or apply a restriction
  * on a classification, or configure a specific classification
  * by accessing another page
- *
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
@@ -86,89 +88,89 @@ if (empty($classifications)) {
     $sqlrestrictionsstr = get_string('sqlrestriction', 'sharedresource');
     $taxonselectionstr = get_string('taxonselection', 'sharedresource');
 
-    $table->head = array($namestr, $taxonsstr, $tablestr, $sqlrestrictionsstr, $taxonselectionstr, '');
+    $table->head = [$namestr, $taxonsstr, $tablestr, $sqlrestrictionsstr, $taxonselectionstr, ''];
     $table->width = '100%';
-    $table->size = array('30%', '10%', '20%', '20%', '10%', '10%');
-    $table->align = array('left', 'center', 'left', 'center', 'center', 'right');
+    $table->size = ['30%', '10%', '20%', '20%', '10%', '10%'];
+    $table->align = ['left', 'center', 'left', 'center', 'center', 'right'];
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $hiddenicon = $OUTPUT->pix_icon('t/show', get_string('hide'), 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $visibleicon = $OUTPUT->pix_icon('t/hide', get_string('show'), 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'core', $attrs);
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $deleteicon = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core', $attrs);
 
     $filteredicon = $OUTPUT->pix_icon('i/filter', '', 'core');
 
-    $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+    $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
     $editvaluesicon = $OUTPUT->pix_icon('i/withsubcat', '', 'core', $attrs);
 
     foreach ($classifications as $classif) {
         $navigation = new \local_sharedresources\browser\navigation($classif);
-        $data = array();
+        $data = [];
         $data[] = $classif->name;
         $data[] = $navigation->count_taxons();
         $data[] = $classif->tablename;
         $data[] = $classif->sqlrestriction;
-        // Storage form adds one
+        // Storage form adds one.
         $taxoncount = count(explode(',', $classif->taxonselection)) - 1;
         $data[] = (!empty($classif->taxonselection)) ? $filteredicon.' ('.$taxoncount.')' : '';
 
         $enabledicon = $classif->enabled ? $visibleicon : $hiddenicon;
         $showstr = $classif->enabled ? 'hideclassification' : 'showclassification';
         $what = $classif->enabled ? 'disable' : 'enable';
-        $params = array('id' => $classif->id, 'what' => $what);
+        $params = ['id' => $classif->id, 'what' => $what];
         $editurl = new moodle_url('/mod/sharedresource/classifications.php', $params);
-        $attrs = array('alt' => get_string($showstr, 'sharedresource'),
-                       'title' => get_string($showstr, 'sharedresource'));
+        $attrs = ['alt' => get_string($showstr, 'sharedresource'),
+                       'title' => get_string($showstr, 'sharedresource')];
         $cmds = html_writer::link($editurl, $enabledicon, $attrs);
 
-        $params = array('id' => $classif->id);
+        $params = ['id' => $classif->id];
         $editurl = new moodle_url('/mod/sharedresource/classification.php', $params);
-        $attrs = array('alt' => get_string('updateclassification', 'sharedresource'),
-                       'title' => get_string('updateclassification', 'sharedresource'));
+        $attrs = ['alt' => get_string('updateclassification', 'sharedresource'),
+                       'title' => get_string('updateclassification', 'sharedresource')];
         $cmds .= '&nbsp;'.html_writer::link($editurl, $editicon, $attrs);
 
         if (has_capability('mod/sharedresource:manageclassifications', $systemcontext)) {
-            $params = array('what' => 'delete', 'id' => $classif->id);
+            $params = ['what' => 'delete', 'id' => $classif->id];
             $deleteurl = new moodle_url('/mod/sharedresource/classifications.php', $params);
-            $attrs = array('alt' => get_string('delete', 'sharedresource'),
+            $attrs = ['alt' => get_string('delete', 'sharedresource'),
                            'title' => get_string('delete', 'sharedresource'),
-                           'class' => 'sharedresource-delete-classification');
+                           'class' => 'sharedresource-delete-classification'];
             $cmds .= '&nbsp;'.html_writer::link($deleteurl, $deleteicon, $attrs);
         }
 
         if (has_capability('mod/sharedresource:manageclassificationtokens', $systemcontext)) {
-            $params = array('id' => $classif->id);
+            $params = ['id' => $classif->id];
             $editvaluesurl = new moodle_url('/mod/sharedresource/classificationvalues.php', $params);
-            $attrs = array('alt' => get_string('editclassificationtable', 'sharedresource'),
-                           'title' => get_string('editclassificationtable', 'sharedresource'));
+            $attrs = ['alt' => get_string('editclassificationtable', 'sharedresource'),
+                           'title' => get_string('editclassificationtable', 'sharedresource')];
             $cmds .= '&nbsp;'.html_writer::link($editvaluesurl, $editvaluesicon, $attrs);
 
             if (sharedresource_supports_feature('taxonomy/fineselect')) {
-                $params = array('id' => $classif->id);
+                $params = ['id' => $classif->id];
                 $selecttaxonsurl = new moodle_url('/mod/sharedresource/pro/classificationtaxonselect.php', $params);
-                $attrs = array('alt' => get_string('selecttaxons', 'sharedresource'),
-                               'title' => get_string('selecttaxons', 'sharedresource'));
+                $attrs = ['alt' => get_string('selecttaxons', 'sharedresource'),
+                               'title' => get_string('selecttaxons', 'sharedresource')];
                 $cmds .= '&nbsp;'.html_writer::link($selecttaxonsurl, $filteredicon, $attrs);
             }
         }
 
         if (sharedresource_supports_feature('taxonomy/accessctl')) {
-            $params = array('classificationid' => $classif->id);
+            $params = ['classificationid' => $classif->id];
             $label = get_string('classificationacls', 'sharedresource');
             $aclurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
-            $attrs = array('alt' => $label, 'title' => $label);
+            $attrs = ['alt' => $label, 'title' => $label];
             if (empty($classif->accessctl)) {
-                $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+                $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
                 $aclicon = $OUTPUT->pix_icon('i/permissions', '', 'core', $attrs);
             } else {
-                $attrs = array('class' => 'mod-sharedresource-classif-ctl');
+                $attrs = ['class' => 'mod-sharedresource-classif-ctl'];
                 $aclicon = $OUTPUT->pix_icon('i/permissionlock', '', 'core', $attrs);
             }
             $cmds .= '&nbsp;'.html_writer::link($aclurl, $aclicon, $attrs);
@@ -187,7 +189,7 @@ echo $OUTPUT->single_button($addurl, get_string('addclassification', 'sharedreso
 echo '</div>';
 
 $label = get_string('backadminpage', 'sharedresource');
-$buttonurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
+$buttonurl = new moodle_url('/admin/settings.php', ['section' => 'modsettingsharedresource']);
 echo $OUTPUT->single_button($buttonurl, $label);
 
 echo $OUTPUT->footer();

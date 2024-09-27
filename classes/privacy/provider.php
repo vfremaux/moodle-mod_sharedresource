@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Sharedresource module has no GRDP concern as shared resources are stored at site
  * level and are managed on behalf of the librarian administrator.
+ * @package mod_sharedresource
  */
 
 class provider implements \core_privacy\local\metadata\null_provider {
@@ -30,7 +31,7 @@ class provider implements \core_privacy\local\metadata\null_provider {
      *
      * @return  string
      */
-    public static function get_reason() : string {
+    public static function get_reason(): string {
         return 'privacy:metadata';
     }
 }

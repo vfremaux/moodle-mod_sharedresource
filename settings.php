@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package mod_sharedresource
- * @category
+ * global settings.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,20 +41,21 @@ $hasclassification = false;
 // Configuration for rss feed.
 
 if (empty($CFG->enablerssfeeds)) {
-    $options = array(0 => get_string('rssglobaldisabled', 'admin'));
+    $options = [0 => get_string('rssglobaldisabled', 'admin')];
     $desc = get_string('configenablerssfeeds', 'sharedresource').'<br />'.get_string('configenablerssfeedsdisabled2', 'admin');
 } else {
-    $options = array(0 => get_string('no'), 1 => get_string('yes'));
+    $options = [0 => get_string('no'), 1 => get_string('yes')];
     $desc = get_string('configenablerssfeeds', 'sharedresource');
 }
 
-$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, $where);
 
 if ($namespace = get_config('sharedresource', 'schema')) {
     $hasmetadata = true;
     $plugin = sharedresource_get_plugin($namespace);
 
-    if (!is_null($plugin->getClassification())) {
+    if (!is_null($plugin->get_classification())) {
         $hasclassification = true;
     }
 }
@@ -62,7 +65,7 @@ if ($ADMIN->fulltree) {
     $label = get_string('repository', 'sharedresource');
     $settings->add(new admin_setting_heading('h0', $label, ''));
 
-    $checkedyesno = array('' => get_string('no'), 'checked' => get_string('yes')); // Not nice at all.
+    $checkedyesno = ['' => get_string('no'), 'checked' => get_string('yes')]; // Not nice at all.
 
     $key = 'sharedresource/freeze_index';
     $label = get_string('configfreezeindex', 'sharedresource');
@@ -101,8 +104,8 @@ if ($ADMIN->fulltree) {
     $desc = get_string('configframesize_desc', 'sharedresource');
     $settings->add(new admin_setting_configtext($key, $label, $desc, 230, PARAM_INT));
 
-    $woptions = array('' => get_string('newwindow', 'sharedresource'),
-                      'checked' => get_string('pagewindow', 'sharedresource'));
+    $woptions = ['' => get_string('newwindow', 'sharedresource'),
+                      'checked' => get_string('pagewindow', 'sharedresource')];
     $key = 'sharedresource/popup';
     $label = get_string('configpopup', 'sharedresource');
     $desc = get_string('configpopup_desc', 'sharedresource');
@@ -138,7 +141,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading($key, $label, $desc));
 
     $scormcfg = get_config('scorm');
-    $options = array(SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm'));
+    $options = [SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm')];
     if (!empty($scormcfg->allowtypelocalsync)) {
         $options[SCORM_TYPE_LOCALSYNC] = get_string('typelocalsync', 'scorm');
     }
@@ -162,7 +165,7 @@ if ($ADMIN->fulltree) {
     $desc = get_string('configpluginscontrol_desc', 'sharedresource');
     $settings->add(new admin_setting_heading($key, $label, $desc));
 
-    $checkedoptions = array(0 => get_string('no'), 1 => get_string('yes'));
+    $checkedoptions = [0 => get_string('no'), 1 => get_string('yes')];
 
     $pluginsoptions['0'] = get_string('noplugin', 'sharedresource');
     $sharedresourcesplugins = core_component::get_plugin_list('sharedmetadata');
@@ -185,21 +188,6 @@ if ($ADMIN->fulltree) {
         }
     }
 
-    /*
-    $disabledarr = array('' => get_string('disabled', 'sharedresource'));
-    $userfieldoptions = $DB->get_records_menu('user_info_field', array(), 'id, name', 'id, name');
-    $userfieldoptions = $disabledarr + $userfieldoptions;
-    $key = 'sharedresource/defaultuserfield';
-    $label = get_string('defaultuserfield', 'sharedresource');
-    $desc = get_string('configdefaultuserfield', 'sharedresource');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, '', $userfieldoptions));
-
-    $key = 'sharedresource/allowmultipleaccessvalues';
-    $label = get_string('allowmultipleaccessvalues', 'sharedresource');
-    $desc = get_string('configallowmultipleaccessvalues', 'sharedresource');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, '0'));
-    */
-
     $key = 'sharedresource/hidemetadatadesc';
     $label = get_string('confighidemetadatadesc', 'sharedresource');
     $desc = '';
@@ -208,15 +196,17 @@ if ($ADMIN->fulltree) {
     if ($namespace = get_config('sharedresource', 'schema')) {
         $key = 'sharedresource/metadataconfig';
         $label = get_string('metadataconfiguration', 'sharedresource');
-        $desc = get_string('medatadaconfiguration_desc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php');
+        $url = $CFG->wwwroot.'/mod/sharedresource/metadataconfigure.php';
+        $desc = get_string('medatadaconfiguration_desc', 'sharedresource', $url);
         $settings->add(new admin_setting_heading($key, $label, $desc));
 
         $plugin = sharedresource_get_plugin($namespace);
 
-        if (!is_null($plugin->getClassification())) {
+        if (!is_null($plugin->get_classification())) {
             $key = 'sharedresource/classificationconfig';
             $label = get_string('classificationconfiguration', 'sharedresource');
-            $desc = get_string('classificationconfiguration_desc', 'sharedresource', $CFG->wwwroot.'/mod/sharedresource/classifications.php');
+            $url = $CFG->wwwroot.'/mod/sharedresource/classifications.php';
+            $desc = get_string('classificationconfiguration_desc', 'sharedresource', $url);
             $settings->add(new admin_setting_heading($key, $label, $desc));
         }
     }
@@ -253,7 +243,7 @@ if ($ADMIN->fulltree) {
 
 if ($hasmetadata || $hasclassification) {
 
-    if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
+    if ($DB->get_field('modules', 'visible', ['name' => 'sharedresource'])) {
 
         $label = new lang_string('pluginname', 'mod_sharedresource');
         $ADMIN->add('modsettings', new admin_category('modsharedresourcefolder', $label));
@@ -265,14 +255,16 @@ if ($hasmetadata || $hasclassification) {
         if ($hasmetadata) {
             $label = get_string('metadata', 'sharedresource');
             $pageurl = new moodle_url('/mod/sharedresource/metadataconfigure.php');
-            $settingspage = new admin_externalpage('resourcemetadata', $label, $pageurl, 'repository/sharedresources:manage');
+            $cap = 'repository/sharedresources:manage';
+            $settingspage = new admin_externalpage('resourcemetadata', $label, $pageurl, $cap);
             $ADMIN->add('modsharedresourcefolder', $settingspage);
         }
 
         if ($hasclassification) {
             $label = get_string('classifications', 'sharedresource');
             $pageurl = new moodle_url('/mod/sharedresource/classifications.php');
-            $settingspage = new admin_externalpage('resourceclassification', $label , $pageurl, 'repository/sharedresources:manage');
+            $cap = 'repository/sharedresources:manage';
+            $settingspage = new admin_externalpage('resourceclassification', $label , $pageurl, $cap);
             $ADMIN->add('modsharedresourcefolder', $settingspage);
         }
     }

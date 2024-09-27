@@ -17,18 +17,15 @@
 /**
  * Definition of log events
  *
- * @package    mod_sharedresource
- * @category   log
- * @copyright  2010 Petr Skoda (http://skodak.org)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
-
-$logs = array(
-    array('module' => 'sharedresource', 'action' => 'add', 'mtable' => 'sharedresource', 'field' => 'name'),
-    array('module' => 'sharedresource', 'action' => 'update', 'mtable' => 'sharedresource', 'field' => 'name'),
-    array('module' => 'sharedresource', 'action' => 'view', 'mtable' => 'sharedresource', 'field' => 'name'),
-);
+$logs = [
+    ['module' => 'sharedresource', 'action' => 'add', 'mtable' => 'sharedresource', 'field' => 'name'],
+    ['module' => 'sharedresource', 'action' => 'update', 'mtable' => 'sharedresource', 'field' => 'name'],
+    ['module' => 'sharedresource', 'action' => 'view', 'mtable' => 'sharedresource', 'field' => 'name'],
+];

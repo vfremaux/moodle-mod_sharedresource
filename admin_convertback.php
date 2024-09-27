@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * this admin screen allows converting massively sharedresources into local resources or urls.
+ * This admin screen allows converting massively sharedresources into local resources or urls.
  *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 require_once('../../config.php');
@@ -32,8 +31,8 @@ require_once($CFG->dirroot.'/mod/sharedresource/forms/admin_convert_form.php');
 $courseid = optional_param('course', SITEID, PARAM_INT);
 
 if ($courseid > SITEID) {
-    if (!$course = $DB->get_record('course', array('id' => "$courseid"))) {
-        print_error('coursemisconf');
+    if (!$course = $DB->get_record('course', ['id' => "$courseid"])) {
+        throw new moodle_exception('coursemisconf');
     }
 
     // Security.
@@ -51,7 +50,7 @@ if ($courseid > SITEID) {
 
 $PAGE->set_title(get_string('resourceconversion', 'sharedresource'));
 $PAGE->set_heading(get_string('resourceconversion', 'sharedresource'));
-$url = new moodle_url('/mod/sharedresource/admin_convertback.php', array('course' => $courseid));
+$url = new moodle_url('/mod/sharedresource/admin_convertback.php', ['course' => $courseid]);
 $PAGE->set_url($url);
 $PAGE->navbar->add(get_string('resourceconversion', 'sharedresource'));
 $PAGE->navbar->add(get_string('repositorytoresource', 'sharedresource'));
@@ -60,38 +59,42 @@ $report = '';
 
 // Get courses.
 if (empty($courseid)) {
-    $alllps = $DB->get_records_menu('course', array('format' => 'learning'), 'shortname', 'id,id');
+    $alllps = $DB->get_records_menu('course', ['format' => 'learning'], 'shortname', 'id,id');
     $form = new sharedresource_choosecourse_form($alllps);
 
     echo $OUTPUT->header();
-    print ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
+    echo ($OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1));
     $form->display();
     echo $OUTPUT->footer();
     exit();
 } else {
-    $sharedresources = $DB->get_records('sharedresource', array('course' => $courseid), 'name');
+    $sharedresources = $DB->get_records('sharedresource', ['course' => $courseid], 'name');
     if (empty($sharedresources)) {
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'), 1);
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
-        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid, 'action' => 'activities')));
+        echo $OUTPUT->continue_button(new moodle_url('/course/view.php', ['id' => $courseid, 'action' => 'activities']));
         echo $OUTPUT->footer();
         exit();
     }
     // Filter convertible resources :
     // We only can convert back non effectively shared resources.
     foreach ($sharedresources as $id => $sharedresource) {
-        if ($DB->count_records_select('sharedresource', " course <> {$courseid} AND identifier = '{$sharedresource->identifier}' ") != 0) {
+        $select = "
+            course <> ? AND
+            identifier = ?
+        ";
+        if ($DB->count_records_select('sharedresource', $select, [$courseid, $sharedresource->identifier]) != 0) {
             unset($sharedresources[$id]);
         }
     }
-    $form2 = new sharedresource_selectresources_form($url,  array('resources' => $sharedresources));
+    $form2 = new sharedresource_selectresources_form($url,  ['resources' => $sharedresources]);
 
     if ($form2->is_cancelled()) {
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('resourceconversion', 'sharedresource'));
         echo $OUTPUT->notification(get_string('conversioncancelled', 'sharedresource'));
-        $buttonurl = new moodle_url('/course/view.php', array('id' => $courseid));
+        $buttonurl = new moodle_url('/course/view.php', ['id' => $courseid]);
         echo $OUTPUT->continue_button($buttonurl);
         echo $OUTPUT->footer();
         exit;
@@ -105,7 +108,7 @@ if (empty($courseid)) {
                 // Convert selected resources.
                 if ($data->$reskey == 1) {
                     $resid = str_replace('rcnv_', '', $reskey);
-                    $sharedresource = $DB->get_record('sharedresource', array('id' => $resid));
+                    $sharedresource = $DB->get_record('sharedresource', ['id' => $resid]);
                     $report .= get_string('convertingsharedresource', 'sharedresource', $sharedresource);
                     sharedresource_convertfrom($sharedresource, $report);
                 }
@@ -133,5 +136,5 @@ if (!empty($report)) {
     echo '</pre>';
 }
 
-echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid)));
+echo $OUTPUT->continue_button(new moodle_url('/course/view.php', ['id' => $courseid]));
 echo $OUTPUT->footer();

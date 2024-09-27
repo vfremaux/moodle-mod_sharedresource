@@ -15,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main plugin implementation file.
  *
  * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package sharedmetadata_anfa
  * @subpackage sharedresource_anfa
  */
+
 namespace mod_sharedresource;
 
 defined('MOODLE_INTERNAL') || die();
+
+use coding_exception;
+use StdClass;
+use context_system;
 
 /*
  * Extend the base resource class for file resources.
@@ -40,13 +46,13 @@ class plugin_anfa extends plugin_base {
 
     protected $context;
 
-    public $ALLSOURCES = ['anfa', 'lom'];
+    public $allsources = ['anfa', 'lom'];
 
-    public $DEFAULTSOURCE = 'LOMv1.0';
+    public $defaultsource = 'LOMv1.0';
 
-    public $OTHERSOURCES = [];
+    public $othersources = [];
 
-    public $METADATATREE = [
+    public $metadatatree = [
         '0' => [
             'name' => 'Root',
             'source' => 'lom',
@@ -59,9 +65,9 @@ class plugin_anfa extends plugin_base {
                 '5' => 'list',
                 '6' => 'single',
                 '7' => 'list', /* usefull to handle document version relations. */
-/*                '8' => 'list',    */
-                '9' => 'list'
-            ]
+    /*                '8' => 'list',    */
+                '9' => 'list',
+            ],
         ],
         '1' => [
             'name' => 'General',
@@ -73,10 +79,10 @@ class plugin_anfa extends plugin_base {
                 '1_3' => 'list',
                 '1_4' => 'list',
                 '1_5' => 'list',
-/*                '1_6' => 'list',
+        /*                '1_6' => 'list',
                 '1_7' => 'single',
                 '1_8' => 'single', */
-                '1_9' => 'list'
+                '1_9' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -85,7 +91,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ]
+            ],
         ],
         '1_1' => [
             'name' => 'Identifier',
@@ -93,7 +99,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '1_1_1' => 'single',
-                '1_1_2' => 'single'
+                '1_1_2' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -102,7 +108,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 1,
                 'author_read'  => 1,
-            ]
+            ],
         ],
         '1_1_1' => [
             'name' => 'Catalog',
@@ -267,7 +273,7 @@ class plugin_anfa extends plugin_base {
             'childs' => [
                 '2_1' => 'single',
                 '2_2' => 'single',
-                '2_3' => 'list'
+                '2_3' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -276,7 +282,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '2_1' => [
             'name' => 'Version',
@@ -323,7 +329,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '2_3_1' => [
             'name' => 'Role',
@@ -380,7 +386,7 @@ class plugin_anfa extends plugin_base {
                 '3_1' => 'list',
                 '3_2' => 'list',
                 '3_3' => 'list',
-                '3_4' => 'single'
+                '3_4' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -389,7 +395,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '3_1' => [
             'name' => 'Identifier',
@@ -397,7 +403,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '3_1_1' => 'single',
-                '3_1_2' => 'single'
+                '3_1_2' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -406,7 +412,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '3_1_1' => [
             'name' => 'Catalog',
@@ -443,7 +449,7 @@ class plugin_anfa extends plugin_base {
             'childs' => [
                 '3_2_1' => 'single',
                 '3_2_2' => 'list',
-                '3_2_3' => 'single'
+                '3_2_3' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -452,7 +458,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '3_2_1' => [
             'name' => 'Role',
@@ -508,7 +514,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '3_4' => [
             'name' => 'Language',
@@ -521,7 +527,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '4' => [
             'name' => 'Technical',
@@ -543,7 +549,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '4_1' => [
             'name' => 'Format',
@@ -753,20 +759,20 @@ class plugin_anfa extends plugin_base {
             'source' => 'lom',
             'type' => 'category',
             'childs' => [
-/*                '5_1' => 'single',   */
+        /*                '5_1' => 'single',   */
                 '5_2' => 'list',
-/*                '5_3' => 'single',
+        /*                '5_3' => 'single',
                 '5_4' => 'single',
                 '5_5' => 'list',    */
                 '5_6' => 'list',
-/*                '5_7' => 'list',
+        /*                '5_7' => 'list',
                 '5_8' => 'single',     */
                 '5_9' => 'single',
                 '5_10' => 'list',
                 '5_11' => 'list',
-/*                '5_12' => 'list',
+        /*                '5_12' => 'list',
                 '5_13' => 'list'   */
-                '5_14' => 'list'
+                '5_14' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -775,7 +781,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         /*
         '5_1' => [
@@ -871,7 +877,7 @@ class plugin_anfa extends plugin_base {
             'values' => ['school', 'higher education', 'training', 'other', 'enseignement primaire', 'enseignement secondaire',
             'license', 'master', 'mastère', 'doctorat', 'formation continue', 'formation en entreprise'],
             */
-            'values' => ['CAP', 'Bac pro', 'BTS', 'Autres'], 
+            'values' => ['CAP', 'Bac pro', 'BTS', 'Autres'],
             'checked' => [
                 'system_write'  => 1,
                 'system_read'  => 1,
@@ -1021,7 +1027,7 @@ class plugin_anfa extends plugin_base {
             'childs' => [
                 '6_1' => 'single',
                 '6_2' => 'single',
-                '6_3' => 'single'
+                '6_3' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1030,7 +1036,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '6_1' => [
             'name' => 'Cost',
@@ -1082,7 +1088,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '7_1' => 'single',
-                '7_2' => 'single'
+                '7_2' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1091,7 +1097,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '7_1' => [
             'name' => 'Kind',
@@ -1116,7 +1122,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '7_2_1' => 'list',
-                '7_2_2' => 'list'
+                '7_2_2' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1125,7 +1131,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '7_2_1' => [
             'name' => 'Identifier',
@@ -1133,7 +1139,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '7_2_1_1' => 'single',
-                '7_2_1_2' => 'single'
+                '7_2_1_2' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1142,7 +1148,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '7_2_1_1' => [
             'name' => 'Catalog',
@@ -1256,7 +1262,7 @@ class plugin_anfa extends plugin_base {
                 '9_1' => 'single',
                 '9_2' => 'list',
                 '9_3' => 'single',
-                '9_4' => 'list'
+                '9_4' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1265,7 +1271,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '9_1' => [
             'name' => 'Purpose',
@@ -1280,7 +1286,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '9_2' => [
             'name' => 'Taxon Path',
@@ -1288,7 +1294,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '9_2_1' => 'single',
-                '9_2_2' => 'list'
+                '9_2_2' => 'list',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1312,7 +1318,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '9_2_2' => [
             'name' => 'Taxum',
@@ -1320,7 +1326,7 @@ class plugin_anfa extends plugin_base {
             'type' => 'category',
             'childs' => [
                 '9_2_2_1' => 'single',
-                '9_2_2_2' => 'single'
+                '9_2_2_2' => 'single',
             ],
             'checked' => [
                 'system_write'  => 1,
@@ -1329,7 +1335,7 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 0,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
+            ],
         ],
         '9_2_2_1' => [
             'name' => 'Id',
@@ -1370,7 +1376,7 @@ class plugin_anfa extends plugin_base {
                 'author_write'  => 0,
                 'author_read'  => 0,
             ],
-            'widget' => 'freetext'
+            'widget' => 'freetext',
         ],
         '9_4' => [
             'name' => 'Keyword',
@@ -1383,13 +1389,13 @@ class plugin_anfa extends plugin_base {
                 'indexer_read' => 1,
                 'author_write'  => 0,
                 'author_read'  => 0,
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function __construct($entryid = 0) {
         $this->entryid = $entryid;
-        $this->context = \context_system::instance();
+        $this->context = context_system::instance();
         $this->pluginname = 'anfa';
         $this->namespace = 'anfa';
     }
@@ -1397,7 +1403,7 @@ class plugin_anfa extends plugin_base {
     /**
      * Provides lom metadata fragment header
      */
-    public function lomHeader() {
+    public function lomheader() {
         return "
             <anfa:anfa xmlns:lom=\"http://ltsc.ieee.org/xsd/LOM\"
                         xmlns:anfa=\"http://www.digitalgreta.fr/xsd/ANFA\">";
@@ -1409,11 +1415,11 @@ class plugin_anfa extends plugin_base {
      */
     public function generate_xml($elem, &$metadata, &$languageattr, &$fatherstr, &$cardinality, $pathcode) {
 
-        $value = $this->METADATATREE[$elem];
+        $value = $this->metadatatree[$elem];
         $tmpname = str_replace(' ', '', $value['name']);
         $name = strtolower(substr($tmpname, 0, 1)).substr($tmpname, 1);
         $valid = 0;
-        $namespace = @$value['source'];
+        $namespace = $value['source'] ?? '';
         // Category/root : we have to call generate_xml on each child.
         if ($elem == '0') {
             $tab = [];
@@ -1457,7 +1463,7 @@ class plugin_anfa extends plugin_base {
                 $fatherstr .= "
                 </{$namespace}:{$name}>";
             }
-        } else if (count(@$metadata[$elem]) > 0) {
+        } else if (count($metadata[$elem] ?? []) > 0) {
             foreach ($metadata[$elem] as $path => $val) {
                 // A "node" that contains data.
                 if (strpos($path, $pathcode) === 0) {
@@ -1510,38 +1516,46 @@ class plugin_anfa extends plugin_base {
      * Access to the sharedresource_entry object after a new object
      * is saved.
      *
-     * @param sharedresource_entry   object, reference to sharedresource_entry object
-     *        including metadata
+     * @param entry $shrentry sharedresource_entry object including metadata
      * @return bool, return true to continue to the next handler
      *        false to stop the running of any subsequent plugin handlers.
      */
-    public function after_save(&$shrentry) {
+    public function after_save($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
     }
 
-    public function after_update(&$shrentry) {
+    /**
+     * Access to the sharedresource_entry object after a sharedresource is updated.
+     * Usually we need to transfer some metadata that are both stored in moodle core's model and
+     * duplicated in metadata standard.
+     *
+     * @param entry $shrentry sharedresource_entry object including metadata
+     * @return bool, return true to continue to the next handler
+     *        false to stop the running of any subsequent plugin handlers.
+     */
+    public function after_update($shrentry) {
         if (!empty($shrentry->keywords)) {
-            $this->setKeywords($shrentry->keywords);
+            $this->set_keywords($shrentry->keywords);
         }
 
         if (!empty($shrentry->title)) {
-            $this->setTitle($shrentry->title);
+            $this->set_title($shrentry->title);
         }
 
         if (!empty($shrentry->description)) {
-            $this->setDescription($shrentry->description);
+            $this->set_description($shrentry->description);
         }
 
         return true;
@@ -1550,8 +1564,8 @@ class plugin_anfa extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword values
      */
-    public function getKeywordValues($metadata) {
-        $keyelm = $this->getKeywordElement();
+    public function get_keyword_values($metadata) {
+        $keyelm = $this->get_keyword_element();
         $keykeys = preg_grep("/{$keyelm->node}:.*/", array_keys($metadata));
         $kwlist = [];
         foreach ($keykeys as $k) {
@@ -1563,8 +1577,8 @@ class plugin_anfa extends plugin_base {
     /**
      * title is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getTitleElement() {
-        $element = (object)$this->METADATATREE['1_2'];
+    public function get_title_element() {
+        $element = (object)$this->metadatatree['1_2'];
         $element->node = '1_2';
         return $element;
     }
@@ -1572,8 +1586,8 @@ class plugin_anfa extends plugin_base {
     /**
      * description is mapped to sharedresource info, so we'll need to get the element often.
      */
-    public function getDescriptionElement() {
-        $element = (object)$this->METADATATREE['1_4'];
+    public function get_description_element() {
+        $element = (object)$this->metadatatree['1_4'];
         $element->node = '1_4';
         return $element;
     }
@@ -1581,8 +1595,8 @@ class plugin_anfa extends plugin_base {
     /**
      * keyword have a special status in metadata form, so a function to find the keyword field is necessary
      */
-    public function getKeywordElement() {
-        $element = (object)$this->METADATATREE['1_5'];
+    public function get_keyword_element() {
+        $element = (object)$this->metadatatree['1_5'];
         $element->node = '1_5';
         return $element;
     }
@@ -1590,8 +1604,8 @@ class plugin_anfa extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getFileFormatElement() {
-        $element = (object)$this->METADATATREE['4_1'];
+    public function get_file_format_element() {
+        $element = (object)$this->metadatatree['4_1'];
         $element->node = '4_1';
         return $element;
     }
@@ -1599,8 +1613,8 @@ class plugin_anfa extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getSizeElement() {
-        $element = (object)$this->METADATATREE['4_2'];
+    public function get_size_element() {
+        $element = (object)$this->metadatatree['4_2'];
         $element->node = '4_2';
         return $element;
     }
@@ -1608,8 +1622,8 @@ class plugin_anfa extends plugin_base {
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
      */
-    public function getLocationElement() {
-        $element = (object)$this->METADATATREE['4_3'];
+    public function get_location_element() {
+        $element = (object)$this->metadatatree['4_3'];
         $element->node = '4_3';
         return $element;
     }
@@ -1617,8 +1631,8 @@ class plugin_anfa extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyPurposeElement() {
-        $element = (object)$this->METADATATREE['9_1'];
+    public function get_taxonomy_purpose_element() {
+        $element = (object)$this->metadatatree['9_1'];
         $element->node = '9_1';
         return $element;
     }
@@ -1626,8 +1640,8 @@ class plugin_anfa extends plugin_base {
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull
      */
-    public function getTaxonomyValueElement() {
-        $element = (object)$this->METADATATREE['9_2_2_1'];
+    public function get_taxonomy_value_element() {
+        $element = (object)$this->metadatatree['9_2_2_1'];
         $element->node = '9_2_2_1';
         return $element;
     }
@@ -1640,7 +1654,7 @@ class plugin_anfa extends plugin_base {
      * The "id" points to the local id to the taxon in the taxonoy source table
      * The "entry" contains a textual recomposed full path to the taxon from taxonomy root.
      */
-    public function getTaxumpath() {
+    public function get_taxum_path() {
         $element = [];
         $element['mainname'] = "Taxon Path";
         $element['source'] = "9_2_1";
@@ -1653,7 +1667,7 @@ class plugin_anfa extends plugin_base {
     /**
      * Gets the metadata node identifier that provides classification storage capability.
      */
-    public function getClassification() {
+    public function get_classification() {
         $element = "9";
         return $element;
     }
@@ -1661,14 +1675,14 @@ class plugin_anfa extends plugin_base {
     /**
      * Tells if the node's value is assimilable to a sharedresource entry.
      */
-    public function isResourceIndex($nodeid) {
+    public function is_resource_index($nodeid) {
         return $nodeid == '7_2_1_2';
     }
 
     /**
      * versionned sharedresources entry must use Relation elements to link each other.
      */
-    public function getVersionSupportElement() {
+    public function get_version_support_element() {
         $element = [];
         $element['mainname'] = "Relation";
         $element['main'] = "7";
@@ -1681,24 +1695,24 @@ class plugin_anfa extends plugin_base {
     /**
      * records keywords in metadata flat table
      */
-    public function setKeywords($keywords) {
+    public function set_keywords($keywords) {
         global $DB;
 
         if (empty($this->entryid)) {
-            throw new \coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
+            throw new coding_exception('setLocation() : sharedresource entry is null or empty. This should not happen. Please inform developers.');
         }
 
-        $keywordSource = $this->METADATATREE['1_5']['source'];
-        $select = " namespace = '{$keywordSource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
+        $keywordsource = $this->metadatatree['1_5']['source'];
+        $select = " namespace = '{$keywordsource}' AND element LIKE '1_5:0_%' AND entryid = ? ";
         $DB->delete_records_select('sharedresource_metadata', $select, [$this->entryid]);
         if ($keywordsarr = explode(',', $keywords)) {
             $i = 0;
             foreach ($keywordsarr as $aword) {
                 $aword = trim($aword);
-                $mtdrec = new \StdClass;
+                $mtdrec = new StdClass();
                 $mtdrec->entryid = $this->entryid;
                 $mtdrec->element = '1_5:0_'.$i;
-                $mtdrec->namespace = $keywordSource;
+                $mtdrec->namespace = $keywordsource;
                 $mtdrec->value = $aword;
                 $DB->insert_record('sharedresource_metadata', $mtdrec);
                 $i++;

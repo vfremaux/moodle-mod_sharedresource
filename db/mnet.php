@@ -17,21 +17,20 @@
 /**
  * This file contains the mnet services for the user_mnet_host plugin
  *
- * @since 2.0
- * @package sharedresource
- * @category mnet
- * @copyright 2012 Valery Fremaux
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
-$publishes = array(
-);
+$publishes = [
+];
 
-$subscribes = array(
-);
+$subscribes = [
+];
 
 if (sharedresource_supports_feature('entry/remote')) {
     include($CFG->dirroot.'/mod/sharedresource/pro/db/mnet.php');

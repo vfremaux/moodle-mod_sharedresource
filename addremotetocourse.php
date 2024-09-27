@@ -15,15 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Add a remote search result in course as sharedresource.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
  * this action screen allows adding a sharedresource from an external search result
  * directly in the current course. This possibility will only be available when
  * external resource repositories are queried from a course starting context
- *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
@@ -45,13 +48,13 @@ if (!empty($token)) {
     $url .= '&token='.$token;
 }
 
-$course = $DB->get_record('course', array('id' => "$courseid"));
+$course = $DB->get_record('course', ['id' => "$courseid"]);
 if (empty($course)) {
-    print_error('coursemisconf');
+    throw new moodle_exception('coursemisconf');
 }
 
 // Some attributes of $PAGE must be defined.
-$params = array('id' => $courseid, 'url' => $url, 'file' => $filename);
+$params = ['id' => $courseid, 'url' => $url, 'file' => $filename];
 $pageurl = new moodle_url('/mod/sharedresource/addremotetocourse.php', $params);
 $PAGE->set_url($pageurl);
 
@@ -60,8 +63,8 @@ $PAGE->set_url($pageurl);
 require_login($course);
 
 $context = context_course::instance($course->id);
-if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
-    print_error('noaccessform', 'sharedresource');
+if (!has_any_capability(['repository/sharedresources:use', 'repository/sharedresources:create'], $context)) {
+    throw new moodle_exception('noaccessform', 'sharedresource');
 }
 
 if (!$section) {
@@ -127,9 +130,9 @@ if ($mode == 'deploy') {
     if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
         sharedresource_deploy_activity($shrentry, $course, $section, $tempfile);
         // TODO : Terminate procedure and return to course silently.
-        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+        redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
     } else {
-        print_error('Activity publisher not installed. Deployment cannot be performed.');
+        throw new moodle_exception('Activity publisher not installed. Deployment cannot be performed.');
     }
 
     // No one should be here....
@@ -151,30 +154,30 @@ if ($mode == 'scorm') {
         $draftid = $tempfile->get_itemid();
     }
     if (empty($draftid) && ($config->scormintegration == SCORM_TYPE_LOCAL)) {
-        print_error('errorscormtypelocalwithnofile', 'sharedresource');
+        throw new moodle_exception('errorscormtypelocalwithnofile', 'sharedresource');
     }
 
     list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section, $draftid);
 
     if (empty($cm)) {
-        print_error('errorscorm', 'sharedresource');
+        throw new moodle_exception('errorscorm', 'sharedresource');
     }
 
     // TODO : Terminate procedure and return to course silently.
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
-if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))) {
+if (!in_array($mode, ['file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'])) {
     /*
      * The resource IS NOT known in the local repository but we may have the identifier and the provider
      * if identifier is empty the resource is submitted from an external search interface.
      * if not empty, the resource comes from another MNET shared repository
      */
-    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $shrentry->identifier))) {
+    if (!$DB->record_exists('sharedresource_entry', ['identifier' => $shrentry->identifier])) {
         $shrentry->add_instance();
     } else {
         if (!$shrentry = \mod_sharedresource\entry::read($identifier)) {
-            print_error('errorinvalididentifier', 'sharedresource');
+            throw new moodle_exception('errorinvalididentifier', 'sharedresource');
         }
     }
 
@@ -196,7 +199,7 @@ if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))
 
         // If we have a physical file we have to bind it to the resource.
         if (!empty($filename)) {
-            $resource = $DB->get_record('resource', array('id' => $resourceid));
+            $resource = $DB->get_record('resource', ['id' => $resourceid]);
             $resource->reference = basename($filename);
             $DB->update_record('resource', $resource);
         }
@@ -204,7 +207,7 @@ if (!in_array($mode, array('file', 'lticonfirm', 'ltiinstall', 'mplayerdeploy'))
         $modulename = 'resource';
     } else {
         if (!$instance->id = $instance->add_instance($instance)) {
-            print_error('erroraddinstance', 'sharedresource');
+            throw new moodle_exception('erroraddinstance', 'sharedresource');
         }
         $modulename = 'sharedresource';
     }
@@ -218,18 +221,18 @@ if (!empty($shrentry->remoteid)) {
 }
 
 if (!$sectionid = course_add_cm_to_section($courseid, $cm->id, $section)) {
-    print_error('errorsectionaddition', 'sharedresource');
+    throw new moodle_exception('errorsectionaddition', 'sharedresource');
 }
 
-if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
-    print_error('errorcmsectionbinding', 'sharedresource');
+if (!$DB->set_field('course_modules', 'section', $sectionid, ['id' => $cm->id])) {
+    throw new moodle_exception('errorcmsectionbinding', 'sharedresource');
 }
 
 // If we are in page format, add page_item to section bound page.
 if ($course->format == 'page') {
     require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
     require_once($CFG->dirroot.'/course/format/page/lib.php');
-    $coursepage = \format\page\course_page::get_current_page($course->id);
+    $coursepage = \format_page\course_page::get_current_page($course->id);
     $coursepage->add_cm_to_page($cm->id);
 }
 
@@ -240,13 +243,13 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(true);
 $PAGE->set_button('');
 $PAGE->set_pagelayout('standard');
-$PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', array('id' => $course->id)));
+$PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', ['id' => $course->id]));
 $PAGE->navbar->add(get_string('addremote', 'sharedresource'));
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('addremote', 'sharedresource').' : '.get_string('pluginname', $modulename));
 
-echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $courseid)));
+echo $OUTPUT->continue_button(new moodle_url('/course/view.php', ['id' => $courseid]));
 echo $OUTPUT->footer($course);
 die;

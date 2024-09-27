@@ -14,22 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-/*
+/**
  * Defines backup_sharedresource_activity_task class
  *
  * @package     mod_sharedresource
- * @category    backup
- * @copyright   2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @subpackage backup-moodle2
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/sharedresource/backup/moodle2/backup_sharedresource_stepslib.php');
 require_once($CFG->dirroot . '/mod/sharedresource/backup/moodle2/backup_sharedresource_settingslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the sharedresource instance
+ * @package mod_sharedresource
  */
 class backup_sharedresource_activity_task extends backup_activity_task {
 
@@ -52,20 +54,20 @@ class backup_sharedresource_activity_task extends backup_activity_task {
      * @param string $content some HTML text that eventually contains URLs to the activity instance scripts
      * @return string the content with the URLs encoded
      */
-    static public function encode_content_links($content) {
+    public static function encode_content_links($content) {
         global $CFG;
 
         $base = preg_quote($CFG->wwwroot, '/');
 
-        // Link to the list of sharedresources
+        // Link to the list of sharedresources.
         $search = "/(".$base."\/mod\/sharedresource\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@SHAREDRESOURCEINDEX*$2@$', $content);
 
-        // Link to sharedresource view by moduleid
+        // Link to sharedresource view by moduleid.
         $search = "/(".$base."\/mod\/sharedresource\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@SHAREDRESOURCEVIEWBYID*$2@$', $content);
 
-        // Link to sharedresource view by sharedresourceid
+        // Link to sharedresource view by sharedresourceid.
         $search = "/(".$base."\/mod\/sharedresource\/view.php\?s\=)([0-9]+)/";
         $content = preg_replace($search, '$@SHAREDRESOURCEVIEWBYF*$2@$', $content);
 

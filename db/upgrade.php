@@ -15,12 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- * @category mod
+ * Upgrade sequence.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
+/**
+ * Standard upgrade.
+ */
 function xmldb_sharedresource_upgrade($oldversion = 0) {
     global $CFG, $DB;
 
@@ -49,7 +54,7 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
 
         $field = new xmldb_field('scorelike', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'scoreview');
 
-        // Conditionally launch add field scoreview
+        // Conditionally launch add field scoreview.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -97,7 +102,7 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
         $table->add_field('purpose', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table sharedresource_classif.
-        $table->add_key('id_classif_pk', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('id_classif_pk', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for sharedresource_classif.
         if (!$dbman->table_exists($table)) {
@@ -141,11 +146,11 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
             $table->add_field('idnumber', XMLDB_TYPE_CHAR, '64', null, null, null, null);
 
             // Adding keys to table sharedresource_taxonomy.
-            $table->add_key('id_pk', XMLDB_KEY_PRIMARY, array('id'));
+            $table->add_key('id_pk', XMLDB_KEY_PRIMARY, ['id']);
 
             // Adding indexes to table sharedresource_taxonomy.
-            $table->add_index('ix_parent', XMLDB_INDEX_NOTUNIQUE, array('parent'));
-            $table->add_index('ix_classificationid', XMLDB_INDEX_NOTUNIQUE, array('classificationid'));
+            $table->add_index('ix_parent', XMLDB_INDEX_NOTUNIQUE, ['parent']);
+            $table->add_index('ix_classificationid', XMLDB_INDEX_NOTUNIQUE, ['classificationid']);
 
             // Conditionally launch create table for sharedresource_taxonomy.
             if (!$dbman->table_exists($table)) {
@@ -208,7 +213,7 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
 
         $field = new xmldb_field('purpose', XMLDB_TYPE_CHAR, 32, null, null, null, null, 'sortorder');
         $changedfield = new xmldb_field('classificationid', XMLDB_TYPE_INTEGER, 11, null, null, null, 0, 'sortorder');
-        $index = new xmldb_index('mdl_shartaxo_pur_ix', XMLDB_INDEX_NOTUNIQUE, array('classificationid'), null);
+        $index = new xmldb_index('mdl_shartaxo_pur_ix', XMLDB_INDEX_NOTUNIQUE, ['classificationid'], null);
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'classificationid');
             // Fix the failed upgrade sequence.
@@ -263,6 +268,9 @@ function xmldb_sharedresource_upgrade($oldversion = 0) {
     return $return;
 }
 
+/**
+ * Classification scheme update.
+ */
 function sharedresource_transfer_classification_settings() {
     global $DB;
 
@@ -289,11 +297,12 @@ function sharedresource_transfer_classification_settings() {
                 $DB->insert_record('sharedresource_classif', $record);
             }
         }
-        // Not yet.
-        // set_config('classifarray', null, 'sharedresource');
     }
 }
 
+/**
+ * Fixes subplugin names.
+ */
 function sharedresource_fix_metadata_settings_plugin_name() {
     global $DB;
 

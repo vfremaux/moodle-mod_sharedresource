@@ -15,13 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * Edits a single token.
  *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/classification_form.php');
@@ -37,19 +38,19 @@ require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = new moodle_url('/mod/sharedresource/token.php', array('id' => $id, 'classifid' => $classifid));
+$url = new moodle_url('/mod/sharedresource/token.php', ['id' => $id, 'classifid' => $classifid]);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
-$classif = $DB->get_record('sharedresource_classif', array('id' => $classifid));
+$classif = $DB->get_record('sharedresource_classif', ['id' => $classifid]);
 
-$mform = new token_form($url, array($classif));
+$mform = new token_form($url, [$classif]);
 
 if ($mform->is_cancelled()) {
-    $redirecturl = new moodle_url('/mod/sharedresource/tokens.php', array('id' => $classifid));
+    $redirecturl = new moodle_url('/mod/sharedresource/tokens.php', ['id' => $classifid]);
     redirect($redirecturl);
 }
 
@@ -66,7 +67,7 @@ if ($data = $mform->get_data()) {
         }
     }
 
-    $redirecturl = new moodle_url('/mod/sharedresource/tokens.php', array('id' => $classifid));
+    $redirecturl = new moodle_url('/mod/sharedresource/tokens.php', ['id' => $classifid]);
     redirect($redirecturl);
 }
 
@@ -77,7 +78,7 @@ $cmd = ($id) ? 'add' : 'update';
 echo $OUTPUT->heading(get_string($cmd.'token', 'sharedresource'));
 
 if ($id) {
-    $tokenrec = $DB->get_record($classif->tablename, array('id' => $id));
+    $tokenrec = $DB->get_record($classif->tablename, ['id' => $id]);
     $mform->set_data($tokenrec);
 }
 

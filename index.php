@@ -15,12 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * General course module index page.
  *
- * @author      Piers Harding  piers@catalyst.net.nz
- * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
  * @package     mod_sharedresource
- * @category    mod
+ * @author      Piers Harding  <piers@catalyst.net.nz>, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require_once('../../config.php');
 
 $id = required_param( 'id', PARAM_INT ); // Course.
@@ -36,9 +38,9 @@ if ($course->id != SITEID) {
     require_login($course->id);
 }
 
-$params = array(
-    'context' => context_course::instance($course->id)
-);
+$params = [
+    'context' => context_course::instance($course->id),
+];
 $event = \mod_sharedresource\event\course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
@@ -70,7 +72,7 @@ if (!$resources = get_all_instances_in_course('sharedresource', $course)) {
 }
 
 $table = new html_table();
-$table->size = array('20%', '40%', '40%');
+$table->size = ['20%', '40%', '40%'];
 
 if ($course->format == 'weeks') {
     $table->head  = [$strweek, $strname, $strsummary];
@@ -89,7 +91,7 @@ $options->para = false;
 $strsummary = get_string('summary');
 
 foreach ($resources as $resource) {
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $printsection = '';
         if ($resource->section !== $currentsection) {
             if ($resource->section) {
@@ -112,14 +114,14 @@ foreach ($resources as $resource) {
     $resurl = new moodle_url('/mod/sharedresource/view.php', ['id' => $resource->coursemodule]);
     if (!$resource->visible) {
         // Show dimmed if the mod is hidden.
-        $table->data[] = array($printsection,
+        $table->data[] = [$printsection,
                 '<a class="dimmed" '.$extra.' href="$resurl">'.format_string($resource->name, true).'</a>',
-                format_text($resource->intro, $resource->introformat, $options));
+                format_text($resource->intro, $resource->introformat, $options)];
     } else {
         // Show normal if the mod is visible.
-        $table->data[] = array($printsection,
+        $table->data[] = [$printsection,
                 '<a '.$extra.' href="'.$resurl.'">'.format_string($resource->name, true).'</a>',
-                format_text($resource->intro, $resource->introformat, $options));
+                format_text($resource->intro, $resource->introformat, $options)];
     }
 }
 echo '<br/>';

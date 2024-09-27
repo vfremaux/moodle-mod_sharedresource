@@ -15,18 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Empty class just to serve as exception marker.
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package     mod_sharedresource
+ * @author      Piers Harding  <piers@catalyst.net.nz>, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (www.activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource;
 
-defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead.");
+/**
+ * Important : moodle_exception CANNOT BE USED here because this class is autoloaded
+ * before moodle libs (and before session creation) to enable proper unserialization of session.
+ */
 
-class exception extends \Exception {
-}
+use Exception;
 
-class coding_exception extends \Exception {
+/**
+ * Empty class just to serve as exception marker.
+ */
+class metadata_exception extends Exception {
 }

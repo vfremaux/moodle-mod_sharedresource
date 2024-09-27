@@ -15,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * main view of a sharedresource
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package     mod_sharedresource
+ * @author      Piers Harding  <piers@catalyst.net.nz>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
+
+use mod_sharedresource\entry;
+use mod_sharedresource\base;
 
 $id = optional_param('id', 0, PARAM_INT);    // Course Module ID.
 $identifier = optional_param('identifier', 0, PARAM_BASE64);    // SHA1 resource identifier.
@@ -38,12 +44,10 @@ $url = new moodle_url('/mod/sharedresource/view.php', ['id' => $id, 'identifier'
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 
-// echo $OUTPUT->header(); // will be done by sharedresource::display();
-
 if ($identifier) {
     $resource = $DB->get_record('sharedresource_entry', ['identifier' => $identifier], '*', MUST_EXIST);
 
-    $resourceentry = new \mod_sharedresource\entry($resource);
+    $resourceentry = new entry($resource);
 
     $originresource = $resourceentry;
     $resourceentry = $resourceentry->fetch_ahead();
@@ -53,10 +57,12 @@ if ($identifier) {
         }
     }
 
-    $params = ['contenthash' => $resource->identifier,
-                    'component' => 'mod_sharedresource',
-                    'filearea' => 'sharedresource',
-                    'itemid' => $resource->id];
+    $params = [
+        'contenthash' => $resource->identifier,
+        'component' => 'mod_sharedresource',
+        'filearea' => 'sharedresource',
+        'itemid' => $resource->id,
+    ];
     if ($resource->file != '' && !$file = $DB->get_record('files', $params)) {
         sharedresource_not_found($cm->course, 'code 00-04');
     }
@@ -70,19 +76,16 @@ if ($identifier) {
             sharedresource_not_found(SITEID, 'Code 01');
         }
 
-        if (!$sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance])) {
-            sharedresource_not_found($cm->course, 'Code 02');
-        }
+        $sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance], '*', MUST_EXIST);
+        $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier], '*', MUST_EXIST);
 
-        if (!$resource = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier])) {
-            sharedresource_not_found($cm->course, 'Code 03');
-        }
-
-        $params = array('contenthash' => $sharedresource->identifier,
-                        'component' => 'mod_sharedresource',
-                        'filearea' => 'sharedresource',
-                        'itemid' => $resource->id);
-        if ($resource->file != '' && !$file = $DB->get_record('files', $params)) {
+        $params = [
+            'contenthash' => $sharedresource->identifier,
+            'component' => 'mod_sharedresource',
+            'filearea' => 'sharedresource',
+            'itemid' => $resource->id,
+        ];
+        if ($resource->file != '' && (!$file = $DB->get_record('files', $params))) {
             sharedresource_not_found($cm->course, 'code 04');
         }
     } else {
@@ -104,10 +107,10 @@ if ($identifier) {
 
 if ($cmid) {
     $modulecontext = context_module::instance($cmid);
-    $params = array(
+    $params = [
         'context' => $modulecontext,
-        'objectid' => $resource->id
-    );
+        'objectid' => $resource->id,
+    ];
 
     $event = \mod_sharedresource\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
@@ -116,12 +119,13 @@ if ($cmid) {
     $event->trigger();
 }
 
-$resourceinstance = new \mod_sharedresource\base($cmid, $identifier);
+$resourceinstance = new base($cmid, $identifier);
 
 if ($inpopup) {
     $resourceinstance->inpopup();
 }
 
+// Handles the OUTPUT->header call.
 $resourceinstance->display();
 
 echo $OUTPUT->footer();
