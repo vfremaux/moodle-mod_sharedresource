@@ -234,8 +234,8 @@ class entry {
         }
 
         if (in_array($attr, ['id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
-                          'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike',
-                          'thumbnail', 'score', 'accessctl'])) {
+                          'thumbnail', 'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context',
+                          'scoreview', 'scorelike', 'score', 'accessctl'])) {
             return $this->shrentryrec->$attr;
         } else {
             mtrace ("Bad attr ".$attr);
@@ -667,7 +667,7 @@ class entry {
 
         // Fix description from tinymce.
         if (is_array($this->description ?? false)) {
-            $this->shrentryrec->description = @$this->description['text'];
+            $this->shrentryrec->description = $this->description['text'] ?? '';
         }
 
         // Remap metadata elements array to cope with setKeywordValues expected format.

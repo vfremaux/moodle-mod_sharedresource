@@ -278,6 +278,7 @@ if ($formdata) {
     }
 
     // Means add or update... common processing.
+    $shrentry->thumbnail = null;
     if ($hasentry) {
 
         // Prepare thumbnail if any.
