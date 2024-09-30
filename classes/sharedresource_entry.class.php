@@ -783,7 +783,7 @@ class entry {
             return $this;
         }
 
-        $nextid = $mtdstandard->getNext();
+        $nextid = $mtdstandard->get_next();
         if ($nextid != $this->id) {
             $next = self::get_by_id($nextid);
             if (empty($next)) {

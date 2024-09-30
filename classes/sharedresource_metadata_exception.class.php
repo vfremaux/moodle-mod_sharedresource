@@ -24,7 +24,7 @@
  */
 namespace mod_sharedresource;
 
-/**
+/*
  * Important : moodle_exception CANNOT BE USED here because this class is autoloaded
  * before moodle libs (and before session creation) to enable proper unserialization of session.
  */
