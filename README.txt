@@ -103,3 +103,7 @@ Changes for 2024052400 (x.x.0012)
 =================================
 
 Fixes CSS link color on metadata popup tabs.
+
+Changes for 2024093000 (x.x.0014)
+=================================
+Global review for moodle CI checks and code normalization. Deep fixes and optimlizations.

@@ -18,22 +18,21 @@
  * Version details.
  *
  * @package mod_sharedresource
- * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @author  Piers Harding  <piers@catalyst.net.nz>, Valery Fremaux  <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (https://activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021102103;       // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2024093000;       // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112801;       // Requires this Moodle version.
 $plugin->component = 'mod_sharedresource';     // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '4.1.0 (Build 2021102103)';
-$plugin->dependencies = ['local_sharedresources' => 201801180];
+$plugin->release = '4.1.0 (Build 2024093000)';
+$plugin->dependencies = ['local_sharedresources' => 2024093000];
 $plugin->supported = [401, 402];
 
 // Non Moodle attributes.
-$plugin->codeincrement = '4.1.0013';
+$plugin->codeincrement = '4.1.0014';
 $plugin->privacy = 'dualrelease';
