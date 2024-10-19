@@ -37,6 +37,7 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.clas
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 
 define('SHAREDRESOURCE_LOCALPATH', 'LOCALPATH');
 define('SHAREDRESOURCE_TEMPPATH', '/temp/sharedresources/');

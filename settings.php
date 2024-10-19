@@ -49,7 +49,7 @@ if (empty($CFG->enablerssfeeds)) {
 }
 
 $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
-$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, $where);
+$managecap = sharedresource_has_capability_somewhere('repository/sharedresources:manage', false, false, false, $where);
 
 if ($namespace = get_config('sharedresource', 'schema')) {
     $hasmetadata = true;

@@ -102,7 +102,7 @@ function sharedresource_check_access($course) {
         $caps = ['repository/sharedresources:create', 'repository/sharedresources:manage'];
         if (!has_any_capability($caps, context_system::instance())) {
             $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
-            if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
+            if (!sharedresource_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
                 throw new moodle_exception(get_string('noaccess'));
             }
         }
@@ -964,4 +964,68 @@ function mod_sharedresource_debug_trace($msg, $level = 0, $label = '', $backtrac
     if (function_exists('debug_trace')) {
         debug_trace($msg, $level, $label, $backtracelevel);
     }
+}
+
+/**
+ * This is a relocalized function in order to get local_my more compact.
+ * checks if a user has a some named capability effective somewhere in a course.
+ * @param string $capability;
+ * @param bool $excludesystem
+ * @param bool $excludesite
+ * @param bool $doanything
+ * @param string $contextlevels restrict to some contextlevel may speedup the query.
+ */
+function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true,
+                                           $doanything = false, $contextlevels = '') {
+    global $USER, $DB;
+
+    // Faster check.
+    $systemcontext = context_system::instance();
+    if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
+        return true;
+    }
+
+    $contextclause = '';
+
+    if ($contextlevels) {
+        list($sql, $params) = $DB->get_in_or_equal(explode(',', $contextlevels), SQL_PARAMS_NAMED);
+        $contextclause = "
+           AND ctx.contextlevel $sql
+        ";
+    }
+    $params['capability'] = $capability;
+    $params['userid'] = $USER->id;
+
+    $sitecoursecontext = context_course::instance(SITEID);
+
+    $sitecontextexclclause = '';
+    if ($excludesite) {
+        $sitecontextexclclause = " ctx.id != {$sitecoursecontext->id}  AND ";
+    }
+
+    // This is a a quick rough query that may not handle all role override possibility.
+
+    $sql = "
+        SELECT
+            COUNT(DISTINCT ra.id)
+        FROM
+            {role_capabilities} rc,
+            {role_assignments} ra,
+            {context} ctx
+        WHERE
+            rc.roleid = ra.roleid AND
+            ra.contextid = ctx.id AND
+            $sitecontextexclclause
+            rc.capability = :capability
+            $contextclause
+            AND ra.userid = :userid AND
+            rc.permission = 1
+    ";
+    $hassome = $DB->count_records_sql($sql, $params);
+
+    if (!empty($hassome)) {
+        return true;
+    }
+
+    return false;
 }

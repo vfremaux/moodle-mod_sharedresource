@@ -75,7 +75,7 @@ if ($course->id > 1) {
     $caps = ['repository/sharedresources:create', 'repository/sharedresources:manage'];
     if (!has_any_capability($caps, context_system::instance())) {
         $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
-        if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
+        if (!sharedresource_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
             throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
         }
     }

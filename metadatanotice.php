@@ -50,7 +50,7 @@ if (!empty($libraryconfig->privatecatalog)) {
         require_login();
     }
     $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
-    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
+    if (!sharedresource_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
         throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
     }
 }
