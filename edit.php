@@ -18,8 +18,7 @@
  * Edit a sharedresource publication.
  *
  * @package     mod_sharedresource
- * @author      Piers Harding  piers@catalyst.net.nz
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Piers Harding  piers@catalyst.net.nz, Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux  (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
@@ -234,7 +233,9 @@ if ($formdata) {
             $newidentifier = sha1($formdata->url);
             if ($shrentry->identifier != $newidentifier) {
                 $SESSION->sr_must_clone_to = $newidentifier;
+                unset($SESSION->sr_no_identifier_change);
             } else {
+                unset($SESSION->sr_must_clone_to);
                 $SESSION->sr_no_identifier_change = $newidentifier;
             }
         } else if (!empty($formdata->sharedresourcefile)) {

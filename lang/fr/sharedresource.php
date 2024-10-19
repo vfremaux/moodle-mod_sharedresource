@@ -447,7 +447,8 @@ $string['vol'] = 'Vol';
 $string['widget'] = 'Widgets de recherche';
 $string['wrongform'] = '<h2> Le formulaire n\'a pas été renseigné correctement. Retour au formulaire dans 15sec</h2>';
 $string['year'] = '- Année -';
-$string['urlchange'] = '<b>Attention ! Changer l\'URL construira une nouvelle ressource liée à celle-ci.</b>';
+$string['urlchange'] = 'Modification de la source';
+$string['urlchange_help'] = '<b>Attention ! Changer l\'URL construira une nouvelle ressource liée à celle-ci.</b>';
 
 $string['taxonpotentialselector'] = 'Taxons possibles';
 $string['selectedtaxonselector'] = 'Taxons actifs';
