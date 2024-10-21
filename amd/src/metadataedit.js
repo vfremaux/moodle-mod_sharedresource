@@ -70,6 +70,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('.mtd-form-element input[type="text"]').trigger('keyup');
             // On selects, triggering empties preload choices on taxonomy.
             // $('.mtd-form-element select').trigger('change');
+            $('.mtd-form-element.is-mandatory-1 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-2 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-3 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-4 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-5 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-6 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-7 select').trigger('change');
             $('.mtd-form-element textarea').trigger('keyup');
         },
 
