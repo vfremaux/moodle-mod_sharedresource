@@ -327,7 +327,8 @@ if ($formdata) {
             'catpath' => $catpath,
         ];
         $fullurl = new moodle_url('/mod/sharedresource/forms/metadata_form.php', $params);
-        redirect($fullurl);
+		echo $OUTPUT->continue($fullurl);
+        // redirect($fullurl);
     }
 }
 
