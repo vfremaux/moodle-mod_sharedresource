@@ -595,8 +595,8 @@ class metadata_renderer extends plugin_renderer_base {
         $template->fromlibrary = $fromlibrary;
         $template->nodestr = get_string('node', 'sharedresource');
         $template->completeformstr = get_string('completeform', 'sharedresource');
-        $template->mustcloneto = $SESSION->sr_must_clone_to;
-        $template->noidentifierchange = $SESSION->sr_no_identifier_change;
+        $template->mustcloneto = $SESSION->sr_must_clone_to ?? '';
+        $template->noidentifierchange = $SESSION->sr_no_identifier_change ?? '';
 
         $template->nbrchilds = count($mtdstandard->get_element_childs(0));
         $template->dmusedstr = get_string('dmused', 'sharedresource');
