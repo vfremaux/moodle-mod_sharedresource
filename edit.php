@@ -334,5 +334,7 @@ if (isset($updateformdata)) {
 echo $OUTPUT->header();
 
 // Display form.
+unset($SESSION->sr_must_clone_to);
+unset($SESSION->sr_no_identifier_change);
 $mform->display();
 echo $OUTPUT->footer($course);
