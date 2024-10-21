@@ -123,4 +123,6 @@ metadata_initialise_core_elements($mtdstandard, $shrentry);
 
 echo $renderer->metadata_edit_form($capability, $mtdstandard, $shrentry);
 
+echo "Post metadata form : CLone to : ".$SESSION->sr_must_clone_to.'<br/>';
+
 echo $OUTPUT->footer($course);
