@@ -232,9 +232,11 @@ if ($formdata) {
         if (empty($formdata->sharedresourcefile) && !empty($formdata->url)) {
             $newidentifier = sha1($formdata->url);
             if ($shrentry->identifier != $newidentifier) {
+                echo " URL Marking session clone_to as old id {$shrentry->identifier} differs from new : $newidentifier ";
                 $SESSION->sr_must_clone_to = $newidentifier;
                 unset($SESSION->sr_no_identifier_change);
             } else {
+                echo " URL UNMarking session clone_to as old id {$shrentry->identifier} equals new : $newidentifier ";
                 unset($SESSION->sr_must_clone_to);
                 $SESSION->sr_no_identifier_change = $newidentifier;
             }
@@ -248,9 +250,11 @@ if ($formdata) {
                 $newidentifier = $file->get_contenthash();
                 if ($shrentry->identifier != $newidentifier) {
                     // Save a reference in session to make metadatabinding on late save.
+                    echo " FILE Marking session clone_to as old id {$shrentry->identifier} differs from new : $newidentifier ";
                     $SESSION->sr_must_clone_to = $newidentifier;
                     unset($SESSION->sr_no_identifier_change);
                 } else {
+                    echo " FILE UNMarking session clone_to as old id {$shrentry->identifier} equals new : $newidentifier ";
                     $SESSION->sr_no_identifier_change = $newidentifier;
                     unset($SESSION->sr_must_clone_to);
                 }
