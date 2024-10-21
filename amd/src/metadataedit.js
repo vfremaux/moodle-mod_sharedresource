@@ -418,7 +418,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // mark element as empty.
                 that.parent('.mtd-form-element').addClass('is-empty');
 
-                if (that.hasClass('is-mandatory')) {
+                if (that.parent('.mtd-form-element').hasClass('is-mandatory')) {
                     // lock form submit.
                     $('#id-mtd-submit').attr('disabled', true);
                     $('#id-mtd-submit').addClass('is-disabled');

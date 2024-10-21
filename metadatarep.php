@@ -112,8 +112,6 @@ $SESSION->error = '';
 $srentry = $SESSION->sr_entry;
 $shrentry = unserialize($srentry);
 
-echo "Early REP : CLone to : ".$SESSION->sr_must_clone_to.'<br/>';
-
 // If it's an update, metadata of the sharedresource should be deleted before adding new ones.
 if ($mode != 'add') {
     foreach ($shrentry->metadataelements as $key => $metadata) {
@@ -171,8 +169,6 @@ if ($result['error'] != []) {
     echo $OUTPUT->footer();
     die;
 }
-
-echo "Pre controller : CLone to : ".$SESSION->sr_must_clone_to.'<br/>';
 
 // No errors in metadata.
 // These two lines in comment can be used if you want to show the user values of saved fields.
