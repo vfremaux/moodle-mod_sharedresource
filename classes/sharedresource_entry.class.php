@@ -611,7 +611,6 @@ class entry {
         global $DB, $SESSION;
 
         if (!empty($SESSION->sr_must_clone_to)) {
-            echo "CLone to : ".$SESSION->sr_must_clone_to.'<br/>';
             /*
              * the resource content has changed, Identifier cannot be preserved.
              * We need to clone resource
