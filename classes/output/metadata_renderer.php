@@ -463,11 +463,11 @@ class metadata_renderer extends plugin_renderer_base {
                     } else {
                         $cleanedkey = clean_string_key(strip_tags($value));
                         if (!empty($cleanedkey)) {
+                            echo "Cleaned key : #$cleanedkey# ";
                             $template->mtdvalue = get_string($cleanedkey, 'sharedmetadata_'.$namespace);
                         }
                     }
                 }
-                break;
             }
 
             case 'date': {
