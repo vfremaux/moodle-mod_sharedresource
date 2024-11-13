@@ -232,13 +232,9 @@ if ($formdata) {
         if (empty($formdata->sharedresourcefile) && !empty($formdata->url)) {
             $newidentifier = sha1($formdata->url);
             if ($shrentry->identifier != $newidentifier) {
-                mod_sharedresource_debug_trace(" URL Marking session clone_to as old id {$shrentry->identifier}
-                differs from new : $newidentifier ", SHR_TRACE_DEBUG);
                 $SESSION->sr_must_clone_to = $newidentifier;
                 unset($SESSION->sr_no_identifier_change);
             } else {
-                mod_sharedresource_debug_trace(" URL UNMarking session clone_to as old id {$shrentry->identifier}
-                equals new : $newidentifier ", SHR_TRACE_DEBUG);
                 unset($SESSION->sr_must_clone_to);
                 $SESSION->sr_no_identifier_change = $newidentifier;
             }
@@ -252,13 +248,9 @@ if ($formdata) {
                 $newidentifier = $file->get_contenthash();
                 if ($shrentry->identifier != $newidentifier) {
                     // Save a reference in session to make metadatabinding on late save.
-                    debug_trace(" FILE Marking session clone_to as old id {$shrentry->identifier}
-                    differs from new : $newidentifier ", SHR_TRACE_DEBUG);
                     $SESSION->sr_must_clone_to = $newidentifier;
                     unset($SESSION->sr_no_identifier_change);
                 } else {
-                    debug_trace(" FILE UNMarking session clone_to as old id {$shrentry->identifier}
-                    equals new : $newidentifier ", SHR_TRACE_DEBUG);
                     $SESSION->sr_no_identifier_change = $newidentifier;
                     unset($SESSION->sr_must_clone_to);
                 }
@@ -342,7 +334,5 @@ if (isset($updateformdata)) {
 echo $OUTPUT->header();
 
 // Display form.
-unset($SESSION->sr_must_clone_to);
-unset($SESSION->sr_no_identifier_change);
 $mform->display();
 echo $OUTPUT->footer($course);
