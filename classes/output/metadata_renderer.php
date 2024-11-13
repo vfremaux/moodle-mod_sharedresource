@@ -455,16 +455,17 @@ class metadata_renderer extends plugin_renderer_base {
                         $mtdvalues = [];
                         foreach ($value as $item) {
                             $cleanedkey = clean_string_key($item);
-                            if (!empty($cleanedkey)) {
+                            if (!empty(clean_param($cleanedkey, PARAM_STRINGID))) {
                                 $mtdvalues[] = get_string($cleanedkey, 'sharedmetadata_'.$namespace);
                             }
                         }
                         $template->mtdvalue = implode(', ', $mtdvalues);
                     } else {
                         $cleanedkey = clean_string_key(strip_tags($value));
-                        if (!empty($cleanedkey)) {
-                            echo "Cleaned key : #$cleanedkey# ";
+                        if (!empty(clean_param($cleanedkey, PARAM_STRINGID))) {
                             $template->mtdvalue = get_string($cleanedkey, 'sharedmetadata_'.$namespace);
+                        } else {
+                            $template->mtdvalue = '';
                         }
                     }
                 }
