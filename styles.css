@@ -156,9 +156,24 @@
     width: 27%;
 }
 
-.mtd-form input[type="submit"]:hover {
-    background-color: #6c3;
+
+.mtd-form #id-mtd-submit {
+    background-color: #A0e080 !important;
     cursor: pointer;
+}
+
+.mtd-form #id-mtd-submit:hover {
+    background-color: #66cc33 !important;
+}
+
+.mtd-form #id-mtd-submit.is-disabled {
+    background-color: #F59696 !important;
+    color: #fff;
+    cursor: pointer;
+}
+
+.mtd-form #id-mtd-submit.is-disabled:hover {
+    background-color: #F05050 !important;
 }
 
 .path-mod-sharedresource-forms input[type="reset"] {
