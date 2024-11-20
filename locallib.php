@@ -15,14 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Local function library
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package    mod_sharedresource
- * @category   mod
+ * @package     mod_sharedresource
+ * @author      Piers Harding  piers@catalyst.net.nz
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
+/*
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+
 defined('MOODLE_INTERNAL') || die();
+
+define('SHR_TRACE_ERRORS', 1);
+define('SHR_TRACE_NOTICE', 3);
+define('SHR_TRACE_DEBUG', 5);
+define('SHR_TRACE_DATA', 8);
+define('SHR_TRACE_DEBUG_FINE', 10);
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
@@ -84,9 +99,10 @@ function sharedresource_check_access($course) {
         return $coursecontext;
     } else {
         require_login();
-        $caps = array('repository/sharedresources:create', 'repository/sharedresources:manage');
+        $caps = ['repository/sharedresources:create', 'repository/sharedresources:manage'];
         if (!has_any_capability($caps, context_system::instance())) {
-            if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+            $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+            if (!sharedresource_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
                 throw new moodle_exception(get_string('noaccess'));
             }
         }
@@ -104,8 +120,8 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
 
     $report = '';
 
-    if (!$module = $DB->get_record('modules', array('name' => 'sharedresource'))) {
-        print_error('errornotinstalled', 'sharedresource');
+    if (!$module = $DB->get_record('modules', ['name' => 'sharedresource'])) {
+        throw new moodle_exception('errornotinstalled', 'sharedresource');
     }
 
     // First get the course module the resource is attached to.
@@ -133,10 +149,10 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
         $storedfile = array_pop($resourcefiles);
 
         $shrentry->identifier = $storedfile->get_contenthash();
-        $shrentry->url = new moodle_url('/mod/sharedresource/view.php', array('identifier' => $storedfile->get_contenthash()));
+        $shrentry->url = new moodle_url('/mod/sharedresource/view.php', ['identifier' => $storedfile->get_contenthash()]);
     }
 
-    if (!$DB->record_exists('sharedresource_entry', array('identifier' => $shrentry->identifier))) {
+    if (!$DB->record_exists('sharedresource_entry', ['identifier' => $shrentry->identifier])) {
         $shrentry->add_instance();
     }
 
@@ -163,7 +179,7 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
     $sharedresource->introformat = $resource->introformat;
     $sharedresource->alltext = '';
     if (!$sharedresourceid = $sharedresource->add_instance($sharedresource)) {
-        print_error('erroraddinstance', 'sharedresource');
+        throw new moodle_exception('erroraddinstance', 'sharedresource');
     }
 
     // If type is 'file', move the physical storage, now we have an instance id.
@@ -177,7 +193,7 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
         $fs->delete_area_files($newfile->contextid, $newfile->component, $newfile->filearea, $newfile->itemid);
 
         $finalrec = $fs->create_file_from_storedfile($newfile, $storedfile);
-        $DB->set_field('sharedresource_entry', 'file', $finalrec->get_id(), array('id' => $shrentry->id));
+        $DB->set_field('sharedresource_entry', 'file', $finalrec->get_id(), ['id' => $shrentry->id]);
     }
 
     // Rebind the existing module to the new sharedresource.
@@ -194,7 +210,7 @@ function sharedresource_convertto(&$resource, $type = 'resource') {
     if (debugging()) {
         $report .= "Delete old instance $resource->id of $type ";
     }
-    $DB->delete_records($type, array('id' => $resource->id));
+    $DB->delete_records($type, ['id' => $resource->id]);
 
     // Cleanup logs and anything that points to this resource...
 
@@ -211,19 +227,19 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
 
     $report = '';
 
-    if (!$sharedmodule = $DB->get_record('modules', array('name' => 'sharedresource'))) {
-        print_error('errornotinstalled', 'sharedresource');
+    if (!$sharedmodule = $DB->get_record('modules', ['name' => 'sharedresource'])) {
+        throw new moodle_exception('errornotinstalled', 'sharedresource');
     }
-    $module = $DB->get_record('modules', array('name' => 'resource'));
+    $module = $DB->get_record('modules', ['name' => 'resource']);
 
     // Get the sharedresource_entry that is represented by the sharedresource.
-    if (!$shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $sharedresource->identifier))) {
-        print_error('errorinvalididentifier', 'sharedresource');
+    if (!$shrentry = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier])) {
+        throw new moodle_exception('errorinvalididentifier', 'sharedresource');
     }
 
     // Calculate physical locations and reference.
     if (!empty($shrentry->file)) {
-        $module = $DB->get_record('modules', array('name' => 'resource'));
+        $module = $DB->get_record('modules', ['name' => 'resource']);
 
         // Complete and add a resource record.
         if (debugging()) {
@@ -248,7 +264,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
         if (debugging()) {
             $report .= "Building an url instance... \n";
         }
-        $module = $DB->get_record('modules', array('name' => 'url'));
+        $module = $DB->get_record('modules', ['name' => 'url']);
         $instance = new StdClass();
         $instance->name = $sharedresource->name;
         $instance->intro = $sharedresource->intro;
@@ -293,7 +309,7 @@ function sharedresource_convertfrom(&$sharedresource, &$report) {
     if (debugging()) {
         $report .= "Remove old sharedresource module... \n";
     }
-    $DB->delete_records('sharedresource', array('id' => $sharedresource->id));
+    $DB->delete_records('sharedresource', ['id' => $sharedresource->id]);
 
     // Original resource stays in repository.
     // TODO : examinate librarian case that may want to fully discard the resource.
@@ -319,9 +335,9 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
     // Get metadata plugin and restype element name.
     $mtdstandard = sharedresource_get_plugin($namespace);
-    $mtdelement = $mtdstandard->getElement($element);
+    $mtdelement = $mtdstandard->get_element($element);
 
-    $params = array();
+    $params = [];
 
     if ($what == 'values') {
         $clause = " element LIKE ? ";
@@ -351,7 +367,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
             $textoption = substr($using, 0, strpos($using, ':'));
             $using = substr($using, strpos($using, ':') + 1);
-            $listsearchoptions = array();
+            $listsearchoptions = [];
 
             if (!empty($using)) {
                 $listtokens = explode(',', str_replace("'", "''", $using));
@@ -451,7 +467,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
 
     // Search in all possible sources for this metadata namespace.
     // list($insql, $params) = $DB->get_in_or_equal($mtdstandard->ALLSOURCES); // For future polystandard hypothesis.
-    list($insql, $nsparams) = $DB->get_in_or_equal(array($namespace));
+    list($insql, $nsparams) = $DB->get_in_or_equal([$namespace]);
     $sql = "
         SELECT DISTINCT
             $fields
@@ -469,8 +485,7 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
         $params[] = $p;
     }
 
-    $items = array();
-    // debug_trace('localsearch : '.$sql);
+    $items = [];
     if ($recs = $DB->get_records_sql($sql, $params)) {
         foreach ($recs as $rec) {
             $items[] = $rec->$fields;
@@ -479,7 +494,12 @@ function sharedresource_get_by_metadata($element, $namespace = 'lom', $what = 'v
     return $items;
 }
 
-function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
+/**
+ * Add contexts
+ * @param array $contextopts
+ * @param object $course
+ */
+function sharedresource_add_accessible_contexts(& $contextopts, $course = null) {
     global $COURSE, $DB;
 
     if (is_null($course)) {
@@ -487,20 +507,20 @@ function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
     }
 
     if ($COURSE->id != SITEID) {
-        $contextoptsrev = array();
-        $ctx = $DB->get_record('context', array('contextlevel' => CONTEXT_COURSECAT, 'instanceid' => $course->category));
-        $current = $DB->get_record('course_categories', array('id' => $course->category), 'id, name, parent');
+        $contextoptsrev = [];
+        $ctx = $DB->get_record('context', ['contextlevel' => CONTEXT_COURSECAT, 'instanceid' => $course->category]);
+        $current = $DB->get_record('course_categories', ['id' => $course->category], 'id, name, parent');
         $contextoptsrev[$ctx->id] = $current->name;
         while ($current->parent) {
-            if ($current = $DB->get_record('course_categories', array('id' => $current->parent), 'id, name, parent')) {
-                $ctx = $DB->get_record('context', array('contextlevel' => CONTEXT_COURSECAT, 'instanceid' => $current->id));
+            if ($current = $DB->get_record('course_categories', ['id' => $current->parent], 'id, name, parent')) {
+                $ctx = $DB->get_record('context', ['contextlevel' => CONTEXT_COURSECAT, 'instanceid' => $current->id]);
                 $contextoptsrev[$ctx->id] = $current->name;
             }
         }
         $contextoptsrev = array_reverse($contextoptsrev, true);
         $contextopts = $contextopts + $contextoptsrev;
     } else {
-        if ($cats = $DB->get_records('course_categories', array('visible' => 1), 'parent,sortorder')) {
+        if ($cats = $DB->get_records('course_categories', ['visible' => 1], 'parent,sortorder')) {
             // Slow way.
             foreach ($cats as $cat) {
                 $ctx = context_coursecat::instance($cat->id);
@@ -514,7 +534,7 @@ function sharedresource_add_accessible_contexts(&$contextopts, $course = null) {
 
 /**
  * get the last visible non empty section in the course.
- *
+ * @param mixed $courseorid
  */
 function sharedresource_get_course_section_to_add($courseorid) {
     global $DB;
@@ -525,7 +545,7 @@ function sharedresource_get_course_section_to_add($courseorid) {
         $courseid = $courseorid;
     }
 
-    if ($sections = $DB->get_records('course_sections', array('course' => $courseid, 'visible' => 1), 'section DESC')) {
+    if ($sections = $DB->get_records('course_sections', ['course' => $courseid, 'visible' => 1], 'section DESC')) {
         foreach ($sections as $s) {
             if (!empty($s->sequence)) {
                 break;
@@ -535,6 +555,10 @@ function sharedresource_get_course_section_to_add($courseorid) {
     return $s->section;
 }
 
+/**
+ * Return cleaned field values
+ * @param string $field
+ */
 function sharedresource_clean_field($field) {
     switch ($field) {
         case 'identifier': {
@@ -560,15 +584,20 @@ function sharedresource_clean_field($field) {
 
 /**
  * Makes a new course module record.
+ * @param int $courseid
+ * @param int $section
+ * @param string $modulename
+ * @param object $shrentry
+ * @param object $instance
  */
 function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $instance = null) {
     global $DB;
 
-    $sectionid = $DB->get_field('course_sections', 'id', array('course' => $courseid, 'section' => $section));
+    $sectionid = $DB->get_field('course_sections', 'id', ['course' => $courseid, 'section' => $section]);
 
     // Make a new course module.
-    $module = $DB->get_record('modules', array('name' => $modulename));
-    $cm = new StdClass;
+    $module = $DB->get_record('modules', ['name' => $modulename]);
+    $cm = new StdClass();
     if (!empty($instance)) {
         $cm->instance = $instance->id;
     }
@@ -584,7 +613,7 @@ function sharedresource_build_cm($courseid, $section, $modulename, $shrentry, $i
 
     // Insert the course module in course.
     if (!$cm->id = add_course_module($cm)) {
-        print_error('errorcmaddition', 'sharedresource');
+        throw new moodle_exception('errorcmaddition', 'sharedresource');
     }
 
     return $cm;
@@ -606,7 +635,7 @@ function sharedresource_get_remote_file($url, $filename) {
     curl_setopt($ch, CURLOPT_POST, false);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Important.
     curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml charset=UTF-8"]);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     if ($rawresponse = curl_exec($ch)) {
@@ -622,7 +651,7 @@ function sharedresource_get_remote_file($url, $filename) {
 
         $file = $fs->create_file_from_string($filerecord, $rawresponse);
     } else {
-        print_error('unreachablefile', 'sharedresource');
+        throw new moodle_exception('unreachablefile', 'sharedresource');
     }
 
     return $file;
@@ -662,7 +691,7 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
 
     $moduleinfo = new StdClass;
     $moduleinfo->modulename = 'scorm';
-    $moduleinfo->module = $DB->get_field('modules', 'id', array('name' => 'scorm'));
+    $moduleinfo->module = $DB->get_field('modules', 'id', ['name' => 'scorm']);
     $moduleinfo->visible = true;
     $moduleinfo->visibleoncoursepage = true;
     $moduleinfo->cmidnumber = '';
@@ -716,20 +745,27 @@ function sharedresource_deploy_scorm(&$shrentry, &$course, $section, $draftid = 
      * the instance, but we can simulate a course add_moduleinfo call.
      */
     $moduleinfo = add_moduleinfo($moduleinfo, $course, null);
-    $cm = $DB->get_record('course_modules', array('id' => $moduleinfo->coursemodule));
-    $instance = $DB->get_record('scorm', array('id' => $moduleinfo->instance));
+    $cm = $DB->get_record('course_modules', ['id' => $moduleinfo->coursemodule]);
+    $instance = $DB->get_record('scorm', ['id' => $moduleinfo->instance]);
     $modulename = 'scorm';
 
     if ($course->format == 'page') {
         require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
         require_once($CFG->dirroot.'/course/format/page/lib.php');
-        $coursepage = \format\page\course_page::get_current_page($course->id);
+        $coursepage = \format_page\course_page::get_current_page($course->id);
         $coursepage->add_cm_to_page($cm->id);
     }
 
-    return array($cm, $instance, $modulename);
+    return [$cm, $instance, $modulename];
 }
 
+/**
+ * Deploys a resource being a LTI record.
+ * @param object $shrentry
+ * @param int $courseid
+ * @param int $section
+ * @param string $url
+ */
 function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
     global $CFG, $OUTPUT;
 
@@ -772,7 +808,7 @@ function sharedresource_deploy_lti($shrentry, $courseid, $section, $url) {
 
     $mform = new lti_mod_form();
     if ($mform->is_cancelled()) {
-        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
+        redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
     }
     if ($data = $mform->get_data()) {
         $intancearr = (array)$instance;
@@ -894,8 +930,9 @@ function sharedresource_deploy_activity(&$shrentry, &$course, $section, $draftfi
 
 /**
  * Tries to find a suitable activity or course icon for a sharedresource entry mapping an MBZ archive.
+ * @param object $resourcedesc
  */
-function sharedresource_extract_activity_icon(&$resourcedesc) {
+function sharedresource_extract_activity_icon($resourcedesc) {
     global $OUTPUT;
 
     if (preg_match('/-activity-(\d+)-/', $resourcedesc['file_filename'], $matches)) {
@@ -914,4 +951,81 @@ function sharedresource_extract_activity_icon(&$resourcedesc) {
     }
 
     return ''.$iconurl;
+}
+
+/**
+ * Wrapper to APL debugging libs
+ * @param string $msg
+ * @param string $level
+ * @param string $label
+ * @param int $backtracelevel
+ */
+function mod_sharedresource_debug_trace($msg, $level = 0, $label = '', $backtracelevel = 2) {
+    if (function_exists('debug_trace')) {
+        debug_trace($msg, $level, $label, $backtracelevel);
+    }
+}
+
+/**
+ * This is a relocalized function in order to get local_my more compact.
+ * checks if a user has a some named capability effective somewhere in a course.
+ * @param string $capability;
+ * @param bool $excludesystem
+ * @param bool $excludesite
+ * @param bool $doanything
+ * @param string $contextlevels restrict to some contextlevel may speedup the query.
+ */
+function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true,
+                                           $doanything = false, $contextlevels = '') {
+    global $USER, $DB;
+
+    // Faster check.
+    $systemcontext = context_system::instance();
+    if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
+        return true;
+    }
+
+    $contextclause = '';
+
+    if ($contextlevels) {
+        list($sql, $params) = $DB->get_in_or_equal(explode(',', $contextlevels), SQL_PARAMS_NAMED);
+        $contextclause = "
+           AND ctx.contextlevel $sql
+        ";
+    }
+    $params['capability'] = $capability;
+    $params['userid'] = $USER->id;
+
+    $sitecoursecontext = context_course::instance(SITEID);
+
+    $sitecontextexclclause = '';
+    if ($excludesite) {
+        $sitecontextexclclause = " ctx.id != {$sitecoursecontext->id}  AND ";
+    }
+
+    // This is a a quick rough query that may not handle all role override possibility.
+
+    $sql = "
+        SELECT
+            COUNT(DISTINCT ra.id)
+        FROM
+            {role_capabilities} rc,
+            {role_assignments} ra,
+            {context} ctx
+        WHERE
+            rc.roleid = ra.roleid AND
+            ra.contextid = ctx.id AND
+            $sitecontextexclclause
+            rc.capability = :capability
+            $contextclause
+            AND ra.userid = :userid AND
+            rc.permission = 1
+    ";
+    $hassome = $DB->count_records_sql($sql, $params);
+
+    if (!empty($hassome)) {
+        return true;
+    }
+
+    return false;
 }

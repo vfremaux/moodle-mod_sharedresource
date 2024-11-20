@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * From to edit tokens.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
 require($CFG->libdir.'/formslib.php');
 
+/**
+ * From for token.
+ */
 class token_form extends moodleform {
 
+    /**
+     * Standard definition.
+     */
     public function definition() {
         $mform = $this->_form;
 
@@ -37,7 +45,7 @@ class token_form extends moodleform {
         $mform->addElement('select', $classif->sqlparent, get_string('parent', 'sharedresource'), $classif->parents);
         $mform->setType($classif->sqlparent, PARAM_INT);
 
-        $mform->addElement('text', 'name', get_string('classificationname', 'sharedresource'), array('size' => 70));
+        $mform->addElement('text', 'name', get_string('classificationname', 'sharedresource'), ['size' => 70]);
         $mform->setType('name', PARAM_TEXT);
 
         // Add standard buttons, common to all modules.
@@ -45,9 +53,14 @@ class token_form extends moodleform {
 
     }
 
+    /**
+     * Standard validation
+     * @param object $data
+     * @param array $files
+     */
     public function validation($data, $files = null) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['label'])) {
             $errors['label'] = get_string('erroremptytokenname', 'sharedresource');
@@ -55,5 +68,4 @@ class token_form extends moodleform {
 
         return $errors;
     }
-
 }

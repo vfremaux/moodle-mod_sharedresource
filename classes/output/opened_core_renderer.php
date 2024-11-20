@@ -15,20 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
+ * This is an overriden core renderer to open some protected methods.
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
+ * phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
  */
 namespace mod_sharedresource\output;
 
-defined('MOODLE_INTERNAL') || die();
+use core_renderer;
+use tabtree;
 
-class opened_core_renderer extends \core_renderer {
+/**
+ *
+ */
+class opened_core_renderer extends core_renderer {
 
-    public function render_tabtree(\tabtree $tabs) {
+    /**
+     * Renders a tabtree. We changed the privacy.
+     * @param tabtree $tabs
+     */
+    public function render_tabtree(tabtree $tabs) {
         return parent::render_tabtree($tabs);
     }
 

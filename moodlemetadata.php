@@ -17,11 +17,10 @@
 /**
  * This file maps several Moodle typical definitions (modules) to Metadata concepts (LOM based)
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,9 +30,9 @@ if (sharedresource_supports_feature() === 'pro') {
 }
 
 // MODRESOURCETYPE addesses LOM 5_2 node (Learning Resource Type).
-global $MODRESOURCETYPES;
+global $modresourcetypes;
 
-$MODRESOURCETYPES = array(
+$modresourcetypes = [
     'advmindmap' => 'graph',
     'assign' => 'exam',
     'assignment' => 'exam',
@@ -62,17 +61,17 @@ $MODRESOURCETYPES = array(
     'techproject' => 'experimentation',
     'tracker' => 'exercice',
     'wiki' => 'narrative text,exercice',
-    'workshop' => 'exercice,experimentation' );
+    'workshop' => 'exercice,experimentation' ];
 
 // Allow completing from configuration file.
 if (isset($CFG->additionalmodresourcetypes) && is_array($CFG->additionalmodresourcetypes)) {
-    $MODRESOURCETYPES = $MODRESOURCETYPES + $CFG->additionalmodresourcetypes;
+    $modresourcetypes = $modresourcetypes + $CFG->additionalmodresourcetypes;
 }
 
 // MODRESOURCETYPE addesses LOM 5_3 node (Learning Resource Type).
-global $MODINTERACTIVITYLEVELS;
+global $modinteractivitylevels;
 
-$MODINTERACTIVITYLEVELS = array(
+$modinteractivitylevels = [
     'advmindmap' => 'very high',
     'assign' => 'medium',
     'assignment' => 'medium',
@@ -101,17 +100,17 @@ $MODINTERACTIVITYLEVELS = array(
     'techproject' => 'very high',
     'tracker' => 'very high',
     'wiki' => 'very high',
-    'workshop' => 'very high' );
+    'workshop' => 'very high' ];
 
 // Allow completing from configuration file.
 if (isset($CFG->additionalmodinteractivitylevel) && is_array($CFG->additionalmodinteractivitylevel)) {
-    $MODINTERACTIVITYLEVELS = $MODINTERACTIVITYLEVELS + $CFG->additionalmodinteractivitylevel;
+    $modinteractivitylevels = $modinteractivitylevels + $CFG->additionalmodinteractivitylevel;
 }
 
 // MODRESORUCETYPE addesses LOM 5_4 node (Learning Resource Type).
-global $MODSEMANTICDENSITIES;
+global $modsemanticdensities;
 
-$MODSEMANTICDENSITIES = array(
+$modsemanticdensities = [
     'advmindmap' => 'high',
     'assign' => 'low',
     'assignment' => 'low',
@@ -140,21 +139,23 @@ $MODSEMANTICDENSITIES = array(
     'techproject' => 'very high',
     'tracker' => 'high',
     'wiki' => 'high',
-    'workshop' => 'high' );
+    'workshop' => 'high' ];
 
 // Allow completing from configuration file.
 if (isset($CFG->additionalmodsemanticdensity) && is_array($CFG->additionalmodsemanticdensity)) {
-    $MODSEMANTICDENSITIES = $MODSEMANTICDENSITIES + $CFG->additionalmodsemanticdensity;
+    $modsemanticdensities = $modsemanticdensities + $CFG->additionalmodsemanticdensity;
 }
 
 // MODRESOURCETYPE addesses LOMFR 5_12 node (Learning Activity Type).
-global $MODLEARNINGACTIVITIES;
+global $modlearningactivities;
 
-// 'animer', 'apprendre', 'collaborer', 'communiquer', 'coopérer', 'créer', 'échanger', 'expérimenter',
-// 'lire', 'observer', 'organiser', 'produire', 'publier', 'rechercher', 's\'auto-former', 's\'exercer',
-// 's\'informer', 'se former', 'simuler', 's\'évaluer'.
+/*
+ * animer, apprendre, collaborer, communiquer, coopérer, créer, échanger, expérimenter,
+ * lire, observer, organiser, produire, publier, rechercher, s\auto-former, s\exercer,
+ * s\informer, se former, simuler, s\évaluer.
+ */
 
-$MODLEARNINGACTIVITIES = array(
+$modlearningactivities = [
     'advmindmap' => 'collaborer,créer,organiser',
     'assign' => 's\'évaluer',
     'assignment' => 's\'évaluer',
@@ -182,15 +183,17 @@ $MODLEARNINGACTIVITIES = array(
     'techproject' => 'expérimenter,organiser,produire',
     'tracker' => 'produire,organiser',
     'wiki' => 'coopérer,collaborer,publier',
-    'workshop' => 'apprendre,coopérer,expérimenter' );
+    'workshop' => 'apprendre,coopérer,expérimenter' ];
 
 // MODDOCUMENTTYPE addesses LOMFR 1_9 node (Type de documents).
-global $MODDOCUMENTTYPES;
+global $moddocumenttypes;
 
-// 'collection', 'ensemble de données', 'événement', 'image', 'image en mouvement', 'image fixe',
-// 'logiciel', 'objet physique', 'ressource interactive', 'service', 'son', 'texte'.
+/*
+ * collection, ensemble de données, événement, image, image en mouvement, image fixe,
+ * logiciel, objet physique, ressource interactive, service, son, texte.
+ */
 
-$MODDOCUMENTTYPES = array(
+$moddocumenttypes = [
     'advmindmap' => 'ressource interactive',
     'assign' => '',
     'assignment' => '',
@@ -222,22 +225,24 @@ $MODDOCUMENTTYPES = array(
     'techproject' => 'ensemble de données',
     'tracker' => 'service',
     'wiki' => 'texte',
-    'workshop' => 'collection' );
+    'workshop' => 'collection' ];
 
 // MODGENERALDOCUMENTTYPE addesses ScoLOMFR 1_10 node (Type general de documents).
-global $MODGENERALDOCUMENTTYPES;
+global $modgeneraldocumenttypes;
 
-// 'annuaire', 'archives', 'article', 'atlas', 'bande dessinée', 'banque de vidéos',
-// 'banque d\'images', 'base de données', 'bibliographie/sitographie', 'biographie',
-// 'carte', 'carte heuristique et conceptuelle', 'chronologie', 'collection de documents',
-// 'compte rendu', 'conférence', 'diaporama', 'dossier documentaire', 'dossier technique',
-// 'exposition', 'feuille de calcul', 'film', 'image numérique', 'livre numérique',
-// 'maquette/prototype', 'norme', 'jeu de données', 'objet physique', 'objet 3D',
-// 'ouvrage', 'partition musicale', 'périodique', 'photographie', 'podcast',
-// 'présentation multimédia', 'programme scolaire', 'rapport', 'référentiel de compétences',
-// 'schéma/graphique', 'site web', 'tableau (art)', 'web média'.
+/*
+ * annuaire, archives, article, atlas, bande dessinée, banque de vidéos,
+ * banque d\images, base de données, bibliographie/sitographie, biographie,
+ * carte, carte heuristique et conceptuelle, chronologie, collection de documents,
+ * compte rendu, conférence, diaporama, dossier documentaire, dossier technique,
+ * exposition, feuille de calcul, film, image numérique, livre numérique,
+ * maquette/prototype, norme, jeu de données, objet physique, objet 3D,
+ * ouvrage, partition musicale, périodique, photographie, podcast,
+ * présentation multimédia, programme scolaire, rapport, référentiel de compétences,
+ * schéma/graphique, site web, tableau (art), web média.
+ */
 
-$MODGENERALDOCUMENTTYPES = array(
+$modgeneraldocumenttypes = [
     'advmindmap' => 'carte heuristique et conceptuelle',
     'assign' => '',
     'assignment' => '',
@@ -269,13 +274,22 @@ $MODGENERALDOCUMENTTYPES = array(
     'techproject' => 'dossier technique',
     'tracker' => '',
     'wiki' => 'site web',
-    'workshop' => '');
+    'workshop' => ''];
 
-// allow completing from configuration file
+// Allow completing from configuration file.
+
 if (isset($CFG->additionalmodgeneraldocumenttype) && is_array($CFG->additionalmodgeneraldocumenttype)) {
-    $MODGENERALDOCUMENTTYPES = $MODGENERALDOCUMENTTYPES + $CFG->additionalmodgeneraldocumenttype;
+    $modgeneraldocumenttypes = $modgeneraldocumenttypes + $CFG->additionalmodgeneraldocumenttype;
 }
 
+/**
+ * Append elements to metadata. A utility function for more complex needs
+ * @see sharedresource_append_author_data()
+ * @param array $elements
+ * @param string $name
+ * @param string $value
+ * @param string $plugin the mtd namespace of this element.
+ */
 function sharedresource_append_metadata_elements(&$elements, $name, $value, $plugin) {
 
     $values = explode(',', $value);
@@ -289,15 +303,18 @@ function sharedresource_append_metadata_elements(&$elements, $name, $value, $plu
     $index = $matches[2];
 
     foreach ($values as $v) {
-        $elements[$radical.$index] = (object) array('name' => $radical.$index, 'value' => $v, 'plugin' => $plugin);
+        $elements[$radical.$index] = (object) ['name' => $radical.$index, 'value' => $v, 'plugin' => $plugin];
         $index++;
     }
 }
 
 /**
- * This fuction searches for editing teachers and add them all as co-authors. This may not be true in reality,
+ * This function searches for editing teachers and add them all as co-authors. This may not be true in reality,
  * but there is no real mean to know who really did create the activity. We can just guess that in most cases,
  * the course has one author/teacher
+ * @param array $backupmetadataelements
+ * @param int $courseid $courseid
+ * @param int $authoringdate
  */
 function sharedresource_append_author_data(&$backupmetadataelements, $courseid = 0, $authoringdate = -1) {
     global $COURSE;
@@ -325,7 +342,8 @@ function sharedresource_append_author_data(&$backupmetadataelements, $courseid =
             }
 
             sharedresource_append_metadata_elements($backupmetadataelements, "2_3_1:0_{$i}_0", 'author', $config->schema);
-            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z', $authoringdate), $config->schema);
+            sharedresource_append_metadata_elements($backupmetadataelements, "2_3_3:0_{$i}_0", date('Y-m-d\Th:i:s\Z',
+                    $authoringdate), $config->schema);
         }
     }
 }

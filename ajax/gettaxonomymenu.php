@@ -18,12 +18,12 @@
  * This script produces a metadata subtree form fragment for element having a list type, after the user
  * clicked on the add button
  *
- * @author  Valery Fremaux
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 define('AJAX_SCRIPT', true);
 
 require_once('../../../config.php');
@@ -35,6 +35,8 @@ echo '<option value="">'.get_string('none', 'sharedresource').'</option>';
 if (empty($id)) {
     return;
 }
+
+require_login();
 
 $classificationoptions = metadata_get_classification_options($id);
 

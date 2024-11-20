@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * this admin screen allows converting massively resources into sharedresources
- * indexable entries.
+ * this admin screen allows converting massively resources into sharedresources indexable entries.
  *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
+ * sharedresource_check_access does the job.
+ * phpcs:disable moodle.Files.RequireLogin.Missing
  */
 
 require('../../config.php');
@@ -35,8 +38,9 @@ $courseid = optional_param('course', SITEID, PARAM_INT);
 $url = new moodle_url('/mod/sharedresource/admin_convertall.php', ['course' => $courseid]);
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
-sharedresource_check_access($course);
+$context = sharedresource_check_access($course);
 
+$PAGE->set_context($context);
 $PAGE->set_title(get_string('resourceconversion', 'sharedresource'));
 $PAGE->set_heading(get_string('resourceconversion', 'sharedresource'));
 $PAGE->set_url('/mod/sharedresource/admin_convertall.php', ['course' => $courseid]);
@@ -71,11 +75,11 @@ if (empty($courseid)) {
         redirect(new moodle_url('/local/sharedresources/index.php'));
     }
 
-    $resources = $DB->get_records('resource', array('course' => $courseid), 'name');
+    $resources = $DB->get_records('resource', ['course' => $courseid], 'name');
 
-    $urls = $DB->get_records('url', array('course' => $courseid), 'name');
+    $urls = $DB->get_records('url', ['course' => $courseid], 'name');
 
-    $buttonurl = new moodle_url('/course/view.php', array('id' => $courseid));
+    $buttonurl = new moodle_url('/course/view.php', ['id' => $courseid]);
     if (empty($resources) && empty($urls)) {
         echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('noresourcestoconvert', 'sharedresource'));
@@ -84,7 +88,7 @@ if (empty($courseid)) {
         exit();
     }
 
-    $form2 = new sharedresource_selectresources_form($url, array('resources' => $resources, 'urls' => $urls));
+    $form2 = new sharedresource_selectresources_form($url, ['resources' => $resources, 'urls' => $urls]);
 
     if ($form2->is_cancelled()) {
         if ($courseid) {

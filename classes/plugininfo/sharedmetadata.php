@@ -23,11 +23,16 @@
  */
 namespace mod_sharedresource\plugininfo;
 
-defined('MOODLE_INTERNAL') || die();
+use core\plugininfo\base;
+use core_plugin_manager;
+use moodle_url;
+use part_of_admin_tree;
 
-use core\plugininfo\base, core_plugin_manager, moodle_url;
-
+/**
+ * Plugininfo class
+ */
 class sharedmetadata extends base {
+
     /**
      * Finds all enabled plugins, the result may include missing plugins.
      * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
@@ -37,9 +42,9 @@ class sharedmetadata extends base {
 
         $plugins = core_plugin_manager::instance()->get_installed_plugins('sharedmetadata');
         if (!$plugins) {
-            return array();
+            return [];
         }
-        $installed = array();
+        $installed = [];
         foreach ($plugins as $plugin => $version) {
             $installed[] = 'sharedmetadata_'.$plugin;
         }
@@ -54,7 +59,7 @@ class sharedmetadata extends base {
             unset($plugins[$name]);
         }
 
-        $enabled = array();
+        $enabled = [];
         foreach ($plugins as $plugin => $version) {
             $enabled[$plugin] = $plugin;
         }
@@ -62,18 +67,16 @@ class sharedmetadata extends base {
         return $enabled;
     }
 
+    /**
+     * Is uninstall allowed ?
+     */
     public function is_uninstall_allowed() {
         return true;
     }
 
     /**
-     * Pre-uninstall hook.
-     * @private
+     * Informs about settings section name.
      */
-    public function uninstall_cleanup() {
-        parent::uninstall_cleanup();
-    }
-
     public function get_settings_section_name() {
         return $this->type . '_' . $this->name;
     }
@@ -84,11 +87,11 @@ class sharedmetadata extends base {
      * This function usually includes settings.php file in plugins folder.
      * Alternatively it can create a link to some settings page (instance of admin_externalpage)
      *
-     * @param \part_of_admin_tree $adminroot
+     * @param part_of_admin_tree $adminroot
      * @param string $parentnodename
      * @param bool $hassiteconfig whether the current user has moodle/site:config capability
      */
-    public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
+    public function load_settings(part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
         global $CFG, $USER, $DB, $OUTPUT, $PAGE; // DO NOT REMOVE !! In case settings.php wants to refer to them.
 
         $ADMIN = $adminroot; // May be used in settings.php.

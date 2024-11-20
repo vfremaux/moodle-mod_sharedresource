@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package mod_sharedresource
- * @category mod
+ * form to edit classification values
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux  valery.fremaux@gmail.com
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
 require($CFG->libdir.'/formslib.php');
 
+/**
+ * Classification values form
+ */
 class classificationvalue_form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         $mform = $this->_form;
 
@@ -43,28 +51,30 @@ class classificationvalue_form extends moodleform {
 
         $mform->addElement('header', 'hdr0', get_string('addtoken', 'sharedresource'), '');
 
-        $mform->addElement('text', 'value', get_string('tokenvalue', 'sharedresource'), array('size' => 48));
+        $mform->addElement('text', 'value', get_string('tokenvalue', 'sharedresource'), ['size' => 48]);
         $mform->setType('value', PARAM_TEXT);
         $mform->addRule('value', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('text', 'idnumber', get_string('idnumber'), array('size' => 48));
+        $mform->addElement('text', 'idnumber', get_string('idnumber'), ['size' => 48]);
         $mform->setType('idnumber', PARAM_TEXT);
         $mform->setAdvanced('idnumber');
 
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
-
     }
 
+    /**
+     * Standard validation
+     * @param object $data
+     * @param array $files
+     */
     public function validation($data, $files = null) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['value'])) {
             $errors['name'] = get_string('erroremptytokenvalue', 'sharedresource');
         }
-
         return $errors;
     }
-
 }

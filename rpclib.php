@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * Mnet WS API functions. Wraps to "Pro" part.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  *
  * Implements MNET cross moodle strategy
  */

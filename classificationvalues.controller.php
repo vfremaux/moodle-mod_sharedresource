@@ -15,28 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * forms for converting resources to sharedresources
+ * Controller for classification edition.
  *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource\classification;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/sharedresource/treelib.php');
 
+/**
+ * MVC controller class
+ */
 class classificationvalues_controller {
 
+    /** @var $data to process in action */
     protected $data;
 
+    /** @var marks data has been received */
     protected $received;
 
+    /** @var form where attached files come from */
     protected $mform;
 
-    public function receive($cmd, $data = array(), $mform = null) {
+    /**
+     * Receive data
+     * @param string $cmd
+     * @param array $data
+     * @param object $mform
+     */
+    public function receive($cmd, $data = [], $mform = null) {
         $this->mform = $mform;
 
         if (!empty($data)) {
@@ -60,13 +71,17 @@ class classificationvalues_controller {
         $this->received = true;
     }
 
+    /**
+     * Process the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
         $config = get_config('sharedresource');
         $namespace = $config->schema;
 
-        $classificationrec = $DB->get_record('sharedresource_classif', array('id' => $this->data->classificationid));
+        $classificationrec = $DB->get_record('sharedresource_classif', ['id' => $this->data->classificationid]);
         $classification = new \local_sharedresources\browser\navigation($classificationrec);
 
         switch  ($cmd) {

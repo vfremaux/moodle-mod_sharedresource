@@ -15,18 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * Administration of a single classification domain.
  *
- * This php script display the admin part of the classification
- * configuration. You can add, delete or apply a restriction
- * on a classification, or configure a specific classification
- * by accessing another page
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/classification_form.php');
@@ -41,7 +37,7 @@ require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = new moodle_url('/mod/sharedresource/classification.php', array('id' => $id));
+$url = new moodle_url('/mod/sharedresource/classification.php', ['id' => $id]);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);
@@ -76,7 +72,7 @@ $cmd = ($id) ? 'add' : 'update';
 echo $OUTPUT->heading(get_string($cmd.'classification', 'sharedresource'));
 
 if ($id) {
-    $classification = $DB->get_record('sharedresource_classif', array('id' => $id));
+    $classification = $DB->get_record('sharedresource_classif', ['id' => $id]);
     $mform->set_data($classification);
 }
 

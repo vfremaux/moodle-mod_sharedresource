@@ -17,7 +17,7 @@
 /**
  * @author  Valery Fremaux valery.fremaux@gmail.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * @package sharedmetadata_anfa
  * @subpackage sharedresource_anfa
  */
 
@@ -229,6 +229,7 @@ $string['autres'] = 'Autres';
 
 // Type de ressource
 $string['coursenintegralite'] = 'Cours en intégralité';
+$string['courstheorique'] = 'Cours théorique';
 $string['travauxpratiques'] = 'Travaux pratiques';
 $string['evaluations'] = 'Évaluations';
 $string['quiz'] = 'Quiz';
@@ -237,6 +238,8 @@ $string['videosinteractives'] = 'Vidéos interactives';
 $string['modelisations3d'] = 'Modélisations 3D';
 $string['realitevirtuelle'] = 'Ressources immersives pour la réalité virtuelle';
 $string['realiteaugmentee'] = 'Ressources immersives pour la réalité augmentée';
+$string['coursmoodlembz'] = 'Cours moodle (.mbz)';
+
 
 // End User Role
 $string['teacher'] = 'Enseignant/Formateur';
@@ -270,7 +273,7 @@ $string['troisheures'] = 'Trois heures';
 $string['quatreheures'] = 'Quatre heures';
 $string['unejournee'] = 'Une journée';
 
-// Langues 
+// Langues
 $string['anglais'] = 'Anglais';
 $string['francais'] = 'Français';
 $string['autre'] = 'Autre';

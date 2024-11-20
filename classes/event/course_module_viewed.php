@@ -18,12 +18,12 @@
  * This file contains an event for when a feedback activity is viewed.
  *
  * @package    mod_sharedresource
- * @copyright  2015 Valery Fremaux
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright  Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_sharedresource\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Event for when a sharedresource activity is viewed.
@@ -51,17 +51,6 @@ class course_module_viewed extends \core\event\course_module_viewed {
         } else {
             return parent::get_legacy_logdata();
         }
-    }
-
-    /**
-     * Custom validations.
-     *
-     * @throws \coding_exception in case of any problems.
-     */
-    protected function validate_data() {
-
-        // Call parent validations.
-        parent::validate_data();
     }
 }
 

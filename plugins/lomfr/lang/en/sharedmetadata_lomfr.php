@@ -15,10 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * Lang file
+ * 
+ * @package sharedmetadata_lomfr
  * @subpackage sharedresource_lomfr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @copyright  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 // Privacy.
@@ -137,10 +140,12 @@ $string['vcard'] = 'VCard';
 
 $string['standarddescription'] = 'LOMFR is the french application profile of LOM. <br/><br/>
 LOMFR describe pedagogical objects (resources).
-Any entity (numeric or not) used in a educational process, a formation process or a learning process is considered as a pedagogical resource.<br/><br/>
+Any entity (numeric or not) used in a educational process, a formation process or a learning process is considered as a
+pedagogical resource.<br/><br/>
 LOMFR objectives are :<br/>
 - allowing a better visibility of the pedagogical objects offer (numeric or not).<br/>
-- having models to respect and to ensure the continued existence, the interoperability, and an openess of produced numeric resources, linked to distribution plate-forms or consultation plate-forms.<br/><br/>
+- having models to respect and to ensure the continued existence, the interoperability, and an openess of produced numeric resources,
+linked to distribution plate-forms or consultation plate-forms.<br/><br/>
 It concern the whole educative community :<br/>
 - the french educative community (primary, secondary or superior cycle)<br/>
 - the formation community (professional formation, continueing formation)<br/>
@@ -148,7 +153,7 @@ It concern the whole educative community :<br/>
 - publishers, companies <br/><br/>
 <center>More informations here : <a href="http://www.lom-fr.fr">Page of the lomfr profile</a></center>';
 
-//Aggregation level
+// Aggregation level
 $string['1'] = '1';
 $string['2'] = '2';
 $string['3'] = '3';
@@ -276,7 +281,7 @@ $string['skilllevel'] = 'Skill level';
 $string['securitylevel'] = 'Security level';
 $string['competency'] = 'Competency';
 
-// Kind 
+// Kind
 $string['estassocieea'] = 'Is related to';
 $string['ispartof'] = 'is part of';
 $string['haspart'] = 'has part';
@@ -310,5 +315,3 @@ $string['sinformer'] = 'Self-inform';
 $string['seformer'] = 'Self-teach';
 $string['simuler'] = 'Simulate';
 $string['sevaluer'] = 'Self-evaluate';
-
-

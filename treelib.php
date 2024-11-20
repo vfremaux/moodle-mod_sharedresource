@@ -15,17 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_sharedresource
- * @category mod
- * @author Valery Fremaux (France) (admin@www.ethnoinformatique.fr)
- * @date 2008/03/03
- * @version phase1
- * @contributors LUU Tao Meng, So Gerard (parts of treelib.php), Guillaume Magnien, Olivier Petit
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * Library of tree dedicated operations.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      LUU Tao Meng, So Gerard (parts of treelib.php), Guillaume Magnien, Olivier Petit
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-defined('MOODLE_INTERNAL') || die();
-
-// Library of tree dedicated operations.
 
 /**
  * deletes into tree a full branch. note that it will work either
@@ -41,12 +38,17 @@ function sharedresource_tree_delete($id, $table, $istree = 1) {
 
 /**
  * deletes recursively a node and its subnodes. this is the recursion deletion
+ * @param int $id
+ * @param object $table
+ * @param bool $istree
+ * @param string $predeletecallback
+ * @param string $postdeletecallback
  * @return an array of deleted ids
  */
 function sharedresource_tree_delete_rec($id, $table, $istree, $predeletecallback = '', $postdeletecallback = '') {
     global $DB;
 
-    $deleted = array();
+    $deleted = [];
     if (empty($id)) {
         return $deleted;
     }
@@ -75,7 +77,7 @@ function sharedresource_tree_delete_rec($id, $table, $istree, $predeletecallback
         }
     }
     // Deleting current node.
-    $DB->delete_records($table, array('id' => $id));
+    $DB->delete_records($table, ['id' => $id]);
     $deleted[] = $id;
     return $deleted;
 }
@@ -83,12 +85,13 @@ function sharedresource_tree_delete_rec($id, $table, $istree, $predeletecallback
 /**
  * raises a node in the tree, resortorder all what needed
  * @param int $id the id of the raised node
+ * @param object $classif classification
  * @return void
  */
 function sharedresource_tree_up($id, $classif) {
     global $DB;
 
-    $res = $DB->get_record('sharedresource_taxonomy', array('id' => $id));
+    $res = $DB->get_record('sharedresource_taxonomy', ['id' => $id]);
     if (!$res) {
         return;
     }
@@ -97,7 +100,7 @@ function sharedresource_tree_up($id, $classif) {
         $result = false;
         $newsortorder = $res->sortorder - 1;
         $select = " classificationid = ? AND sortorder = ? AND parent = ? ORDER BY sortorder";
-        $params = array($res->classificationid, $newsortorder, $res->parent);
+        $params = [$res->classificationid, $newsortorder, $res->parent];
         if ($resid = $DB->get_field_select('sharedresource_taxonomy', 'id', $select, $params)) {
             // Swapping.
             $object = new StdClass();
@@ -115,25 +118,22 @@ function sharedresource_tree_up($id, $classif) {
 
 /**
  * lowers a node on its branch. this is done by swapping sortorder.
- * @param object $project the current project
- * @param int $group the current group
  * @param int $id the node id
- * @param string $table the table-tree where to perform swap
- * @param boolean $istree if not set, performs swapping on a single list
+s * @param boolean $istree if not set, performs swapping on a single list
  */
 function sharedresource_tree_down($id) {
     global $DB;
 
-    $res = $DB->get_record('sharedresource_taxonomy', array('id' => $id));
+    $res = $DB->get_record('sharedresource_taxonomy', ['id' => $id]);
 
     $select = " parent = ?  AND classificationid = ? ";
-    $params = array($res->parent, $res->classificationid);
+    $params = [$res->parent, $res->classificationid];
     $maxsortorder = $DB->get_field_select('sharedresource_taxonomy', " MAX(sortorder) ", $select, $params);
 
     if ($res->sortorder < $maxsortorder) {
         $newsortorder = $res->sortorder + 1;
         $select = " classificationid = ? AND sortorder = ? AND parent = ? ";
-        $params = array($res->classificationid, $newsortorder, $res->parent);
+        $params = [$res->classificationid, $newsortorder, $res->parent];
         if ($resid = $DB->get_field_select('sharedresource_taxonomy', 'id', $select, $params)) {
             // Swapping.
             $object = new StdClass;
@@ -148,4 +148,3 @@ function sharedresource_tree_down($id) {
         $DB->update_record('sharedresource_taxonomy', $object);
     }
 }
-

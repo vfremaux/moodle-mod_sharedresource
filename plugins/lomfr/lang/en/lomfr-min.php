@@ -15,10 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
+ * Lang file.
+ *
+ * @package sharedmetadata_lomfr
  * @subpackage sharedresource_lomfr
+ * @author  Valery Fremaux valery.fremaux@gmail.com
+ * @copyright  Valery Fremaux valery.fremaux@gmail.com
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 $string['plugin_lomfr'] = 'Local indexation (LOM FR)';

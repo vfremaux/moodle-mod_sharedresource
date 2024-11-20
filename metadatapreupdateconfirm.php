@@ -21,16 +21,22 @@
  * case, the resource is not saved and the user is sent back
  * to the metadata form
  *
- * @author  Frederic GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
+ * @package     mod_sharedresource
+ * @author      Frederic GUILLOU
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-// Here we need load some classes before config and session is setup to help unserializing
+/*
+ * Because classes preloading perturbates config.php detection.
+ * phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
+ */
+
+// Here we need load some classes before config and session is setup to help unserializing.
 require_once(dirname(__FILE__).'/classes/__autoload.php');
 
-require_once('../../config.php');
+require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
@@ -58,6 +64,7 @@ $sharingcontext = optional_param('context', 1, PARAM_INT);
 $course = $DB->get_record('course', ['id' => $course], '*', MUST_EXIST);
 
 // Security.
+
 $systemcontext = context_system::instance();
 $context = context_course::instance($course->id);
 if ($course->id > 1) {
@@ -67,7 +74,8 @@ if ($course->id > 1) {
     require_login();
     $caps = ['repository/sharedresources:create', 'repository/sharedresources:manage'];
     if (!has_any_capability($caps, context_system::instance())) {
-        if (!sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+        $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+        if (!sharedresource_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where)) {
             throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
         }
     }
@@ -85,7 +93,7 @@ if ($cancel) {
             'course' => $course->id,
             'catid' => $catid,
             'catpath' => $catpath,
-            'returnpage' => $returnpage
+            'returnpage' => $returnpage,
         ];
         $fullurl = new moodle_url('/local/sharedresources/index.php', $params);
         redirect($fullurl, get_string('correctsave', 'sharedresource'), 5);
@@ -96,7 +104,7 @@ if ($cancel) {
         'course' => $course->id,
         'sr' => $section,
         'add' => 'sharedresource',
-        'return' => 0
+        'return' => 0,
     ];
     $cancelurl = new moodle_url('/course/modedit.php', $params);
     redirect($cancelurl);
@@ -109,16 +117,18 @@ $shrentry = unserialize($srentry);
 if ($confirm) {
     $oldshrentryid = required_param('shentryid', PARAM_INT);
     // We asked to go to the old resource edition.
-    $params = array('course' => $course->id,
-                    'section' => $section,
-                    'add' => 'sharedresource',
-                    'type' => $type,
-                    'mode' => 'update',
-                    'catid' => $catid,
-                    'catpath' => $catpath,
-                    'fromlibrary' => $fromlibrary,
-                    'returnpage' => $returnpage,
-                    'entryid' => $oldshrentryid);
+    $params = [
+        'course' => $course->id,
+        'section' => $section,
+        'add' => 'sharedresource',
+        'type' => $type,
+        'mode' => 'update',
+        'catid' => $catid,
+        'catpath' => $catpath,
+        'fromlibrary' => $fromlibrary,
+        'returnpage' => $returnpage,
+        'entryid' => $oldshrentryid,
+    ];
     $fullurl = new moodle_url('/mod/sharedresource/edit.php', $params);
     redirect($fullurl);
 }
@@ -128,9 +138,9 @@ if ($confirm) {
 $pagetitle = strip_tags($course->shortname);
 $strtitle = $pagetitle;
 $PAGE->set_pagelayout('standard');
-$system_context = context_system::instance();
-$PAGE->set_context($system_context);
-$urlparams = array('mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return);
+$systemcontext = context_system::instance();
+$PAGE->set_context($systemcontext);
+$urlparams = ['mode' => $mode, 'course' => $course->id, 'section' => $section, 'return' => $return];
 $url = new moodle_url('/mod/sharedresource/metadatapreupdateconfirm.php', $urlparams);
 $PAGE->set_url($url);
 $PAGE->set_title($strtitle);

@@ -71,14 +71,14 @@
 
 {{#isselect}}
     <div class="mtd-form-element {{mandatoryclass}}">
-        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+        <label for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
         {{{select}}}
     </div>
 {{/isselect}}
 
 {{#isdate}}
     <div class="mtd-form-element mtd-date-element {{mandatoryclass}}">
-        <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}}</label>
+        <label class="{{errorclass}" for="{{elmname}}">{{fieldnum}} {{fieldvisiblename}} {{occur}} {{mandatorysign}}</label>
 
             {{{yearselect}}}
             {{{monthselect}}}

@@ -15,27 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
+ * A specialized renderer for classification management.
  *
- * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource\output;
 
-use \Stdclass;
-use \moodle_url;
+use Stdclass;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/locallib.php');
 
+/**
+ * Classification renderer
+ */
 class classification_renderer extends \plugin_renderer_base {
 
+    /**
+     * Renders classifications
+     * @param array $classifications
+     */
     public function classifications($classifications) {
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->strdelete = get_string('delete');
         $template->stredit = get_string('edit');
@@ -54,15 +61,17 @@ class classification_renderer extends \plugin_renderer_base {
         $this->output->render_from_template('mod_sharedresource/classifications', $template);
     }
 
+    /**
+     * Renders a link back to admin page.
+     */
     public function backadminpage() {
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $label = get_string('backadminpage', 'sharedresource');
-        $hrefurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingsharedresource'));
+        $hrefurl = new moodle_url('/admin/settings.php', ['section' => 'modsettingsharedresource']);
         $template->backbutton = $this->output->continue_button($hrefurl, $label);
 
         return $this->output->render_from_template('mod_sharedresource/backadminpage', $template);
     }
-
 }

@@ -15,23 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * A service entry point to allo sumitting an external resource.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
+/**
+ * @todo redesign all stuff with moodle exernalapi services
+ */
+
 require('../../config.php');
 require_once($CFG->dirroot."/mod/sharedresource/lib.php");
 require_once($CFG->dirroot."/mod/sharedresource/classes/sharedresource_plugin_base.class.php");
 
 $identifier = required_param('resid', PARAM_RAW);
-$navlinks[] = array('name' => get_string('remotesubmission', 'sharedresource'),
-                    'url' => '',
-                    'type' => 'title');
+$navlinks[] = [
+    'name' => get_string('remotesubmission', 'sharedresource'),
+    'url' => '',
+    'type' => 'title',
+];
 
 $PAGE->set_title(get_string('remotesubmission', 'sharedresource'));
 $PAGE->set_heading($COURSE->fullname);
 $PAGE->set_pagelayout('embedded');
+
+require_login();
 
 echo $OUTPUT->header();
 
@@ -42,7 +53,7 @@ $identifier = required_param('resid', PARAM_RAW);
 $repos = optional_param('repos', '', PARAM_TEXT);
 
 if ($confirm == 1) {
-    $shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier));
+    $shrentry = $DB->get_record('sharedresource_entry', ['identifier' => $identifier]);
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         $pluginclass = get_class($plugin);

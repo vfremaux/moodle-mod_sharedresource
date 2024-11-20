@@ -15,22 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
+ * TODO : clarify doc.
  * this action screen allows adding a sharedresource from an external browse or search result
  * directly in the current course and the resource results being already known as a local proxy, or
  * it is a locally stored resource.
  * This possibility will only be available when
  * external resource repositories are queried from a course starting context.
  * Adding local resource should always provide identifier.
- *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-use \mod_sharedresource\entry_factory;
-use \mod_sharedresource\entry;
-use \mod_sharedresource\entry_extended;
+use mod_sharedresource\entry_factory;
+use mod_sharedresource\entry;
+use mod_sharedresource\entry_extended;
 
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
@@ -44,10 +47,10 @@ $courseid = optional_param('id', '', PARAM_INT);
 $section = optional_param('section', '', PARAM_INT);
 $identifier = required_param('identifier', PARAM_TEXT);
 $mode = optional_param('mode', 'shared', PARAM_ALPHA);
-$course = $DB->get_record('course', array('id' => "$courseid"));
+$course = $DB->get_record('course', ['id' => "$courseid"]);
 
 if (empty($course)) {
-    print_error('coursemisconf');
+    throw new moodle_exception('coursemisconf');
 }
 
 if (!$section) {
@@ -59,15 +62,15 @@ if (!$section) {
 
 require_login($course);
 $context = context_course::instance($course->id);
-if (!has_any_capability(array('repository/sharedresources:use', 'repository/sharedresources:create'), $context)) {
-    print_error('noaccessform', 'sharedresource');
+if (!has_any_capability(['repository/sharedresources:use', 'repository/sharedresources:create'], $context)) {
+    throw new moodle_exception('noaccessform', 'sharedresource');
 }
 
 $config = get_config('sharedresource');
 
 $strtitle = get_string('addlocal', 'sharedresource');
 
-$params = array('id' => $courseid, 'identifier' => $identifier, 'mode' => $mode);
+$params = ['id' => $courseid, 'identifier' => $identifier, 'mode' => $mode];
 $url = new moodle_url('/mod/sharedresource/addlocaltocourse.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
@@ -87,21 +90,6 @@ if ($class == '\mod_sharedresource\entry_extended') {
 }
 
 /*
-// Obsolete.
-
-if ($mode == 'file') {
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('addfile', 'sharedresource'));
-    // This is the simple "file" mode that gets back the resource file into course file scope.
-    print_string('fileadvice', 'sharedresource');
-    $return = new moodle_url('/files/index.php', array('id' => $courseid));
-    echo $OUTPUT->continue_button($return);
-    echo $OUTPUT->footer($course);
-    die;
-}
-*/
-
-/*
  * The sharedresource has been recognized as a deployable backup.
  * Take the physical file and deploy it with the activity publisher utility.
  */
@@ -111,7 +99,7 @@ if ($mode == 'deploy') {
     if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
         sharedresource_deploy_activity($shrentry, $course, $section);
         // TODO : Terminate procedure and return to course silently.
-        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+        redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
     }
 
     // No one should be here....
@@ -127,7 +115,7 @@ if ($mode == 'scorm') {
      */
     list($cm, $instance, $modname) = sharedresource_deploy_scorm($shrentry, $course, $section);
     // TODO : Terminate procedure and return to course silently.
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
 /*
@@ -153,7 +141,7 @@ if (($mode == 'ltiinstall') || ($mode == 'lticonfirm')) {
     $instance->timemodified = time();
 
     if (!$instance->id = $instance->add_instance($instance)) {
-        print_error('erroraddinstance', 'sharedresource');
+        throw new moodle_exception('erroraddinstance', 'sharedresource');
     }
 
     $modulename = 'sharedresource';
@@ -168,18 +156,18 @@ $course->modinfo = null;
 $DB->update_record('course', $course);
 
 if (!$sectionid = course_add_cm_to_section($course, $cm->id, $section)) {
-    print_error('errorsectionaddition', 'sharedresource');
+    throw new moodle_exception('errorsectionaddition', 'sharedresource');
 }
 
-if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
-    print_error('errorcmsectionbinding', 'sharedresource');
+if (!$DB->set_field('course_modules', 'section', $sectionid, ['id' => $cm->id])) {
+    throw new moodle_exception('errorcmsectionbinding', 'sharedresource');
 }
 
 // If we are in page format, add page_item to section bound page.
 if ($course->format == 'page') {
     require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
     require_once($CFG->dirroot.'/course/format/page/lib.php');
-    $coursepage = \format\page\course_page::get_current_page($course->id);
+    $coursepage = \format_page\course_page::get_current_page($course->id);
     $coursepage->add_cm_to_page($cm->id);
 }
 
@@ -216,11 +204,11 @@ if ($CFG->debug == DEBUG_DEVELOPER) {
     echo $report;
     echo '</pre>';
 
-    echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $course->id)));
+    echo $OUTPUT->continue_button(new moodle_url('/course/view.php', ['id' => $course->id]));
     echo $OUTPUT->footer();
     die;
 } else {
     // TODO : Terminate procedure and return to course silently.
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
     die;
 }

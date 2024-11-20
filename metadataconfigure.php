@@ -15,13 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
- *
  * This is a separate configuration screen to configure any metadata stub that is attached to a shared resource.
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/formslib.php');
@@ -52,7 +53,7 @@ $PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle, 'metadataconfigure.php', 'misc');
-$PAGE->requires->js_call_amd('mod_sharedresource/metadataform', 'init', array($config->schema));
+$PAGE->requires->js_call_amd('mod_sharedresource/metadataform', 'init', [$config->schema]);
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
@@ -64,7 +65,7 @@ if (empty($config->schema)) {
 
 $plugin = sharedresource_get_plugin($config->schema);
 $namespace = $plugin->pluginname;
-$config = array();
+$config = [];
 if ($currentconfig = $DB->get_records_sql(' SELECT * from {config_plugins} WHERE  plugin = "sharedmetadata_'.$namespace.'"')) {
     foreach ($currentconfig as $conf) {
         $config[$conf->name] = $conf->value;
@@ -72,8 +73,8 @@ if ($currentconfig = $DB->get_records_sql(' SELECT * from {config_plugins} WHERE
 }
 
 // Load configuration from hard coded defaults.
-if ($config == array() || $action == 'reinitialize') {
-    foreach ($plugin->METADATATREE as $key => $value) {
+if ($config == [] || $action == 'reinitialize') {
+    foreach ($plugin->metadatatree as $key => $value) {
         if ($key != 0) {
             if ((@$value['checked']['system'] == 1) || ($value['checked']['system_write'] == 1)) {
                 $config['config_'.$namespace.'_system_write_'.$key.''] = 1;
@@ -99,7 +100,7 @@ if ($config == array() || $action == 'reinitialize') {
                 $config['config_'.$namespace.'_author_read_'.$key.''] = 1;
                 set_config('config_'.$namespace.'_author_read_'.$key.'', 1, 'sharedmetadata_'.$namespace);
             }
-            set_config('activewidgets', serialize(array()), 'sharedresource');
+            set_config('activewidgets', serialize([]), 'sharedresource');
         }
     }
 }
@@ -109,7 +110,7 @@ if ($data = data_submitted()) {
 
     $DB->execute('delete from {config_plugins} where plugin = "sharedmetadata_'.$namespace.'"');
 
-    $activewidgets = array();
+    $activewidgets = [];
 
     foreach ($data as $key => $value) {
         if (preg_match('/config_(\w+?)_/', $key, $matches)) {
@@ -117,9 +118,9 @@ if ($data = data_submitted()) {
             set_config($key, $value, 'sharedmetadata_'.$pluginname);
         } else if (preg_match('/widget_(\w+?)_()/', $key, $matches)) {
             $idwidget = substr($key, strlen($matches[0]));
-            $wtype = $plugin->METADATATREE[$idwidget]['widget'];
+            $wtype = $plugin->metadatatree[$idwidget]['widget'];
             $classname = '\\local_sharedresources\\search\\'.$wtype.'_widget';
-            $widget = new $classname($idwidget, $plugin->METADATATREE[$idwidget]['name'], $wtype);
+            $widget = new $classname($idwidget, $plugin->metadatatree[$idwidget]['name'], $wtype);
             array_push($activewidgets, $widget);
         }
     }

@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * Form to search resources.
+ *
+ * @package     mod_sharedresource
+ * @author      Piers Harding  piers@catalyst.net.nz
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Search form.
+ */
 class mod_sharedresource_search_form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
 
         $mform =& $this->_form;
@@ -53,14 +61,19 @@ class mod_sharedresource_search_form extends moodleform {
         if (!empty($mform->_customdata['addsharedresourceurl'])) {
             $mform->addElement('header', 'addheader',  get_string('addheader', 'sharedresource'));
             $addbutton2 = $mform->addElement('submit', 'addsharedresource', get_string('addsharedresource', 'sharedresource'));
-            $buttonattributes2 = array('title' => get_string('addsharedresource', 'sharedresource'), 'onclick' => "location.href = '"
-                               .$mform->_customdata['addsharedresourceurl']."'; return false;");
+            $buttonattributes2 = ['title' => get_string('addsharedresource', 'sharedresource'), 'onclick' => "location.href = '"
+                               .$mform->_customdata['addsharedresourceurl']."'; return false;"];
             $addbutton2->updateAttributes($buttonattributes2);
         }
 
         $this->add_action_buttons(false, get_string('addsharedresource', 'sharedresource'));
     }
 
+    /**
+     * Standard validation
+     * @param object $data
+     * @param array $files
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         return $errors;

@@ -15,24 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Displays the metadata notice form.
  *
- * @author  Frédéric GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
- * This php script displays the metadata form
+ * @package     mod_sharedresource
+ * @author      Frederic Guillou, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-require_once("../../config.php");
+require("../../config.php");
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
-$system_context = context_system::instance();
+use mod_sharedresource\entry;
+use mod_sharedresource\metadata;
+
+$id = optional_param('id', 0, PARAM_INT); // The course module where resource is published.
+$courseid = optional_param('course', 0, PARAM_INT); // The course in navigation context.
+$identifier = optional_param('identifier', 0, PARAM_TEXT);
+
+$config = get_config('sharedresource');
+$libraryconfig = get_config('local_sharedresources');
+
+// Check access.
+if (!empty($libraryconfig->privatecatalog)) {
+    if ($courseid) {
+        $context = context_course::instance($courseid);
+        $fromcourse = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+        require_login($fromcourse);
+    } else {
+        $context = context_system::instance();
+        require_login();
+    }
+    $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+    if (!sharedresource_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
+    }
+}
+
+
+$systemcontext = context_system::instance();
 $strtitle = get_string('metadatanotice', 'sharedresource');
 $PAGE->set_pagelayout('popup');
-$PAGE->set_context($system_context);
+$PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('sharedresourcenotice', 'sharedresource'));
@@ -46,46 +73,34 @@ $PAGE->requires->js_call_amd('mod_sharedresource/metadatanotice', 'init');
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
-$config = get_config('sharedresource');
-
-$id = optional_param('id', 0, PARAM_INT);
-$identifier = optional_param('identifier', 0, PARAM_TEXT);
-
 if ($identifier) {
-    if (!$shrentry = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
-        sharedresource_not_found();
-    }
+    $shrentry = $DB->get_record('sharedresource_entry', ['identifier' => $identifier], '*', MUST_EXIST);
 } else {
     if ($id) {
         if (! $cm = get_coursemodule_from_id('sharedresource', $id)) {
             sharedresource_not_found();
         }
-        if (!$resource = $DB->get_record('sharedresource', array('id' => $cm->instance))) {
-            sharedresource_not_found($cm->course);
-        }
-        if (!$shrentry_rec = $DB->get_record('sharedresource_entry', array('identifier' => $resource->identifier))) {
-            sharedresource_not_found($cm->course);
-        }
-        if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
-            print_error('badcourseid', 'sharedresource');
-        }
+        $resource = $DB->get_record('sharedresource', ['id' => $cm->instance], '*', MUST_EXIST);
+        $shrentryrec = $DB->get_record('sharedresource_entry', ['identifier' => $resource->identifier], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     } else {
         sharedresource_not_found();
     }
 }
 
-$shrentry = \mod_sharedresource\entry::read($shrentry->identifier);
+$shrentry = entry::read($shrentry->identifier);
 
-\mod_sharedresource\metadata::normalize_storage($shrentry->id);
+metadata::normalize_storage($shrentry->id);
 
 $pagetitle = strip_tags($SITE->fullname);
-// build up navigation links
+// Build up navigation links.
 
 $capability = metadata_get_user_capability();
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', '<span class="mtd-resource-name">'.format_string($shrentry->title).'</span>'));
+$html = '<span class="mtd-resource-name">'.format_string($shrentry->title).'</span>';
+echo $OUTPUT->heading(get_string('sharedresourcenotice', 'sharedresource', $html));
 
 require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
 

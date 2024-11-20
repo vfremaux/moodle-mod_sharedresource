@@ -15,21 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * This class defines a single sharedresource entry in central library.
  *
- * @author  Piers Harding  piers@catalyst.net.nz
+ * @author  Piers Harding  <piers@catalyst.net.nz>, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod-sharedresource
+ * @package mod_sharedresource
  *
+ */
+
+/*
+ * Because classes preloading (SHAREDRESOURCE_INTERNAL) pertubrates MOODLE_INTERNAL detection.
+ * phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
  */
 namespace mod_sharedresource;
 
+if (!defined('SHAREDRESOURCE_INTERNAL')) {
+    defined('MOODLE_INTERNAL') || die();
+}
+
 use StdClass;
-use \moodle_url;
+use moodle_url;
 use moodle_exception;
+use context_system;
 
-defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead");
-
-include_once(dirname(__FILE__).'/sharedresource_entry_factory.class.php');
+require_once(dirname(__FILE__).'/sharedresource_entry_factory.class.php');
 
 /**
  * This class defines a single sharedresource entry in central library.
@@ -49,49 +59,50 @@ include_once(dirname(__FILE__).'/sharedresource_entry_factory.class.php');
  *
  * mod/sharedresource uses a system level file repository. Files are stored into
  * a system context, course independant, special filearea.
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class entry {
 
-    // A sharedresource entry is a combination of:
+    // A sharedresource entry is a combination of.
 
-    /**
-     * The DB record of the resource entry.
-     */
+    /** @var The DB record of the resource entry. */
     protected $shrentryrec;
 
-    /**
-     * A set of metadata as an array of mod_sharedresource/metadata instances.
-     */
+    /** @var A set of metadata as an array of mod_sharedresource/metadata instances. */
     public $metadataelements;
 
-    /**
-     * An eventual physical file stored somewhere in the Moodle filesystem.
-     */
+    /** @var An eventual physical file stored somewhere in the Moodle filesystem. */
     public $storedfile;
 
-    /**
-     * The current system wide configuration of the sharedresource plugin.
-     */
+    /** @var The current system wide configuration of the sharedresource plugin. */
     protected $config;
 
-    /**
-     * A reference metadata standard description.
-     */
+    /** @var A reference metadata standard description. */
     protected $mtdstandard;
 
     /**
      * Internal method that processes the plugins for the search
      * interface.
      *
-     * @param object &$criteria, reference to Moodle Forms populated
+     * @param object $criteria, reference to Moodle Forms populated
      *        values.
      * @return results, return an array of shrentryrec objects that
      *         will be formated and displayed in the search results screen.
      */
-    static public function search(&$criteria) {
+    public static function search(& $criteria) {
         // Get the plugins.
         $plugins = sharedresource_get_plugins();
-        $results = array();
+        $results = [];
 
         // Process each plugins search function - there is a default called local.
         foreach ($plugins as $plugin) {
@@ -108,46 +119,46 @@ class entry {
      * Hydrate a sharedresource_entry object reading by identifier
      *
      * @param string $identifier, sha1 hash identifier
-     * @return sharedreosurce entry object
+     * @return entry object
      */
-    static public function read($identifier) {
+    public static function read($identifier) {
         global $DB;
 
-        if (!$shrentryrec = $DB->get_record('sharedresource_entry', array('identifier' => $identifier))) {
+        if (!$shrentryrec = $DB->get_record('sharedresource_entry', ['identifier' => $identifier])) {
             return false;
         }
 
         // Entry class may upgrade itself to entry_extended in "pro" version.
-        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
-        $shrentryrec = new $entryclass($shrentryrec);
-        return $shrentryrec;
+        $entryclass = entry_factory::get_entry_class();
+        $shrentry = new $entryclass($shrentryrec);
+        return $shrentry;
     }
 
     /**
-     * Hydrate a shrentryrec object reading by id
+     * Hydrates a shrentryrec object reading by id
      *
      * @param id   int, internal id of shrentryrec object
      * @return shrentryrec object
      */
-    static public function read_by_id($entryid) {
+    public static function read_by_id($entryid) {
         global $DB;
 
-        if (!$shrentryrec = $DB->get_record('sharedresource_entry', array('id' => $entryid))) {
+        if (!$shrentryrec = $DB->get_record('sharedresource_entry', ['id' => $entryid])) {
             return false;
         }
 
-        $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
-        $shrentryrec = new $entryclass($shrentryrec);
-        return $shrentryrec;
+        $entryclass = entry_factory::get_entry_class();
+        $shrentry = new $entryclass($shrentryrec);
+        return $shrentry;
     }
 
     /**
      * Same as read_by_id(). Hydrate a shrentryrec object reading by id
      *
-     * @param id   int, internal id of shrentryrec object
-     * @return shrentryrec object
+     * @param id   int, internal id of shrentry record
+     * @return entry object
      */
-    static public function get_by_id($entryid) {
+    public static function get_by_id($entryid) {
         return self::read_by_id($entryid);
     }
 
@@ -155,10 +166,10 @@ class entry {
      * Same as read(). Hydrate a shrentryrec object reading by identifier
      *
      * @param identifier   hash, sha1 hash identifier
-     * @return shrentryrec object
+     * @return entry object
      */
-    static public function get_by_identifier($identifier) {
-        return $shrentryrec = self::read($identifier);
+    public static function get_by_identifier($identifier) {
+        return self::read($identifier);
     }
 
     /**
@@ -199,8 +210,8 @@ class entry {
         $this->metadataelements = [];
 
         if ($this->id) {
-            $this->mtdstandard->setEntry($this->id); // Bind the metadata instance to us.
-            if ($elements = $DB->get_records('sharedresource_metadata', array('entryid' => $this->id))) {
+            $this->mtdstandard->set_entry($this->id); // Bind the metadata instance to us.
+            if ($elements = $DB->get_records('sharedresource_metadata', ['entryid' => $this->id])) {
                 foreach ($elements as $element) {
                     $this->add_element($element->element, $element->value, $element->namespace);
                 }
@@ -210,21 +221,21 @@ class entry {
 
     /**
      * magic getter
-     *
+     * @param string $attr
      */
     public function __get($attr) {
 
         if ($attr == 'id') {
-            return 0 + @$this->shrentryrec->$attr;
+            return $this->shrentryrec->$attr ?? 0;
         }
 
         if ($attr == 'metadataelements') {
             return $this->metadataelements;
         }
 
-        if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
-                                  'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context', 'scoreview', 'scorelike',
-                                  'thumbnail', 'score', 'accessctl'))) {
+        if (in_array($attr, ['id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url', 'lang', 'description',
+                          'thumbnail', 'keywords', 'timemodified', 'provider', 'isvalid', 'displayed', 'context',
+                          'scoreview', 'scorelike', 'score', 'accessctl'])) {
             return $this->shrentryrec->$attr;
         } else {
             mtrace ("Bad attr ".$attr);
@@ -234,16 +245,18 @@ class entry {
 
     /**
      * magic setter
-     *
+     * @param string $attr
+     * @param mixed $value
      */
     public function __set($attr, $value) {
-        if (in_array($attr, array('id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url',
+        if (in_array($attr, ['id', 'title', 'type', 'mimetype', 'identifier', 'remoteid', 'file', 'url',
                                   'lang', 'description', 'keywords', 'timemodified', 'provider', 'isvalid',
-                                  'displayed', 'context', 'scoreview', 'scorelike', 'score', 'thumbnail', 'accessctl'))) {
+                                  'displayed', 'context', 'scoreview', 'scorelike', 'score', 'thumbnail', 'accessctl'])) {
             if ($attr == 'description') {
                 if (is_array($value)) {
                     if (preg_match('/^<p>?(.*)<\/p>$/', $value['text'])) {
-                        $this->shrentryrec->$attr = preg_replace('/^<p>?(.*)<\/p>$/', "$1", format_string($value['text'], $value['format']));
+                        $pattern = '/^<p>?(.*)<\/p>$/';
+                        $this->shrentryrec->$attr = preg_replace($pattern, "$1", format_string($value['text'], $value['format']));
                     } else {
                         $valuestr = format_string($value['text'], $value['format']);
                         $this->shrentryrec->$attr = $valuestr;
@@ -262,10 +275,16 @@ class entry {
         }
     }
 
+    /**
+     * Builds an url for the notice.
+     */
     public function get_notice_link() {
         return new moodle_url('/mod/sharedresource/metadatanotice.php', ['identifier' => $this->identifier]);
     }
 
+    /**
+     * Accessor to the internal record.
+     */
     public function get_record() {
         return $this->shrentryrec;
     }
@@ -361,9 +380,9 @@ class entry {
     /**
      * set a core shrentryrec attribute, or add a metadata element (always appended)
      *
-     * @param $element   string, name of shrentryrec attribute or metadata element
-     * @param $value     string, value of shrentryrec attribute or metadata element
-     * @param $namespace string, namespace of metadata element only
+     * @param string $element name of shrentryrec attribute or metadata element
+     * @param string $value value of shrentryrec attribute or metadata element
+     * @param string $namespace namespace of metadata element only
      */
     public function add_element($element, $value, $namespace = '') {
         $this->update_element($element, $value, $namespace);
@@ -372,9 +391,9 @@ class entry {
     /**
      * access the value of a core shrentryrec attribute or metadata element
      *
-     * @param $element   string, name of shrentryrec attribute or metadata element
-     * @param $namespace string, namespace of metadata element only
-     * @return string, value of attribute or metadata element
+     * @param string $element name of shrentryrec attribute or metadata element
+     * @param string $namespace namespace of metadata element only
+     * @return value of attribute or metadata element
      */
     public function element($element, $namespace = '') {
         global $shrcoreelements;
@@ -397,19 +416,20 @@ class entry {
      * amend a core shrentryrec attribute, or metadata element - if metadata element
      * is not found then it is appended.
      *
-     * @param $element   string, name of shrentryrec attribute or metadata element
-     * @param $value     string, value of shrentryrec attribute or metadata element
-     * @param $namespace string, namespace of metadata element only
+     * @param string $element name of shrentryrec attribute or metadata element
+     * @param string $value value of shrentryrec attribute or metadata element
+     * @param string $namespace namespace of metadata element only
      */
     public function update_element($element, $value, $namespace = '') {
         global $shrcoreelements;
 
-        // add the core ones to the main table entry - everything else goes in the metadata table.
+        // Add the core ones to the main table entry - everything else goes in the metadata table.
         if (in_array($element, $shrcoreelements) && !empty($value)) {
             $this->$element = $value;
         } else {
             if (!array_key_exists($element, $this->metadataelements)) {
-                $this->metadataelements[$element] = new metadata($this->id, $element, $value, $namespace);
+                $mtdelement = new metadata($this->id, $element, $value, $namespace);
+                $this->metadataelements[$element] = $mtdelement;
             }
         }
     }
@@ -508,11 +528,11 @@ class entry {
         $mtdstandard = new $mtdclass();
 
         // Remap metadata elements array to cope with setKeywordValues expected format.
-        $metadataelements = array();
+        $metadataelements = [];
         foreach ($this->metadataelements as $elm) {
             $metadataelements[$elm->element] = $elm;
         }
-        $this->shrentryrec->keywords = $mtdstandard->getKeywordValues($metadataelements);
+        $this->shrentryrec->keywords = $mtdstandard->get_keyword_values($metadataelements);
 
         // Fix description from tinymce.
         if (is_array(@$this->description)) {
@@ -520,7 +540,9 @@ class entry {
         }
 
         if ($oldres = $DB->get_record('sharedresource_entry', ['identifier' => $this->identifier])) {
-            throw new moodle_exception("Shared resources cannot collide identifier on creation. The identifier '{$this->identifier}' exists. This case should not happen.");
+            $msg = "Shared resources cannot collide identifier on creation. ";
+            $msg .= "The identifier '{$this->identifier}' exists. This case should not happen.";
+            throw new moodle_exception($msg);
         } else {
             $this->id = $DB->insert_record('sharedresource_entry', $this->shrentryrec);
         }
@@ -544,7 +566,7 @@ class entry {
             // Now we post udate the shrentryrec record to reflect changes.
             $this->shrentryrec->file = $definitive->get_id();
 
-            $DB->set_field('sharedresource_entry', 'file', $definitive->get_id(), array('id' => $this->id));
+            $DB->set_field('sharedresource_entry', 'file', $definitive->get_id(), ['id' => $this->id]);
         }
 
         // Process eventual thumbnail.
@@ -573,7 +595,7 @@ class entry {
                 return false;
             }
         }
-        $this->mtdstandard->setEntry($this->id);
+        $this->mtdstandard->set_entry($this->id);
 
         // Trigger the after save plugins.
         $this->after_save();
@@ -590,8 +612,10 @@ class entry {
         global $DB, $SESSION;
 
         if (!empty($SESSION->sr_must_clone_to)) {
-            // the resource content has changed, Identifier cannot be preserved.
-            // We need to clone resource
+            /*
+             * the resource content has changed, Identifier cannot be preserved.
+             * We need to clone resource
+             */
             $oldidentifier = $this->shrentryrec->identifier;
             $this->shrentryrec->identifier = $SESSION->sr_must_clone_to;
             $this->add_instance();
@@ -609,7 +633,6 @@ class entry {
             return true;
         }
 
-
         $this->timemodified = time();
 
         // Trigger the before save plugins.
@@ -619,7 +642,7 @@ class entry {
         $DB->delete_records('sharedresource_metadata', ['entryid' => $this->id]);
 
         $firstdescelmkey = null;
-        $desc = $this->mtdstandard->getDescriptionElement();
+        $desc = $this->mtdstandard->get_description_element();
         if ($desc) {
             $firstdescelmkey = metadata::to_instance($desc->node);
         }
@@ -644,8 +667,8 @@ class entry {
         $this->title = $this->title;
 
         // Fix description from tinymce.
-        if (is_array(@$this->description)) {
-            $this->shrentryrec->description = @$this->description['text'];
+        if (is_array($this->description ?? false)) {
+            $this->shrentryrec->description = $this->description['text'] ?? '';
         }
 
         // Remap metadata elements array to cope with setKeywordValues expected format.
@@ -653,16 +676,16 @@ class entry {
         foreach ($this->metadataelements as $elm) {
             $metadataelements[$elm->element] = $elm;
         }
-        $this->shrentryrec->keywords = $this->mtdstandard->getKeywordValues($metadataelements);
+        $this->shrentryrec->keywords = $this->mtdstandard->get_keyword_values($metadataelements);
 
         $DB->update_record('sharedresource_entry', $this->shrentryrec);
 
         $fs = get_file_storage();
-        $systemcontext = \context_system::instance();
+        $systemcontext = context_system::instance();
 
         // Process eventual thumbnail, by deleting old stored version and recreate stored file.
         $fs->delete_area_files($systemcontext->id, 'mod_sharedresource', 'thumbnail', $this->shrentryrec->id);
-        $thumbnail = @$this->thumbnail; // Care with magic __get and empty().
+        $thumbnail = $this->thumbnail ?? ''; // Care with magic __get and empty().
         if (!empty($thumbnail)) {
             $filerec = new StdClass();
             $filerec->contextid = $systemcontext->id;
@@ -689,31 +712,36 @@ class entry {
     public function delete_instance() {
         global $DB;
 
-        /* Given an object containing the sharedresource data
+        /*
+         * Given an object containing the sharedresource data
          * this function will permanently delete the instance
          * and any data that depends on it, including local file.
          */
 
-        if (! $DB->delete_records('sharedresource_metadata', array('entryid' => $this->id))) {
+        if (! $DB->delete_records('sharedresource_metadata', ['entryid' => $this->id])) {
             return false;
         }
 
         if ($this->is_local_resource()) {
-            $context = \context_system::instance();
+            $context = context_system::instance();
             $fs = get_file_storage();
             $fs->delete_area_files($context->id, 'mod_sharedresource', 'sharedresource', $this->id);
             $fs->delete_area_files($context->id, 'mod_sharedresource', 'thumbnail', $this->id);
         }
 
-        if (! $DB->delete_records('sharedresource_entry', array('id' => $this->id))) {
+        if (! $DB->delete_records('sharedresource_entry', ['id' => $this->id])) {
             return false;
         }
         return true;
     }
 
-    public function unset_metadata($key) {
-        if (isset($this->metadataelements[$key])) {
-            unset($this->metadataelements[$key]);
+    /**
+     * Unset an element in metadata.
+     * @param string $element
+     */
+    public function unset_metadata($element) {
+        if (isset($this->metadataelements[$element])) {
+            unset($this->metadataelements[$element]);
         }
     }
 
@@ -724,7 +752,7 @@ class entry {
     public function exists() {
         global $DB;
 
-        if ($oldrec = $DB->get_record('sharedresource_entry', array('identifier' => $this->identifier))) {
+        if ($oldrec = $DB->get_record('sharedresource_entry', ['identifier' => $this->identifier])) {
             $this->id = $oldrec->id;
 
             // Update all internal metadata references.
@@ -752,16 +780,15 @@ class entry {
 
          $mtdstandard = sharedresource_get_plugin($config->schema, $this->shrentryrec->id);
 
-        if (is_null($mtdstandard->getVersionSupportElement())) {
+        if (is_null($mtdstandard->get_version_support_element())) {
             return $this;
         }
 
-        $nextid = $mtdstandard->getNext();
+        $nextid = $mtdstandard->get_next();
         if ($nextid != $this->id) {
             $next = self::get_by_id($nextid);
             if (empty($next)) {
-                throw new MoodleException("Non existing versionned resource");
-                // return $this ?
+                throw new moodle_exception("Non existing versionned resource");
             }
             return $next->fetch_ahead($fullchain);
         }
@@ -774,7 +801,7 @@ class entry {
      * @return the next sharedresource id and the current resource id if end of chain.
      */
     public function has_next() {
-        $nextid = $this->mtdstandard->getNext();
+        $nextid = $this->mtdstandard->get_next();
         return (!empty($nextid) && ($nextid != $this->id));
     }
 
@@ -783,31 +810,30 @@ class entry {
      * @return the next sharedresource id and the current resource id if end of chain.
      */
     public function get_next() {
-        return $this->mtdstandard->getNext();
+        return $this->mtdstandard->get_next();
     }
 
     /**
      * Defines the given sharedresouce as next version of the current resource.
-     * @param object $sharedresourceentry
+     * @param object $shrentry
      */
-    public function set_next($sharedresourceentry) {
-        return $this->mtdstandard->setNext($sharedresourceentry);
+    public function set_next($shrentry) {
+        return $this->mtdstandard->set_next($shrentry);
     }
 
     /**
      * Defines the given sharedresouce as next version of the current resource.
-     * @param object $sharedresourceentry
      */
     public function get_previous() {
-        return $this->mtdstandard->getPrevious();
+        return $this->mtdstandard->get_previous();
     }
 
     /**
      * Defines the given sharedresouce as previous version of the current resource.
-     * @param object $sharedresourceentry
+     * @param object $shrentry
      */
-    public function set_previous($sharedresourceentry) {
-        return $this->mtdstandard->setPrevious($sharedresourceentry);
+    public function set_previous($shrentry) {
+        return $this->mtdstandard->set_previous($shrentry);
     }
 
     /**
@@ -828,7 +854,7 @@ class entry {
         static $userdatacache;
 
         if (!isset($userdatacache)) {
-            $userdatacache = array();
+            $userdatacache = [];
         }
 
         $config = get_config('sharedresource');
@@ -846,13 +872,13 @@ class entry {
          * and a set of control values (allowed values) as a coma separated list.
          */
         if (!empty($this->accessctl)) {
-            $accessctl = \mod_sharedresource\access_ctl::instance($this->accessctl);
+            $accessctl = access_ctl::instance($this->accessctl);
             if ($accessctl->can_use()) {
                 return true;
             }
         }
 
-        // By taxonomy access control
+        // By taxonomy access control.
         /*
          * Taxonomies have some access control rules based on profile field or capabilities.
          * At least one match is required to pass, when the resource has explicit taxonomy binding.
@@ -861,19 +887,19 @@ class entry {
          * a taxon deletion in the taxonomy.)
          */
          $mtdstandard = sharedresource_get_plugin($config->schema);
-         $taxumarr = $mtdstandard->getTaxumpath();
+         $taxumarr = $mtdstandard->get_taxum_path();
 
         if (empty($taxumarr)) {
             // No need to care about taxonomy access control as there is no taxonomy in the standard.
             return true;
         }
 
-        $sources = \mod_sharedresource\metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
+        $sources = metadata::instances_by_node($this->id, $config->schema, $taxumarr['source']);
         if (!empty($sources)) {
             foreach ($sources as $source) {
                 // Find some tokenids that are attached to this source instance.
-                $idkey = \mod_sharedresource\metadata::to_instance($taxumarr['id'], $source->get_element_key()); // Normalise element key.
-                $elmids = \mod_sharedresource\metadata::instances_by_element($this->id, $config->schema, $idkey, null, true);
+                $idkey = metadata::to_instance($taxumarr['id'], $source->get_element_key()); // Normalise element key.
+                $elmids = metadata::instances_by_element($this->id, $config->schema, $idkey, null, true);
                 if (empty($elmids)) {
                     continue;
                 }
@@ -882,7 +908,7 @@ class entry {
                  * - one source at least has no access control.
                  * - one source at least has access allowed for user.
                  */
-                 $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $source->get_value()));
+                 $taxonomy = $DB->get_record('sharedresource_classif', ['id' => $source->get_value()]);
                  $classif = new \local_sharedresource\browser\navigator($taxonomy);
                 if ($classif->can_use()) {
                     return true;
@@ -894,5 +920,4 @@ class entry {
 
         return true;
     }
-
 }

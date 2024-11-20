@@ -14,10 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * A class factory for a sharedresource_entry.
+ *
+ * @author  Piers Harding  <piers@catalyst.net.nz>, Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * @package mod_sharedresource
+ *
+ */
+
+/*
+ * Because classes preloading (SHAREDRESOURCE_INTERNAL) pertubrates MOODLE_INTERNAL detection.
+ * phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
+ */
 namespace mod_sharedresource;
 
-defined('MOODLE_INTERNAL') || defined('SHAREDRESOURCE_INTERNAL') || die("Not loadable directly. Use __autoload.php instead.");
+if (!defined('SHAREDRESOURCE_INTERNAL')) {
+    defined('MOODLE_INTERNAL') || die();
+}
 
+/**
+ * A class factory for a sharedresource_entry.
+ */
 class entry_factory {
 
     /**

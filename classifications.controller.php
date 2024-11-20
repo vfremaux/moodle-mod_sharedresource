@@ -15,27 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * forms for converting resources to sharedresources
+ * Controller for classification list management.
  *
- * @package    mod_sharedresource
- * @category   mod
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource\classification;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * MVC Controller class
+ */
 class classifications_controller {
 
+    /** @var data */
     protected $data;
 
+    /** @var marks data as received */
     protected $received;
 
+    /** @var a form for getting attached files inside */
     protected $mform;
 
-    public function receive($cmd, $data = array(), $mform = null) {
+    /**
+     * Receives data to process
+     * @param string $cmd
+     * @param array $data
+     * @param object $mform
+     */
+    public function receive($cmd, $data = [], $mform = null) {
         $this->mform = $mform;
 
         if (!empty($data)) {
@@ -61,6 +70,10 @@ class classifications_controller {
         $this->received = true;
     }
 
+    /**
+     * Processes the data
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
@@ -82,27 +95,27 @@ class classifications_controller {
                  * - deduce all taxonpath instances that are attached to this source
                  * - remove taxon path subtree.
                  */
-                $classification = $DB->get_record('sharedresource_classif', array('id' => $this->data->classificationid));
+                $classification = $DB->get_record('sharedresource_classif', ['id' => $this->data->classificationid]);
 
                 $mtdstandard = sharedresource_get_plugin($namespace);
                 $mtdstandard->delete_classifications($this->data->classificationid, $namespace);
 
                 if ($classification->tablename == 'sharedresource_taxonomy') {
                     // Delete also taxons in local taxonomy storage table.
-                    $DB->delete_records('sharedresource_taxonomy', array('classificationid' => $this->data->classificationid));
+                    $DB->delete_records('sharedresource_taxonomy', ['classificationid' => $this->data->classificationid]);
                 }
                 // Finally delete the classification record.
-                $DB->delete_records('sharedresource_classif', array('id' => $this->data->classificationid));
+                $DB->delete_records('sharedresource_classif', ['id' => $this->data->classificationid]);
                 break;
             }
 
             case 'enable': {
-                $DB->set_field('sharedresource_classif', 'enabled', 1, array('id' => $this->data->classificationid));
+                $DB->set_field('sharedresource_classif', 'enabled', 1, ['id' => $this->data->classificationid]);
                 break;
             }
 
             case 'disable': {
-                $DB->set_field('sharedresource_classif', 'enabled', 0, array('id' => $this->data->classificationid));
+                $DB->set_field('sharedresource_classif', 'enabled', 0, ['id' => $this->data->classificationid]);
                 break;
             }
         }

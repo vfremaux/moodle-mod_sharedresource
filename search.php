@@ -15,19 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Local Search page.
  *
- * @author  Piers Harding  piers@catalyst.net.nz
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
- * @category mod
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/search_form.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
 $courseid       = required_param('course', PARAM_INT);
 $add            = optional_param('add', 0, PARAM_ALPHA);
-$return         = optional_param('return', 0, PARAM_BOOL); // Return to course/view.php if false or local/sharedresources/index.php if true.
+// Return to course/view.php if false or local/sharedresources/index.php if true.
+$return         = optional_param('return', 0, PARAM_BOOL);
 $type           = optional_param('type', 'file', PARAM_ALPHANUM);
 $section        = optional_param('section', 0, PARAM_ALPHANUM);
 $id             = optional_param('id', false, PARAM_INT); // The originating course id.
@@ -35,10 +38,10 @@ $page           = optional_param('page', false, PARAM_INT);
 
 // Query string parameters to ignore.
 
-$excludeinputs = array('course', 'section', 'add', 'update', 'return', 'type', 'id', 'page', 'MAX_FILE_SIZE', 'submitbutton');
+$excludeinputs = ['course', 'section', 'add', 'update', 'return', 'type', 'id', 'page', 'MAX_FILE_SIZE', 'submitbutton'];
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('coursemisconf');
+if (!$course = $DB->get_record('course', ['id' => $courseid])) {
+    throw new moodle_exception('coursemisconf');
 }
 
 // Security.
@@ -49,23 +52,23 @@ require_course_login($course, false);
 require_capability('moodle/course:manageactivities', $context);
 
 if ($return) {
-    $params = array();
+    $params = [];
     if ($id) {
-        $params = array('id' => $id);
+        $params = ['id' => $id];
     }
     redirect(new moodle_url('/local/sharedresources/index.php', $params));
 }
 
 $strtitle = get_string('addinstance', 'sharedresource');
 $PAGE->set_pagelayout('standard');
-$params = array('course' => $courseid, 'add' => $add, 'return' => $return, 'section' => $section, 'id' => $id);
+$params = ['course' => $courseid, 'add' => $add, 'return' => $return, 'section' => $section, 'id' => $id];
 $url = new moodle_url('/mod/sharedresource/search.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle, 'metadataconfigure.php', 'misc');
-$linkurl = new moodle_url('/mod/sharedresource/index.php', array('id' => $course->id, 'section' => $section));
+$linkurl = new moodle_url('/mod/sharedresource/index.php', ['id' => $course->id, 'section' => $section]);
 $PAGE->navbar->add(get_string('modulenameplural', 'sharedresource'), $linkurl, 'activity');
 $PAGE->navbar->add(get_string('searchsharedresource', 'sharedresource'));
 
