@@ -16,7 +16,6 @@
 /**
  * AMD module for providing metadata related manipulation functions
  * @module     mod_sharedresource/metadata
- * @package    mod
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
@@ -31,6 +30,7 @@ define(['jquery', 'core/log'], function ($, log) {
         /**
          * Given an element id as m_n_o:x_y_z, gives the next to come
          * leaf element in sequence
+         * @param {string} elementid the element id as m_n_o:x_y_z
          */
         next_occurrence : function(elementid) {
             var parts = elementid.split(':');
@@ -48,19 +48,21 @@ define(['jquery', 'core/log'], function ($, log) {
         /**
          * Given an element id as mnx_nny_onz, gives the next to come
          * leaf element in sequence, that is ; mnx_nny_on(z + 1)
+         * @param {string} elementname the element name as mnx_nny_onz
          */
-        next_occurrence_name : function(elmname) {
-            var parts = elmname.split('n');
+        next_occurrence_name : function(elementname) {
+            var parts = elementname.split('n');
             var lastoccurrence = parts.pop();
             lastoccurrence++;
             parts.push(lastoccurrence);
-            elmname = parts.join('n');
-            return elmname;
+            elementname = parts.join('n');
+            return elementname;
         },
 
         /**
          * Given an element name as mnx_nny_onz, gives the first parent as
          * mnx_nny
+         * @param {string} elementname the name of the element as mnx_nny_onz
          */
         parent_name : function(elementname) {
             var parts = elementname.split('_');

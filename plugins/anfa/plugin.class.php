@@ -1621,12 +1621,16 @@ class plugin_anfa extends plugin_base {
 
     /**
      * location have a special status in metadata form, so a function to find the location field is necessary
+     * DO NOT expose this method. Anfa has derrogated the use of location element to something else that MUST NOT
+     * be postprocessed.
      */
+    /*
     public function get_location_element() {
         $element = (object)$this->metadatatree['4_3'];
         $element->node = '4_3';
         return $element;
     }
+    */
 
     /**
      * purpose must expose the values, so a function to find the purpose field is usefull

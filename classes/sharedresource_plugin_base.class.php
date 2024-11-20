@@ -31,6 +31,7 @@ namespace mod_sharedresource;
 
 use StdClass;
 use moodle_exception;
+use coding_exception;
 
 if (!defined('SHAREDRESOURCE_INTERNAL')) {
     defined('MOODLE_INTERNAL') || die();

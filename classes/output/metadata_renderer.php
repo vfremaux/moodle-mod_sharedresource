@@ -469,6 +469,7 @@ class metadata_renderer extends plugin_renderer_base {
                         }
                     }
                 }
+                break;
             }
 
             case 'date': {
@@ -478,7 +479,7 @@ class metadata_renderer extends plugin_renderer_base {
                 if (!empty($value)) {
                     $template->hascontent = true;
                     if (!is_array($value)) {
-                        $date = date(get_string('datefmt', 'sharedresource'), $value);
+                        $date = date(get_string('datefmt', 'sharedresource'), (int) $value);
                         $template->mtdvalue = $date;
                     } else {
                         $dates = [];
@@ -532,6 +533,7 @@ class metadata_renderer extends plugin_renderer_base {
                     }
                 }
                 $template->mtdvalue .= $this->output->help_icon('vcard', 'sharedresource', $vcard);
+                break;
             }
         }
     }
@@ -583,6 +585,7 @@ class metadata_renderer extends plugin_renderer_base {
 
         $template = new StdClass();
         $template->shrid = $shrentry->id ?? 0;
+        $template->shridentifier = $shrentry->identifier ?? '';
         $template->pluginname = $mtdstandard->get_namespace();
         $template->metadatadescrstr = get_string('metadatadescr', 'sharedresource');
         $template->namespace = $mtdstandard->get_namespace();
@@ -1161,7 +1164,7 @@ class metadata_renderer extends plugin_renderer_base {
                         $template->mandatoryclass = 'is-mandatory';
                     }
                 }
-            } else if ($nodeid == $mtdstandard->get_location_element()->node && $elminstance->get_value() == '') {
+            } else if (method_exists($mtdstandard, 'get_location_element') && ($nodeid == $mtdstandard->get_location_element()->node && $elminstance->get_value() == '')) {
                 $template->value = $shrentry->url;
             } else if ($elminstance->get_value() != '') {
                 $template->value = $elminstance->get_value();

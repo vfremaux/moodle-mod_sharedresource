@@ -118,7 +118,9 @@ if ($mode != 'add') {
         unset($shrentry->metadataelements[$key]);
     }
 }
+
 $result = metadata_display_and_check($shrentry, $metadataentries);
+
 metadata::normalize_storage($shrentry->id);
 
 // If there are errors in fields filled in by the user.

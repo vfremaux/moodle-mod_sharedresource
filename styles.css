@@ -102,6 +102,14 @@
     width: 62%;
 }
 
+.path-mod-sharedresource-forms input[type="button"] {
+    width: 25%;
+}
+.path-mod-sharedresource-forms input.mtd-form-addbutton.is-list {
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
 .path-mod-sharedresource-forms input.mtd-form-duration {
     width: 2em;
 }

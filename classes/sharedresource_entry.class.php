@@ -428,7 +428,8 @@ class entry {
             $this->$element = $value;
         } else {
             if (!array_key_exists($element, $this->metadataelements)) {
-                $this->metadataelements[$element] = new metadata($this->id, $element, $value, $namespace);
+                $mtdelement = new metadata($this->id, $element, $value, $namespace);
+                $this->metadataelements[$element] = $mtdelement;
             }
         }
     }

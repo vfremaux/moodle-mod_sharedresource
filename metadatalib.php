@@ -80,11 +80,24 @@ function metadata_display_and_check(entry & $shrentry, $metadataentries) {
 
     $keywordelm = $mtdstandard->get_keyword_element();
 
+    // those form fields are NOT metadata entries.
+    $notmtd = [
+        'mode',
+        'fromlibrary',
+        'catid',
+        'catpath',
+        'course',
+        'section',
+        'returnpage',
+        'context',
+        'go-btn',
+        'identifier'
+    ];
+
     foreach ($metadataentries as $htmlkey => $value) {
 
         // Discard any non-metadata entry.
-        if (in_array($htmlkey, ['mode', 'fromlibrary', 'catid', 'catpath', 'course', 'section', 'returnpage',
-                'context', 'go-btn'])) {
+        if (in_array($htmlkey, $notmtd)) {
             continue;
         }
 
@@ -177,7 +190,7 @@ function metadata_display_and_check(entry & $shrentry, $metadataentries) {
 
             /*
              * At this point any suffixed htmlkey should be decoded and cleaned. It is safe to
-             * convert to strorage keys.
+             * convert to storage keys.
              */
             $elementkey = metadata::html_to_storage($htmlkey);
             list($nodeid, $instanceid)  = explode(':', $elementkey);

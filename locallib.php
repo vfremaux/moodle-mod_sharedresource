@@ -960,7 +960,7 @@ function sharedresource_extract_activity_icon($resourcedesc) {
  * @param string $label
  * @param int $backtracelevel
  */
-function mod_sharedresource_debug_trace($msg, $level = 0, $label = '', $backtracelevel = 1) {
+function mod_sharedresource_debug_trace($msg, $level = 0, $label = '', $backtracelevel = 2) {
     if (function_exists('debug_trace')) {
         debug_trace($msg, $level, $label, $backtracelevel);
     }
