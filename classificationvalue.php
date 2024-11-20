@@ -15,20 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    sharedresource
- * @subpackage mod_sharedresource
- * @category   mod
+ * Allows adding or updating a single taxon in the sharedresource_taxonomy table.
  *
- * Allows adding/updating a single taxon in the sharedresource_taxonomy table.
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/forms/classificationvalue_form.php');
 
-$classifid = required_param('classificationid', PARAM_INT); // the classification id.
+$classifid = required_param('classificationid', PARAM_INT); // The classification id.
 $parent = required_param('parent', PARAM_INT); // The parent of this taxon.
 $id = optional_param('id', 0, PARAM_INT); // The taxon id.
 
@@ -40,7 +39,7 @@ require_capability('repository/sharedresources:manage', $systemcontext);
 
 // Build page.
 
-$url = new moodle_url('/mod/sharedresource/classificationvalue.php', array('classificationid' => $classifid, 'parent' => $parent));
+$url = new moodle_url('/mod/sharedresource/classificationvalue.php', ['classificationid' => $classifid, 'parent' => $parent]);
 $PAGE->set_url($url);
 $PAGE->set_context($systemcontext);
 $PAGE->set_title($SITE->fullname);
@@ -50,12 +49,12 @@ $PAGE->set_pagelayout('standard');
 $mform = new classificationvalue_form();
 
 if ($mform->is_cancelled()) {
-    $params = array('id' => $classifid, 'parent' => $parent);
+    $params = ['id' => $classifid, 'parent' => $parent];
     $redirecturl = new moodle_url('/mod/sharedresource/classificationvalues.php', $params);
     redirect($redirecturl);
 }
 
-$classification = $DB->get_record('sharedresource_classif', array('id' => $classifid));
+$classification = $DB->get_record('sharedresource_classif', ['id' => $classifid]);
 
 if ($data = $mform->get_data()) {
     if (!empty($data->id)) {
@@ -64,7 +63,7 @@ if ($data = $mform->get_data()) {
         $DB->insert_record('sharedresource_taxonomy', $data);
     }
 
-    $params = array('id' => $classifid, 'parent' => $parent);
+    $params = ['id' => $classifid, 'parent' => $parent];
     $redirecturl = new moodle_url('/mod/sharedresource/classificationvalues.php', $params);
     redirect($redirecturl);
 }
@@ -76,13 +75,13 @@ $cmd = (empty($id)) ? 'add' : 'update';
 echo $OUTPUT->heading(get_string($cmd.'classificationvalue', 'sharedresource'));
 
 if ($id) {
-    $taxon = $DB->get_record('sharedresource_taxonomy', array('id' => $id));
+    $taxon = $DB->get_record('sharedresource_taxonomy', ['id' => $id]);
     $mform->set_data($taxon);
 } else {
     $taxon = new StdClass;
     $taxon->parent = $parent;
     $taxon->classificationid = $classifid;
-    $params = array('classificationid' => $classifid, 'parent' => $parent);
+    $params = ['classificationid' => $classifid, 'parent' => $parent];
     $maxorder = $DB->get_field('sharedresource_taxonomy', 'MAX(sortorder)', $params);
     if (!is_null($maxorder)) {
         $taxon->sortorder = $maxorder + 1;

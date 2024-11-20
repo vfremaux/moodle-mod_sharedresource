@@ -16,7 +16,6 @@
 /**
  * AMD module for providing metadata related manipulation functions
  * @module     mod_sharedresource/metadata
- * @package    mod
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true

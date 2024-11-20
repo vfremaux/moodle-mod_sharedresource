@@ -15,31 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays the filled fields of the metadata
- * form and save these metadata and the resource.
+ * Displays the filled fields of the metadata form and save these metadata and the resource.
+ *
  * It informs the user if there are some errors and in that
  * case, the resource is not saved and the user is sent back
  * to the metadata form
  *
- * @author  Frederic GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
+ * @package     mod_sharedresource
+ * @author      Frederic GUILLOU
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-// Here we need load some classes before config and session is setup to help unserializing
+/*
+ * sharedresource_check_access does the job.
+ * phpcs:disable moodle.Files.RequireLogin.Missing
+ * Prerequires perturbate config.php inclusion detection.
+ * phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
+ */
+
+// Here we need load some classes before config and session is setup to help unserializing.
 require_once(dirname(__FILE__).'/classes/__autoload.php');
 
-require_once('../../config.php');
+require('../../config.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
+use mod_sharedresource\metadata;
+
 $config = get_config('sharedresource');
 
 $mode = required_param('mode', PARAM_ALPHA);
-$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Return to course or library
-$returnpage = required_param('returnpage', PARAM_TEXT); // Return to course or mod form, either browse or explore in library
+$fromlibrary = optional_param('fromlibrary', 1, PARAM_BOOL); // Return to course or library.
+$returnpage = required_param('returnpage', PARAM_TEXT); // Return to course or mod form, either browse or explore in library.
 $section = optional_param('section', 0, PARAM_INT);
 $courseid = required_param('course', PARAM_INT);
 $catid = optional_param('catid', 0, PARAM_INT);
@@ -49,6 +60,7 @@ $sharingcontext = optional_param('context', 1, PARAM_INT);
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
 // Security.
+
 $pagecontext = sharedresource_check_access($course);
 
 $mtdstandard = sharedresource_get_plugin($config->schema);
@@ -106,8 +118,10 @@ if ($mode != 'add') {
         unset($shrentry->metadataelements[$key]);
     }
 }
+
 $result = metadata_display_and_check($shrentry, $metadataentries);
-\mod_sharedresource\metadata::normalize_storage($shrentry->id);
+
+metadata::normalize_storage($shrentry->id);
 
 // If there are errors in fields filled in by the user.
 
@@ -127,7 +141,7 @@ if ($result['error'] != []) {
         $fieldnum = substr($field, 0, strpos($field, ':'));
         $errtpl = new StdClass();
         $errtpl->fieldnum = $fieldnum;
-        $errtpl->fieldname = $mtdstandard->METADATATREE[$fieldnum]['name'];
+        $errtpl->fieldname = $mtdstandard->metadatatree[$fieldnum]['name'];
         $errortpl->errors[] = $errtpl;
     }
 
@@ -214,8 +228,10 @@ if ($mode == 'add' && $shrentry->exists()) {
     }
 } else if ($mode == 'update') {
 
-    // Here we need update the instance. Update will react to any identifier alteration, by building
-    // a complete new entry linked to the current unaltered entry by metadata chain. 
+    /*
+     * Here we need update the instance. Update will react to any identifier alteration, by building
+     * a complete new entry linked to the current unaltered entry by metadata chain.
+     */
     if (!$shrentry->update_instance()) {
         unset($SESSION->sr_must_clone_to);
         throw new moodle_exception(get_string('failupdate', 'sharedresource'));

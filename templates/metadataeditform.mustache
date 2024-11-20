@@ -23,7 +23,7 @@
 }}
 <!-- metadataeditform -->
 <center>
-<div id="mtd-form-container" align="center">
+<div id="mtd-form-container" align="center" data-id="{{shrid}}">
 
     <div align="center" id="mtd-form-title">
         {{metadatadescrstr}} {{pluginname}}
@@ -49,12 +49,13 @@
         </div>
 
         <div style="margin-left: 67px;">
-            <form id="id-mtd-form" action="{{{receiverurl}}}" method="post" class="mtd-form" autocomplete="off">
+            <form id="id-mtd-form" action="{{{receiverurl}}}" method="post" class="mtd-form" autocomplete="off" data-mustcloneto="{{mustcloneto}}">
                 <input type="hidden"  name="mode"  value="{{mode}}">
                 <input type="hidden"  name="course"  value="{{course}}">
                 <input type="hidden"  name="section"  value="{{section}}">
                 <input type="hidden"  name="context"  value="{{sharingcontext}}">
                 <input type="hidden"  name="catid"  value="{{catid}}">
+                <input type="hidden"  name="identifier"  value="{{shridentifier}}">
                 <input type="hidden"  name="catpath"  value="{{catpath}}">
                 <input type="hidden"  name="returnpage"  value="{{returnpage}}">
                 <input type="hidden"  name="fromlibrary"  value="{{fromlibrary}}">

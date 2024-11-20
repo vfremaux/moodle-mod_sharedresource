@@ -15,12 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Specific function set for metadata processing.
  *
  * @author  Frederic GUILLOU
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
+/*
  * Important design note about namespace processing:
  *
  * Namespace designate both field source namespace and actual Moodle active namespace.
@@ -33,48 +37,67 @@
 defined('MOODLE_INTERNAL') || die();
 
 /*
- * Detects a change in the metadata model used et display a message to a inform the user of the loss of the old metadata
+ * Detects a change in the metadata model used and displays a message to a inform the user of the loss of the old metadata
  * in case of validation.
  */
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/extlib/encoding.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
-// Ensure thr adequate sharedresource_entry class is pre loaded.
-\mod_sharedresource\entry_factory::get_entry_class();
+use mod_sharedresource\entry_factory;
+use mod_sharedresource\entry;
+use mod_sharedresource\metadata;
 
-/*
+// Ensure thr adequate sharedresource_entry class is pre loaded.
+entry_factory::get_entry_class();
+
+/**
  * Function which display and check the metadata submitted by the form
+ * @param entry $shrentry
+ * @param array $metadataentries
  */
-function metadata_display_and_check(&$shrentry, $metadataentries) {
+function metadata_display_and_check(entry & $shrentry, $metadataentries) {
 
     $config = get_config('sharedresource');
     $namespace = $config->schema;
     $mtdstandard = sharedresource_get_plugin($namespace);
 
-    $taxumarray = $mtdstandard->getTaxumpath();
+    $taxumarray = $mtdstandard->get_taxum_path();
     if ($taxumarray) {
-        $standardsourceelm = $mtdstandard->getElement($taxumarray['source']);
-        $standardidelm = $mtdstandard->getElement($taxumarray['id']);
-        $standardentryelm = $mtdstandard->getElement($taxumarray['entry']);
+        $standardsourceelm = $mtdstandard->get_element($taxumarray['source']);
+        $standardidelm = $mtdstandard->get_element($taxumarray['id']);
+        $standardentryelm = $mtdstandard->get_element($taxumarray['entry']);
     }
 
     $fieldnamestr = get_string('mtdfieldname', 'sharedresource');
     $fieldidstr = get_string('mtdfieldid', 'sharedresource');
     $valuestr = get_string('mtdvalue', 'sharedresource');
 
-    $error = array();
-    $template = new StdClass;
+    $error = [];
+    $template = new StdClass();
     $template->fieldnamestr = $fieldnamestr;
     $template->fieldidstr = $fieldidstr;
     $template->valuestr = $valuestr;
 
-    $keywordelm = $mtdstandard->getKeywordElement();
+    $keywordelm = $mtdstandard->get_keyword_element();
+
+    // those form fields are NOT metadata entries.
+    $notmtd = [
+        'mode',
+        'fromlibrary',
+        'catid',
+        'catpath',
+        'course',
+        'section',
+        'returnpage',
+        'context',
+        'go-btn',
+        'identifier'
+    ];
 
     foreach ($metadataentries as $htmlkey => $value) {
 
         // Discard any non-metadata entry.
-        if (in_array($htmlkey, array('mode', 'fromlibrary', 'catid', 'catpath', 'course', 'section', 'returnpage', 'context', 'go-btn'))) {
+        if (in_array($htmlkey, $notmtd)) {
             continue;
         }
 
@@ -95,9 +118,9 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
             if (substr($htmlkey, -3) == 'Day') {
                 $htmlkeytemp = substr($htmlkey, 0, -4);
                 $temp = 0;
-                if ($value != '' && !\mod_sharedresource\metadata::is_integer($value)) {
+                if ($value != '' && !metadata::is_integer($value)) {
                     $errortemp .= get_string('integerday', 'sharedresource');
-                } else if ($value != '' && \mod_sharedresource\metadata::is_integer($value) && $value < 0) {
+                } else if ($value != '' && metadata::is_integer($value) && $value < 0) {
                     $errortemp .= get_string('incorrectday', 'sharedresource');
                 }
                 if ($value != '' && $value != '0') {
@@ -107,10 +130,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $minkey = $htmlkeytemp.'_Min';
                 $seckey = $htmlkeytemp.'_Sec';
                 if ($metadataentries->$hourkey != '' &&
-                        !\mod_sharedresource\metadata::is_integer($metadataentries->$hourkey)) {
+                        !metadata::is_integer($metadataentries->$hourkey)) {
                     $errortemp .= get_string('integerhour', 'sharedresource');
                 } else if ($metadataentries->$hourkey != '' &&
-                                \mod_sharedresource\metadata::is_integer($metadataentries->$hourkey) &&
+                                metadata::is_integer($metadataentries->$hourkey) &&
                                         $metadataentries->$hourkey < 0) {
                     $errortemp .= get_string('incorrecthour', 'sharedresource');
                 }
@@ -118,10 +141,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                     $temp += $metadataentries->$hourkey * HOURSECS;
                 }
                 if ($metadataentries->$minkey != '' &&
-                        !\mod_sharedresource\metadata::is_integer($metadataentries->$minkey)) {
+                        !metadata::is_integer($metadataentries->$minkey)) {
                     $errortemp .= get_string('integerminute', 'sharedresource');
                 } else if ($metadataentries->$minkey != '' &&
-                        \mod_sharedresource\metadata::is_integer($metadataentries->$minkey) &&
+                        metadata::is_integer($metadataentries->$minkey) &&
                                 $metadataentries->$minkey < 0) {
                     $errortemp .= get_string('incorrectminute', 'sharedresource');
                 }
@@ -167,9 +190,9 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
 
             /*
              * At this point any suffixed htmlkey should be decoded and cleaned. It is safe to
-             * convert to strorage keys.
+             * convert to storage keys.
              */
-            $elementkey = \mod_sharedresource\metadata::html_to_storage($htmlkey);
+            $elementkey = metadata::html_to_storage($htmlkey);
             list($nodeid, $instanceid)  = explode(':', $elementkey);
 
             // In case of a keyword element (if we have some), we have to check there is only one keyword, with no punctuation.
@@ -193,12 +216,12 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $sourcename = $standardsourceelm->name;
                 // We are in a classification.
 
-                // Value for SOURCE comes directly from the metadata taxonomy source select, or
+                // Value for SOURCE comes directly from the metadata taxonomy source select, or.
                 $elementtpl->elmname = $sourcename;
                 $sourcenodeid = $taxumarray['source'];
                 // Get full source element key from the taxon path branch.
-                $sourceelementkey = \mod_sharedresource\metadata::to_instance($sourcenodeid, $instanceid);
-                $sourcehtmlname = \mod_sharedresource\metadata::storage_to_html($sourceelementkey);
+                $sourceelementkey = metadata::to_instance($sourcenodeid, $instanceid);
+                $sourcehtmlname = metadata::storage_to_html($sourceelementkey);
                 $elementtpl->elmkey = $sourceelementkey;
                 if (!empty($metadataentries->$sourcehtmlname)) {
                     $elementtpl->elmvalue = $metadataentries->$sourcehtmlname;
@@ -207,10 +230,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $template->elements[] = $elementtpl;
 
                 // Value for ID comes directly from the metadata taxonomy select.
-                $elementtpl = new StdClass;
+                $elementtpl = new StdClass();
                 $elementtpl->elmname = $standardidelm->name;
                 $idnodeid = $taxumarray['id'];
-                $idelementkey = \mod_sharedresource\metadata::to_instance($idnodeid, $instanceid);
+                $idelementkey = metadata::to_instance($idnodeid, $instanceid);
                 $elementtpl->elmkey = $idelementkey;
                 $elementtpl->elmvalue = $value;
 
@@ -220,10 +243,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 $template->elements[] = $elementtpl;
 
                 // Value for ENTRY is deduced from the taxonomy source.
-                $elementtpl = new StdClass;
+                $elementtpl = new StdClass();
                 $elementtpl->elmname = $standardentryelm->name;
                 $entrynodeid = $taxumarray['entry'];
-                $entryelementkey = \mod_sharedresource\metadata::to_instance($entrynodeid, $instanceid);
+                $entryelementkey = metadata::to_instance($entrynodeid, $instanceid);
                 $elementtpl->elmkey = $entryelementkey;
                 $elementtpl->elmvalue = $value;
 
@@ -239,10 +262,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
                 }
                 if ($value != '') {
 
-                    $standardelm = $mtdstandard->getElement($nodeid);
+                    $standardelm = $mtdstandard->get_element($nodeid);
                     $name = $standardelm->name;
 
-                    $elementtpl = new StdClass;
+                    $elementtpl = new StdClass();
                     $elementtpl->elmname = $name;
                     $elementtpl->elmkey = $elementkey;
                     $elementtpl->elmvalue = $value;
@@ -260,6 +283,10 @@ function metadata_display_and_check(&$shrentry, $metadataentries) {
     return $result;
 }
 
+/**
+ * Helper function
+ * @param string $value
+ */
 function clean_string_key($value) {
     $value = strtolower($value);
     $value = str_replace('.', '', $value);
@@ -286,51 +313,53 @@ function clean_string_key($value) {
     return $value;
 }
 
-function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
-    global $USER, $DB, $CFG, $SESSION;
-
-    $config = get_config('sharedresource');
-    $namespace = $config->schema;
+/**
+ * Initialize thos elements who are handled by core in standard resource
+ * @param object $mtdstandard the metadata plugin
+ * @param object entry $shrentry
+ */
+function metadata_initialise_core_elements($mtdstandard, entry & $shrentry) {
+    global $USER, $DB, $SESSION;
 
     // Initialise metadata elements from core : description and title.
-    $descriptionelement = $mtdstandard->getDescriptionElement();
+    $descriptionelement = $mtdstandard->get_description_element();
 
-    $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $namespace);
-    $titleelement = $mtdstandard->getTitleElement();
+    $shrentry->update_element($descriptionelement->node.':0_0', $shrentry->description, $mtdstandard->get_namespace());
+    $titleelement = $mtdstandard->get_title_element();
 
-    $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $namespace);
+    $shrentry->update_element($titleelement->node.':0_0', $shrentry->title, $mtdstandard->get_namespace());
 
     // If we have a file, find the size element and update value from known size.
     $usercontext = context_user::instance($USER->id);
     $filerecid = $shrentry->file;
     if (!empty($filerecid)) {
-        if (method_exists($mtdstandard, 'getSizeElement')) {
-            $draftsize = $DB->get_field('files', 'filesize', array('id' => $filerecid));
-            $element = $mtdstandard->getSizeElement();
-            $shrentry->update_element($element->node.':0_0', $draftsize, $namespace);
+        if (method_exists($mtdstandard, 'get_size_element')) {
+            $draftsize = $DB->get_field('files', 'filesize', ['id' => $filerecid]);
+            $element = $mtdstandard->get_size_element();
+            $shrentry->update_element($element->node.':0_0', $draftsize, $mtdstandard->get_namespace());
         }
     }
 
     // If we have a file, find the format element and update value from known mimetype as technical format.
     if (!empty($filerecid)) {
-        if (method_exists($mtdstandard, 'getFileFormatElement')) {
-            $mimetype = $DB->get_field('files', 'mimetype', array('id' => $filerecid));
-            $element = $mtdstandard->getFileFormatElement();
-            $shrentry->update_element($element->node.':0_0', $mimetype, $namespace);
+        if (method_exists($mtdstandard, 'get_file_format_element')) {
+            $mimetype = $DB->get_field('files', 'mimetype', ['id' => $filerecid]);
+            $element = $mtdstandard->get_file_format_element();
+            $shrentry->update_element($element->node.':0_0', $mimetype, $mtdstandard->get_namespace());
         }
     }
 
     // If we have a file, find the location element and update value from known access url as location.
     $identifier = $shrentry->identifier;
     if ($identifier) {
-        if (method_exists($mtdstandard, 'getLocationElement')) {
+        if (method_exists($mtdstandard, 'get_location_element')) {
             if (empty($config->foreignurl)) {
-                $url = $CFG->wwwroot.'/local/sharedresources/view.php?identifier='.$identifier;
+                $url = new moodle_url('/local/sharedresources/view.php', ['identifier' => $identifier]);
             } else {
                 $url = str_replace('<%%ID%%>', $identifier, $config->foreignurl);
             }
-            $element = $mtdstandard->getLocationElement();
-            $shrentry->update_element($element->node.':0_0', $url, $namespace);
+            $element = $mtdstandard->get_location_element();
+            $shrentry->update_element($element->node.':0_0', $url, $mtdstandard->get_namespace());
         }
     }
 
@@ -338,6 +367,9 @@ function metadata_initialise_core_elements($mtdstandard, &$shrentry) {
     $SESSION->sr_entry = serialize($shrentry);
 }
 
+/**
+ * Get the actual capability of the current user regarding sharedresource edition.
+ */
 function metadata_get_user_capability() {
 
     if (has_capability('repository/sharedresources:systemmetadata', context_system::instance())) {
@@ -355,6 +387,7 @@ function metadata_get_user_capability() {
 
 /**
  * Given an element name as xny_zxw_..._k, returns a tail incremented name (k+1)
+ * @param string $elmname
  */
 function metadata_increment_name_occurrence($elmname) {
     $parts = explode('_', $elmname);
@@ -377,7 +410,7 @@ function metadata_increment_name_occurrence($elmname) {
  * @param string $occ the occurence index path
  * @param string $pos the target position node path
  *
- * TDDO : Replace by a sharedresource_metadata method using get_parent() and get_instance_id()
+ * @todo : Replace by a sharedresource_metadata method using get_parent() and get_instance_id()
  */
 function metadata_get_node_occurence($occ, $pos) {
 
@@ -385,7 +418,7 @@ function metadata_get_node_occurence($occ, $pos) {
 
     $occparts = explode('_', $occ);
 
-    $occout = array();
+    $occout = [];
     for ($i = 0; $i < $level; $i++) {
         $nextpart = 0 + array_shift($occparts);
         $occout[] = $nextpart;

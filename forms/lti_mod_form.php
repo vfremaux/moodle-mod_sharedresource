@@ -13,17 +13,24 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//
-// This file is part of BasicLTI4Moodle
-//
-//
-// BasicLTI4Moodle is copyright 2009 by Marc Alier Forment, Jordi Piguillem and Nikolas Galanis
-// of the Universitat Politecnica de Catalunya http://www.upc.edu
-// Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu
 
 /**
- * This file is a clone from main lti client form used by sharedresource to easily
- * make a new client instance in a course from a tool definition stored in sharedresource
+ * This file is a clone from main lti client form used by sharedresource.
+ *
+ * @package    mod_sharedresource
+ * @see /mod/lti/mod_form.php
+ * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis, marc.alier@upc.edu
+ * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @author     Marc Alier
+ * @author     Jordi Piguillem
+ * @author     Nikolas Galanis
+ * @author     Chris Scribner
+ * @author     Valery Fremaux (VF Consulting)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/*
+ * Provided to easily make a new client instance in a course from a tool definition stored in sharedresource
  * library
  *
  * The client takes most of its configuration data from the sharedresource informations, such as
@@ -33,27 +40,21 @@
  * we lack of secure fields recoding in sharedresource metadata, and those fields would not be
  * LOM compliant. So we still need the secret be known by the user that deployes the LTI tool
  * from the library.
- *
- * @package    mod_sharedresource
- * @category   mod
- * @see /mod/lti/mod_form.php
- * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
- *  marc.alier@upc.edu
- * @adaptator     Valery Fremaux (VF Consulting)
- * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
- * @author     Marc Alier
- * @author     Jordi Piguillem
- * @author     Nikolas Galanis
- * @author     Chris Scribner
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/lti/locallib.php');
 
+/**
+ * Make LTI form.
+ */
 class lti_mod_form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $PAGE, $OUTPUT, $USER, $COURSE;
 
@@ -62,7 +63,7 @@ class lti_mod_form extends moodleform {
         $mform =& $this->_form;
 
         // Contextual addtolocalresource transaction params.
-        $mform->addElement('hidden', 'id'); // Course id
+        $mform->addElement('hidden', 'id'); // Course id.
         $mform->setType('id', PARAM_INT);
 
         $mform->addElement('hidden', 'section');
@@ -91,11 +92,11 @@ class lti_mod_form extends moodleform {
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // Adding the standard "name" field.
 
-        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $mform->addElement('editor', 'introeditor', get_string('description'), null, array());
+        $mform->addElement('editor', 'introeditor', get_string('description'), null, []);
         $mform->setAdvanced('introeditor');
 
         // Display the label to the right of the checkbox so it looks better & matches rest of the form.
@@ -110,31 +111,13 @@ class lti_mod_form extends moodleform {
         $mform->setAdvanced('showdescriptionlaunch');
         $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'lti');
 
-        // Tool settings
-        /*
-        $tooltypes = $mform->addElement('select', 'typeid', get_string('external_tool_type', 'lti'), array());
-        $mform->addHelpButton('typeid', 'external_tool_type', 'lti');
-
-        foreach (lti_get_types_for_add_instance() as $id => $type) {
-            if ($type->course == $COURSE->id) {
-                $attributes = array( 'editable' => 1, 'courseTool' => 1, 'domain' => $type->tooldomain );
-            } else if ($id != 0) {
-                $attributes = array( 'globalTool' => 1, 'domain' => $type->tooldomain);
-            } else {
-                $attributes = array();
-            }
-
-            $tooltypes->addOption($type->name, $id, $attributes);
-        }
-        */
-
         $mform->addElement('hidden', 'toolurl');
         $mform->setType('toolurl', PARAM_TEXT);
 
         $mform->addElement('hidden', 'securetoolurl');
         $mform->setType('securetoolurl', PARAM_TEXT);
 
-        $launchoptions = array();
+        $launchoptions = [];
         $launchoptions[LTI_LAUNCH_CONTAINER_DEFAULT] = get_string('default', 'lti');
         $launchoptions[LTI_LAUNCH_CONTAINER_EMBED] = get_string('embed', 'lti');
         $launchoptions[LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS] = get_string('embed_no_blocks', 'lti');
@@ -156,12 +139,12 @@ class lti_mod_form extends moodleform {
         $mform->addElement('hidden', 'instructorcustomparameters');
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
 
-        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), ['size' => '64']);
         $mform->setType('icon', PARAM_TEXT);
         $mform->setAdvanced('icon');
         $mform->addHelpButton('icon', 'icon_url', 'lti');
 
-        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), ['size' => '64']);
         $mform->setType('secureicon', PARAM_TEXT);
         $mform->setAdvanced('secureicon');
         $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
@@ -183,11 +166,6 @@ class lti_mod_form extends moodleform {
 
         // Add standard elements, common to all modules.
 
-        /*
-        $this->standard_coursemodule_elements();
-        $mform->setAdvanced('cmidnumber');
-        */
-
         // Fake standard course module elements adding grade.
         $mform->addElement('header', 'gradeheader', get_string('scale'));
 
@@ -197,11 +175,11 @@ class lti_mod_form extends moodleform {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
-        $params = array('sesskey' => $USER->sesskey, 'course' => $COURSE->id);
+        $params = ['sesskey' => $USER->sesskey, 'course' => $COURSE->id];
         $editurl = new moodle_url("/mod/lti/instructor_edit_tool_type.php", $params);
         $ajaxurl = new moodle_url('/mod/lti/ajax.php');
 
-        $jsinfo = (object)array(
+        $jsinfo = (object)[
                         'edit_icon_url' => (string)$OUTPUT->image_url('t/edit'),
                         'add_icon_url' => (string)$OUTPUT->image_url('t/add'),
                         'delete_icon_url' => (string)$OUTPUT->image_url('t/delete'),
@@ -209,41 +187,31 @@ class lti_mod_form extends moodleform {
                         'warning_icon_url' => (string)$OUTPUT->image_url('warning', 'lti'),
                         'instructor_tool_type_edit_url' => $editurl->out(false),
                         'ajax_url' => $ajaxurl->out(true),
-                        'courseId' => $COURSE->id
-                  );
+                        'courseId' => $COURSE->id,
+                  ];
 
-        $module = array(
+        $module = [
             'name'      => 'mod_lti_edit',
             'fullpath'  => '/mod/lti/mod_form.js',
-            'requires'  => array('base', 'io', 'querystring-stringify-simple', 'node', 'event', 'json-parse'),
-            'strings'   => array(
-                array('addtype', 'lti'),
-                array('edittype', 'lti'),
-                array('deletetype', 'lti'),
-                array('delete_confirmation', 'lti'),
-                array('cannot_edit', 'lti'),
-                array('cannot_delete', 'lti'),
-                array('global_tool_types', 'lti'),
-                array('course_tool_types', 'lti'),
-                array('using_tool_configuration', 'lti'),
-                array('domain_mismatch', 'lti'),
-                array('custom_config', 'lti'),
-                array('tool_config_not_found', 'lti'),
-                array('forced_help', 'lti')
-            ),
-        );
+            'requires'  => ['base', 'io', 'querystring-stringify-simple', 'node', 'event', 'json-parse'],
+            'strings'   => [
+                ['addtype', 'lti'],
+                ['edittype', 'lti'],
+                ['deletetype', 'lti'],
+                ['delete_confirmation', 'lti'],
+                ['cannot_edit', 'lti'],
+                ['cannot_delete', 'lti'],
+                ['global_tool_types', 'lti'],
+                ['course_tool_types', 'lti'],
+                ['using_tool_configuration', 'lti'],
+                ['domain_mismatch', 'lti'],
+                ['custom_config', 'lti'],
+                ['tool_config_not_found', 'lti'],
+                ['forced_help', 'lti'],
+            ],
+        ];
 
-        $PAGE->requires->js_init_call('M.mod_lti.editor.init', array(json_encode($jsinfo)), true, $module);
-    }
-
-    /**
-     * Make fields editable or non-editable depending on the administrator choices
-     * @see moodleform_mod::definition_after_data()
-     */
-    public function definition_after_data() {
-        parent::definition_after_data();
-
-        // $mform =& $this->_form;
+        $PAGE->requires->js_init_call('M.mod_lti.editor.init', [json_encode($jsinfo)], true, $module);
     }
 
     /**
@@ -252,7 +220,7 @@ class lti_mod_form extends moodleform {
      *
      * @param array $default_values passed by reference
      */
-    public function data_preprocessing(&$default_values) {
-
+    public function data_preprocessing(& $defaultvalues) {
+        assert(true);
     }
 }

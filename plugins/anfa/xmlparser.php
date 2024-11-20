@@ -1,10 +1,26 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Custom XML parser for XML Metadata (LOMFR)
  *
  * @author  Vincent Micheli
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @package sharedmetadata_anfa
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -17,7 +33,7 @@ require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.
  */
 
 
-class metadata_xml_parser_anfa extends metadata_xml_parser{
+class metadata_xml_parser_anfa extends metadata_xml_parser {
     /**
      * Constructor creates and initialises parser resource and calls initialise
      *
@@ -43,11 +59,11 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
 
         $this->current_path = '';
         $this->start_discard = 0;
-        $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
-        $this->duration_nodes = array('DURATION', 'TYPICALLEARNINGTIME');
+        $this->ignored_nodes = ['LOM', 'STRING', 'DATETIME', 'VALUE'];
+        $this->duration_nodes = ['DURATION', 'TYPICALLEARNINGTIME'];
 
         $this->current_meta = null;
-        $this->metadata = array();
+        $this->metadata = [];
 
         $this->title_node = '/GENERAL/TITLE';
         $this->url_node = '/TECHNICAL/LOCATION';
@@ -62,39 +78,39 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
 
         $this->plugin = 'lomfr';
 
-        $this->nodes_tree = array(
-            '/GENERAL' => array(
+        $this->nodes_tree = [
+            '/GENERAL' => [
                 'item' => '1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER' => [
                 'item' => '1_1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER/CATALOG' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER/CATALOG' => [
                 'item' => '1_1_1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER/ENTRY' => [
                 'item' => '1_1_2',
-                'iteration' => -1
-            ),
-            '/GENERAL/TITLE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/TITLE' => [
                 'item' => '1_2',
-                'iteration' => -1
-            ),
-            '/GENERAL/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/LANGUAGE' => [
                 'item' => '1_3',
-                'iteration' => -1
-            ),
-            '/GENERAL/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/DESCRIPTION' => [
                 'item' => '1_4',
-                'iteration' => -1
-            ),
-            '/GENERAL/KEYWORD' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/KEYWORD' => [
                 'item' => '1_5',
-                'iteration' => -1
-            ),
+                'iteration' => -1,
+            ],
             /*
             '/GENERAL/COVERAGE' => array(
                 'item' => '1_6',
@@ -109,80 +125,80 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
                 'iteration' => -1
             ),
             */
-            '/GENERAL/DOCUMENTTYPE' => array(
+            '/GENERAL/DOCUMENTTYPE' => [
                 'item' => '1_9',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE' => [
                 'item' => '2',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/VERSION' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/VERSION' => [
                 'item' => '2_1',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/STATUS' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/STATUS' => [
                 'item' => '2_2',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE' => [
                 'item' => '2_3',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE/ROLE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE/ROLE' => [
                 'item' => '2_3_1',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE/ENTITY' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE/ENTITY' => [
                 'item' => '2_3_2',
-                'iteration' => -1
-            ),
+                'iteration' => -1,
+            ],
             /*
             '/LIFECYCLE/CONTRIBUTE/DATE' => array(
                 'item' => '2_3_3',
                 'iteration' => -1
             ),
             */
-            '/METAMETADATA' => array(
+            '/METAMETADATA' => [
                 'item' => '3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER' => [
                 'item' => '3_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER/CATALOG' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER/CATALOG' => [
                 'item' => '3_1_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER/ENTRY' => [
                 'item' => '3_1_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE' => [
                 'item' => '3_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/ROLE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/ROLE' => [
                 'item' => '3_2_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/ENTITY' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/ENTITY' => [
                 'item' => '3_2_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/DATE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/DATE' => [
                 'item' => '3_2_3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/METADATASCHEMA' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/METADATASCHEMA' => [
                 'item' => '3_3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/LANGUAGE' => [
                 'item' => '3_4',
-                'iteration' => -1
-            ),
+                'iteration' => -1,
+            ],
             /*
             '/TECHNICAL' => array(
                 'item' => '4',
@@ -237,78 +253,78 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
                 'iteration' => -1
             ),
             */
-            '/EDUCATIONAL' => array(
+            '/EDUCATIONAL' => [
                 'item' => '5',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTERACTIVITYTYPE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTERACTIVITYTYPE' => [
                 'item' => '5_1',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/LEARNINGRESOURCETYPE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/LEARNINGRESOURCETYPE' => [
                 'item' => '5_2',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTERACTIVITYLEVEL' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTERACTIVITYLEVEL' => [
                 'item' => '5_3',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/SEMANTICDENSITY' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/SEMANTICDENSITY' => [
                 'item' => '5_4',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTENDEDENDUSERROLE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTENDEDENDUSERROLE' => [
                 'item' => '5_5',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/CONTEXT' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/CONTEXT' => [
                 'item' => '5_6',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/TYPICALAGERANGE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/TYPICALAGERANGE' => [
                 'item' => '5_7',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/DIFFICULTY' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/DIFFICULTY' => [
                 'item' => '5_8',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/TYPICALLEARNINGTIME' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/TYPICALLEARNINGTIME' => [
                 'item' => '5_9',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/DESCRIPTION' => [
                 'item' => '5_10',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/LANGUAGE' => [
                 'item' => '5_11',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/ACTIVITY' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/ACTIVITY' => [
                 'item' => '5_12',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/CREDIT' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/CREDIT' => [
                 'item' => '5_13',
-                'iteration' => -1
-            ),
-            '/RIGHTS' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS' => [
                 'item' => '6',
-                'iteration' => -1
-            ),
-            '/RIGHTS/COST' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/COST' => [
                 'item' => '6_1',
-                'iteration' => -1
-            ),
-            '/RIGHTS/COPYRIGHTANDOTHERRESTRICTIONS' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/COPYRIGHTANDOTHERRESTRICTIONS' => [
                 'item' => '6_2',
-                'iteration' => -1
-            ),
-            '/RIGHTS/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/DESCRIPTION' => [
                 'item' => '6_3',
-                'iteration' => -1
-            ),
+                'iteration' => -1,
+            ],
             /*
             '/RELATION' => array(
                 'item' => '7',
@@ -355,43 +371,43 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
                 'iteration' => -1
             ),
             */
-            '/CLASSIFICATION' => array(
+            '/CLASSIFICATION' => [
                 'item' => '9',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/PURPOSE' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/PURPOSE' => [
                 'item' => '9_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH' => [
                 'item' => '9_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/SOURCE' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/SOURCE' => [
                 'item' => '9_2_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON' => [
                 'item' => '9_2_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON/ID' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON/ID' => [
                 'item' => '9_2_2_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON/ENTRY' => [
                 'item' => '9_2_2_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/DESCRIPTION' => [
                 'item' => '9_3',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/KEYWORD' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/KEYWORD' => [
                 'item' => '9_4',
-                'iteration' => -1
-            )
-        );
+                'iteration' => -1,
+            ],
+        ];
 
         return true;
     }
@@ -431,7 +447,7 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
         $elempath = '';
         $depth = substr_count($path, '/');
         $tmppath = $path;
-        $elempathtab = array();
+        $elempathtab = [];
         for ($i = 0; $i < $depth; $i++) {
             $elempathtab[$depth - ($i + 1)] = $this->nodes_tree[$tmppath]['iteration'];
             $tmppath = substr($tmppath, 0, strrpos($tmppath, '/'));
@@ -500,7 +516,7 @@ class metadata_xml_parser_anfa extends metadata_xml_parser{
      */
     function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {
-            return true; 
+            return true;
         }
         if ($this->current_path == $this->title_node) {
             if (empty($this->title)) {

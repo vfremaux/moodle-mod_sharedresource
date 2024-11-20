@@ -15,19 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * implements a hook for the page_module block (page course format) to construct the access link to a sharedressource
  *
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
- *
- * implements a hook for the page_module block to construct the
- * access link to a sharedressource
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 
+/**
+ * Page format wrapper callback
+ * @param object $block
+ */
 function sharedresource_set_instance($block) {
     global $DB, $COURSE, $PAGE;
 
@@ -42,14 +44,15 @@ function sharedresource_set_instance($block) {
         return;
     }
 
-    $block->content->text = '<div class="block-page-module-view">'.$renderer->print_cm($COURSE, $modinfo->cms[$block->config->cmid], array()).'</div>';
+    $html = $renderer->print_cm($COURSE, $modinfo->cms[$block->config->cmid], []);
+    $block->content->text = '<div class="block-page-module-view">'.$html.'</div>';
 
     // Call each plugin to add something.
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         if (method_exists($plugin, 'sharedresource_set_instance')) {
             $cm = get_coursemodule_from_id('sharedresource', $block->cm->id);
-            $sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance));
+            $sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance]);
             $plugin->sharedresource_set_instance($block, $sharedresource);
         }
     }

@@ -16,7 +16,6 @@
 /**
  * AMD module for editing metadata
  * @module     mod_sharedresource/view
- * @package    blocks
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
@@ -70,6 +69,13 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
             $('.mtd-form-element input[type="text"]').trigger('keyup');
             // On selects, triggering empties preload choices on taxonomy.
             // $('.mtd-form-element select').trigger('change');
+            $('.mtd-form-element.is-mandatory-1 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-2 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-3 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-4 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-5 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-6 select').trigger('change');
+            $('.mtd-form-element.is-mandatory-7 select').trigger('change');
             $('.mtd-form-element textarea').trigger('keyup');
         },
 
@@ -306,9 +312,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
 
         /**
          * Calls an ajax renderer to produce a new form subtree fragment.
-         * keyid : the current element instanceid (m_n_o:x_y_z)
-         * numoccur : the occurrence number of the node (int)
-         * realoccur :
+         * @param {string} elmname the element id
+         * @param {int} realoccur the occurence index
+         * @param {string} taxonsourceid the occurence index
          */
         add_list_item: function(elmname, realoccur, taxonsourceid) {
 
@@ -410,6 +416,7 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // unlock form submit if no more empty on whole form.
                 var otherempty = $('.mtd-form-element.is-mandatory.is-empty');
                 if (!otherempty || (otherempty.length === 0)) {
+                    log.debug("Lock form ");
                     $('#id-mtd-submit').attr('disabled', false);
                     $('#id-mtd-submit').removeClass('is-disabled');
                 }
@@ -418,8 +425,9 @@ define(['jquery', 'core/str', 'core/log', 'core/config', 'mod_sharedresource/met
                 // mark element as empty.
                 that.parent('.mtd-form-element').addClass('is-empty');
 
-                if (that.hasClass('is-mandatory')) {
-                    // lock form submit.
+                if (that.parent('.mtd-form-element').hasClass('is-mandatory')) {
+                    // lock form submit if some mandatory element is empty.
+                    log.debug("Unlock form ");
                     $('#id-mtd-submit').attr('disabled', true);
                     $('#id-mtd-submit').addClass('is-disabled');
 

@@ -15,21 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Valery Fremaux  valery.fremaux@gmail.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- * @subpackage mod_sharedresource
- * @category mod
+ * Provides an alternative view for page format.
  *
- * implements a hook for the page_module block to construct the
- * access link to a sharedressource
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
+/*
+ * Embedds the resource in a page format course page.
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_base.class.php');
 
-function sharedresource_set_instance(&$block) {
+/**
+ * Page format wrapper callback
+ * @param object $block
+ */
+function sharedresource_set_instance($block) {
     global $DB;
 
     $modinfo = get_fast_modinfo($block->course);
@@ -39,11 +46,11 @@ function sharedresource_set_instance(&$block) {
     $resourceinstance->embedded = true;
     $block->content->text = '<div class="block-page-module-view">'.$sharedresource->display().'</div>';
 
-    // call each plugin to add something
+    // Call each plugin to add something.
     $plugins = sharedresource_get_plugins();
     foreach ($plugins as $plugin) {
         if (method_exists($plugin, 'sharedresource_set_instance')) {
-            $sharedresource = $DB->get_record('sharedresource', array('id' => $cm->instance));
+            $sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance]);
             $plugin->sharedresource_set_instance($block, $sharedresource);
         }
     }

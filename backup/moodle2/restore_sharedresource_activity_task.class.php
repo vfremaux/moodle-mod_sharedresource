@@ -15,15 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * Restore tasks.
+ *
+ * @package     mod_sharedresource
  * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/sharedresource/backup/moodle2/restore_sharedresource_stepslib.php'); // Because it exists (must)
+// Because it exists (must).
+require_once($CFG->dirroot . '/mod/sharedresource/backup/moodle2/restore_sharedresource_stepslib.php');
 
 /**
  * sharedresource restore task that provides all the settings and steps to perform one
@@ -35,14 +39,15 @@ class restore_sharedresource_activity_task extends restore_activity_task {
      * Define (add) particular settings this activity can have
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
+        // No particular settings for this activity.
+        return true;
     }
 
     /**
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // Choice only has one structure step
+        // Choice only has one structure step.
         $this->add_step(new restore_sharedresource_activity_structure_step('sharedresource_structure', 'sharedresource.xml'));
     }
 
@@ -50,10 +55,10 @@ class restore_sharedresource_activity_task extends restore_activity_task {
      * Define the contents in the activity that must be
      * processed by the link decoder
      */
-    static public function define_decode_contents() {
-        $contents = array();
+    public static function define_decode_contents() {
+        $contents = [];
 
-        $contents[] = new restore_decode_content('sharedresource', array('intro'), 'sharedresource');
+        $contents[] = new restore_decode_content('sharedresource', ['intro'], 'sharedresource');
 
         return $contents;
     }
@@ -62,12 +67,12 @@ class restore_sharedresource_activity_task extends restore_activity_task {
      * Define the decoding rules for links belonging
      * to the activity to be executed by the link decoder
      */
-    static public function define_decode_rules() {
-        $rules = array();
+    public static function define_decode_rules() {
+        $rules = [];
 
-        // List of sharedresources in course
+        // List of sharedresources in course.
         $rules[] = new restore_decode_rule('SHAREDRESOURCEINDEX', '/mod/sharedresource/index.php?id=$1', 'course');
-        // Forum by cm->id and sharedresource->id
+
         $rules[] = new restore_decode_rule('SHAREDRESOURCEVIEWBYID', '/mod/sharedresource/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('SHAREDRESOURCEVIEWBYF', '/mod/sharedresource/view.php?s=$1', 'sharedresource');
 
@@ -76,12 +81,12 @@ class restore_sharedresource_activity_task extends restore_activity_task {
 
     /**
      * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
+     * by the processor when restoring
      * sharedresource logs. It must return one array
-     * of {@link restore_log_rule} objects
+     * of rule objects
      */
-    static public function define_restore_log_rules() {
-        $rules = array();
+    public static function define_restore_log_rules() {
+        $rules = [];
 
         $rules[] = new restore_log_rule('sharedresource', 'add', 'view.php?id={course_module}', '{sharedresource}');
         $rules[] = new restore_log_rule('sharedresource', 'update', 'view.php?id={course_module}', '{sharedresource}');
@@ -89,5 +94,4 @@ class restore_sharedresource_activity_task extends restore_activity_task {
 
         return $rules;
     }
-
 }

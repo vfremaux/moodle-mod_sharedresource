@@ -15,19 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author  Frederic Guillou
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package    mod_sharedresource
- * @category   mod
+ * Special class for parsing metadata XML documents
+ *
+ * @package     mod_sharedresource
+ * @author      Frederic Guillou
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Base XML Parser class
+ */
 abstract class metadata_xml_parser {
 
-    public abstract function add_identifier(&$metadata, $catalog, $identifier, $entryid);
+    /**
+     *
+     */
+    abstract public function add_identifier(&$metadata, $catalog, $identifier, $entryid);
 
+    /**
+     * Get a value in the tree
+     * @param string $path
+     */
     public function get_metadata_value($path) {
         foreach ($this->metadata as $id => $elem) {
             if ($this->metadata[$id]->element == $path) {
@@ -35,5 +46,4 @@ abstract class metadata_xml_parser {
             }
         }
     }
-
 }

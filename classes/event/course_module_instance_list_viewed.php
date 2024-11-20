@@ -18,12 +18,12 @@
  * mod_sharedresource course module instance list viewed event.
  *
  * @package    mod_sharedresource
- * @copyright  2015 Valery Fremaux
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_sharedresource\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * mod_sharedresource course module instance list event class.

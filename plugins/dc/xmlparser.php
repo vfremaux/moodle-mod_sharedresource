@@ -17,13 +17,14 @@
 /**
  * Custom XML parser for XML Metadata (LOM)
  *
+ * @package sharedmetadata_dc
  * @author  Vincent Micheli
- * @version 0.0.1
+ * @copyright activeprolearn.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace mod_sharedresource;
 
-use \StdClass;
+use StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,7 +34,6 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.
 /**
  * Custom XML parser class for XML Metadata
  */
-
 class metadata_xml_parser_lom extends metadata_xml_parser {
 
     /**
@@ -60,11 +60,11 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
 
         $this->current_path = '';
         $this->start_discard = 0;
-        $this->ignored_nodes = array('LOM', 'STRING', 'DATETIME', 'VALUE');
-        $this->duration_nodes = array('DURATION', 'TYPICALLEARNINGTIME');
+        $this->ignored_nodes = ['LOM', 'STRING', 'DATETIME', 'VALUE'];
+        $this->duration_nodes = ['DURATION', 'TYPICALLEARNINGTIME'];
 
         $this->current_meta = null;
-        $this->metadata = array();
+        $this->metadata = [];
 
         $this->title_node = '/GENERAL/TITLE';
         $this->url_node = '/TECHNICAL/LOCATION';
@@ -79,316 +79,316 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
 
         $this->plugin = 'lom';
 
-        $this->nodes_tree = array(
-            '/GENERAL' => array(
+        $this->nodes_tree = [
+            '/GENERAL' => [
                 'item' => '1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER' => [
                 'item' => '1_1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER/CATALOG' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER/CATALOG' => [
                 'item' => '1_1_1',
-                'iteration' => -1
-            ),
-            '/GENERAL/IDENTIFIER/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/IDENTIFIER/ENTRY' => [
                 'item' => '1_1_2',
-                'iteration' => -1
-            ),
-            '/GENERAL/TITLE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/TITLE' => [
                 'item' => '1_2',
-                'iteration' => -1
-            ),
-            '/GENERAL/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/LANGUAGE' => [
                 'item' => '1_3',
-                'iteration' => -1
-            ),
-            '/GENERAL/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/DESCRIPTION' => [
                 'item' => '1_4',
-                'iteration' => -1
-            ),
-            '/GENERAL/KEYWORD' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/KEYWORD' => [
                 'item' => '1_5',
-                'iteration' => -1
-            ),
-            '/GENERAL/COVERAGE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/COVERAGE' => [
                 'item' => '1_6',
-                'iteration' => -1
-            ),
-            '/GENERAL/STRUCTURE' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/STRUCTURE' => [
                 'item' => '1_7',
-                'iteration' => -1
-            ),
-            '/GENERAL/AGGREGATIONLEVEL' => array(
+                'iteration' => -1,
+            ],
+            '/GENERAL/AGGREGATIONLEVEL' => [
                 'item' => '1_8',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE' => [
                 'item' => '2',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/VERSION' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/VERSION' => [
                 'item' => '2_1',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/STATUS' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/STATUS' => [
                 'item' => '2_2',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE' => [
                 'item' => '2_3',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE/ROLE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE/ROLE' => [
                 'item' => '2_3_1',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE/ENTITY' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE/ENTITY' => [
                 'item' => '2_3_2',
-                'iteration' => -1
-            ),
-            '/LIFECYCLE/CONTRIBUTE/DATE' => array(
+                'iteration' => -1,
+            ],
+            '/LIFECYCLE/CONTRIBUTE/DATE' => [
                 'item' => '2_3_3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA' => [
                 'item' => '3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER' => [
                 'item' => '3_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER/CATALOG' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER/CATALOG' => [
                 'item' => '3_1_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/IDENTIFIER/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/IDENTIFIER/ENTRY' => [
                 'item' => '3_1_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE' => [
                 'item' => '3_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/ROLE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/ROLE' => [
                 'item' => '3_2_1',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/ENTITY' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/ENTITY' => [
                 'item' => '3_2_2',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/CONTRIBUTE/DATE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/CONTRIBUTE/DATE' => [
                 'item' => '3_2_3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/METADATASCHEMA' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/METADATASCHEMA' => [
                 'item' => '3_3',
-                'iteration' => -1
-            ),
-            '/METAMETADATA/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/METAMETADATA/LANGUAGE' => [
                 'item' => '3_4',
-                'iteration' => -1
-            ),
-            '/TECHNICAL' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL' => [
                 'item' => '4',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/FORMAT' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/FORMAT' => [
                 'item' => '4_1',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/SIZE' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/SIZE' => [
                 'item' => '4_2',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/LOCATION' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/LOCATION' => [
                 'item' => '4_3',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT' => [
                 'item' => '4_4',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE' => [
                 'item' => '4_4_1',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/TYPE' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/TYPE' => [
                 'item' => '4_4_1_1',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/NAME' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/NAME' => [
                 'item' => '4_4_1_2',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/MINIMUMVERSION' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/MINIMUMVERSION' => [
                 'item' => '4_4_1_3',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/MAXIMUMVERSION' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/REQUIREMENT/ORCOMPOSITE/MAXIMUMVERSION' => [
                 'item' => '4_4_1_4',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/INSTALLATIONREMARKS' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/INSTALLATIONREMARKS' => [
                 'item' => '4_5',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/OTHERPLATFORMREQUIREMENTS' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/OTHERPLATFORMREQUIREMENTS' => [
                 'item' => '4_6',
-                'iteration' => -1
-            ),
-            '/TECHNICAL/DURATION' => array(
+                'iteration' => -1,
+            ],
+            '/TECHNICAL/DURATION' => [
                 'item' => '4_7',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL' => [
                 'item' => '5',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTERACTIVITYTYPE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTERACTIVITYTYPE' => [
                 'item' => '5_1',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/LEARNINGRESOURCETYPE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/LEARNINGRESOURCETYPE' => [
                 'item' => '5_2',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTERACTIVITYLEVEL' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTERACTIVITYLEVEL' => [
                 'item' => '5_3',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/SEMANTICDENSITY' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/SEMANTICDENSITY' => [
                 'item' => '5_4',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/INTENDEDENDUSERROLE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/INTENDEDENDUSERROLE' => [
                 'item' => '5_5',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/CONTEXT' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/CONTEXT' => [
                 'item' => '5_6',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/TYPICALAGERANGE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/TYPICALAGERANGE' => [
                 'item' => '5_7',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/DIFFICULTY' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/DIFFICULTY' => [
                 'item' => '5_8',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/TYPICALLEARNINGTIME' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/TYPICALLEARNINGTIME' => [
                 'item' => '5_9',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/DESCRIPTION' => [
                 'item' => '5_10',
-                'iteration' => -1
-            ),
-            '/EDUCATIONAL/LANGUAGE' => array(
+                'iteration' => -1,
+            ],
+            '/EDUCATIONAL/LANGUAGE' => [
                 'item' => '5_11',
-                'iteration' => -1
-            ),
-            '/RIGHTS' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS' => [
                 'item' => '6',
-                'iteration' => -1
-            ),
-            '/RIGHTS/COST' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/COST' => [
                 'item' => '6_1',
-                'iteration' => -1
-            ),
-            '/RIGHTS/COPYRIGHTANDOTHERRESTRICTIONS' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/COPYRIGHTANDOTHERRESTRICTIONS' => [
                 'item' => '6_2',
-                'iteration' => -1
-            ),
-            '/RIGHTS/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/RIGHTS/DESCRIPTION' => [
                 'item' => '6_3',
-                'iteration' => -1
-            ),
-            '/RELATION' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION' => [
                 'item' => '7',
-                'iteration' => -1
-            ),
-            '/RELATION/KIND' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/KIND' => [
                 'item' => '7_1',
-                'iteration' => -1
-            ),
-            '/RELATION/RESOURCE' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/RESOURCE' => [
                 'item' => '7_2',
-                'iteration' => -1
-            ),
-            '/RELATION/RESOURCE/IDENTIFIER' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/RESOURCE/IDENTIFIER' => [
                 'item' => '7_2_1',
-                'iteration' => -1
-            ),
-            '/RELATION/RESOURCE/IDENTIFIER/CATALOG' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/RESOURCE/IDENTIFIER/CATALOG' => [
                 'item' => '7_2_1_1',
-                'iteration' => -1
-            ),
-            '/RELATION/RESOURCE/IDENTIFIER/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/RESOURCE/IDENTIFIER/ENTRY' => [
                 'item' => '7_2_1_2',
-                'iteration' => -1
-            ),
-            '/RELATION/RESOURCE/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/RELATION/RESOURCE/DESCRIPTION' => [
                 'item' => '7_2_2',
-                'iteration' => -1
-            ),
-            '/ANNOTATION' => array(
+                'iteration' => -1,
+            ],
+            '/ANNOTATION' => [
                 'item' => '8',
-                'iteration' => -1
-            ),
-            '/ANNOTATION/ENTITY' => array(
+                'iteration' => -1,
+            ],
+            '/ANNOTATION/ENTITY' => [
                 'item' => '8_1',
-                'iteration' => -1
-            ),
-            '/ANNOTATION/DATE' => array(
+                'iteration' => -1,
+            ],
+            '/ANNOTATION/DATE' => [
                 'item' => '8_2',
-                'iteration' => -1
-            ),
-            '/ANNOTATION/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/ANNOTATION/DESCRIPTION' => [
                 'item' => '8_3',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION' => [
                 'item' => '9',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/PURPOSE' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/PURPOSE' => [
                 'item' => '9_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH' => [
                 'item' => '9_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/SOURCE' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/SOURCE' => [
                 'item' => '9_2_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON' => [
                 'item' => '9_2_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON/ID' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON/ID' => [
                 'item' => '9_2_2_1',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/TAXONPATH/TAXON/ENTRY' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/TAXONPATH/TAXON/ENTRY' => [
                 'item' => '9_2_2_2',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/DESCRIPTION' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/DESCRIPTION' => [
                 'item' => '9_3',
-                'iteration' => -1
-            ),
-            '/CLASSIFICATION/KEYWORD' => array(
+                'iteration' => -1,
+            ],
+            '/CLASSIFICATION/KEYWORD' => [
                 'item' => '9_4',
-                'iteration' => -1
-            )
-        );
+                'iteration' => -1,
+            ],
+        ];
 
         return true;
     }
@@ -428,11 +428,11 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
     function get_elempath($path) {
         $elempath = '';
         $depth = substr_count($path, '/');
-        $tmp_path = $path;
-        $elempathtab = array();
+        $tmppath = $path;
+        $elempathtab = [];
         for ($i = 0; $i < $depth; $i++) {
-            $elempathtab[$depth - ($i + 1)] = $this->nodes_tree[$tmp_path]['iteration'];
-            $tmp_path = substr($tmp_path, 0, strrpos($tmp_path, '/'));
+            $elempathtab[$depth - ($i + 1)] = $this->nodes_tree[$tmppath]['iteration'];
+            $tmppath = substr($tmppath, 0, strrpos($tmppath, '/'));
         }
         ksort($elempathtab);
         foreach ($elempathtab as $value) {
@@ -492,9 +492,9 @@ class metadata_xml_parser_lom extends metadata_xml_parser {
     /**
      * Text handler
      *
-     * @param   mixed   $parser The XML parser
-     * @param   string  $data   The content of the current tag (1024 byte chunk)
-     * @return  bool            True
+     * @param mixed $parser The XML parser
+     * @param string $data   The content of the current tag (1024 byte chunk)
+     * @return  bool True
      */
     public function default_data($parser, $data) {
         if (trim($data) == '' || $this->start_discard) {

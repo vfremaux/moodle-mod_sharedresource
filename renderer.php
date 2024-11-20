@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package sharedresource
- * @category mod
- * @author  Valery Fremaux (valery.fremaux@gmail.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
+ * General renderer
+ *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Sharedresource renderer
+ */
 class mod_sharedresource_renderer extends plugin_renderer_base {
 
     /**
      * Used to go to the library for searching a sharedresource entry for publishing.
+     * @param int $section
+     * @param string $returnpage
      * @see mod/sharedresource/search.php
      */
     public function add_instance_form($section, $returnpage) {
@@ -37,7 +43,7 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
             $context = context_course::instance($COURSE->id);
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $params = [
             'course' => $COURSE->id,
@@ -56,7 +62,7 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
                 'section' => $section,
                 'returnpage' => $returnpage,
                 'fromlibrary' => 0,
-                'mode' => 'add'
+                'mode' => 'add',
             ];
             $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
             $template->createbutton = $this->output->single_button($editurl, get_string('addsharedresource', 'sharedresource'));
@@ -68,6 +74,9 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
 
     /**
      * Print resource comparison board.
+     * @param object $new
+     * @param object $old
+     * @param string $step
      */
     public function resourcecompare($new, $old, $step = 'postdata') {
 
@@ -81,10 +90,10 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
         $template->olddescriptionstr = get_string('resourceolddescription', 'sharedresource');
         $template->newdescriptionstr = get_string('resourcenewdescription', 'sharedresource');
 
-        $attributes = array();
+        $attributes = [];
         foreach ($old->metadataelements as $elm) {
             $elmkey = $elm->get_element_key();
-            $stdelm = $plugin->getElement($elm->get_node_id());
+            $stdelm = $plugin->get_element($elm->get_node_id());
             $attribute = new StdClass;
             $attribute->id = $elmkey;
             $attribute->name = $stdelm->name;
@@ -95,7 +104,7 @@ class mod_sharedresource_renderer extends plugin_renderer_base {
 
         foreach ($new->metadataelements as $elm) {
             $elmkey = $elm->get_element_key();
-            $stdelm = $plugin->getElement($elm->get_node_id());
+            $stdelm = $plugin->get_element($elm->get_node_id());
             if (!array_key_exists($elmkey, $attributes)) {
                 $attribute = new StdClass;
                 $attribute->id = $elmkey;

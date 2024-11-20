@@ -18,12 +18,12 @@
  * This script produces a metadata subtree form fragment for element having a list type, after the user
  * clicked on the add button
  *
- * @author  Frédéric GUILLOU
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resoruce
- * @package sharedresource
- *
+ * @package     mod_sharedresource
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 define('AJAX_SCRIPT', true);
 
 require_once('../../../config.php');
@@ -33,16 +33,18 @@ require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php');
 
+use mod_sharedresource\metadata;
+
 // The required element identity as mnx_nny_onz html format.
 $elementname = required_param('elementname', PARAM_TEXT);
 
-// contextual values in the branch that has been triggered for addition.
+// Contextual values in the branch that has been triggered for addition.
 $taxonsourceid = optional_param('taxonsourceid', '', PARAM_TEXT);
 
 // The required apparent occurrence.
 $realoccur = optional_param('realoccur', null, PARAM_INT);
 
-$elementid = \mod_sharedresource\metadata::html_to_storage($elementname);
+$elementid = metadata::html_to_storage($elementname);
 $url = new moodle_url('/mod/sharedresource/ajax/getformelement.php');
 
 $PAGE->set_url($url);
@@ -55,13 +57,13 @@ require_login();
 $config = get_config('sharedresource');
 $mtdstandard = sharedresource_get_plugin($config->schema);
 list($nodeid, $instanceid) = explode(':', $elementid);
-$element = $mtdstandard->getElement($nodeid);
+$element = $mtdstandard->get_element($nodeid);
 
 $capability = metadata_get_user_capability();
 
 $renderer = $PAGE->get_renderer('mod_sharedresource', 'metadata');
 
-$template = new StdClass;
+$template = new StdClass();
 $template->taxonsourceid = $taxonsourceid;
 $template->is_ajax_root = true;
 $renderer->part_form($template, $elementid, $capability, $realoccur);

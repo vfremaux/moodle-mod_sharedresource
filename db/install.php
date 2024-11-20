@@ -15,15 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Post-install code for the customlabel module.
+ * Post-install code for the sharedresource module.
  *
  * @package     mod_sharedresource
- * @category    mod
- * @copyright   2013 Valery Fremaux
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux  (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * on the install we still need to index the text description
@@ -38,15 +36,15 @@ function xmldb_sharedresource_install() {
     $dbman = $DB->get_manager();
 
     if (preg_match('/^postgres/', $CFG->dbtype)) {
-        $idx_field = 'description';
+        $idxfield = 'description';
     } else {
-        $idx_field = 'description(250)';
+        $idxfield = 'description(250)';
     }
 
     $table = new xmldb_table('sharedresource_entry');
     $index = new xmldb_index('description');
 
-    $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array($idx_field));
+    $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, [$idxfield]);
 
     if (!$dbman->index_exists($table, $index)) {
         $dbman->add_index($table, $index, false, false);

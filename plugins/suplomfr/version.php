@@ -19,7 +19,7 @@
  * @author  Valery Fremaux  valery.fremaux@gmail.com
  * @version 0.0.1
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/taoresource is a work derived from Moodle mod/resoruce
- * @package mod_sharedresource
+ * @package sharedmetadata_suplomfr
  * @subpackage plugin
  *
  */

@@ -211,7 +211,7 @@ $string['typicallearningtime'] = 'Typical learning time';
 $string['version'] = 'Version';
 $string['webmedia'] = 'Web media';
 
-$string['standarddescription']='LOMFR is the french application profile of LOM. <br/><br/>
+$string['standarddescription'] = 'LOMFR is the french application profile of LOM. <br/><br/>
 LOMFR describe pedagogical objects (resources).
 Any entity (numeric or not) used in a educational process, a formation process or a learning process is considered as a pedagogical resource.<br/><br/>
 ScoLOMFR is an extension of LOM FR standadized by the French Ministry of Education.<br/><br/>
