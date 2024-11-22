@@ -1129,6 +1129,7 @@ class metadata_renderer extends plugin_renderer_base {
         }
 
         $nodeid = $elminstance->get_node_id();
+        $template->nodeid = $nodeid;
 
         // Previous fieldtype may resolve on one more generic type beneath.
         if ($standardelm->type == 'text' ||
