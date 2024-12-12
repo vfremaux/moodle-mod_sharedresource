@@ -34,5 +34,5 @@ $plugin->dependencies = ['local_sharedresources' => 2024093000];
 $plugin->supported = [401, 402];
 
 // Non Moodle attributes.
-$plugin->codeincrement = '4.1.0019';
+$plugin->codeincrement = '4.1.0020';
 $plugin->privacy = 'dualrelease';
