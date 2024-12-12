@@ -263,4 +263,4 @@ $string['diagnosticvehiculeselectriques'] = 'Diagnostic des véhicules à batter
 $string['parametragelogiciel'] = 'Paramétrage des logiciels suite à une intervention';
 $string['chainedetraction'] = 'Démontage et remplacement des organes composant la chaine de traction';
 $string['entretiencourant'] = 'Les opérations d’entretien courant';
-$string['entretienperiodique'] = 'Entretien périodique;
+$string['entretienperiodique'] = 'Entretien périodique';
