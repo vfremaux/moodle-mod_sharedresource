@@ -77,7 +77,7 @@ if ($identifier) {
         }
 
         $sharedresource = $DB->get_record('sharedresource', ['id' => $cm->instance], '*', MUST_EXIST);
-        $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier], '*', MUST_EXIST);
+        $resource = $DB->get_record('sharedresource_entry', ['identifier' => $sharedresource->identifier], '*', MUST_EXIST);
 
         $params = [
             'contenthash' => $sharedresource->identifier,
