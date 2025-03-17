@@ -33,6 +33,7 @@ use StdClass;
 use moodle_url;
 use moodle_exception;
 use context_module;
+use context_course;
 use mod_sharedresource\entry;
 
 if (!defined('SHAREDRESOURCE_INTERNAL')) {
@@ -173,6 +174,7 @@ class base {
             $shr->popup = '';
             $shr->options = 'forcedownload';
         } else if (!empty($shr->windowpopup)) {
+            // New window.
             $optionlist = [];
             foreach ($shrwindowoptions as $option) {
                 if (isset($shr->$option)) {
@@ -934,7 +936,7 @@ class base {
 
         $mform->addElement('header', 'displaysettings', get_string('displayoptions', 'sharedresource'));
 
-        $mform->addElement('checkbox', 'forcedownload', get_string('forcedownload', 'sharedresource'));
+        $mform->addElement('advcheckbox', 'forcedownload', get_string('forcedownload', 'sharedresource'));
         $mform->disabledIf('forcedownload', 'windowpopup', 'eq', 1);
 
         $woptions = [0 => get_string('pagewindow', 'sharedresource'), 1 => get_string('newwindow', 'sharedresource')];
@@ -943,7 +945,7 @@ class base {
         $mform->setDefault('windowpopup', (empty($config->popup) ? 1 : 0));
         $mform->disabledIf('windowpopup', 'forcedownload', 'checked');
 
-        $mform->addElement('checkbox', 'framepage', get_string('keepnavigationvisible', 'sharedresource'));
+        $mform->addElement('advcheckbox', 'framepage', get_string('keepnavigationvisible', 'sharedresource'));
         $mform->addHelpButton('framepage', 'frameifpossible', 'sharedresource');
         $mform->setDefault('framepage', 0);
         $mform->disabledIf('framepage', 'windowpopup', 'eq', 1);
@@ -957,7 +959,7 @@ class base {
                 $mform->setDefault($option, $config->{'popup'.$option});
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
             } else {
-                $mform->addElement('checkbox', $option, get_string('new'.$option, 'sharedresource'));
+                $mform->addElement('advcheckbox', $option, get_string('new'.$option, 'sharedresource'));
                 $mform->setDefault($option, $config->{'popup'.$option});
                 $mform->setType($option, PARAM_INT);
                 $mform->disabledIf($option, 'windowpopup', 'eq', 0);
@@ -1000,7 +1002,22 @@ class base {
      * @param array defaultvalues reference to form default values object
      */
     public function setup_preprocessing(& $defaultvalues) {
+
         // Override to add your own options.
-        assert(1);
+        $defaultvalues['forcedownload'] = false;
+
+        if (!empty($defaultvalues['popup'])) {
+            $popup = explode(',', $defaultvalues['popup']);
+            foreach ($popup as $windowoption) {
+                list($key, $value) = explode('=', $windowoption);
+                $defaultvalues[$key] = $value;
+            }
+            $defaultvalues['windowpopup'] = 1;
+        } else {
+            $defaultvalues['windowpopup'] = 0;
+        }
+        if (!empty($defaultvalues['options']) && $defaultvalues['options'] == 'forcedownload') {
+            $defaultvalues['forcedownload'] = true;
+        }
     }
 }
