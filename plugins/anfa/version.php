@@ -30,4 +30,4 @@ $plugin->version   = 2024061700;       // The current module version (Date: YYYY
 $plugin->requires  = 2012062500;       // Requires this Moodle version
 $plugin->component  = 'sharedmetadata_anfa';       // Requires this Moodle version
 $plugin->maturity = MATURITY_RC;     // Full name of the plugin (used for diagnostics)
-$plugin->release = '4.1.0 (Build 2014022800)';     // Full name of the plugin (used for diagnostics)
+$plugin->release = '4.5.0 (Build 2014022800)';     // Full name of the plugin (used for diagnostics)

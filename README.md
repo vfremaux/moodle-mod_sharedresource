@@ -56,3 +56,7 @@ Global review for moodle CI checks and code normalization. Deep fixes and optiml
 Changes for 2024093000 (x.x.0020)
 =================================
 Changes in ANFA Location vocabulary (4 items added)
+
+Changes for 2025031700 (x.x.0021)
+=================================
+Fix mod_sharedresource view regression, fixing display options behaviour
