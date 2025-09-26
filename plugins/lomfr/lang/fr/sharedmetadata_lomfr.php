@@ -137,6 +137,7 @@ $string['service'] = 'Service';
 $string['sevaluer'] = 'S\'évaluer';
 $string['sexercer'] = 'S\'exercer';
 $string['simuler'] = 'Simuler';
+$string['simplesearch'] = 'Recherche simple';
 $string['sinformer'] = 'S\'informer';
 $string['size'] = 'Taille';
 $string['son'] = 'Son';

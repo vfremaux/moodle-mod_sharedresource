@@ -116,6 +116,7 @@ $string['role'] = 'Role';
 $string['semanticdensity'] = 'Semantic Density';
 $string['service'] = 'Service';
 $string['size'] = 'Size';
+$string['simplesearch'] = 'Simple search';
 $string['son'] = 'Sound';
 $string['source'] = 'Source';
 $string['status'] = 'Status';
