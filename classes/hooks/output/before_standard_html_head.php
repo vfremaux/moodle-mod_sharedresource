@@ -29,7 +29,7 @@ class before_standard_html_head {
     public static function callback(\core\hook\output\before_standard_html_head $hook): void {
         $isframetop = optional_param('frameset', '', PARAM_ALPHA);
         if ($isframetop) {
-            return '<base target="_top" />';
+            echo '<base target="_top" />';
         }
     }
 }
