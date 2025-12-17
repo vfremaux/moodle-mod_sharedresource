@@ -165,7 +165,7 @@ if ($result['error'] != []) {
     $fullurl = new moodle_url('/mod/sharedresource/metadataform.php', $params);
 
     echo '<center>';
-    $OUTPUT->continue($fullurl, get_string('wrongform', 'sharedresource'), 15);
+    $OUTPUT->continue_button($fullurl);
     echo '</center>';
 
     echo $OUTPUT->footer();
